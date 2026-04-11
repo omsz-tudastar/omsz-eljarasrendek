@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Anaphylaxia Eljárásrend</title>
+<style>
+:root {
+  --bg-main: #121212;
+  --bg-card: #1e1e1e;
+  --bg-item: #2a2a2a;
+  --bg-hover: #333333;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+  --accent: #f43f5e;
+  --border: #3f3f3f;
+  --success-bg: #064e3b;
+  --success-border: #065f46;
+  --success-text: #4ade80;
+  --danger-bg: #450a0a;
+  --danger-border: #7f1d1d;
+  --danger-text: #fca5a5;
+  --warning-bg: #451a03;
+  --warning-border: #78350f;
+  --warning-text: #fbbf24;
+  --info-bg: #172554;
+  --info-border: #1e3a8a;
+  --info-text: #bfdbfe;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif; background: var(--bg-main); color: var(--text-main); min-height: 100vh; padding-bottom: 72px; }
+.app { max-width: 680px; margin: 0 auto; background: var(--bg-card); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,.4); position: relative; }
+.nav { display: flex; background: #242424; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.nb { flex: 1; padding: 9px 2px 6px; background: none; border: none; border-top: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: border-color .2s; }
+.nb.act { border-top-color: var(--accent); }
+.ni { font-size: 16px; }
+.nl { font-size: 9px; color: var(--text-muted); font-weight: 400; }
+.nb.act .nl { color: var(--accent); font-weight: 600; }
+.ct { padding: 1rem; }
+.card { background: var(--bg-item); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: .75rem; }
+.card-btn { background: var(--bg-item); border: 1px solid var(--border); border-radius: 12px; padding: .85rem 1rem; margin-bottom: 7px; cursor: pointer; text-align: left; width: 100%; font-family: inherit; transition: background .15s; color: var(--text-main); }
+.card-btn:hover { background: var(--bg-hover); }
+.al { border-radius: 8px; padding: .75rem 1rem; margin-bottom: .75rem; font-size: 13px; line-height: 1.6; white-space: pre-line; }
+.al-d { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
+.al-w { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+.al-i { background: var(--info-bg); color: var(--info-text); border: 1px solid var(--info-border); }
+.al-s { background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+.sub { font-size: 13px; font-weight: 600; color: #d1d5db; margin: .75rem 0 .35rem; }
+ul.bl { margin: 0 0 .5rem; padding-left: 1.3rem; }
+ul.bl li { font-size: 13px; color: #d1d5db; line-height: 1.65; margin-bottom: .2rem; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.tbl th { padding: 5px 8px; text-align: left; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); background: #262626; }
+table.tbl td { padding: 5px 8px; border-bottom: 1px solid #333; vertical-align: top; color: #d1d5db; }
+.tbl-wrap { overflow-x: auto; margin-bottom: .75rem; }
+.prog { height: 4px; background: #333; border-radius: 2px; margin-bottom: 1rem; }
+.progb { height: 4px; border-radius: 2px; transition: width .3s; }
+.btn { padding: .65rem 1rem; border: 1px solid #4b5563; border-radius: 8px; background: var(--bg-item); cursor: pointer; font-size: 13px; color: var(--text-main); font-family: inherit; font-weight: 600; transition: all .15s; }
+.btn:hover { background: #374151; }
+.btn-g { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-g:hover { background: #be123c; }
+.btn-fw { width: 100%; display: block; text-align: center; margin-bottom: .5rem; }
+.btn-row { display: flex; gap: 8px; }
+.btn-row .btn { flex: 1; text-align: center; margin-bottom: 0; }
+.opt { width: 100%; display: block; padding: .75rem 1rem; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; text-align: left; font-size: 13.5px; color: #d1d5db; background: var(--bg-item); font-family: inherit; line-height: 1.5; transition: all .15s; }
+.opt:hover { background: #374151; }
+.opt-ok { background: var(--success-bg) !important; border-color: var(--success-border) !important; color: #ecfdf5 !important; cursor: default !important; }
+.opt-no { background: var(--danger-bg) !important; border-color: var(--danger-border) !important; color: #fef2f2 !important; cursor: default !important; }
+.flip { border: 2px solid var(--border); border-radius: 12px; padding: 1.5rem; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: border-color .2s; margin-bottom: .75rem; background: #262626; }
+.flip.on { border-color: var(--accent); }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+input[type=number] { width: 100%; background: transparent; border: 1px solid #4b5563; border-radius: 8px; padding: 10px; color: var(--text-main); font-family: inherit; background: var(--bg-item); margin-bottom: 10px; font-size: 16px; }
+.tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.tag-g { background: #1e3a8a; color: #dbeafe; }
+.tag-y { background: #78350f; color: #fef3c7; }
+.home-mod { background: var(--bg-item); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; cursor: pointer; text-align: left; font-family: inherit; transition: all .15s; color: var(--text-main); display: flex; flex-direction: column; }
+.home-mod:hover { background: var(--bg-hover); border-color: #4b5563; transform: translateY(-1px); }
+.ch-row { display: flex; align-items: center; gap: 10px; background: var(--bg-item); border: 1px solid var(--border); border-radius: 12px; padding: .75rem 1rem; margin-bottom: 7px; cursor: pointer; width: 100%; text-align: left; font-family: inherit; transition: background .15s; color: var(--text-main); }
+.ch-row:hover { background: var(--bg-hover); }
+.res-box { border-radius: 12px; padding: 1rem; margin-top: .75rem; background: var(--info-bg); border: 1px solid var(--info-border); }
+
+/* Szótár stílusok */
+.dict-word { border-bottom: 1px dashed var(--accent); cursor: pointer; color: var(--accent); transition: color 0.2s; position: relative; font-weight: 600; }
+.dict-word:hover { color: #fecdd3; }
+#dictToast { display: none; position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: #1f2937; border: 1px solid #4b5563; color: #f3f4f6; padding: 16px 20px; border-radius: 12px; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.6); width: 90%; max-width: 400px; font-size: 14px; line-height: 1.5; text-align: left; }
+#dtWord { color: var(--accent); display: block; margin-bottom: 8px; text-transform: capitalize; font-weight: 700; font-size: 16px; border-bottom: 1px solid #374151; padding-bottom: 6px; padding-right: 24px; }
+#dtClose { position: absolute; top: 12px; right: 12px; color: #9ca3af; font-size: 24px; cursor: pointer; background: none; border: none; padding: 0; line-height: 1; transition: color 0.2s; font-weight: bold;}
+#dtClose:hover { color: #fca5a5; }
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimulációk</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+<div id="dictToast">
+  <button id="dtClose" onclick="closeDict()">×</button>
+  <strong id="dtWord"></strong>
+  <span id="dtDesc"></span>
+</div>
+</div>
+
+<script>
+let SCR = 'home', CHID = null;
+let FC = { cat: 'Összes', idx: 0, flip: false };
+let QZ = { idx: 0, sel: null, score: 0, done: false, ans: [] };
+let SI = { id: null, step: 0, chosen: null, hist: [], fin: false };
+let CA = { age: 30, weight: 80 };
+
+const defs = {
+  "Anaphylaxia": "Súlyos, életveszélyes, egész testre kiterjedő allergiás reakció.",
+  "Generalizált": "Egész testre kiterjedő, általános.",
+  "Urticaria": "Csalánkiütés.",
+  "Angiooedema": "A bőr alatti szövetek és nyálkahártyák hirtelen kialakuló duzzanata (főleg arc, ajkak).",
+  "Periorbitalis": "Szem körüli.",
+  "Oedema": "Vizenyő, duzzanat a szövetekben.",
+  "Cyanosis": "A bőr és a nyálkahártyák kékes elszíneződése oxigénhiány miatt.",
+  "Stridor": "Sípoló, húzó légzési hang, mely a légutak szűkületére utal.",
+  "Bronchusspasmus": "Hörgőgörcs, a légutak simaizmainak összehúzódása.",
+  "Hypoxia": "Oxigénhiány a szövetekben.",
+  "Tachycardia": "Szapora szívverés (magas pulzus).",
+  "Bradycardia": "Lassú szívverés (alacsony pulzus).",
+  "Hypotensio": "Alacsony vérnyomás.",
+  "Collapsus": "Ájulás, hirtelen keringés-összeomlás.",
+  "Incontinentia": "Akaratlan vizelet- vagy székletürítés.",
+  "Perzisztáló": "Tartósan fennálló, folyamatosan jelenlévő.",
+  "Bifázisos": "Két fázisban jelentkező (a tünetek látszólagos javulás után órákkal később visszatérnek).",
+  "Cardiovascularis": "Szív- és érrendszeri.",
+  "Syncope": "Átmeneti eszméletvesztés, ájulás.",
+  "Hyperventilatio": "Túlzottan szapora és mély légzés.",
+  "Aspiráció": "Idegentest, folyadék vagy gyomortartalom légutakba kerülése.",
+  "Intramuscularis": "Izomba adott (injekció).",
+  "Subcutan": "Bőr alá adott (injekció).",
+  "Krisztalloid": "Víz és egyszerű sók (kristályok) oldata (pl. Salsol, Ringer).",
+  "Nebulizátor": "Gyógyszerporlasztó készülék (inhaláláshoz).",
+  "Perfúzor": "Fecskendős infúziós pumpa (precíz, folyamatos gyógyszeradagoló).",
+  "Necrosis": "Szövetelhalás.",
+  "Conicotomia": "Életmentő beavatkozás: a légcső megnyitása a pajzsporc és gyűrűporc között.",
+  "Inotrop": "A szívizom összehúzódási erejét befolyásoló hatás.",
+  "Chronotrop": "A szívfrekvenciát (pulzusszámot) befolyásoló hatás.",
+  "Thrombolysis": "Vérrögoldó kezelés (pl. stroke vagy infarktus esetén).",
+  "Uvula": "Nyelvcsap.",
+  "Per os": "Szájon át történő alkalmazás.",
+  "Bólus": "Gyorsan, egyszerre beadott nagyobb gyógyszer- vagy folyadékadag.",
+  "Szisztolés": "A szív összehúzódásakor mért (felső) vérnyomásérték.",
+  "Pulmonális": "Tüdőt érintő.",
+  "Embolia": "Érelzáródás (pl. vérrög miatt).",
+  "Stroke": "Agyvérzés vagy agyi infarktus.",
+  "Herediter": "Öröklött, veleszületett.",
+  "Autoszomális domináns": "Olyan öröklődés, ahol egyetlen hibás gén is elegendő a betegség kialakulásához.",
+  "Konvencionális": "Hagyományos, megszokott.",
+  "Infraglotticus": "Hangrés alatti.",
+  "Expozíció": "Behatás, alkalmazás (pl. inhalációs gyógyszer belégzése).",
+  "Gastrointestinalis": "Gyomor-bélrendszeri.",
+  "GI": "Gastrointestinalis (gyomor-bélrendszeri).",
+  "SpO2": "Pulzoximéterrel mért oxigénszaturáció.",
+  "EKG": "Elektrokardiogram, a szív elektromos tevékenységének vizsgálata.",
+  "CPR": "Cardiopulmonalis resuscitatio (Újraélesztés).",
+  "NPA": "Nasopharyngealis tubus (orron át bevezetett légútbiztosító eszköz).",
+  "OPA": "Oropharyngealis tubus (szájon át bevezetett légútbiztosító eszköz).",
+  "LMA": "Laryngeális maszk (gége feletti légútbiztosító eszköz).",
+  "IO": "Intraossealis (csontvelőüregbe adott).",
+  "IV": "Intravénás (vénába adott).",
+  "IM": "Intramuscularis (izomba adott).",
+  "SC": "Subcutan (bőr alá adott)."
+};
+
+const DICT = {
+  "anaphylaxia": defs["Anaphylaxia"], "anaphylaxiás": defs["Anaphylaxia"], "anaphylaxiában": defs["Anaphylaxia"],
+  "generalizált": defs["Generalizált"],
+  "urticaria": defs["Urticaria"],
+  "angiooedema": defs["Angiooedema"],
+  "periorbitalis": defs["Periorbitalis"],
+  "oedema": defs["Oedema"], "oedemát": defs["Oedema"],
+  "cyanosis": defs["Cyanosis"],
+  "stridor": defs["Stridor"], "stridort": defs["Stridor"], "stridoros": defs["Stridor"],
+  "bronchusspasmus": defs["Bronchusspasmus"],
+  "hypoxia": defs["Hypoxia"],
+  "tachycardia": defs["Tachycardia"], "bradycardia": defs["Bradycardia"],
+  "hypotensio": defs["Hypotensio"], "hypotonia": defs["Hypotensio"],
+  "collapsus": defs["Collapsus"],
+  "incontinentia": defs["Incontinentia"],
+  "perzisztáló": defs["Perzisztáló"],
+  "bifázisos": defs["Bifázisos"],
+  "cardiovascularis": defs["Cardiovascularis"],
+  "syncope": defs["Syncope"],
+  "hyperventilatio": defs["Hyperventilatio"],
+  "aspiráció": defs["Aspiráció"],
+  "intramuscularis": defs["Intramuscularis"], "intramuscularisan": defs["Intramuscularis"], "im": defs["IM"], "im.": defs["IM"],
+  "subcutan": defs["Subcutan"], "sc": defs["SC"], "sc.": defs["SC"],
+  "intravénás": defs["IV"], "intravénásan": defs["IV"], "iv": defs["IV"], "iv.": defs["IV"],
+  "krisztalloid": defs["Krisztalloid"], "krisztalloidot": defs["Krisztalloid"],
+  "nebulizátor": defs["Nebulizátor"], "nebulizátorban": defs["Nebulizátor"],
+  "perfúzor": defs["Perfúzor"], "perfúzorban": defs["Perfúzor"], "perfúzorral": defs["Perfúzor"],
+  "necrosis": defs["Necrosis"],
+  "conicotomia": defs["Conicotomia"],
+  "inotrop": defs["Inotrop"], "chronotrop": defs["Chronotrop"],
+  "thrombolysis": defs["Thrombolysis"],
+  "uvula": defs["Uvula"],
+  "per os": defs["Per os"],
+  "bólus": defs["Bólus"], "bólusokban": defs["Bólus"], "bólusokat": defs["Bólus"], "bolus": defs["Bólus"], "bolusokban": defs["Bólus"], "bolusokat": defs["Bólus"],
+  "szisztolés": defs["Szisztolés"],
+  "pulmonális": defs["Pulmonális"], "pulmonalis": defs["Pulmonális"],
+  "embolia": defs["Embolia"],
+  "stroke": defs["Stroke"], "stroke-nál": defs["Stroke"],
+  "herediter": defs["Herediter"],
+  "autoszomális domináns": defs["Autoszomális domináns"], "autoszomális": defs["Autoszomális domináns"],
+  "konvencionális": defs["Konvencionális"],
+  "infraglotticus": defs["Infraglotticus"],
+  "expozíció": defs["Expozíció"], "expozíciót": defs["Expozíció"],
+  "gastrointestinalis": defs["Gastrointestinalis"], "gi": defs["GI"],
+  "spo2": defs["SpO2"],
+  "ekg": defs["EKG"], "ttekg": defs["EKG"],
+  "cpr": defs["CPR"],
+  "npa": defs["NPA"], "opa": defs["OPA"], "lma": defs["LMA"], "io": defs["IO"]
+};
+
+// Szótár kezelő explicit bezárással
+window.showDict = function(word) {
+  const meaning = DICT[word.toLowerCase()];
+  if (meaning) {
+    document.getElementById('dtWord').innerText = word;
+    document.getElementById('dtDesc').innerText = meaning;
+    document.getElementById('dictToast').style.display = 'block';
+  }
+};
+
+window.closeDict = function() {
+  document.getElementById('dictToast').style.display = 'none';
+};
+
+// HTML escape csak attribútumokba
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// Kifejezések kigyűjtése hosszuk szerint csökkenő sorrendben a pontos illeszkedéshez
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+const dictKeys = Object.keys(DICT).sort((a,b) => b.length - a.length).map(escapeRegExp);
+const dictRegex = new RegExp('(^|[^a-záéíóöőúüűA-ZÁÉÍÓÖŐÚÜŰ])(' + dictKeys.join('|') + ')(?=[^a-záéíóöőúüűA-ZÁÉÍÓÖŐÚÜŰ]|$)', 'gi');
+
+// HTML escape és szótár csere a szövegekben
+const h = s => {
+  let res = esc(s);
+  res = res.replace(dictRegex, (match, p1, p2) => {
+    return p1 + '<span class="dict-word" onclick="showDict(\'' + p2.toLowerCase() + '\')">' + p2 + '</span>';
+  });
+  return res;
+};
+
+const CDATA = [
+{ id: 'def', title: 'Definíció és Diagnosztikus Kritériumok', icon: '🔍', acc: '#f43f5e', secs: [
+  { t: 'I. Célok és II. Bevezetés, definíció', bk: [
+    { tp: 'al', lv: 'i', tx: 'Definíció: Az anaphylaxia akutan (percek-órák alatt) kialakuló, potenciálisan halálos, generalizált, több szervet érintő túlérzékenységi reakció, mely leggyakrabban étel, gyógyszer vagy rovarcsípés következményeként lép fel.' },
+    { tp: 'sub', tx: 'Diagnosztikus kritériumok (Hármas feltételrendszer):' },
+    { tp: 'bl', items: [
+      '1. KÜLÖNÖS ELŐZMÉNY NÉLKÜL: Bőr és/vagy nyálkahártya érintettség ÉS legalább EGY az alábbiak közül: Légúti/légzési érintettség VAGY Keringési zavar / célszerv-funkciózavar jelei.',
+      '2. GYANÍTOTT ALLERGÉNNEL érintkezés: ÉS legalább KETTŐ az alábbiak közül: Légúti/légzési érintettség, Keringési/célszerv-funkciózavar, Bőr és/vagy nyálkahártya érintettség, Perzisztáló gyomor-bélrendszeri tünetek.',
+      '3. A beteg számára ISMERT ALLERGÉNNEL érintkezés: ÉS Heveny vérnyomáscsökkenés önmagában elegendő. (Felnőttek: Szisztolés <90 Hgmm vagy 30%-os csökkenés; Gyermekek: Korhoz mérten alacsony vagy 30%-os csökkenés).'
+    ]},
+    { tp: 'sub', tx: 'Tünetek részletes magyarázata:' },
+    { tp: 'ftable', rows: [
+      { s: 'KÜLLEM', m: 'Generalizált csalánkiütés, viszketés, kipirulás, megduzzadt ajak-nyelv-uvula, melegségérzés, fémes íz érzése, angiooedema, periorbitalis oedema, cyanosis.' },
+      { s: 'A (Légúti érintettség)', m: 'Stridor, gombócérzés, hangadási nehézség, rekedtség, nyelési nehézség.' },
+      { s: 'B (Légzészavar)', m: 'Nehézlégzés, sípolás/bronchusspasmus, mellkasi szorítás, hypoxia, köhögés.' },
+      { s: 'C (Keringési zavar)', m: 'Megsemmisülés-érzés, gyengeségérzés, szédülés, szívdobogásérzés, tachy/bradycardia, ritmuszavar, hypotensio, collapsus, keringésmegállás.' },
+      { s: 'Célszerv-funkciózavar', m: 'Látás-/halláscsökkenés, eszmélet-/tudatzavar, incontinentia, görcsroham.' },
+      { s: 'Perzisztáló GI tünetek', m: 'Görcsös hasi fájdalom, hasmenés, hányinger/hányás.' }
+    ]}
+  ]},
+  { t: 'Klinikai jellemzők és Differenciáldiagnózis', bk: [
+    { tp: 'al', lv: 'w', tx: 'Bifázisos reakció: anaphylaxiás reakció esetén a tünetek/panaszok az esetek 1-20%-ában az ellátást követő javulás után 8-10 (1-72) órával ismét fellángolnak. Minél súlyosabb az első reakció, annál valószínűbb a második.' },
+    { tp: 'bl', items: [
+      'Az anaphylaxia diagnózisa hypotensio fennállásától függetlenül is megállapítható (pl. bőrtünet + GI tünet gyanított allergénnél már súlyos reakció).',
+      'Súlyosbító tényezők: asztma, cardiovascularis megbetegedések, COPD/pneumonia (főleg idős korban), akut fertőzés, láz.',
+      'Antiallergiás terápiát csökkentő szerek: béta-blokkolók, alfa-blokkolók, ACE-gátlók, ATII-blokkolók, triciklikus antidepresszánsok, MAO-gátlók, kokain.'
+    ]},
+    { tp: 'sub', tx: 'Differenciáldiagnózis:' },
+    { tp: 'bl', items: [
+      'Akut asztma, syncope, pánikroham/hyperventilatio.',
+      'Konverziós zavar miatti pszichés stridor (kisgyermekek).',
+      'Idegentest aspiráció.',
+      'AMI, Pulmonális Embolia, Stroke, görcsrohamok.',
+      'Herediter angioneuroticus oedema (HANO): Autoszomális domináns, urticaria (csalánkiütés) nagyon ritka! Konvencionális terápia sikertelen rá.'
+    ]}
+  ]}
+]},
+{ id: 'ics_immediate', title: 'Mentésirányítás és Azonnali Teendők', icon: '📞', acc: '#3b82f6', secs: [
+  { t: 'IV. Mentésirányítás (ICS) feladatai', bk: [
+    { tp: 'bl', items: [
+      'ABCDE szerinti kikérdezés.',
+      'Legközelebbi mentőegység azonnali riasztása: ABC instabil beteghez elsősorban eset/ROKO.',
+      'Tanácsadás: lapos fektetés (esetleg megemelt alsó végtagok), nehézlégzés esetén félülő/ülő helyzet.',
+      'Adrenalin autoinjekció rendelkezésre állása esetén annak használatára bátorítás (betegre szabott adagolás).',
+      'Vonalban maradás súlyos esetben, állapotváltozás figyelése.'
+    ]}
+  ]},
+  { t: 'V. Azonnali teendők MINDEN mentőegység számára', bk: [
+    { tp: 'al', lv: 'd', tx: 'Helyszín biztonságának ellenőrzése!\nABCDE szerinti betegvizsgálat, monitorozás (SpO2, EKG, vérnyomás). Az életveszélyes tüneteket azonnal kezelni kell! ABC instabilitás esetén (kompetencia hiányában) AZONNALI segélykocsikérés.' },
+    { tp: 'sub', tx: 'Pozicionálás:' },
+    { tp: 'bl', items: [
+      'Dominálóan légzési elégtelenség: félülő/ülő helyzet.',
+      'Vérnyomásesés: lapos fektetés, esetleg megemelt alsó végtagok.',
+      'Egyidejű légzési elégtelenség/hányás + vérnyomásesés: enyhén megemelt felsőtest és megemelt alsó végtagok.',
+      'Várandósság: fordítsuk a beteget a bal oldalára (vagy uterus balra húzása).'
+    ]},
+    { tp: 'al', lv: 'w', tx: 'Súlyos anaphylaxiában a beteg felültetése vagy felállítása a keringés összeomlását okozhatja!' },
+    { tp: 'sub', tx: 'További alapteendők:' },
+    { tp: 'bl', items: [
+      'Ágens eltávolítása: pl. infúzió azonnali megszüntetése (véna marad!), fullánk eltávolítása.',
+      'Keringésmegállás: Azonnali újraélesztés (CPR).',
+      'Átjárható légutak: Szükség szerint NPA, OPA, leszívás. (Az anaphylaxia gyorsan elzárhatja a légutat, infraglotticus eszköz korán szóba jön).',
+      'Oxigén: Minden vitálisan kritikus betegnél kezdetben 100%-os belégzési oxigén (nem-visszalégző rezervoáros maszk).',
+      'Dokumentálás, célzott anamnézis (SAMPLE, korábbi allergiák), testhőmérséklet.'
+    ]}
+  ]}
+]},
+{ id: 'paramedic', title: 'Mentőápolói Ellátás (B+)', icon: '💉', acc: '#10b981', secs: [
+  { t: 'VI. Ellátás gyógyszerkompetenciával (B+)', bk: [
+    { tp: 'al', lv: 's', tx: 'ADRENALIN: Első választandó terápia, a legfontosabb gyógyszer. Minél hamarabb adjuk, annál hatásosabb. MINDEN életveszélyes állapotú betegnek adjunk. Abszolút kontraindikációja ilyenkor nincs!' },
+    { tp: 'bl', items: [
+      'Beviteli mód: KIZÁRÓLAG INTRAMUSCULARIS (IM). A subcutan és inhalációs bevitel sokkal kevésbé hatásos, nem javasolt.',
+      'Helye: Mélyen az izomba, a comb középső harmadának elülső-oldalsó része (szíváspróba kötelező!).',
+      'Ismétlés: 5-15 perc múlva, ha nincs javulás. MENTŐÁPOLÓ MAX. 1x ISMÉTELHETI!'
+    ]},
+    { tp: 'sub', tx: 'Adrenalin (1 mg/ml - Tonogen) IM dózisok (0,01 mg/ttkg):' },
+    { tp: 'bl', items: [
+      '12 év felett: max. 0,5 mg im. (0,5 ml)',
+      '6-12 év között: max. 0,3 mg im. (0,3 ml)',
+      '6 éves kor alatt: max. 0,15 mg im. (0,15 ml)'
+    ]},
+    { tp: 'al', lv: 'w', tx: 'Előretöltött autoinjektorok (Epipen, Anapen): Időnyereség céljából használhatók (10 mp-ig beszúrva tartva). Felnőtt változat 300 µg, gyermek (15-30 kg) 150 µg.' },
+    { tp: 'sub', tx: 'Vénabiztosítás és folyadékpótlás:' },
+    { tp: 'bl', items: [
+      'Biztosítsunk két, lehetőleg nagylumenű vénát (min. 16G).',
+      'Az IM adrenalin beadása ELSŐBBSÉGET ÉLVEZ az IV/IO biztosításával szemben!',
+      'Hypotonia, keringési elégtelenség esetén túlnyomással 500-1000 ml krisztalloid 5-20 perc alatt.',
+      'Felnőttek: 250 ml-es bólusokban.',
+      'Gyermekek: 10 ml/ttkg bólusokban.',
+      'MENTŐÁPOLÓ MAX. 30 ml/ttkg folyadékot adhat!',
+      'Folyamatos monitorozás a túltöltés jeleire (fokozódó légzési munka, tüdőpangás, telt nyaki vénák).'
+    ]},
+    { tp: 'sub', tx: 'Inhalációs hörgőtágítók (Bronchodilatatorok):' },
+    { tp: 'bl', items: [
+      'Szalbutamol (Ventolin): Mentőápoló max. 2 expozíciót alkalmazhat (sz.e. 20 percenként ismételve). Felnőtt alapból 2-4 puff.',
+      'Fenoterol + Ipratropium (Berodual): Mentőápoló max. 20 cseppet alkalmazhat nebulizátorban (5 ml sóval, látható párával). Felnőtt alapból 20-50, 6-12 év 10-20, <6 év 10 csepp.'
+    ]}
+  ]}
+]},
+{ id: 'als_and_spec', title: 'Mentőtiszti / Orvosi és Speciális', icon: '⚕️', acc: '#a855f7', secs: [
+  { t: 'VII. További ellátás (Mentőtiszt/Orvos)', bk: [
+    { tp: 'bl', items: [
+      'Adrenalin IV: Spontán keringés mellett hatalmas rizikó (tachycardia, necrosis). Csak ha az IM + folyadék hatástalan. Kizárólag perfúzorban: 0,1-1,0 µg/ttkg/perc. Közvetlen bolus KIZÁRÓLAG perfúzor hiányában (50 µg felnőttnek).',
+      'Noradrenalin: Adrenalinra/folyadékra nem reagáló esetben perfúzorban.',
+      'Klórpiramin (Suprastin): Életveszély elhárítása után. Csökkenti a bőrtüneteket, de NEM csökkenti a stridort, nehézlégzést, GI tünetet és shockot! (Felnőtt: 20 mg iv).',
+      'Metilprednizolon: Bifázisos reakció ellen (1-2 mg/ttkg iv, max 40 mg gyereknek). Krónikus asztmás/szteroidos betegnek KÖTELEZŐ.',
+      'Glukagon: B-blokkolót szedő betegeknél adrenalin helyett/mellett (1-5 mg iv/im).',
+      'Emelt szintű légútbiztosítás: Gyors romlás ("time is diameter"). LMA nem megoldás. Sikertelen intubáció -> conicotomia.'
+    ]}
+  ]},
+  { t: 'VIII. NEM ajánlott gyógyszerek', bk: [
+    { tp: 'al', lv: 'd', tx: 'Kalcium: Hatásosságára semmilyen bizonyíték nincs, használata NEM INDOKOLT!\nTeofillin/Aminofillin: Nem rendszeresített, nem ajánlott.\nTerbutalin (Bricanyl): Inotrop/chronotrop mellékhatások miatt subcutan formában SEM ajánlott!' }
+  ]},
+  { t: 'IX. Ellátás utáni teendők és X. Speciális', bk: [
+    { tp: 'bl', items: [
+      '12 elvezetéses EKG / TTEKG készítése (ACS, ritmuszavar veszélye).',
+      'Anaphylaxia kritériumai esetén, ill. adrenalin adása után a kórházba szállítás MINDIG KÖTELEZŐ!',
+      'Nagy helyi reakció (>10 cm) is kórházi megfigyelést igényel.',
+      'Szállítás: folyamatos észlelés (AVPU, RR, SpO2, EKG).',
+      'HANO ellátása: C1-INH koncentrátum (Berinert) 20 NE/ttkg lassú IV.',
+      'Thrombolysis közbeni allergia: Adrenalin IM adása TILOS (vérzésveszély), helyette IV perfúzor + nagy dózisú metilprednizolon (125 mg).'
+    ]}
+  ]}
+]}
+];
+
+const CARDS = [
+{ cat: 'Kritérium', f: 'Diagnózis feltétele KÜLÖNÖS ELŐZMÉNY NÉLKÜL?', b: 'Bőr és/vagy nyálkahártya érintettség\nÉS legalább EGY az alábbiak közül:\n- Légúti/légzési zavar\n- Keringési/célszerv-funkciózavar' },
+{ cat: 'Kritérium', f: 'Diagnózis feltétele GYANÍTOTT allergén esetén?', b: 'Legalább KETTŐ az alábbi 4-ből:\n- Bőr/nyálkahártya tünetek\n- Légúti/légzési zavar\n- Keringési zavar\n- Perzisztáló gyomor-bélrendszeri tünetek' },
+{ cat: 'Kritérium', f: 'Diagnózis feltétele ISMERT allergén esetén?', b: 'Heveny vérnyomáscsökkenés (hypotensio) önmagában elegendő!\nFelnőtt: <90 Hgmm szisztolés, vagy >30% csökkenés.' },
+{ cat: 'Fogalom', f: 'Mi a bifázisos reakció és mi a jelentősége?', b: 'A tünetek az ellátás/javulás után 8-10 (max 72) órával ismét fellángolnak (1-20%).\nEmiatt kötelező a kórházi szállítás és megfigyelés!' },
+{ cat: 'Pozíció', f: 'Hogyan pozicionáld a súlyos anaphylaxiás beteget dominálóan vérnyomásesés esetén?', b: 'Lapos fektetés, esetleg megemelt alsó végtagok.\nSúlyos anaphylaxiában a felültetés keringés-összeomlást okozhat!' },
+{ cat: 'Pozíció', f: 'Hogyan pozicionáld a várandós anaphylaxiás beteget?', b: 'Fordítsuk a beteget a bal oldalára.\n(A Vena Cava Inferior tehermentesítése céljából).' },
+{ cat: 'Gyógyszer (B+)', f: 'Mi az első választandó gyógyszer, és mi a kontraindikációja?', b: 'ADRENALIN (Intramuscularisan).\nÉletveszélyes állapotban ABSZOLÚT KONTRAINDIKÁCIÓJA NINCS!' },
+{ cat: 'Gyógyszer (B+)', f: 'Adrenalin IM beadásának pontos helye?', b: 'Mélyen az izomba, a comb középső harmadának elülső-oldalsó részébe.' },
+{ cat: 'Gyógyszer (B+)', f: 'Adrenalin IM maximális dózisai korcsoportonként?', b: '- 12 év felett: max. 0,5 mg (0,5 ml)\n- 6-12 év között: max. 0,3 mg (0,3 ml)\n- 6 éves kor alatt: max. 0,15 mg (0,15 ml)' },
+{ cat: 'Gyógyszer (B+)', f: 'Mentőápoló hányszor ismételheti az adrenalint?', b: 'MAXIMUM 1 ALKALOMMAL.\n(5-15 perc múlva, ha nincs javulás).' },
+{ cat: 'Folyadék (B+)', f: 'Mennyi a mentőápoló által adható maximális folyadék anaphylaxiában?', b: 'Maximum 30 ml/ttkg.\n(Túlnyomással, krisztalloid, 5-20 perc alatt).' },
+{ cat: 'Folyadék (B+)', f: 'Mekkora bólusokban adjuk a folyadékot felnőtteknek és gyermekeknek?', b: 'Felnőtteknek: 250 ml-es bólusokban.\nGyermekeknek: 10 ml/ttkg bólusokban.' },
+{ cat: 'Inhaláció (B+)', f: 'Mik a mentőápolói limitációk az inhalációs hörgőtágítóknál?', b: 'Szalbutamol (Ventolin): Max. 2 expozíció.\nBerodual: Max. 20 csepp (5 ml sóval).' },
+{ cat: 'Súlyosbítók', f: 'Mely alapbetegségek súlyosbítják leginkább az anaphylaxiát?', b: 'Asztma, cardiovascularis megbetegedések, COPD, akut légúti fertőzés, láz.' },
+{ cat: 'Differenciál', f: 'Mi a legfőbb különbség a HANO (Herediter angioödéma) és az anaphylaxia tünetei között?', b: 'HANO esetén az urticaria (csalánkiütés) megjelenése nagyon ritka!\n(Továbbá az adrenalin és antihisztamin terápia hatástalan rá).' },
+{ cat: 'Tiltott', f: 'Adható-e Kalcium vagy Bricanyl injekció az OMSZ eljárásrendje szerint?', b: 'NEM!\nA Kalcium hatásossága nem bizonyított.\nA Bricanyl (Terbutalin) mellékhatásai miatt SC formában SEM ajánlott.' },
+{ cat: 'Szállítás', f: 'Otthon hagyható a beteg, ha az Epipen után teljesen panaszmentes?', b: 'NEM!\nAdrenalin adása és anaphylaxia kritériumainak teljesülése esetén a beteget MINDIG kötelező gyógyintézetbe szállítani!' },
+{ cat: 'Kivétel', f: 'Mikor TILOS az Adrenalin IM adása anaphylaxiában?', b: 'Thrombolysis közben szállított stroke betegnél (vérzésveszély miatt).\nIlyenkor csak IV perfúzor alkalmazható (ALS kompetencia).' }
+];
+
+const QUIZ = [
+{ q: 'Ismert allergénnel való érintkezés esetén mi elegendő önmagában az anaphylaxia diagnózisához?', opts: ['Csalánkiütés és viszketés', 'Heveny vérnyomáscsökkenés', 'Eszméletvesztés', 'Nyelési nehézség'], ok: 1, exp: 'A protokoll szerint ISMERT allergén esetén a heveny vérnyomáscsökkenés (felnőtteknél <90 Hgmm) önmagában elegendő a diagnózishoz.' },
+{ q: 'Hogyan kell pozicionálni a beteget, ha a vérnyomásesés a domináló tünet?', opts: ['Félülő helyzetben', 'Lapos fektetés, esetleg megemelt alsó végtagokkal', 'Stabil oldalfekvésben', 'Ültetve, előredőlve'], ok: 1, exp: 'Vérnyomásesésnél lapos fektetés (esetleg megemelt lábakkal) javasolt. Súlyos anaphylaxiában a felültetés keringés-összeomlást okozhat!' },
+{ q: 'Mi az Adrenalin IM maximális dózisa egy 8 éves gyermeknél?', opts: ['0,15 mg (0,15 ml)', '0,3 mg (0,3 ml)', '0,5 mg (0,5 ml)', '1,0 mg (1,0 ml)'], ok: 1, exp: '6-12 év közötti gyermekeknél az Adrenalin (Tonogen) maximális IM dózisa 0,3 mg.' },
+{ q: 'Mentőápoló hányszor ismételheti az IM adrenalin beadását az eljárásrend alapján?', opts: ['Egyáltalán nem', 'Maximum 1 alkalommal', 'Maximum 2 alkalommal', 'Korlátlanul, amíg be nem áll a vérnyomás'], ok: 1, exp: 'A mentőápoló a gyógyszert (adrenalint) maximum 1 alkalommal ismételheti, 5-15 perc múlva.' },
+{ q: 'Mennyi a mentőápoló által adható maximális krisztalloid folyadék összdózis anaphylaxiában?', opts: ['10 ml/ttkg', '20 ml/ttkg', '30 ml/ttkg', 'Felnőtteknél korlátlan'], ok: 2, exp: 'Mentőápoló maximum 30 ml/ttkg folyadékot adhat a túltöltés elkerülése érdekében.' },
+{ q: 'Hova kell beadni az IM adrenalint?', opts: ['Glutealis izomba (farizom)', 'Deltoid izomba (felkar)', 'A comb középső harmadának elülső-oldalsó részébe', 'Subcutan a hasfalba'], ok: 2, exp: 'A leggyorsabb és legmegbízhatóbb felszívódás miatt mélyen a comb elülső-oldalsó izomzatába kell adni.' },
+{ q: 'Melyik gyógyszer használata NEM INDOKOLT anaphylaxiában az OMSZ protokoll szerint?', opts: ['Adrenalin', 'Kalcium', 'Szalbutamol', 'Krisztalloid sóoldat'], ok: 1, exp: 'A Kalcium hatásosságára semmilyen bizonyíték nincs, használata az eljárásrend szerint NEM indokolt.' },
+{ q: 'Milyen oxigénterápiát kell alkalmazni kritikus anaphylaxiás betegnél?', opts: ['Orrszonda 2-4 l/perc', '100% oxigén nem-visszalégző rezervoáros maszkkal', 'Csak ha az SpO2 90% alá esik', 'Légzőmaszk 6 l/perc'], ok: 1, exp: 'Minden vitálisan kritikus, instabil betegnél kezdetben 100% O2 koncentrációt kell biztosítani rezervoáros maszkkal.' },
+{ q: 'Mentőápoló (B+) mennyi Berodual cseppet alkalmazhat maximum nebulizátorban?', opts: ['10 csepp', '20 csepp', '40 csepp', '50 csepp'], ok: 1, exp: 'A mentőápolói folyamatábra alapján max. 20 csepp Berodual alkalmazható.' },
+{ q: 'Melyik állítás IGAZ a vénabiztosításra és az adrenalinra?', opts: ['Az IV út biztosítása megelőzi az IM adrenalin adását.', 'Az IM adrenalin adása elsőbbséget élvez az IV/IO út biztosításával szemben.', 'Mentőápoló IV is adhat adrenalint.', 'A vénabiztosítás felesleges, ha a beteg kapott IM adrenalint.'], ok: 1, exp: 'Az eljárásrend kimondja: Az IM adrenalin beadása elsőbbséget élvez az IV, ill. IO út biztosításával szemben.' },
+{ q: 'Mi az eljárás, ha a beteg egy Epipen beadása után a helyszínen teljesen tünetmentessé válik?', opts: ['Otthon maradhat a háziorvos értesítésével.', 'Csak antihisztamint kell bevennie.', 'Kórházba szállítás MINDIG kötelező a bifázisos reakció veszélye miatt.', 'Mentőtiszt engedélyével otthon maradhat.'], ok: 2, exp: 'Adrenalin adása és anaphylaxia kritériumai esetén a beteget a bifázisos reakció miatt KÖTELEZŐ gyógyintézetbe szállítani.' },
+{ q: 'Milyen folyadék bólusokat javasol a protokoll anaphylaxiás felnőttnek?', opts: ['100 ml-es bólusok', '250 ml-es bólusok', '500 ml-es bólusok', 'Egyszerre 1000 ml'], ok: 1, exp: 'Felnőtteknél 250 ml-es bólusokban kell a krisztalloidot adni túlnyomással.' },
+{ q: 'Mit jelent a bifázisos reakció?', opts: ['Kétféle allergén egyszerre hat.', 'A tünetek 8-10 órával a javulás után ismét fellángolnak.', 'Bőr és légúti tünetek egyszerre vannak jelen.', 'Az adrenalin hatására a vérnyomás kétszer is megugrik.'], ok: 1, exp: 'Bifázisos reakció: a tünetek az esetek 1-20%-ában 8-10 órával a javulás után újra megjelennek.' },
+{ q: 'A Herediter angioneuroticus oedema (HANO) miben különbözik a klasszikus anaphylaxiától tünetileg?', opts: ['Nincs légzési nehezítettség.', 'Urticaria (csalánkiütés) megjelenése nagyon ritka.', 'Soha nincs GI tünete.', 'Mindig magas vérnyomással jár.'], ok: 1, exp: 'HANO esetén az urticaria (csalánkiütés) nagyon ritka, ellentétben az anaphylaxiával.' },
+{ q: 'Melyik alapbetegség súlyosbíthatja leginkább az anaphylaxia tüneteit?', opts: ['Cukorbetegség', 'Asztma', 'Vesekő', 'Pajzsmirigy alulműködés'], ok: 1, exp: 'Bizonyos kórképek, különösen az asztma és a cardiovascularis megbetegedések súlyosbíthatják a tüneteket.' }
+];
+
+const SIMS = [
+{ id: 1, title: '1. Szimuláció: Eszméletlen beteg (Darázscsípés)', diff: 'B kompetencia', desc: 'Egy 40 éves férfi favágás közben többszörös darázscsípést szenvedett. Nehezen kapott levegőt, majd összeesett. Te egy B kompetenciájú (gyógyszer nélküli) egységgel érkezel.', steps: [
+  { sit: 'Megérkezel az erdősávhoz. A beteg a földön fekszik. Mi az első teendőd?', opts: [
+    { tx: 'Azonnal a beteghez futok és megkezdem az újraélesztést.', ok: false, fb: 'Hibás! A helyszínbiztonság és védőfelszerelés mindig az első lépés.' },
+    { tx: 'Helyszínbiztonság ellenőrzése (vannak-e még darazsak), védőfelszerelés, majd a beteg megközelítése és ABCDE vizsgálat.', ok: true, fb: 'Helyes! A biztonság az első, utána az ABCDE vizsgálat.' },
+    { tx: 'Azonnal segélykocsit kérek a kocsiból.', ok: false, fb: 'Hibás! Előbb meg kell vizsgálni a beteget (legalább a reakcióképességét).' }
+  ]},
+  { sit: 'A helyszín biztonságos. A beteg hangra és fájdalomra nem reagál (U). Légzése stridoros (sípoló-húzó), arca dagadt, csalánkiütéses. Mi a teendőd mentőápolóként?', opts: [
+    { tx: 'Stabil oldalfekvésbe helyezem és várok.', ok: false, fb: 'Hibás! A légúti elégtelenséget azonnal kezelni kell.' },
+    { tx: 'Mivel a beteg kritikus és nem tudok gyógyszert adni, AZONNAL segélykocsit (eset/ROKO) kérek, és manuálisan légutat biztosítok (áll kiemelése).', ok: true, fb: 'Helyes! B kompetenciával a magasabb szint azonnali riasztása és a BLS légútbiztosítás a legfontosabb.' },
+    { tx: 'Keresem a fullánkokat a testén.', ok: false, fb: 'Hibás! A légút (A) prioritást élvez a külsérelmi nyomokkal szemben.' }
+  ]},
+  { sit: 'Az "A" vizsgálat után a "B" (légzés) következik. A légzésszám 32/perc, a stridor megmaradt. Mit alkalmazol?', opts: [
+    { tx: 'Felültetem a beteget, mert úgy könnyebb lélegezni.', ok: false, fb: 'Hibás! Eszméletlen beteget nem ültetünk, és anaphylaxiában a felültetés keringés-összeomlást okozhat.' },
+    { tx: '100% oxigént adok nem-visszalégző rezervoáros maszkkal (12-15 l/perc).', ok: true, fb: 'Helyes! A protokoll minden vitálisan kritikus betegnek 100% O2-t ír elő maszkon.' },
+    { tx: 'Orrszondán 2 l/perc oxigént adok.', ok: false, fb: 'Hibás! A súlyos hypoxia gyanúja miatt a maximum kell.' }
+  ]},
+  { sit: 'A "C" (keringés) vizsgálat során a radiális pulzus nem tapintható, carotis 130/perc. Bőre sápadt, verejtékes. Hogyan pozicionálod a beteget?', opts: [
+    { tx: 'Félülő helyzetbe.', ok: false, fb: 'Hibás! A vérnyomásesés/shock jelei miatt ez tilos.' },
+    { tx: 'Lapos fektetés, alsó végtagok megemelésével (shock-pozíció).', ok: true, fb: 'Helyes! A domináló keringési elégtelenség miatt a lapos fektetés + lábemelés a kötelező.' },
+    { tx: 'Hanyatt fektetem a földön, párnával a feje alatt.', ok: false, fb: 'Hibás! A lábat kell megemelni.' }
+  ]},
+  { sit: 'A beteg felesége egy Epipen autoinjektort ad a kezedbe. Mentőápolóként (B) mit tehetsz?', opts: [
+    { tx: 'Nem nyúlhatok hozzá, mert B kompetenciájú vagyok.', ok: false, fb: 'Hibás! Életveszély esetén az autoinjektor használatát az eljárásrend engedi.' },
+    { tx: 'Időnyereség céljából használhatom a beteg combjába szúrva, 10 másodpercig bent tartva.', ok: true, fb: 'Helyes! Az ismert autoinjektor használata időnyereségből alkalmazható és életmentő.' },
+    { tx: 'Kibontom és intravénásan adom be.', ok: false, fb: 'Hibás! Tilos szétbontani és IV adni!' }
+  ]},
+  { sit: 'Az Epipen beadása után jön a "D" (Idegrendszer) vizsgálat. A beteg eszméletlen. Melyik műszeres vizsgálat kötelező?', opts: [
+    { tx: 'Vércukormérés ujjbegyből.', ok: true, fb: 'Helyes! Megváltozott tudatállapot esetén a vércukormérés kötelező eleme a D vizsgálatnak.' },
+    { tx: 'Pupillák megvilágítása 5 percenként.', ok: false, fb: 'Hibás! A vércukormérés a prioritás.' },
+    { tx: 'EKG készítése.', ok: false, fb: 'Hibás! Az EKG a C vagy az E vizsgálat része.' }
+  ]},
+  { sit: 'Az "E" (Egyéb) vizsgálat során a feleségtől SAMPLE anamnézist veszel fel. Melyik "A" (Allergies) információ a legrelevánsabb?', opts: [
+    { tx: 'Mikor evett utoljára (L).', ok: false, fb: 'Hibás! Ez az L betű a SAMPLE-ben.' },
+    { tx: 'Van-e korábbról ismert allergiája a darázscsípésre.', ok: true, fb: 'Helyes! Az ISMERT allergén jelenléte azonnal megerősíti a diagnózist.' },
+    { tx: 'Szed-e vérnyomáscsökkentőt (M).', ok: false, fb: 'Hibás! Ez a gyógyszerek (M) része.' }
+  ]},
+  { sit: '5 perc telt el az Epipen óta. A beteg még mindig eszméletlen, de a stridor halkult. Mit csinálsz a segélykocsi érkezéséig?', opts: [
+    { tx: 'Csak várok és nézem a szaturációt.', ok: false, fb: 'Hibás! A fizikális vizsgálat ismétlése elengedhetetlen.' },
+    { tx: 'Folyamatosan újraértékelem az ABCDE-t 5-10 percenként, figyelem a vitális paramétereket.', ok: true, fb: 'Helyes! Az instabil beteg szisztematikus újraértékelést igényel.' },
+    { tx: 'Beadom a felesége antihisztamin gyógyszerét szájon át.', ok: false, fb: 'Hibás! Eszméletlen betegnek tilos per os gyógyszert adni.' }
+  ]},
+  { sit: 'A rohammentő megérkezik. Hogyan adod át a beteget?', opts: [
+    { tx: 'Csak átadom a papírokat.', ok: false, fb: 'Hibás! Szóbeli strukturált átadás szükséges.' },
+    { tx: 'ABCDE struktúra alapján: anaphylaxiás shock, légúti elzáródás jelei, Epipen beadásának ideje, oxigén adás ténye, jelenlegi paraméterek és anamnézis.', ok: true, fb: 'Helyes! A strukturált átadás biztosítja az azonnali ALS folytatást.' },
+    { tx: 'Rögtön a kocsiba toljuk és ott beszélünk.', ok: false, fb: 'Hibás! Az átadásnak rögtön, röviden a beteg mellett is meg kell történnie.' }
+  ]},
+  { sit: 'A mentőorvos átveszi a gyógyszerelést. Milyen IV gyógyszert NE várj az orvostól az eljárásrend alapján?', opts: [
+    { tx: 'Metilprednizolont (szteroidot).', ok: false, fb: 'Hibás! Azt adhat a bifázisos reakció ellen.' },
+    { tx: 'Kalcium injekciót.', ok: true, fb: 'Helyes! A Kalcium adása anaphylaxiában nem indokolt és hatástalan az OMSZ protokoll szerint.' },
+    { tx: 'Klórpiramint (Suprastint).', ok: false, fb: 'Hibás! Ezt fog adni a bőrtüneteketre.' }
+  ]}
+], summary: 'A darázscsípés miatti eszméletlen, stridoros (légúti elégtelenség) és pulzus nélküli (shock) beteg ellátása B kompetencián azonnali segélykocsi riasztást igényelt. A 100% O2 és a shock-pozíció (lapos + megemelt láb) alkalmazása mellett a feleség Epipen autoinjektorát időnyereségből a protokoll szerint beadhattuk a combba (10 mp). A tudatzavar miatt vércukrot mértünk. Az ALS egység kiérkezéséig 5 percenként újraértékeltük a beteget (ABCDE), majd strukturáltan átadtuk az orvosnak/mentőtisztnek, elkerülve a hatástalan szerek (pl. Kalcium) használatát.' },
+
+{ id: 2, title: '2. Szimuláció: Gyermek ételallergia', diff: 'B+ kompetencia', desc: 'Egy 8 éves (30 kg) gyermek mogyorót evett. "Dagadni" kezdett és nehezen kap levegőt. Te egy gyógyszeres (B+) egységgel vagy a helyszínen.', steps: [
+  { sit: 'A gyermek a széken ül, sípolva veszi a levegőt, ajkai duzzadtak, teste csalánkiütéses. Mi a legelső lépés a betegvizsgálatnál?', opts: [
+    { tx: 'Azonnal IM Adrenalint adok.', ok: false, fb: 'Hibás! Az ABCDE vizsgálat az első lépés.' },
+    { tx: 'Helyszínbiztonság, majd ABCDE vizsgálat. "A" és "B" probléma (sípolás), "E" (csalánkiütés). O2-t adok maszkon.', ok: true, fb: 'Helyes! Az ABCDE után a légúti fenyegetettség miatt a 100% O2 a prioritás.' },
+    { tx: 'Lefektetem laposan a földre.', ok: false, fb: 'Hibás! A légzési nehezítettség miatt (ha a BP jó) az ülő/félülő pozíció a helyes.' }
+  ]},
+  { sit: 'A vérnyomás 105/65 Hgmm (korának megfelelő). Kimeríti az anaphylaxia kritériumait?', opts: [
+    { tx: 'Nem, vérnyomásesés nélkül ez nem anaphylaxia.', ok: false, fb: 'Hibás! A vérnyomásesés csak ISMERT allergénnél feltétel.' },
+    { tx: 'Igen, gyanított/ismert allergénnél a bőr/nyálkahártya ÉS a légúti tünet együttes jelenléte már anaphylaxia.', ok: true, fb: 'Helyes! Két tünetcsoport (Bőr + Légút) jelenléte elegendő a diagnózishoz.' },
+    { tx: 'Csak ha tudatzavara is van.', ok: false, fb: 'Hibás! Nem szükséges.' }
+  ]},
+  { sit: 'B+ kompetenciájú ápolóként mi az elsődleges gyógyszered az eljárásrend alapján?', opts: [
+    { tx: 'Kalcium IV.', ok: false, fb: 'Hibás! A Kalcium tilos.' },
+    { tx: 'Adrenalin (Tonogen 1 mg/ml) Intramuscularisan (IM).', ok: true, fb: 'Helyes! Az első választandó terápia az adrenalin IM.' },
+    { tx: 'Suprastin IV.', ok: false, fb: 'Hibás! A H1-blokkoló nem életmentő.' }
+  ]},
+  { sit: 'Mennyi az Adrenalin IM maximális dózisa a 8 éves gyermeknek?', opts: [
+    { tx: '0,15 mg', ok: false, fb: 'Hibás! Ez a 6 év alattiaké.' },
+    { tx: '0,3 mg (0,3 ml)', ok: true, fb: 'Helyes! 6-12 év között max. 0,3 mg az adag.' },
+    { tx: '0,5 mg', ok: false, fb: 'Hibás! Ez a 12 év felettiek dózisa.' }
+  ]},
+  { sit: 'Hova és hogyan adod be a kiszámolt 0,3 mg adrenalint?', opts: [
+    { tx: 'A felkar izomba (deltoid).', ok: false, fb: 'Hibás! Nem ez az előírt hely.' },
+    { tx: 'Mélyen az izomba (IM), a comb középső harmadának elülső-oldalsó részébe.', ok: true, fb: 'Helyes! Ez a hivatalos beadási terület.' },
+    { tx: 'Bőr alá (SC) a hasba.', ok: false, fb: 'Hibás! A subcutan út lassú.' }
+  ]},
+  { sit: 'Az adrenalin IM beadása után milyen párhuzamos, B+ szintű feladatot végzel a "C" vizsgálat keretében?', opts: [
+    { tx: 'Várok, amíg az orvos megérkezik.', ok: false, fb: 'Hibás! A B+ ápoló vénát biztosíthat.' },
+    { tx: 'Két, lehetőleg nagylumenű perifériás vénát biztosítok.', ok: true, fb: 'Helyes! Az IV út kiépítése a folyadékterápia előkészítése miatt kötelező.' },
+    { tx: 'Azonnal Adrenalin IV bólust is adok.', ok: false, fb: 'Hibás! B+ ápoló nem adhat adrenalint IV.' }
+  ]},
+  { sit: 'A gyermek légzése továbbra is sípoló (bronchospasmus). Milyen inhalációs gyógyszert alkalmazhatsz B+ kompetenciával?', opts: [
+    { tx: 'Berodual oldatot nebulizátorban, max 20 cseppet 5 ml sóban.', ok: true, fb: 'Helyes! A folyamatábra a mentőápolónak Ventolin puffot (max 2) vagy Berodualt (max 20 csepp) engedélyez.' },
+    { tx: 'Bricanyl subcutan injekciót.', ok: false, fb: 'Hibás! SC Bricanyl tilos.' },
+    { tx: 'Teofillint IV.', ok: false, fb: 'Hibás! Nem ajánlott.' }
+  ]},
+  { sit: 'Eltelt 10 perc. A sípolás nem javul, a vérnyomás 80/50 Hgmm-re esett. Mit teszel az adrenalinnal mentőápolóként?', opts: [
+    { tx: 'Nem adhatok többet.', ok: false, fb: 'Hibás! Ismételhető.' },
+    { tx: 'MAXIMUM 1 ALKALOMMAL megismétlem az IM adrenalin dózist (0,3 mg).', ok: true, fb: 'Helyes! A protokoll 5-15 perc múlva egy ismétlést engedélyez a mentőápolónak.' },
+    { tx: 'Adok még 0,5 mg-ot, mert romlott az állapota.', ok: false, fb: 'Hibás! A dózist életkor alapján tartani kell (0,3 mg).' }
+  ]},
+  { sit: 'A vérnyomásesés miatt folyadékot indítasz. Mekkora bólusokat adsz a 30 kg-os gyermeknek?', opts: [
+    { tx: '250 ml-es bólusokban.', ok: false, fb: 'Hibás! Ez a felnőtt dózis.' },
+    { tx: '10 ml/ttkg bólusokban (vagyis 300 ml-t adok túlnyomással).', ok: true, fb: 'Helyes! A gyermek folyadékbólus 10 ml/ttkg.' },
+    { tx: 'Mind a 1000 ml-t gyorsan befújom.', ok: false, fb: 'Hibás! Folyadéktúltöltés veszélye.' }
+  ]},
+  { sit: 'Mennyi a B+ mentőápolóként adható folyadék abszolút maximuma anaphylaxiában?', opts: [
+    { tx: '10 ml/ttkg.', ok: false, fb: 'Hibás! Ez csak a bólus mérete.' },
+    { tx: '30 ml/ttkg (a 30 kg-os gyermeknél max 900 ml).', ok: true, fb: 'Helyes! A mentőápoló maximum 30 ml/ttkg folyadékot adhat a protokoll szerint.' },
+    { tx: 'Nincs limit.', ok: false, fb: 'Hibás! Van protokolláris limit.' }
+  ]},
+  { sit: 'A terápia hatására a gyermek teljesen tünetmentessé válik. Szülei kérik, hogy hagyjátok otthon. Mit mondasz?', opts: [
+    { tx: 'Rendben, de írják alá a papírt.', ok: false, fb: 'Hibás! Ez szakmai hiba.' },
+    { tx: 'A szállítás MINDIG kötelező, mivel az adrenalin adása után 8-10 órával a tünetek visszatérhetnek (bifázisos reakció).', ok: true, fb: 'Helyes! Az eljárásrend tiltja a beteghátrahagyást adrenalin adása után.' },
+    { tx: 'Csak akkor viszem, ha a mentésirányítás is így akarja.', ok: false, fb: 'Hibás! A protokoll kötelező érvényű.' }
+  ]}
+], summary: 'A 8 éves (30 kg) gyermeknél a bőr- és légúti tünetek együttes jelenléte vérnyomásesés nélkül is anaphylaxiát igazolt. B+ kompetenciával 100% O2-t, majd azonnal 0,3 mg Adrenalin IM-t alkalmaztunk a comb izomzatába. A vénabiztosítás után a bronchospasmusra max 20 csepp Berodualt inhaláltattunk. 10 perc utáni állapotromlás (vérnyomásesés) miatt a B+ ápoló a protokollt követve megismételte az Adrenalint (0,3 mg IM), és folyadékterápiát indított (10 ml/kg = 300 ml bólus, max 30 ml/kg plafonnal). A sikeres ellátás és tünetmentesség ellenére a beteget a bifázisos reakció kockázata miatt gyermeksürgősségi osztályra szállítottuk.' },
+
+{ id: 3, title: '3. Szimuláció: Gyógyszerallergia és súlyos shock', diff: 'B+ kompetencia', desc: 'Egy 50 éves, 80 kg-os nő új antibiotikum bevétele után rosszul lett. Te egy gyógyszeres (B+) mentőápoló vagy.', steps: [
+  { sit: 'A helyszínen a beteg a földön fekszik, nagyon gyenge, arca vörös, foltos. Mi az első teendő?', opts: [
+    { tx: 'Rögtön vérnyomást mérek.', ok: false, fb: 'Hibás! Az ABCDE alapelveket nem írhatja felül a monitorozás.' },
+    { tx: 'Helyszínbiztonság, majd ABCDE vizsgálat. "A" szabad, "B" 22/p, "C" radiális pulzus nem tapintható, sápadt, verejtékes.', ok: true, fb: 'Helyes! Az ABCDE gyorsan felfedi a domináló "C" (keringési) problémát.' },
+    { tx: 'Azonnal lábra állítom, hogy felsétáljon a mentőbe.', ok: false, fb: 'Hibás! Súlyos shockban ez halálos lehet.' }
+  ]},
+  { sit: 'A vérnyomása 65 Hgmm (súlyos hypotensio). Bőrtünetei vannak a gyanított gyógyszer után. Ez anaphylaxia?', opts: [
+    { tx: 'Csak ha fullad is.', ok: false, fb: 'Hibás! A légzési zavar nem kötelező, ha a vérnyomásesés + bőrtünet megvan.' },
+    { tx: 'Igen, gyanított allergénnél a bőr + keringési zavar két kritérium, tehát anaphylaxiás shock.', ok: true, fb: 'Helyes! A kritériumrendszer alapján ez egyértelmű.' },
+    { tx: 'Nem, mert a pulzusa tapintható a nyakán.', ok: false, fb: 'Hibás! A hypotensio jelen van.' }
+  ]},
+  { sit: 'Hogyan pozicionálod a beteget az ABCDE elvek alapján?', opts: [
+    { tx: 'Félülő helyzetbe.', ok: false, fb: 'Hibás! A domináló tünet a keringési zavar, a felültetés tilos.' },
+    { tx: 'Lapos fektetés, az alsó végtagok megemelésével (shock-fektetés).', ok: true, fb: 'Helyes! Súlyos vérnyomásesésnél ez az előírt pozíció.' },
+    { tx: 'Hanyatt fektetem fejemeléssel.', ok: false, fb: 'Hibás! Az agyi keringést a láb emelésével segítjük.' }
+  ]},
+  { sit: 'B+ kompetenciával mi az életmentő gyógyszered azonnal?', opts: [
+    { tx: 'Suprastin intravénásan.', ok: false, fb: 'Hibás! Az antihisztamin nem oldja meg a shockot.' },
+    { tx: 'Adrenalin IM a comb középső harmadának elülső-oldalsó részébe. Felnőtt dózis: max. 0,5 mg.', ok: true, fb: 'Helyes! Felnőttnél 0,5 mg IM adrenalin az első vonalbeli terápia.' },
+    { tx: 'Noradrenalin perfúzorban.', ok: false, fb: 'Hibás! B+ kompetencia erre nem terjed ki.' }
+  ]},
+  { sit: 'A "C" vizsgálat részeként vénát biztosítasz. Milyet?', opts: [
+    { tx: 'Egy darab vékony (20G) kanült.', ok: false, fb: 'Hibás! A gyors folyadékpótláshoz ez kevés.' },
+    { tx: 'Két nagylumenű (min. 16G) vénát.', ok: true, fb: 'Helyes! A shockos betegnél a tömeges folyadékpótlás miatt 2 db 16G (szürke) javasolt.' },
+    { tx: 'Centrális vénát.', ok: false, fb: 'Hibás! Mentőápoló perifériás vénát szúr.' }
+  ]},
+  { sit: 'Megkezded a folyadékpótlást (krisztalloid). Felnőtteknél mekkora bólusokat alkalmazol?', opts: [
+    { tx: '250 ml-es bólusokban, túlnyomással.', ok: true, fb: 'Helyes! Felnőtteknél a 250 ml-es szakaszos adás a protokolláris.' },
+    { tx: '10 ml/ttkg bólusokban.', ok: false, fb: 'Hibás! Ez a gyermek dózis.' },
+    { tx: '1000 ml-t nyitok rá egyszerre.', ok: false, fb: 'Hibás! A folyamatos kontroll (bólus) elengedhetetlen.' }
+  ]},
+  { sit: 'A beteg 80 kg. B+ mentőápolóként mi az abszolút maximum folyadék, amit adhatsz?', opts: [
+    { tx: '1000 ml.', ok: false, fb: 'Hibás! Testsúly alapján számolunk.' },
+    { tx: 'Maximum 30 ml/ttkg, tehát max 2400 ml.', ok: true, fb: 'Helyes! A mentőápoló limitje anaphylaxiában 30 ml/ttkg.' },
+    { tx: 'Nincs limit, amíg meg nem javul a vérnyomás.', ok: false, fb: 'Hibás! Van szakmai limit.' }
+  ]},
+  { sit: 'A folyadék adása közben mire kell figyelned (túltöltésre utaló jelek)?', opts: [
+    { tx: 'Csak az EKG-n a QRS komplexusra.', ok: false, fb: 'Hibás! A klinikai tünetek dominálnak.' },
+    { tx: 'Fokozódó légzési munka, tüdőpangás (szörtyzörej), telt nyaki vénák.', ok: true, fb: 'Helyes! A jobbszívfél-elégtelenség és tüdőödéma jeleinél az infúziót le kell állítani.' },
+    { tx: 'Csalánkiütések szaporodása.', ok: false, fb: 'Hibás! Ez nem a túltöltés jele.' }
+  ]},
+  { sit: '10 perc múlva a vérnyomás 70/45 Hgmm, a beteg nem javul. Mit teszel az adrenalinnal (B+ szinten)?', opts: [
+    { tx: 'Már nem adhatok többet.', ok: false, fb: 'Hibás! Van ismétlési lehetőség.' },
+    { tx: 'MAXIMUM 1 ALKALOMMAL megismétlem a 0,5 mg IM adrenalint.', ok: true, fb: 'Helyes! 5-15 perc múlva a mentőápoló egyszer ismételhet.' },
+    { tx: 'Intravénásan nyomom be a maradékot.', ok: false, fb: 'Hibás! B+ mentőápoló nem adhat IV adrenalint!' }
+  ]},
+  { sit: 'Mivel a beteg instabil shockban van és kimerítetted a kompetenciád határait, mi a protokolláris lépés?', opts: [
+    { tx: 'Megvárom, amíg felébred a helyszínen.', ok: false, fb: 'Hibás! Súlyos életveszélyben van.' },
+    { tx: 'Telefonos konzultáció (ICS) alapján azonnali transzport (SBO/randevú) megszervezése, magasabb kompetencia bevonása (mentőtiszt/orvos).', ok: true, fb: 'Helyes! Az instabil anaphylaxiás beteg definitív ellátást (Noradrenalin perfúzor, stb.) igényel.' },
+    { tx: 'Adok neki kalciumot.', ok: false, fb: 'Hibás! Kalcium adása tilos.' }
+  ]}
+], summary: 'A gyógyszerallergia miatt súlyos shockos (RR 65 Hgmm) állapotba került felnőtt (80 kg) betegnél a helyszínbiztonság és ABCDE alapján egyértelmű anaphylaxiát diagnosztizáltunk (Bőr + Keringés). A beteget laposan, megemelt lábakkal pozicionáltuk, 100% maszkon adott O2-vel. B+ kompetenciával azonnal 0,5 mg IM adrenalint alkalmaztunk a comb izomzatába. Párhuzamosan 2 db 16G vénát biztosítottunk és 250 ml-es bólusokban megkezdtük a folyadékterápiát (ápolói plafon: 30 ml/kg = 2400 ml), folyamatosan figyelve a túltöltés jeleire. Mivel 10 perc után a shock nem oldódott, az eljárásrend alapján egy alkalommal ismételtük a 0,5 mg IM adrenalint. Az instabil állapot miatt az ICS-vel egyeztetve magasabb szintű segélykocsi (randevú/SBO) bevonása történt meg folyamatos monitorozás mellett.' },
+
+{ id: 4, title: '4. Szimuláció: Enyhe légúti, kifejezett bőr tünetek', diff: 'B kompetencia', desc: 'Egy 18 éves diák mogyorós csokit evett, amire tudottan allergiás. Csalánkiütéses és "gombócot" érez a torkában, de a vérnyomása normális. B (gyógyszermentes) egységgel érkezel.', steps: [
+  { sit: 'A diák a padban ül, arca piros, nyeldes és a torkát fogja. Mi az első teendő mentőegységként?', opts: [
+    { tx: 'Azonnal megkeresem az Epipen-t.', ok: false, fb: 'Hibás! A szisztematikus vizsgálatot nem lehet átugrani.' },
+    { tx: 'Helyszínbiztonság, majd ABCDE vizsgálat. "A" vizsgálatnál a gombócérzés légúti érintettség. "B" tiszta. "C" RR 120/80.', ok: true, fb: 'Helyes! Az ABCDE a gombócérzésben (légúti fenyegetettség) azonosítja a fő problémát.' },
+    { tx: 'Azonnal lefektetem a padlóra.', ok: false, fb: 'Hibás! A vérnyomás normális, a légúti tünet miatt az ülő helyzet a jó.' }
+  ]},
+  { sit: 'Anamnézis: ISMERT mogyoróallergia. Vérnyomás 120/80 Hgmm. Bőr (csalán) és légúti tünetei (gombóc) vannak. Ez anaphylaxia?', opts: [
+    { tx: 'Nem, mert nem esett le a vérnyomása.', ok: false, fb: 'Hibás! A BP esés csak a 3. kritérium önmagában.' },
+    { tx: 'Igen, mivel a bőr/nyálkahártya érintettség ÉS a légúti érintettség együttesen jelen van, ami kimeríti az anaphylaxia kritériumait.', ok: true, fb: 'Helyes! A kritériumok szerint Bőr + Légút = Anaphylaxia.' },
+    { tx: 'Csak ha stridort hallok.', ok: false, fb: 'Hibás! A gombócérzés is az "A" érintettség jele.' }
+  ]},
+  { sit: 'B kompetenciájú (gyógyszermentes) egységként mi a protokolláris kötelezettséged az adminisztráció/irányítás felé a légúti tünet (gombócérzés) láttán?', opts: [
+    { tx: 'Csak megfigyelem a beteget.', ok: false, fb: 'Hibás! A gyors oedema-képződés veszélyes.' },
+    { tx: 'Azonnal segélykocsit (esetkocsit/ALS-t) kérek, mivel gyógyszert (adrenalint) magamtól nem szívhatok fel, és az állapot rohamosan romolhat.', ok: true, fb: 'Helyes! A B kompetencia korlátai miatt a magasabb szint azonnali riasztása életmentő.' },
+    { tx: 'Beviszem a helyi ügyeletre.', ok: false, fb: 'Hibás! Definitív kórházi/ALS ellátást igényel.' }
+  ]},
+  { sit: 'Milyen oxigénterápiát alkalmazol a segélykocsi megérkezéséig?', opts: [
+    { tx: 'Nem adok oxigént, ha a szaturáció 96% felett van.', ok: false, fb: 'Hibás! A légúti oedema preventív/terápiás oxigént kíván.' },
+    { tx: '100%-os oxigént nem-visszalégző rezervoáros maszk segítségével (12-15 l/perc).', ok: true, fb: 'Helyes! Az eljárásrend minden életveszélyes potenciálú betegnél ezt írja elő.' },
+    { tx: 'Orrszondán 2 l/perc.', ok: false, fb: 'Hibás! A koncentráció nem lesz elegendő.' }
+  ]},
+  { sit: 'Hogyan pozicionálod a beteget az "A" (gombócérzés) probléma miatt?', opts: [
+    { tx: 'Lapos fektetés.', ok: false, fb: 'Hibás! Ez rontja a légzést és a gombócérzést.' },
+    { tx: 'A tüneteknek megfelelően: félülő/ülő pozícióban, mivel dominálóan légzési érintettsége van (és vérnyomása normális).', ok: true, fb: 'Helyes! Légzési dominancia esetén az ülő/félülő helyzet az előírt.' },
+    { tx: 'Sétáltatom, hogy megnyugodjon.', ok: false, fb: 'Hibás! A mozgás rontja a keringési stabilitást anaphylaxiában.' }
+  ]},
+  { sit: 'A táskában találsz egy felírt, lejárati időn belüli Anapen (Adrenalin) autoinjektort (300 µg). Mit teszel mentőápolóként (B szint)?', opts: [
+    { tx: 'Nem használhatom, tilos a kompetenciám miatt!', ok: false, fb: 'Hibás! Életmentés esetén a beteg saját autoinjektora alkalmazható.' },
+    { tx: 'Időnyereség céljából használhatom (bátorítom vagy beszúrom a combjába), mivel a beteg anaphylaxiás állapotban van.', ok: true, fb: 'Helyes! B kompetencián a beteg saját autoinjektorának használata szabályos és ajánlott.' },
+    { tx: 'Beadom neki szájon át.', ok: false, fb: 'Hibás! Kizárólag IM adható.' }
+  ]},
+  { sit: 'Hogyan adod be az Anapen/Epipen injektort?', opts: [
+    { tx: 'A vénába szúrom.', ok: false, fb: 'Hibás! Az eszköz IM beadásra készült.' },
+    { tx: 'A ruhán keresztül vagy a csupasz comb elülső-oldalsó izomzatába nyomom, majd 10 másodpercig beszúrva tartom.', ok: true, fb: 'Helyes! A 10 másodperces beszúrás a teljes dózis ürülését biztosítja.' },
+    { tx: 'A hasába szúrom.', ok: false, fb: 'Hibás! Az adrenalin IM a combból szívódik fel a legjobban.' }
+  ]},
+  { sit: 'A D vizsgálat során milyen műszeres kontroll kötelező?', opts: [
+    { tx: 'Vércukormérés, különösen, ha tudatzavar is lenne (bár itt éber).', ok: true, fb: 'Helyes! A D vizsgálat része a vércukormérés (bár a fiú éber, a protokoll a paraméterek ismételt mérését kéri).' },
+    { tx: 'EKG ritmus.', ok: false, fb: 'Hibás! Az az E vizsgálathoz/C vizsgálathoz tartozik.' },
+    { tx: 'Pupillavizsgálat percenként.', ok: false, fb: 'Hibás! A vércukor fontosabb.' }
+  ]},
+  { sit: 'Az injektor beadása után 5 perccel a diák tünetmentes lesz. Kéri, hogy maradhasson a suliban. Mi a döntés?', opts: [
+    { tx: 'Maradhat, ha aláírja a felelősségvállalást.', ok: false, fb: 'Hibás! Adrenalin után ez szakmai hiba.' },
+    { tx: 'Nem maradhat! Adrenalin adása és anaphylaxia esetén a kórházba szállítás MINDIG kötelező a bifázisos reakció miatt.', ok: true, fb: 'Helyes! Az eljárásrend szigorúan fogalmaz a kórházi szállítás kötelezőségéről.' },
+    { tx: 'Maradhat, de be kell vennie egy Suprastint.', ok: false, fb: 'Hibás! A kórház kötelező.' }
+  ]},
+  { sit: 'A mentőtiszt megérkezik a helyszínre. Milyen további gyógyszert adhat IV a megelőzés céljából (amit te B szinten nem adhattál)?', opts: [
+    { tx: 'Kalciumot.', ok: false, fb: 'Hibás! A Kalcium tilos.' },
+    { tx: 'Klórpiramint (Suprastin) és Metilprednizolont (szteroid) intravénásan.', ok: true, fb: 'Helyes! A szteroid a bifázisos reakció ellen, a Suprastin a bőrtünetekre hat (ALS kompetencia).' },
+    { tx: 'Teofillint.', ok: false, fb: 'Hibás! A Teofillin nem javasolt.' }
+  ]}
+], summary: 'A 18 éves diák esetében az ismert mogyoróallergia mellett jelentkező bőr (csalán) és légúti (gombócérzés) tünetek (vérnyomásesés nélkül is) azonnali anaphylaxiát igazoltak. B kompetenciájú (gyógyszermentes) egységként a légúti fenyegetettség miatt haladéktalanul magasabb szintű segélykocsit (ALS) kértünk. A beteget félülő helyzetbe pozicionáltuk és 100% maszkon adott oxigént alkalmaztunk. A táskában lévő saját Epipen autoinjektort időnyereségből, a protokollnak megfelelően (comb izomzatába, 10 mp) felhasználtuk. Bár az adrenalin hatására a beteg tünetmentessé vált, a bifázisos reakció (késői fellángolás) kockázata miatt a kórházba szállítás KÖTELEZŐ maradt. A folyamatos monitorozást a mentőtiszt érkezéséig és az átadásig folytattuk.' }
+];
+
+const renderHome = () => `
+  <div style="margin-bottom:1.25rem">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Szabványos Eljárásrend</div>
+    <h1 style="font-size:22px;font-weight:700;color:var(--text-main);margin-bottom:4px;line-height:1.2">Anaphylaxia Prehospitális Ellátása</h1>
+    <div style="font-size:13px;color:var(--text-muted)">Országos Mentőszolgálat</div>
+  </div>
+  <div class="g2" style="margin-bottom:.75rem">
+    ${[
+      ['chapters','📚','Eljárásrend','Teljes protokoll'],
+      ['flash','🃏','Kártyák','Tanulást segítő'],
+      ['quiz','❓','Kvíz','Tudásfelmérő'],
+      ['sim','🚑','Szimulációk','Mentőápolói esetek'],
+      ['calc','🧮','Kalkulátor','Dózisok számítása']
+    ].map(([id, ic, lb, d]) => `
+      <button onclick="go('${id}')" class="home-mod">
+        <div style="font-size:26px;margin-bottom:6px">${ic}</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-main);margin-bottom:2px">${lb}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${d}</div>
+      </button>
+    `).join('')}
+  </div>
+  <div class="card" style="background:var(--danger-bg);border-color:var(--danger-border)">
+    <div style="font-size:12px;color:var(--danger-text)"><b>Figyelem:</b> Az anaphylaxia potenciálisan halálos kórkép. Az adrenalin korai adása életmentő. Készült a legfrissebb OMSZ eljárásrend alapján.</div>
+  </div>
+`;
+
+const rb = b => {
+  if (b.tp === 'sub') return `<div class="sub">${h(b.tx)}</div>`;
+  if (b.tp === 'bl') return `<ul class="bl">${b.items.map(i => `<li>${h(i)}</li>`).join('')}</ul>`;
+  if (b.tp === 'al') return `<div class="al al-${b.lv}">${h(b.tx)}</div>`;
+  if (b.tp === 'ftable') {
+    return `<div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Kritérium / Tünet</th><th>Részletek</th></tr></thead>
+        <tbody>
+          ${b.rows.map(r => `<tr><td style="font-weight:600;color:var(--text-main)">${h(r.s)}</td><td style="color:#e5e7eb">${h(r.m)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  }
+  return '';
+};
+
+const renderChapters = () => `
+  <h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:var(--text-main)">Eljárásrend Fejezetei</h2>
+  ${CDATA.map(c => `
+    <button class="ch-row" onclick="go('chapter','${esc(c.id)}')">
+      <div style="width:38px;height:38px;border-radius:9px;background:${c.acc}20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${c.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;color:var(--text-main)">${h(c.title)}</div>
+      </div>
+      <div style="color:var(--text-muted);font-size:18px">›</div>
+    </button>
+  `).join('')}
+`;
+
+const renderChapter = id => {
+  const c = CDATA.find(x => x.id === id);
+  if (!c) return '';
+  return `
+    <button onclick="go('chapters')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza a fejezetekhez</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem">
+      <div style="width:42px;height:42px;border-radius:10px;background:${c.acc}20;display:flex;align-items:center;justify-content:center;font-size:21px">${c.icon}</div>
+      <h2 style="font-size:18px;font-weight:700;color:var(--text-main);margin:0">${h(c.title)}</h2>
+    </div>
+    ${c.secs.map(s => `
+      <div class="card">
+        <h3 style="font-size:14px;font-weight:700;color:${c.acc};margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)">${h(s.t)}</h3>
+        ${s.bk.map(b => rb(b)).join('')}
+      </div>
+    `).join('')}
+  `;
+};
+
+const renderFlash = () => {
+  const cats = ['Összes', ...new Set(CARDS.map(c => c.cat))];
+  const filtered = FC.cat === 'Összes' ? CARDS : CARDS.filter(c => c.cat === FC.cat);
+  const card = filtered[Math.min(FC.idx, filtered.length - 1)];
+  return `
+    <h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:var(--text-main)">Flashkártyák</h2>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">
+      ${cats.map(c => `<button onclick="setCat('${esc(c)}')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid ${FC.cat === c ? 'var(--accent)' : 'var(--border)'};background:${FC.cat === c ? 'var(--accent)' : 'var(--bg-item)'};color:${FC.cat === c ? '#fff' : 'var(--text-muted)'};cursor:pointer;font-family:inherit">${h(c)}</button>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:.65rem">${FC.idx + 1} / ${filtered.length} • Kattints a kártyára a fordításhoz</div>
+    <div class="flip ${FC.flip ? 'on' : ''}" onclick="flipCard()">
+      ${FC.flip ? `
+        <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>
+        <div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">${h(card.b)}</div>
+      ` : `
+        <div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">${h(card.cat)}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text-main);line-height:1.5">${h(card.f)}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:14px">Kattints a válaszért →</div>
+      `}
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button>
+      <button class="btn btn-g btn-fw" onclick="flipCard()">Fordít</button>
+      <button class="btn btn-fw" onclick="navCard(1)">Következő ›</button>
+    </div>
+  `;
+};
+
+const renderQuiz = () => {
+  if (QZ.done) {
+    const pct = Math.round((QZ.score / QUIZ.length) * 100);
+    const good = pct >= 80;
+    return `
+      <h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:var(--text-main)">Kvíz eredmény</h2>
+      <div style="background:${good ? 'var(--success-bg)' : 'var(--warning-bg)'};border:1px solid ${good ? 'var(--success-border)' : 'var(--warning-border)'};border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">
+        <div style="font-size:42px;font-weight:700;color:${good ? 'var(--success-text)' : 'var(--warning-text)'}">${QZ.score}/${QUIZ.length}</div>
+        <div style="font-size:15px;font-weight:600;color:${good ? 'var(--success-text)' : 'var(--warning-text)'}">${pct}% – ${good ? 'Kiváló!' : 'Ismételd át az anyagot.'}</div>
+      </div>
+      ${QZ.ans.filter(a => !a.ok).length ? `
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:var(--text-main)">Helytelen válaszok:</h3>
+        ${QZ.ans.filter(a => !a.ok).map(a => `
+          <div class="card" style="margin-bottom:8px">
+            <div style="font-size:12px;font-weight:600;color:var(--text-main);margin-bottom:4px">${h(QUIZ[a.qi].q)}</div>
+            <div style="font-size:11px;color:var(--danger-text);margin-bottom:2px">✗ Válasz: ${h(QUIZ[a.qi].opts[a.pi])}</div>
+            <div style="font-size:11px;color:var(--success-text);margin-bottom:5px">✓ Helyes: ${h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${h(QUIZ[a.qi].exp)}</div>
+          </div>
+        `).join('')}
+      ` : `<div class="al al-s">Tökéletes eredmény!</div>`}
+      <button class="btn btn-g btn-fw" style="margin-top:10px" onclick="resetQuiz()">Újra</button>
+    `;
+  }
+  
+  const q = QUIZ[QZ.idx];
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <h2 style="font-size:19px;font-weight:700;margin:0;color:var(--text-main)">Kvíz</h2>
+      <span style="font-size:12px;color:var(--text-muted)">${QZ.idx + 1}/${QUIZ.length}</span>
+    </div>
+    <div class="prog"><div class="progb" style="width:${((QZ.idx + 1) / QUIZ.length) * 100}%;background:var(--accent)"></div></div>
+    <div class="card" style="margin-bottom:.75rem;background:#262626">
+      <p style="font-size:15px;font-weight:600;color:var(--text-main);line-height:1.5;margin:0">${h(q.q)}</p>
+    </div>
+    ${q.opts.map((opt, i) => {
+      let cls = 'opt';
+      if (QZ.sel !== null) {
+        if (i === q.ok) cls += ' opt-ok';
+        else if (i === QZ.sel && i !== q.ok) cls += ' opt-no';
+      }
+      return `<button class="${cls}" ${QZ.sel === null ? `onclick="pickQ(${i})"` : ''}>${h(opt)}</button>`;
+    }).join('')}
+    ${QZ.sel !== null ? `
+      <div class="al al-i" style="margin-bottom:.75rem">${h(q.exp)}</div>
+      <button class="btn btn-g btn-fw" onclick="nextQ()">${QZ.idx < QUIZ.length - 1 ? 'Következő kérdés →' : 'Eredmények'}</button>
+    ` : ''}
+  `;
+};
+
+const renderSim = () => {
+  if (!SI.id) {
+    return `
+      <h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:var(--text-main)">Szimulációs Esetek</h2>
+      <div class="al al-w">Ezek a szimulációk KIZÁRÓLAG a Mentőápolói (B és B+) kompetenciákat tesztelik az eljárrend alapján.</div>
+      ${SIMS.map(s => `
+        <button class="card-btn" onclick="startSim(${s.id})">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <div style="font-size:14px;font-weight:700;color:var(--text-main)">${h(s.title)}</div>
+            <span class="tag ${s.diff === 'B kompetencia' ? 'tag-g' : 'tag-y'}">${s.diff}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:5px">${h(s.desc)}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${s.steps.length} lépéses eset</div>
+        </button>
+      `).join('')}
+    `;
+  }
+  
+  const sim = SIMS.find(s => s.id === SI.id);
+  
+  if (SI.fin) {
+    const correct = SI.hist.filter(h => sim.steps[h.step].opts[h.oi].ok).length;
+    return `
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:var(--text-main)">${h(sim.title)} - Eredmény</h2>
+      <div style="background:var(--success-bg);border:1px solid var(--success-border);border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">
+        <div style="font-size:36px;font-weight:700;color:var(--success-text)">${correct}/${sim.steps.length}</div>
+        <div style="font-size:13px;color:var(--success-text);font-weight:600">helyes döntés</div>
+      </div>
+      <div class="al al-i"><strong>Részletes Összefoglaló:</strong><br><br>${h(sim.summary)}</div>
+      ${SI.hist.map((hh, i) => {
+        const st = sim.steps[hh.step];
+        const opt = st.opts[hh.oi];
+        return `
+          <div class="card" style="margin-bottom:7px">
+            <div style="font-size:12px;font-weight:600;color:var(--text-main);margin-bottom:3px">${i + 1}. ${h(st.sit)}</div>
+            <div style="font-size:11px;margin-bottom:3px;color:${opt.ok ? 'var(--success-text)' : 'var(--danger-text)'}">${opt.ok ? '✓' : '✗'} ${h(opt.tx)}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${h(opt.fb)}</div>
+          </div>
+        `;
+      }).join('')}
+      <button class="btn btn-g btn-fw" style="margin-top:10px" onclick="resetSim()">Vissza az esetekhez</button>
+    `;
+  }
+  
+  const step = sim.steps[SI.step];
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <div style="font-size:15px;font-weight:700;color:var(--text-main)">${h(sim.title)}</div>
+      <span style="font-size:12px;color:var(--text-muted)">${SI.step + 1}/${sim.steps.length}</span>
+    </div>
+    <div class="prog"><div class="progb" style="width:${((SI.step + 1) / sim.steps.length) * 100}%;background:var(--accent)"></div></div>
+    ${SI.step === 0 ? `<div class="al al-i">${h(sim.desc)}</div>` : ''}
+    <div class="card" style="margin-bottom:.75rem;background:#262626">
+      <p style="font-size:14px;font-weight:600;color:var(--text-main);line-height:1.5;margin:0">${h(step.sit)}</p>
+    </div>
+    ${step.opts.map((opt, i) => {
+      let cls = 'opt';
+      if (SI.chosen !== null) {
+        if (opt.ok) cls += ' opt-ok';
+        else if (i === SI.chosen && !opt.ok) cls += ' opt-no';
+      }
+      return `<button class="${cls}" ${SI.chosen === null ? `onclick="chooseSim(${i})"` : ''}>${h(opt.tx)}</button>`;
+    }).join('')}
+    ${SI.chosen !== null ? `
+      <div class="al ${step.opts[SI.chosen].ok ? 'al-s' : 'al-d'}">${h(step.opts[SI.chosen].fb)}</div>
+      <button class="btn btn-g btn-fw" onclick="nextSim()">${SI.step < sim.steps.length - 1 ? 'Következő helyzet →' : 'Összefoglaló megtekintése'}</button>
+    ` : ''}
+  `;
+};
+
+const doCalc = () => {
+  let w = parseFloat(CA.weight);
+  let a = parseFloat(CA.age);
+  if (isNaN(w) || w <= 0) w = 70;
+  if (isNaN(a) || a <= 0) a = 30;
+  
+  let adrDose = w * 0.01;
+  let adrMax = 0;
+  let adrMaxStr = '';
+  
+  if (a > 12) { adrMax = 0.5; adrMaxStr = '0,5 mg (0,5 ml)'; }
+  else if (a >= 6) { adrMax = 0.3; adrMaxStr = '0,3 mg (0,3 ml)'; }
+  else { adrMax = 0.15; adrMaxStr = '0,15 mg (0,15 ml)'; }
+  
+  let finalAdr = Math.min(adrDose, adrMax).toFixed(2);
+  
+  let fluidBolus = a > 17 ? '250 ml (Felnőtt)' : (10 * w).toFixed(0) + ' ml (Gyermek 10 ml/ttkg)';
+  let fluidMax = (30 * w).toFixed(0) + ' ml';
+  
+  return {
+    adr: finalAdr + ' mg (' + finalAdr + ' ml)',
+    adrM: adrMaxStr,
+    fb: fluidBolus,
+    fm: fluidMax
+  };
+};
+
+const rc = c => `
+  <div class="card" style="border-color:var(--info-border)">
+    <h3 style="font-size:14px;font-weight:700;color:var(--info-text);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--info-border)">Adrenalin (IM) - Tonogen 1 mg/ml</h3>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px">Kiszámolt IM dózis (0,01 mg/ttkg alapján):</div>
+    <div style="font-size:24px;font-weight:700;color:var(--success-text);margin-bottom:10px">${c.adr}</div>
+    <div style="font-size:12px;color:var(--danger-text)">Maximális adható dózis ezen életkorban: ${c.adrM}</div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:5px">Mentőápoló max. 1x ismételheti (5-15 perc múlva)! Combba (IM) adandó.</div>
+  </div>
+  <div class="card" style="border-color:var(--info-border)">
+    <h3 style="font-size:14px;font-weight:700;color:var(--info-text);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--info-border)">Krisztalloid Folyadék (IV)</h3>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px">Javasolt bólus mérete túlnyomással:</div>
+    <div style="font-size:20px;font-weight:700;color:var(--success-text);margin-bottom:10px">${c.fb}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:3px">Mentőápoló által adható MAXIMÁLIS összdózis (30 ml/ttkg):</div>
+    <div style="font-size:20px;font-weight:700;color:var(--danger-text);margin-bottom:10px">${c.fm}</div>
+  </div>
+  <div class="card" style="border-color:var(--info-border)">
+    <h3 style="font-size:14px;font-weight:700;color:var(--info-text);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--info-border)">Hörgőtágító Limitek (Mentőápoló B+)</h3>
+    <div style="font-size:12px;color:#d1d5db;margin-bottom:5px"><b>Szalbutamol (Ventolin):</b> Max. 2 expozíció</div>
+    <div style="font-size:12px;color:#d1d5db"><b>Berodual nebulizátorban:</b> Max. 20 csepp (5 ml NaCl-dal)</div>
+  </div>
+`;
+
+const renderCalc = () => {
+  const c = doCalc();
+  return `
+    <h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:var(--text-main)">Mentőápolói Terápia Kalkulátor</h2>
+    <div class="al al-i">A számítások a B+ kompetenciára és a hivatalos protokollban szereplő dózisokra vonatkoznak. Adja meg pontosan az adatokat!</div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:6px">Beteg életkora (év):</div>
+      <input type="number" min="0" step="1" value="${CA.age}" oninput="CA.age=this.value;upC()">
+      <div style="font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:6px;margin-top:10px">Beteg testsúlya (kg):</div>
+      <input type="number" min="1" step="1" value="${CA.weight}" oninput="CA.weight=this.value;upC()">
+    </div>
+    <div id="calcRes">${rc(c)}</div>
+  `;
+};
+
+window.upC = () => {
+  const res = document.getElementById('calcRes');
+  if (res) res.innerHTML = rc(doCalc());
+};
+
+const render = () => {
+  const c = document.getElementById('ct');
+  c.innerHTML = '';
+  if (SCR === 'home') c.innerHTML = renderHome();
+  else if (SCR === 'chapters') c.innerHTML = renderChapters();
+  else if (SCR === 'chapter') c.innerHTML = renderChapter(CHID);
+  else if (SCR === 'flash') c.innerHTML = renderFlash();
+  else if (SCR === 'quiz') c.innerHTML = renderQuiz();
+  else if (SCR === 'sim') c.innerHTML = renderSim();
+  else if (SCR === 'calc') c.innerHTML = renderCalc();
+  
+  const tabs = ['home', 'chapters', 'flash', 'quiz', 'sim', 'calc'];
+  const active = SCR === 'chapter' ? 'chapters' : SCR;
+  document.querySelectorAll('.nb').forEach((b, i) => {
+    b.classList.toggle('act', tabs[i] === active);
+  });
+  window.scrollTo(0, 0);
+};
+
+window.go = (s, id) => { SCR = s; CHID = id || null; render(); };
+window.setCat = c => { FC.cat = c; FC.idx = 0; FC.flip = false; render(); };
+window.flipCard = () => { FC.flip = !FC.flip; render(); };
+window.navCard = d => {
+  const f = FC.cat === 'Összes' ? CARDS : CARDS.filter(c => c.cat === FC.cat);
+  FC.flip = false;
+  FC.idx = (FC.idx + d + f.length) % f.length;
+  render();
+};
+window.pickQ = i => {
+  if (QZ.sel !== null) return;
+  QZ.sel = i;
+  const ok = i === QUIZ[QZ.idx].ok;
+  if (ok) QZ.score++;
+  QZ.ans.push({ qi: QZ.idx, pi: i, ok });
+  render();
+};
+window.nextQ = () => {
+  if (QZ.idx < QUIZ.length - 1) { QZ.idx++; QZ.sel = null; }
+  else QZ.done = true;
+  render();
+};
+window.resetQuiz = () => { QZ = { idx: 0, sel: null, score: 0, done: false, ans: [] }; render(); };
+window.startSim = id => { SI.id = id; SI.step = 0; SI.chosen = null; SI.hist = []; SI.fin = false; render(); };
+window.chooseSim = i => {
+  if (SI.chosen !== null) return;
+  SI.chosen = i;
+  SI.hist.push({ step: SI.step, oi: i });
+  render();
+};
+window.nextSim = () => {
+  const sim = SIMS.find(s => s.id === SI.id);
+  if (SI.step < sim.steps.length - 1) { SI.step++; SI.chosen = null; }
+  else SI.fin = true;
+  render();
+};
+window.resetSim = () => { SI = { id: null, step: 0, chosen: null, hist: [], fin: false }; render(); };
+
+// Initialization
+render();
+</script>
+</body>
+</html>

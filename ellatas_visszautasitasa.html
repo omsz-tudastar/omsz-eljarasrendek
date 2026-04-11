@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Ellátás Visszautasítása</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+.step-wrap{display:flex;gap:10px;margin-bottom:10px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#14b8a6;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-body{flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;}
+.step-t{font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;}
+.step-x{font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:middle;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* GLOSSARY MODAL */
+.gloss{color:#14b8a6;border-bottom:1px dotted #14b8a6;cursor:pointer;font-weight:600;}
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.on{display:flex;}
+.modal-box{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;padding:1.5rem;max-width:400px;width:100%;position:relative;box-shadow:0 10px 25px rgba(0,0,0,.5);}
+.modal-close{position:absolute;top:10px;right:15px;background:none;border:none;color:#9ca3af;font-size:20px;cursor:pointer;}
+.modal-title{font-size:16px;font-weight:700;color:#f3f4f6;margin-bottom:.5rem;padding-right:20px;}
+.modal-text{font-size:13px;color:#d1d5db;line-height:1.5;}
+/* CHECKLIST */
+.chk-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #333;}
+.chk-q{font-size:13px;color:#d1d5db;flex:1;padding-right:15px;line-height:1.4;}
+.chk-opts{display:flex;gap:5px;flex-shrink:0;}
+.chk-btn{padding:5px 12px;border:1px solid #4b5563;border-radius:6px;background:#262626;color:#9ca3af;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;}
+.chk-btn.act-y{background:#064e3b;color:#4ade80;border-color:#065f46;}
+.chk-btn.act-n{background:#450a0a;color:#fca5a5;border-color:#7f1d1d;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">📋</span><span class="nl">Csekklista</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div id="modal-bg" class="modal-bg" onclick="hideGloss(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="hideGloss(true)">×</button>
+    <div id="modal-title" class="modal-title"></div>
+    <div id="modal-text" class="modal-text"></div>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CK={ans:Array(9).fill(null)};
+
+// ── DICTIONARY (Glossary) ─────────────────────────────────────────
+var GLOSS = {
+  'cselekvőképesség': '18. életévét betöltött személy (vagy 16. életévét betöltve megházasodott), aki szellemi épséggel bír, belátási képessége birtokában van, nem áll befolyásoltság alatt, és képes ésszerű akarat-elhatározásra.',
+  'cselekvőképtelenség': '14 éves kor alatti gyermek, kizáró gondnokság alá helyezett nagykorú, vagy átmenetileg belátási képességét vesztett beteg (pl. kábítószer, eszméletlenség, altatás miatt).',
+  'korlátozott cselekvőképesség': '14-18. életév közötti (nem házas) gyermek, vagy az a nagykorú, akinek a bíróság részlegesen korlátozta a cselekvőképességét.',
+  'életmentő beavatkozás': 'Sürgős szükség esetén a beteg életének megmentésére irányuló egészségügyi tevékenység.',
+  'életfenntartó beavatkozás': 'A beteg életének mesterséges módon történő fenntartására, illetve egyes életműködéseinek pótlására irányuló egészségügyi tevékenység.',
+  'isbar': 'Kommunikációs formula a mentésirányítás tájékoztatására: I (Azonosítás), S (Szituáció/ok), B (Háttér/vitális paraméterek), A (Assessment/vizsgálat), R (Rögzítés/dokumentáció elkészülte).',
+  'epikrízis': 'Az E-esetlap szöveges összefoglaló rovata, ahol kötelező rögzíteni a cselekvőképesség meglétét, valamint az ellátás és szállítás visszautasításának okait és körülményeit.',
+  'magánokirat': 'Teljes bizonyító erejű magánokirat: Olyan irat, amely bizonyítja, hogy kiállítója a benne foglalt nyilatkozatot megtette, és megfelel a törvényi alaki kellékeknek (pl. két tanú aláírásával hitelesítve).',
+  'mils': 'Manual In-Line Stabilization - a nyaki gerinc kézi, tengelyirányú stabilizálása, mely traumás esetekben kötelező.'
+};
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Bevezetés és Alapelvek',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Az eljárásrend célja',bk:[
+{tp:'bl',items:[
+'Szabályozni, hogy a beteg milyen esetekben hagyható a helyszínen.',
+'Meghatározni, mikor utasíthatja vissza önrendelkezési joga alapján a helyszíni ellátást, illetve szállítást.',
+'Tisztázni a helyszínen hagyással kapcsolatos dokumentációs kötelezettségeket.'
+]},
+{tp:'al',lv:'i',tx:'Elsődleges cél a beteg megfelelő ellátása és kórházba szállítása. A visszautasítás elfogadására kizárólag a Szabványos eljárásrend szigorú betartásával kerülhet sor.'}
+]},
+{t:'II. Bevezetés',bk:[
+{tp:'bl',items:[
+'Érvényesülnie kell a cselekvőképes beteg önrendelkezési jogának.',
+'Nem járhat a beteg vagy mások életének, testi épségének veszélyeztetésével.',
+'Maradéktalanul érvényesülnie kell az életmentő, súlyos egészségkárosodást megelőző ellátáshoz és fájdalomcsillapításhoz való jognak.'
+]}
+]}
+]},
+{id:'fogalmak',title:'Fogalmak',icon:'🧠',acc:'#3b82f6',secs:[
+{t:'III. Cselekvőképesség szintjei',bk:[
+{tp:'sub',tx:'[[cselekvőképesség|Cselekvőképes]] beteg feltételei:'},
+{tp:'bl',items:[
+'18. életévét betöltött személy (vagy 16. életévét betöltve megházasodott).',
+'Szellemi épséggel bír, belátási képessége birtokában van.',
+'Nem áll kábítószer, alkohol vagy gyógyszer hatása alatt, mely a cselekvőképességet befolyásolná.',
+'Ésszerű akarat-elhatározásra való képességgel bír (tisztában van a döntései következményeivel).'
+]},
+{tp:'sub',tx:'[[cselekvőképtelenség|Cselekvőképtelen]] a beteg, ha:'},
+{tp:'bl',items:[
+'14 éves kor alatti gyermek.',
+'Kizáró gondnokság alá helyezett nagykorú.',
+'Átmenetileg cselekvőképtelen (pl. kábítószer, alkohol miatti befolyásoltság, tudatzavar, eszméletlenség, műtéti altatás miatt).'
+]},
+{tp:'note',tx:'Az átmeneti állapot elmúltával a cselekvőképesség helyreáll.'},
+{tp:'sub',tx:'[[korlátozott cselekvőképesség|Korlátozottan cselekvőképes]] a beteg, ha:'},
+{tp:'bl',items:[
+'14-18. életév közötti beteg (kivéve, ha >16 év és házas).',
+'Az egészségügyi jogok tekintetében bíróság által részlegesen korlátozott nagykorú.'
+]}
+]}
+]},
+{id:'jogok',title:'A Visszautasítás Joga',icon:'⚖️',acc:'#ef4444',secs:[
+{t:'IV. Mikor utasítható vissza az ellátás?',bk:[
+{tp:'al',lv:'w',tx:'A cselekvőképes beteg visszautasíthatja az ellátást, HA az elmaradás nem veszélyezteti mások életét, testi épségét.'},
+{tp:'bl',items:[
+'Ha a visszautasítás miatt később súlyos vagy maradandó károsodás következhet be, az CSAK [[magánokirat|teljes bizonyító erejű magánokiratban]] tehető meg (1. sz. Nyilatkozat, két tanúval).'
+]}
+]},
+{t:'V. Mikor NEM utasítható vissza az ellátás?',bk:[
+{tp:'kr',items:[
+'Ha a beteg nem cselekvőképes, vagy korlátozottan cselekvőképes kiskorú.',
+'[[életmentő beavatkozás|Életmentő]] vagy [[életfenntartó beavatkozás|életfenntartó]] beavatkozás esetén (kivéve gyógyíthatatlan, halálhoz vezető betegségnél, közokiratba foglalva).',
+'24. hetet betöltött várandósnál, ha képes a gyermek kihordására.',
+'Ha az elmaradás MÁSOK életét, testi épségét veszélyezteti.',
+'Közvetlen életveszély esetén.'
+]},
+{tp:'note',tx:'Cselekvőképtelen betegnél a törvényes képviselő dönt, de súlyos egészségkárosodással járó ellátást ő SEM utasíthat vissza (pl. gyermekeknél a kórházba szállítás visszautasítása szigorúan korlátozott).'}
+]},
+{t:'VI. A beteg tájékoztatása',bk:[
+{tp:'bl',items:[
+'A mentőegység vezetőjének kompetenciaszintnek megfelelő, egyéniesített tájékoztatást kell adnia.',
+'Tartalmaznia kell az állapot, a javasolt vizsgálatok, az elmaradás előnyei/kockázatai, és a várható kimenetel ismertetését.',
+'A cselekvőképtelen gyermeknek is joga van a korának megfelelő tájékoztatáshoz.'
+]}
+]}
+]},
+{id:'komp',title:'Kompetenciaszintek',icon:'👨‍⚕️',acc:'#f59e0b',secs:[
+{t:'VII. "A" kompetenciaszint (Mentőápoló)',bk:[
+{tp:'al',lv:'d',tx:'Önálló döntés alapján NEM hagyhat helyszínen beteget!'},
+{tp:'bl',items:[
+'Minden esetben konzultál a mentésvezetővel / Szolgálatvezető főorvossal.',
+'Ha a helyszínen hagyás nem megalapozott, segélykocsit/orvosi ügyeletet hív.',
+'Kitölti a 2. sz. mellékletet (Csekklista).',
+'NEM fogadhatja el az ellátást megtagadó 1. sz. nyilatkozatot (csak okiratot).'
+]}
+]},
+{t:'VIII. "B, B+" kompetenciaszint (Mentőápoló)',bk:[
+{tp:'al',lv:'d',tx:'Önálló döntés keretében nem hagyhat helyszínen beteget. Gyógyszeres ellátást követően pedig egyedüli észlelőként EGYÁLTALÁN NEM hagyhat helyszínen beteget!'},
+{tp:'bl',items:[
+'Konzultál a mentésvezetővel / Szolgálatvezető főorvossal. Szükség esetén segélykocsit/ügyeletet hív.',
+'Kitölti a 2. sz. mellékletet.',
+'Elfogadhatja a betegetől az 1. sz. Nyilatkozatot, HA cselekvőképes, és a kórházba nem menetel nem veszélyezteti önmaga/mások életét.',
+'Szülőtől elfogadhatja a nyilatkozatot, ha a gyermeknek NINCS szüksége azonnali kórházi kezelésre, és a felügyelet biztosított.'
+]}
+]},
+{t:'IX. Mentőtiszti/Orvosi kompetencia',bk:[
+{tp:'al',lv:'s',tx:'Saját döntéskörben helyszínen hagyhat beteget, ha a feltételek adottak.'},
+{tp:'bl',items:[
+'Nem hagyhatja helyszínen, ha a rövid időn belüli súlyos egészségkárosodás lehetősége nem zárható ki.',
+'Közvetlen életveszélyben lévő, várandós (>24. hét) vagy veszélyeztető betegnél nem fogadhatja el a visszautasítást.'
+]}
+]}
+]},
+{id:'teendok',title:'Teendők és Dokumentáció',icon:'📋',acc:'#8b5cf6',secs:[
+{t:'X. Általános teendők visszautasításkor',bk:[
+{tp:'bl',items:[
+'A kommunikáció elsődleges célja a beteg MEGGYŐZÉSE a kórházi kezelés elfogadása érdekében.',
+'Teljes körű, ABCDE szerinti betegvizsgálat szükséges.',
+'Szükség esetén telefonos konzultáció a szolgálatvezető főorvossal.',
+'A dokumentumok (2. sz. és 1. sz. melléklet) szabályos kitöltése, aláíratása (2 tanúval).'
+]},
+{tp:'al',lv:'w',tx:'Ha a beteg megtagadja az ellátást ÉS megakadályozza az önrendelkezési jog tisztázását (elutasító magatartás), szükség esetén karhatalmat (rendőrséget) kell kérni.'}
+]},
+{t:'XI. Irányítás tájékoztatása',bk:[
+{tp:'note',tx:'Az irányítást rögzített vonalon, az [[isbar|ISBAR]] formula szerint kell tájékoztatni.'},
+{tp:'bl',items:[
+'I: Beteg azonosítása (kezdőbetűkkel).',
+'S: Helyszínen hagyás/visszautasítás oka.',
+'B, A: Vitális paraméterek.',
+'R: Dokumentáció elkészültének ténye (vagy akadálya).'
+]}
+]},
+{t:'XII. Esetdokumentáció (E-esetlap)',bk:[
+{tp:'kr',items:[
+'A 2. sz. Csekklistát MINDEN ESETBEN a Nyilatkozat előtt kell kitölteni.',
+'A kitöltött dokumentumokat az E-media részeként kell rögzíteni.',
+'Az [[epikrízis|Epikrízis]] rovatban KÖTELEZŐ a cselekvőképesség meglétét, a visszautasítás okait és körülményeit külön rögzíteni.'
+]}
+]}
+]},
+{id:'segedlet',title:'Segédlet és Gyakorlat',icon:'💡',acc:'#ec4899',secs:[
+{t:'XIII. Gyakorlati magyarázatok',bk:[
+{tp:'bl',items:[
+'Alapvetés, hogy a beteget alapos ABCDE vizsgálat után kórházba szállítjuk. Ha a beteg/mentő is kórházat akar -> szállítás.',
+'Ha mentő szerint kell a kórház, de a beteg nem akarja -> Cselekvőképesség vizsgálata (2. sz. melléklet csekklista).',
+'Alkoholt fogyasztott betegnél egyéni elbírálás alapján döntünk arról, hogy az alkohol megfosztotta-e a belátási képességétől. A csekklistán a "Kizárható-e..." kérdésre a befolyásoltság hiányát vizsgáljuk.',
+'Koponyasérült betegek a vizsgálat idején NEM tekinthetők cselekvőképesnek döntés szempontjából.',
+'A Nyilatkozaton (1. sz. melléklet) a tanúk lehetnek a mentőegység tagjai is. Lakcímként elegendő a mentőállomás címe és az ivir kód megadása.'
+]}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Fogalmak',f:'Ki tekinthető cselekvőképesnek életkor alapján?',b:'Minden 18. életévét betöltött személy.\nIlletve az is, aki betöltötte a 16. életévét és megházasodott.'},
+{cat:'Fogalmak',f:'Ki tekinthető korlátozottan cselekvőképesnek?',b:'A 14 és 18 év közötti gyermek (kivéve ha megházasodott).\nValamint az a felnőtt, akit a bíróság ezen a téren korlátozó gondnokság alá helyezett.'},
+{cat:'Szabályok',f:'A cselekvőképes beteg MIKOR NEM utasíthatja vissza az ellátást?',b:'1. Ha az MÁSOK életét/testi épségét veszélyezteti.\n2. Közvetlen életveszélyben.\n3. Várandós, ha a 24. hetet betöltötte.\n4. Életmentő/életfenntartó beavatkozásnál (kivéve speciális közokiratos esetben).'},
+{cat:'Szabályok',f:'Koponyasérült beteg hagyható-e a helyszínen visszautasítás alapján?',b:'NEM.\nA koponyasérültek nem tekinthetők cselekvőképeseknek, döntésképességük a vizsgálat idején kétséges.'},
+{cat:'Kompetencia',f:'"A" kompetenciájú mentőápoló hagyhat-e beteget a helyszínen önálló döntésből?',b:'SOHA.\nKonzultálnia kell a mentésvezetővel/szolgálatvezető főorvossal, vagy segélykocsit kell hívnia.'},
+{cat:'Kompetencia',f:'"B / B+" kompetenciájú ápoló hagyhat-e beteget helyszínen gyógyszeres beavatkozás után?',b:'NEM.\nGyógyszeres ellátást követően B/B+ szint egyedüli észlelőként egyáltalán nem hagyhat a helyszínen beteget. (Konzultáció/ügyelet bevonása szükséges).'},
+{cat:'Dokumentáció',f:'Melyik dokumentumot kell ELŐSZÖR kitölteni az ellátás visszautasításakor?',b:'A 2. számú mellékletet (Cselekvőképesség csekklistája).\nCsak ha ez alapján a beteg cselekvőképes, akkor következhet az 1. számú Nyilatkozat.'},
+{cat:'Dokumentáció',f:'Hogyan kell jelenteni az irányításnak a helyszínen hagyást?',b:'Az ISBAR formula alapján.\nI: Azonosítás\nS: Visszautasítás oka\nB/A: Vitális paraméterek\nR: Dokumentáció elkészülte.'},
+{cat:'Gyakorlat',f:'Mit tegyél, ha a beteg elzárkózik, megtagadja az ellátást, és nem tudod a cselekvőképességét vizsgálni?',b:'Szükség esetén karhatalmat (rendőrséget) kell kérni a helyszínre az önrendelkezési jog tisztázása érdekében.'},
+{cat:'Gyakorlat',f:'Kik írják alá a Nyilatkozatot tanúként, és mi a lakcímük?',b:'Bárki, aki jelen van (akár a mentőegység tagjai is).\nA bajtársak lakcímeként a mentőállomás címe és az IVIR kód szerepelhet.'}
+];
+
+var QUIZ=[
+{q:'Melyik életkor esetében NEM cselekvőképes a beteg (ha nem házas)?',opts:['14 év alatti (Cselekvőképtelen)','15 éves (Cselekvőképtelen)','17 éves (Cselekvőképes)','21 éves (Korlátozottan cselekvőképes)'],ok:0,exp:'14 év alatt a beteg cselekvőképtelen. 14-18 év között korlátozottan cselekvőképes (kivéve ha házas).'},
+{q:'Melyik esetben utasíthatja vissza a cselekvőképes beteg a kórházba szállítást a helyszínen önmaga?',opts:['Ha terhes és a 25. hétben van','Ha az ellátás elmaradása miatt azonnali közvetlen életveszélybe kerül','Ha a szállítás elmaradása mások testi épségét veszélyezteti','Ha eltörte a bokáját, de belátási képessége birtokában van és nem akar bemenni'],ok:3,exp:'A cselekvőképes beteg élhet önrendelkezési jogával, ha ez másokat nem veszélyeztet, nincs életveszélyben és nem >24. hetes terhes.'},
+{q:'"B+" kompetenciájú mentőápolóként intravénás gyógyszert adtál a betegnek. A beteg jobban van, és nem akar kórházba menni. Mi az eljárás?',opts:['Azonnal aláíratom vele a Nyilatkozatot és elmegyek.','Gyógyszerelés után egyedüli észlelőként nem hagyhatom a helyszínen. Konzultálnom kell, sz.e. orvosi ügyeletet / segélykocsit hívni.','Ha a vitális paraméterei jók, önállóan otthon hagyhatom.','Csak kiskorú esetén nem hagyhatom otthon.'],ok:1,exp:'B/B+ kompetencia gyógyszeres ellátás után egyedüli észlelőként EGYÁLTALÁN NEM hagyhat beteget a helyszínen.'},
+{q:'Melyik dokumentum kitöltése KÖTELEZŐ minden esetben, mielőtt az ellátást visszautasító Nyilatkozatot elővesszük?',opts:['Csak az E-esetlap','Az 1. sz. melléklet (Nyilatkozat) azonnal','A 2. sz. melléklet (Cselekvőképesség helyszíni megítélését elősegítő ellenőrző lista)','Orvosi szakvélemény kikérése írásban'],ok:2,exp:'Minden visszautasítást meg kell előznie a csekklista (2. sz. melléklet) kitöltésének.'},
+{q:'Kik írhatják alá tanúként a Visszautasító Nyilatkozatot a helyszínen?',opts:['Csak a beteg hozzátartozói','Csak a rendőrség munkatársai','Két tanú, akik lehetnek a mentőegység tagjai is (lakcímnek elég a mentőállomás címe és ivir kód)','Kizárólag orvosi végzettségű személyek'],ok:2,exp:'Ha más nincs jelen, a mentőegység tagjai is lehetnek tanúk.'},
+{q:'Hogyan kell a mentésirányítást tájékoztatni a helyszínen hagyásról?',opts:['SAMPLE formula alapján','ISBAR formula alapján rögzített vonalon','Nem kell tájékoztatni, elég a tableten rögzíteni','Szabad szavas rádión keresztüli bejelentéssel'],ok:1,exp:'Az irányítást az ISBAR (I: azonosítás, S: ok, B/A: vitális paraméterek, R: dokumentáció) formula szerint kell tájékoztatni.'},
+{q:'A beteg ittas állapotban van (ivott két sört). A segédlet alapján mi a helyes megítélés?',opts:['Automatikusan cselekvőképtelen, azonnal be kell szállítani','Egyéni elbírálás alapján döntendő el, hogy a befolyásoltság megszünteti-e a belátási képességét','Csak rendőri felvezetéssel szállítható','Ha tud járni, biztosan cselekvőképes'],ok:1,exp:'Az alkoholfogyasztás nem tesz automatikusan cselekvőképtelenné. Egyéni elbírálás alapján dől el a belátási képesség.'},
+{q:'Egy beteg fejsérülést (koponyatörés gyanúja) szenvedett, de éber és nem akar kórházba menni. Mit mond a segédlet?',opts:['A koponyasérültek nem tekinthetők cselekvőképeseknek a vizsgálat idején.','Aláíratom a Nyilatkozatot és eljövök.','Megkérem a feleségét, hogy írja alá helyette.','Megvárom, amíg elalszik, és akkor beviszem.'],ok:0,exp:'A koponyasérülteknél a döntésképesség kétséges, nem tekinthetők cselekvőképesnek (és így nem nyilatkoztathatóak a helyszínen maradásról).'},
+{q:'Melyik állítás IGAZ az "A" kompetenciájú (alap) mentőápolóra?',opts:['Önálló döntése alapján hagyhat otthon beteget.','Elfogadhatja a kézzel írt Nyilatkozatot (1. sz. melléklet).','Önálló döntés alapján SOHA nem hagyhat beteget a helyszínen, konzultálnia kell.','Nincs joga segélykocsit hívni.'],ok:2,exp:'Az "A" szint önállóan sosem hagyhat helyszínen beteget. Nem fogadhatja el a sima 1. sz. Nyilatkozatot (csak okiratot), mindig konzultál vagy segélykocsit hív.'},
+{q:'Egy 16 éves beteg, aki megházasodott, ellátást igényel. Milyen a cselekvőképessége?',opts:['Korlátozottan cselekvőképes (mert 18 év alatti)','Cselekvőképtelen','Cselekvőképes (mert a 16. életévét betöltve házasságot kötött)','Csak a szülei dönthetnek felette'],ok:2,exp:'Nagykorúvá (és cselekvőképessé) válik az a 18 év alatti személy is, aki a 16. életévét betöltve megházasodott.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szituáció: Részeg, makacs beteg (B kompetencia)',diff:'B kompetencia',desc:'Egy 40 éves férfihez hívnak, aki a lépcsőn elesett. Karcolások vannak az alkarján. A beteg ivott pár sört, beszélget, de kijelenti, hogy nem megy sehova. B kompetenciával vagy a helyszínen.',steps:[
+{sit:'Megérkezel, a helyszín biztonságos. Mi az első szakmai teendőd?',opts:[{tx:'Azonnal megíratom vele a papírt.',ok:false,fb:'Hibás! Betegvizsgálat nélkül senki nem ír alá semmit.'},{tx:'Teljeskörű ABCDE vizsgálat, traumás fejsérülés kizárása.',ok:true,fb:'Helyes! A betegvizsgálat (és a fejsérülés kizárása) mindig az első, függetlenül a panaszoktól.'},{tx:'Rendőrt hívok az ittasság miatt.',ok:false,fb:'Hibás! Ha nem agresszív, az ittasság önmagában nem rendőrségi ügy.'}]},
+{sit:'A beteg stabil, nincs fejsérülése, csak eszcoriáció a karján. Kórházba kéne vinni sebészetre, de ő elzárkózik. Mi az elsődleges kommunikációs cél?',opts:[{tx:'Gyorsan ráhagyom, hogy spóroljak az idővel.',ok:false,fb:'Hibás! Az eljárásrend tiltja a siettetést.'},{tx:'Megkísérlem meggyőzni a kórházi kezelés elfogadásáról, részletesen tájékoztatva a következményekről.',ok:true,fb:'Helyes! A mentőegység kommunikációjának elsődlegesen a beteg meggyőzését kell szolgálnia.'},{tx:'Fenyegetőzöm a rendőrséggel.',ok:false,fb:'Hibás! Erőszakot alkalmazni tilos, a tájékoztatás az első.'}]},
+{sit:'A beteg továbbra is hajthatatlan. Ahhoz, hogy önrendelkezési jogával élhessen, mit kell elsőként megítélned?',opts:[{tx:'A cselekvőképességét a 2. sz. melléklet (Csekklista) kitöltésével.',ok:true,fb:'Helyes! A csekklista az első dokumentum.'},{tx:'Hogy van-e nála személyigazolvány.',ok:false,fb:'Hibás! Az azonosítás fontos, de a cselekvőképesség a jogi alap.'},{tx:'Hogy egyedül él-e.',ok:false,fb:'Hibás! Bár a felügyelet fontos szempont bizonyos esetekben, a cselekvőképesség eldöntése az elsődleges.'}]},
+{sit:'A Csekklista kitöltésekor felmerül, hogy ivott (2 sört). A segédlet szerint hogyan értelmezed ezt?',opts:[{tx:'Aki ivott, automatikusan cselekvőképtelen, kötelező bevinni.',ok:false,fb:'Hibás! A segédlet szerint egyéni elbírálás szükséges.'},{tx:'Egyéni elbírálás: ha az alkohol ellenére tudata tiszta, belátási képessége megvan (tudja ki ő, hol van, következményeket érti), akkor tekinthető cselekvőképesnek.',ok:true,fb:'Helyes! A befolyásoltság mértéke számít a cselekvőképességnél.'},{tx:'Ha csak sört ivott, akkor mindig cselekvőképes.',ok:false,fb:'Hibás! A belátási képességet kell mérlegelni.'}]},
+{sit:'A beteg teljesen orientált, cselekvőképes a lista alapján. B kompetenciájú ápolóként mi a teendőd most?',opts:[{tx:'Aláíratom vele az 1. sz. Nyilatkozatot és elmegyünk.',ok:false,fb:'Hibás! Önálló döntéssel B kompetencia nem hagyhat ott beteget.'},{tx:'Konzultálok a mentésvezetővel vagy a Szolgálatvezető főorvossal telefonon.',ok:true,fb:'Helyes! B kompetenciával a konzultáció és az engedélykérés a felsőbb szinttől kötelező.'},{tx:'Kihívom az ALS egységet azonnal.',ok:false,fb:'Hibás! Ha stabil és cselekvőképes, előbb a konzulenssel kell beszélni.'}]},
+{sit:'A Szolgálatvezető főorvos engedélyezi a helyszínen hagyást. Ekkor kitöltöd az 1. sz. Nyilatkozatot. Hány tanú kell rá?',opts:[{tx:'Nem kell tanú, elég a beteg.',ok:false,fb:'Hibás.'},{tx:'Két tanú szükséges.',ok:true,fb:'Helyes! Két tanúnak kell hitelesítenie.'},{tx:'Egy orvos tanú kell.',ok:false,fb:'Hibás.'}]},
+{sit:'A helyszínen csak ti ketten vagytok a gépkocsivezetővel és a beteggel. Kik lesznek a tanúk?',opts:[{tx:'Akkor nem lehet aláírni a papírt.',ok:false,fb:'Hibás.'},{tx:'Becsöngetek a szomszédba.',ok:false,fb:'Hibás! Nem szükséges és adatvédelmileg is aggályos.'},{tx:'Én és a gépkocsivezető bajtársam leszünk a tanúk.',ok:true,fb:'Helyes! Ha más nincs, a mentőegység tagjai írják alá.'}]},
+{sit:'Mi kerül a bajtársak címe rubrikába a tanú aláírásnál a segédlet alapján?',opts:[{tx:'A saját otthoni lakcímünk.',ok:false,fb:'Hibás! Ezt adatvédelmi okokból kerüljük.'},{tx:'Üresen hagyjuk.',ok:false,fb:'Hibás! A rovatot ki kell tölteni.'},{tx:'A mentőállomás címe és a saját ivir kódunk.',ok:true,fb:'Helyes! A jogi osztállyal egyeztetve ez elegendő és védi a dolgozókat.'}]},
+{sit:'A papír kitöltve (2 példányban, egyet kap a beteg). Hogyan zárod le a folyamatot rádiózáskor?',opts:[{tx:'"Minden rendben, megyünk a bázisra."',ok:false,fb:'Hibás! Nem elég részletes.'},{tx:'ISBAR formula alapján rögzített vonalon bemondom: azonosítás, ok, paraméterek, dokumentáció megtörtént.',ok:true,fb:'Helyes! Az ISBAR kommunikáció az eljárásrendi követelmény.'},{tx:'Mindent csak a tableten írok meg, nem rádiózom.',ok:false,fb:'Hibás! Az ICS-t tájékoztatni kell.'}]},
+{sit:'A táblagépen az E-esetlap kitöltése következik. Melyik rovatban KÖTELEZŐ külön leírni a visszautasítás körülményeit és a cselekvőképességet?',opts:[{tx:'Csak kipipálom a "Helyszínen hagyva" gombot.',ok:false,fb:'Hibás! Szöveges indoklás kell.'},{tx:'Az Epikrízis / decursus rovatban.',ok:true,fb:'Helyes! Az eljárásrend külön nevesíti az epikrízist.'},{tx:'A vitális paraméterek között.',ok:false,fb:'Hibás.'}]}
+],summary:'Összefoglaló (B kompetencia): Első lépés a teljes ABCDE és a fejsérülés kizárása volt. A beteget megpróbáltuk meggyőzni a szállításról. Miután elzárkózott, a 2. sz. Csekklistával megítéltük a cselekvőképességét (az ittasság egyéni elbírálás alá esik, de orientáltság esetén cselekvőképes maradhat). B kompetenciaként KÖTELEZŐ volt konzultálni a mentésvezetővel/főorvossal, mert önállóan nem dönthettünk. A jóváhagyás után a beteg és két tanú (a mentőszemélyzet, lakcímként az állomás és az ivir kód használatával) aláírta az 1. sz. Nyilatkozatot. Az irányításnak ISBAR formulával jelentettük a tényeket, végül a tableten az Epikrízisben rögzítettünk minden részletet.'},
+
+{id:2,title:'2. Szituáció: Visszautasítás beavatkozás után (B+ kompetencia)',diff:'B+ kompetencia',desc:'Cukorbeteghez riasztanak (hypoglykaemia). A helyszínen eszméletlen. B+ ápolóként glükózt adsz iv., mire a beteg azonnal, teljesen feltisztul (GCS 15). Kijelenti, hogy jól van, megevett egy szendvicset, esze ágában sincs kórházba menni.',steps:[
+{sit:'Megérkeztetek. A beteg eszméletlen volt (cselekvőképtelen), de az intravénás glükóz (gyógyszer) hatására teljesen éber (GCS 15) és orientált lett. Mi a cselekvőképességének a státusza?',opts:[{tx:'Örökre cselekvőképtelen marad erre az esetre.',ok:false,fb:'Hibás! Az átmeneti cselekvőképtelenség megszűnhet.'},{tx:'Mivel az átmeneti cselekvőképtelenséget okozó tényező (hypoglykaemia) megszűnt, a cselekvőképessége helyreállt.',ok:true,fb:'Helyes! Az állapot elmúltával a belátási képesség visszatért.'},{tx:'Csak egy orvos mondhatja ki, hogy felébredt.',ok:false,fb:'Hibás! A tudatállapotot az ellátó is megítéli.'}]},
+{sit:'A beteg elutasítja a kórházat. B+ kompetenciájú ápolóként, miután GYÓGYSZERES ellátást (iv. glükóz) alkalmaztál, otthon hagyhatod-e a beteget önálló döntésedből?',opts:[{tx:'Igen, hiszen teljesen jól van és cselekvőképes.',ok:false,fb:'Hibás! Az eljárásrend szigorú kivételt tesz a gyógyszerelés után.'},{tx:'Nem! Gyógyszeres ellátást követően B/B+ szint egyedüli észlelőként EGYÁLTALÁN NEM hagyhat helyszínen beteget.',ok:true,fb:'Helyes! Ez a B/B+ kompetencia egyik legfontosabb korlátja.'},{tx:'Igen, de csak ha a felesége aláírja.',ok:false,fb:'Hibás! A kompetencia a korlát, nem a beteg akarata.'}]},
+{sit:'Kivel kell először telefonon egyeztetned a kialakult helyzetet?',opts:[{tx:'A beteg háziorvosával.',ok:false,fb:'Hibás! Nem ő az operatív irányító.'},{tx:'A mentésvezetővel / Szolgálatvezető főorvossal.',ok:true,fb:'Helyes! Velük kell egyeztetni a legfelsőbb szintű döntés érdekében.'},{tx:'Senkivel, majd otthon hagyom és beírom a tabletre.',ok:false,fb:'Hibás! Szabályszegés.'}]},
+{sit:'A beteg továbbra is cselekvőképes (csekklista kitöltve), de te nem hagyhatod magára a szabályok miatt. A szolgálatvezető főorvossal egyeztetve mit kérsz a helyszínre?',opts:[{tx:'Segélykocsit (C kompetencia: mentőtiszt/orvos) vagy a helyi orvosi ügyeletet, hogy magasabb kompetenciájú ellátó vizsgálja meg és hozzon döntést.',ok:true,fb:'Helyes! Mivel egyedül nem hagyhatod ott, egy orvosnak/mentőtisztnek kell átvennie az esetet.'},{tx:'Rendőrt, hogy vigye be megbilincselve.',ok:false,fb:'Hibás! A beteg cselekvőképes, nincs joga kényszeríteni.'},{tx:'Pszichiátert.',ok:false,fb:'Hibás!'}]},
+{sit:'Amíg a segélykocsi/ügyelet megérkezik, mi a teendőd?',opts:[{tx:'Kimegyek a mentőbe várni.',ok:false,fb:'Hibás! A beteget nem hagyhatod magára.'},{tx:'A beteg mellett maradok, folyamatosan monitorozom, és megkísérlem újra meggyőzni a szállítás szükségességéről.',ok:true,fb:'Helyes! A betegbiztonság és a folyamatos meggyőzés kötelező.'},{tx:'Kihúzom a vénáját.',ok:false,fb:'Hibás! A véna még kellhet.'}]},
+{sit:'Megérkezik a magasabb szintű egység (orvos). Ő elvégzi az ismételt betegvizsgálatot. Ki fogja meghozni a végső döntést a helyszínen hagyásról?',opts:[{tx:'A B+ ápoló.',ok:false,fb:'Hibás! A felelősség átszállt.'},{tx:'Az orvosi/mentőtiszti (C) egység vezetője az ismételt vizsgálat alapján.',ok:true,fb:'Helyes! Neki már van kompetenciája saját hatáskörben a helyszínen hagyni a beteget.'},{tx:'A mentésvezető a rádióban.',ok:false,fb:'Hibás! A helyszíni C szintű ellátó dönt.'}]},
+{sit:'Az orvos megállapítja, hogy a beteg biztonságosan otthon maradhat. A dokumentáció kitöltésénél kinek kell elfogadnia az 1. sz. Nyilatkozatot?',opts:[{tx:'A B+ mentőápolónak.',ok:false,fb:'Hibás! Ő hívta a segítséget, mert ő nem hagyhatta ott.'},{tx:'Az orvosi egység vezetőjének, hiszen ő hagyja a helyszínen.',ok:true,fb:'Helyes! Az adminisztrációt és felelősséget a magasabb szintű ellátó veszi át.'},{tx:'A mentésirányítónak.',ok:false,fb:'Hibás!'}]},
+{sit:'Hogyan kell a B+ egységnek befejeznie az esetet a saját dokumentációjában?',opts:[{tx:'Csak egy üres lapot ad le, hiszen az orvos adminisztrál.',ok:false,fb:'Hibás! Saját tevékenységet mindig dokumentálni kell.'},{tx:'Rögzíti az ABCDE paramétereket, az adott gyógyszert, az átmeneti cselekvőképtelenséget, a tisztulást, és a magasabb szintű egység (orvos) kiérkezéséig végzett megfigyelést.',ok:true,fb:'Helyes! A teljes saját ellátási folyamatot le kell dokumentálni az E-esetlapon.'},{tx:'Törli a gyógyszeradást, hogy ne legyen gond.',ok:false,fb:'Hibás! Súlyos szakmai szabályszegés (okirat-hamisítás).'},]},
+{sit:'Mivel a helyszíni dokumentációt és Nyilatkozatot (1. és 2. sz melléklet) a C kompetenciájú ellátó végzi, a B+ egység mi tesz ezekkel?',opts:[{tx:'Neki is ki kell töltenie egyet.',ok:false,fb:'Hibás! Duplikáció lenne.'},{tx:'Ezeket az iratokat az az ellátó (itt az orvos) tölti és irattárazza, aki a helyszínen hagyást végrehajtja.',ok:true,fb:'Helyes! A felelős ellátó viszi a dokumentumot.'},{tx:'Otthagyja a betegnél.',ok:false,fb:'Hibás!'}]},
+{sit:'Milyen formula alapján kell jelenteni az irányításnak a helyszínen hagyás tényét (amit az orvos végez el)?',opts:[{tx:'ISBAR formula alapján.',ok:true,fb:'Helyes! Ez a standard jelentési protokoll.'},{tx:'SAMPLE alapján.',ok:false,fb:'Hibás!'},{tx:'Saját szavakkal, ahogy eszébe jut.',ok:false,fb:'Hibás!'}]},
+{sit:'Az Epikrízis rovatban mi a legfontosabb kötelező elem, amit a B+ ápolónak IS le kell írnia a saját ellátása végén?',opts:[{tx:'A mentőautó kilométeróra állása.',ok:false,fb:'Hibás!'},{tx:'Hogy az eset elején a beteg cselekvőképtelen volt (GCS 3), majd a gyógyszerelés után cselekvőképessé vált (GCS 15), és emiatt segítséget kért.',ok:true,fb:'Helyes! Az állapotváltozás (és cselekvőképesség változása) kötelező elem.'},{tx:'Hogy milyen színű volt a beteg pólója.',ok:false,fb:'Hibás!'}]}
+],summary:'Összefoglaló (B+ kompetencia): A hypoglykaemiás, eszméletlen beteg átmenetileg cselekvőképtelen volt. B+ szinten vénát biztosítottunk és iv. glükózt adtunk (gyógyszerelés). A beteg feltisztult (cselekvőképes lett), majd elutasította a kórházat. A protokoll kimondja: "B, B+ szint gyógyszeres ellátást követően egyedüli észlelőként egyáltalán nem hagyhat helyszínen beteget." Ezért azonnal konzultáltunk a szolgálatvezetővel, és segélykocsit/orvosi ügyeletet kértünk a helyszínre. A beteg mellett maradtunk, monitoroztuk, amíg az orvos (C kompetencia) meg nem érkezett. Az orvos az ismételt vizsgálat után saját kompetenciájában otthon hagyhatta a beteget, ő íratta alá a Nyilatkozatokat. Saját E-esetlapunkon az Epikrízisben rögzítettük a kezdeti cselekvőképtelenséget, a gyógyszeradás tényét, a feltisztulást, és az átadás körülményeit.'}
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Add Glossary tags dynamically to text
+function parseGlossary(text) {
+  let out = text;
+  // Match [[term|display text]]
+  const regex = /\[\[(.*?)\|(.*?)\]\]/g;
+  out = out.replace(regex, '<span class="gloss" onclick="showGloss(\'$1\', event)">$2</span>');
+  return out;
+}
+
+// Render blocks for Chapters
+function rb(b){
+  let html = '';
+  if(b.tp==='sub') html = '<div class="sub">'+h(b.tx)+'</div>';
+  else if(b.tp==='bl') html = '<ul class="bl">'+b.items.map(i=>'<li>'+parseGlossary(h(i))+'</li>').join('')+'</ul>';
+  else if(b.tp==='kr') html = '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+parseGlossary(h(i))+'</div>').join('')+'</div>';
+  else if(b.tp==='al') html = '<div class="al al-'+b.lv+'">'+parseGlossary(h(b.tx))+'</div>';
+  else if(b.tp==='note') html = '<div class="note">'+parseGlossary(h(b.tx))+'</div>';
+  return html;
+}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Ellátás Visszautasítása</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v1.0 · 2024.04.04.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Tananyag','Szabályok és jogok'],['flash','🃏','Flashkártyák','Gyors átismétlés'],['quiz','❓','Kvíz','Tudáspróba'],['sim','🚑','Szimuláció','B és B+ esetek'],['calc','📋','Csekklista','2. sz. melléklet']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az OMSZ kivonuló állománya számára, kompetenciaszintnek megfelelően.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Tananyag</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+h(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+h(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+h(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+h(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag tag-y">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' lépés</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function renderCalc(){
+var qs = [
+  'Kizárható-e a rendelkezésre álló információk birtokában, hogy a beteg tudatmódosító szer hatása alatt áll?',
+  'Belátási képességgel rendelkezik a beteg?',
+  'Kizárható-e a 24. hetet meghaladó várandósság?',
+  '18. életévét már betöltötte, vagy 16 éves elmúlt, de házasságban él?',
+  'Kizárható, hogy a beteg közvetlen életveszélyben van?',
+  'Képes megmondani a nevét, életkorát, lakcímét, a napi dátumot?',
+  'Képes megmondani hol van?',
+  'Kizárható, hogy a beteg önmagára vagy környezetére veszélyt jelent?',
+  'Kizárható a beteg koponyasérülése vagy súlyos sérülést feltételező mechanizmus?'
+];
+
+var allAns = CK.ans.every(a => a === true);
+var hasFail = CK.ans.some(a => a === false);
+var missing = CK.ans.some(a => a === null);
+
+var resBox = '';
+if(!missing) {
+  if(hasFail) {
+    resBox = '<div class="al al-d" style="text-align:center;font-size:16px;font-weight:700">A BETEG NEM NYILATKOZTATHATÓ!</div><div style="font-size:12px;color:#fca5a5;text-align:center">A fenti kérdések bármelyikére adott nemleges válasz esetén a beteg nem élhet a visszautasítás jogával.</div>';
+  } else {
+    resBox = '<div class="al al-s" style="text-align:center;font-size:16px;font-weight:700">A BETEG NYILATKOZTATHATÓ.</div><div style="font-size:12px;color:#4ade80;text-align:center">A beteg cselekvőképesnek minősül, a feltételek adottak az 1. sz. Nyilatkozat kitöltéséhez.</div>';
+  }
+}
+
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">2. sz. Melléklet</h2>'+
+'<div style="font-size:13px;color:#9ca3af;margin-bottom:1rem;line-height:1.4">A beteg nyilatkozattételre alkalmasságának helyszíni megítélését elősegítő ellenőrző lista (csekklista). Ezt a nyilatkozat aláíratása ELŐTT kell kitölteni.</div>'+
+'<div class="card" style="padding:0 1rem">'+
+qs.map((q,i)=>
+'<div class="chk-row"><div class="chk-q">'+h(q)+'</div><div class="chk-opts">'+
+'<button class="chk-btn '+(CK.ans[i]===true?'act-y':'')+'" onclick="setChk('+i+',true)">IGEN</button>'+
+'<button class="chk-btn '+(CK.ans[i]===false?'act-n':'')+'" onclick="setChk('+i+',false)">NEM</button>'+
+'</div></div>').join('')+
+'</div>'+
+resBox+
+'<div style="margin-top:10px"><button class="btn btn-fw" onclick="resetChk()">Lista alaphelyzetbe</button></div>';
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc')c.innerHTML=renderCalc();
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+window.setChk=function(i,val){CK.ans[i]=val;render();};
+window.resetChk=function(){CK.ans=Array(9).fill(null);render();};
+
+// Modal functions
+window.showGloss=function(key, ev){
+  if(ev) ev.stopPropagation();
+  var term = key.toLowerCase();
+  if(!GLOSS[term]) return;
+  document.getElementById('modal-title').textContent = key.toUpperCase();
+  document.getElementById('modal-text').textContent = GLOSS[term];
+  document.getElementById('modal-bg').classList.add('on');
+};
+window.hideGloss=function(force){
+  if(force===true || event.target.id === 'modal-bg') {
+    document.getElementById('modal-bg').classList.remove('on');
+  }
+};
+
+render();
+</script>
+</body>
+</html>

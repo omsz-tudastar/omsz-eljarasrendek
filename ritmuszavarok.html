@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Ritmuszavarok Prehospitális Ellátása</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;line-height:1.5;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+/* STEP WRAPS */
+.step-wrap{display:flex;gap:10px;margin-bottom:10px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#14b8a6;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-body{flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;}
+.step-t{font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;}
+.step-x{font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ/SIM OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+/* INPUTS */
+input[type=number]{width:100%;accent-color:#14b8a6;border:1px solid #4b5563;border-radius:8px;padding:8px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;}
+/* GLOSSARY MODAL */
+.glos{color:#38bdf8;text-decoration:underline;text-decoration-style:dotted;cursor:pointer;}
+.mod-ov{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:1000;display:none;justify-content:center;align-items:center;padding:1rem;opacity:0;transition:opacity 0.2s;}
+.mod-ov.act{display:flex;opacity:1;}
+.mod-bx{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;padding:1.5rem;max-width:400px;width:100%;position:relative;}
+.mod-cl{position:absolute;top:10px;right:10px;background:none;border:none;color:#9ca3af;font-size:24px;cursor:pointer;line-height:1;}
+.mod-t{font-size:16px;font-weight:700;color:#f3f4f6;margin-bottom:8px;padding-right:20px;}
+.mod-d{font-size:13px;color:#d1d5db;line-height:1.5;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+@media(max-width:480px){.tbl-wrap table{min-width:340px;}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+
+<div class="mod-ov" id="mod" onclick="closeGlos(event)">
+  <div class="mod-bx" onclick="event.stopPropagation()">
+    <button class="mod-cl" onclick="closeGlos(event)">×</button>
+    <div class="mod-t" id="mod-t"></div>
+    <div class="mod-d" id="mod-d"></div>
+  </div>
+</div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={w:20, energyIdx:0}; // Weight in kg for ped cardioversion
+
+// ── GLOSSARY DATA ──────────────────────────────────────────────────
+var GLOSSARY = {
+  "hypoperfusio": "A szövetek, szervek csökkent véráramlása, mely oxigén- és tápanyaghiányhoz vezet (pl. shock).",
+  "hypoxia": "Oxigénhiányos állapot a szövetekben.",
+  "hypovolaemia": "Keringő vérmennyiség csökkenése (pl. vérzés, kiszáradás).",
+  "ischaemia": "A szívizom vérellátási zavara, melyet csökkent koszorúér-keringés okoz.",
+  "syncope": "Átmeneti, rövid ideig tartó eszméletvesztés az agyi véráramlás csökkenése miatt (pl. Morgagni-Adams-Stokes szindróma).",
+  "asystolia": "A szív elektromos és mechanikai aktivitásának teljes hiánya.",
+  "preexcitatio": "A kamrák korai aktiválódása egy járulékos kötegen keresztül (pl. WPW-szindróma).",
+  "torsades de pointes": "Polimorf kamrai tachycardia típus, bradycardia vagy megnyúlt QT-idő talaján alakulhat ki.",
+  "cardioversio": "Szinkronizált elektromos áramütés (sokk) leadása a szív R-hullámához igazítva hemodinamikailag instabil tachycardiában.",
+  "defibrilláció": "Aszinkron áramütés leadása kamrafibrilláció vagy pulzus nélküli kamrai tachycardia esetén.",
+  "cyanosis": "A bőr és a nyálkahártyák kékes elszíneződése az alacsony oxigénszint miatt.",
+  "orthopnoe": "Lefekvéskor jelentkező, ülő/álló helyzetben javuló nehézlégzés (pl. balszívfél-elégtelenségben).",
+  "cardiogen shock": "A szív elégtelen pumpafunkciója miatt kialakuló súlyos hypoperfusio.",
+  "vagus manőver": "A bolygóideg (nervus vagus) stimulálása a pulzusszám csökkentése érdekében (pl. módosított Valsalva-manőver).",
+  "adenozin": "Rövid felezési idejű antiarrhythmiás gyógyszer, mely blokkolja az AV-csomó átvezetését.",
+  "amiodaron": "Antiarrhythmiás gyógyszer, széles QRS tachycardiákban és kamrafibrillációban alkalmazzák.",
+  "av-disszociáció": "A pitvarok és a kamrák egymástól független elektromos működése (széles QRS tachycardiában kamrai eredetre utal).",
+  "capture": "A pacemaker ingerlő impulzusát (spike) követő sikeres szívizom-aktiváció (elektromos) és pulzushullám (mechanikus)."
+};
+
+function linkGlos(txt) {
+  let res = txt;
+  for (let key in GLOSSARY) {
+    let regex = new RegExp(`\\b(${key})\\b`, 'gi');
+    res = res.replace(regex, `<span class="glos" onclick="showGlos('${key}')">$&</span>`);
+  }
+  return res;
+}
+
+window.showGlos = function(key) {
+  let term = key.toLowerCase();
+  if(GLOSSARY[term]) {
+    document.getElementById('mod-t').innerText = term.charAt(0).toUpperCase() + term.slice(1);
+    document.getElementById('mod-d').innerText = GLOSSARY[term];
+    document.getElementById('mod').classList.add('act');
+  }
+};
+window.closeGlos = function(e) {
+  if(e) e.stopPropagation();
+  document.getElementById('mod').classList.remove('act');
+};
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Célok és Alapelvek',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Célok',bk:[
+{tp:'bl',items:['A ritmuszavarok sürgősségi szempontú csoportosításának bemutatása.','Diagnosztikus elvek ismertetése sürgősségi ellátást igénylő esetekben.','Stabil és instabil beteg gyógyszeres és elektromos kezelési lehetőségei.','A szokásokon alapuló, bizonyíték nélküli (esetleg káros) beavatkozások mellőzése.']}
+]},
+{t:'II. Bevezetés',bk:[
+{tp:'bl',items:['A periarrest ritmuszavarok növelhetik a keringésmegállás esélyét, korai felismerésük életet menthet.','Mérlegelni kell, hogy a ritmuszavar primer (maga az ok) vagy szekunder (más folyamat következménye).']},
+{tp:'al',lv:'w',tx:'Szekunder ritmuszavar esetén elsődlegesen a kiváltó okot kell kezelni (pl. hypoxia, hypovolaemia, fájdalom). A kiváltó ok kezelése nélkül a szívfrekvencia erőszakos csökkentése a beteg állapotának romlását okozhatja.'},
+{tp:'note',tx:'Felnőttkorban a normális szívfrekvencia 60-100/perc. Oxiológiai szempontból a 40/perc alatti, illetve a 150/perc feletti kamrafrekvenciával járó ritmuszavart tartjuk potenciálisan hemodinamikai instabilitást okozónak.'}
+]}
+]},
+{id:'teendok',title:'Általános Teendők',icon:'📋',acc:'#3b82f6',secs:[
+{t:'III. (Párhuzamos) teendők ritmuszavar gyanúja esetén',bk:[
+{tp:'kr',items:['ABCDE szerinti betegvizsgálat (instabilitás mérlegelése)','Monitor, O2 (indokolt esetben), vénabiztosítás, pozicionálás','12-elvezetéses EKG készítése minden esetben (ha az állapot engedi)','Legalább 10-15 mp hosszúságú ritmuscsík készítése','Azonnali elektroterápia mérlegelése hemodinamikai instabilitás esetén','Reverzibilis okok keresése és kezelése']},
+{tp:'al',lv:'d',tx:'Segélykocsi hívása hemodinamikai instabilitás észlelésekor kompetencia hiányában KÖTELEZŐ!'}
+]},
+{t:'IV. Hemodinamikai instabilitás mérlegelése',bk:[
+{tp:'sub',tx:'Létfontosságú szövetek súlyos hypoperfusiójának jelei:'},
+{tp:'bl',items:['A szöveti hypoperfusio (shock) általános jelei: sápadt, hideg, verejtékes bőr; megnyúlt CRT (>2s); cyanosis; RRsys < 90 Hgmm.','Az agy hypoperfusiója: tudatállapot beszűkülése, nyugtalanság, görcsroham, syncope.','A szívizom hypoperfusiója: jelentős mellkasi fájdalom, akut ischaemiás EKG eltérések, akut szívelégtelenség (orthopnoe).']},
+{tp:'al',lv:'w',tx:'A helyszíni elektroterápia indikációja a hemodinamikai instabilitást okozó, akutan kialakult ritmuszavar. A kockázat csak valós instabilitás és ok-okozati összefüggés esetén vállalható.'}
+]}
+]},
+{id:'bradycardia',title:'Bradycardia',icon:'📉',acc:'#f59e0b',secs:[
+{t:'Szekunder bradycardia',bk:[
+{tp:'note',tx:'Mielőtt a frekvenciát befolyásoljuk, keressük a reverzibilis okokat! Pl.: hypothermia, hypoxia, intoxicatio, ICP fokozódás.'},
+{tp:'bl',items:['Béta-blokkoló / Ca-csatorna gátló mérgezés: Glükagon 3-10 mg iv.','Súlyos hypothermia: megtartott légzésnél extrém bradycardia is tolerálható, PM/atropin indokolatlan.']}
+]},
+{t:'Primer bradycardia kategóriák',bk:[
+{tp:'sub',tx:'1. Stabil beteg (nincs riasztó tünet)'},
+{tp:'bl',items:['Kórházba szállítás monitorozva.','Atropin adása megfontolható 0,5 mg-onként, max 3 mg. (Szívtranszplantáltnak NE adjunk!)']},
+{tp:'sub',tx:'2. Potenciálisan instabil (asystolia veszélye fennáll)'},
+{tp:'note',tx:'Asystolia kockázata: közelmúltbeli asystolia, Mobitz II. AV-blokk, III° AV-blokk széles QRS-el, >3 mp kamrai pauza.'},
+{tp:'bl',items:['Atropin (max 3 mg).','Szoros megfigyelés, transcutan pacemaker készenlét.']},
+{tp:'sub',tx:'3. Instabil beteg (shock, syncope, ischaemia, elégtelenség)'},
+{tp:'bl',items:['Atropin 0,5 mg iv. (ismételhető 3 mg-ig).','Ha elégtelen a válasz: Adrenalin (2-10 µg/perc perfúzorral, vagy 20-30 µg bólusokban 100x hígítva) VAGY Transcutan pacemaker.','Elégtelen terápiás válasz esetén gyógyszer és PM kombinálása.']}
+]},
+{t:'Transcutan Pacemaker kivitelezése',bk:[
+{tp:'steps',items:[
+{n:'1',t:'Előkészületek',x:'ABCDE, O2, EKG/NIBP/SpO2, vénabiztosítás.'},
+{n:'2',t:'Szedáció/Analgézia (PSA)',x:'Fentanil (0,5-1 µg/kg) VAGY Ketamin (0,1-0,3 mg/kg) VAGY Morfin.'},
+{n:'3',t:'Ingerlés megkezdése',x:'Frekvencia 60-80/perc (TdP esetén 100-120). Fix üzemmód. Áramerősség fokozatos emelése a hatásosig (capture).'},
+{n:'4',t:'Ellenőrzés',x:'Elektromos capture (QRS a spike után) ÉS Mechanikus capture (tapintható pulzus). Ha stabil, demand módba váltható.'}
+]}
+]}
+]},
+{id:'tachycardia',title:'Tachycardia',icon:'📈',acc:'#ef4444',secs:[
+{t:'Általános elvek',bk:[
+{tp:'al',lv:'w',tx:'Stabil állapotú betegnél a helyszínen nem cél a ritmuszavar megszüntetése, inkább csak frekvenciakontroll jön szóba. 150/min frekvencia alatt ritka, hogy maga a ritmuszavar okoz instabilitást.'}
+]},
+{t:'Szekunder tachycardiák',bk:[
+{tp:'note',tx:'Kiváltó ok: hypoxia, hypovolaemia, láz, fájdalom. Oki kezelés nélkül a frekvenciacsökkentés (pl. béta-blokkoló) sikertelen és kártékony (perctérfogat csökkenhet).'}
+]},
+{t:'A. Stabil beteg (nincs riasztó tünet)',bk:[
+{tp:'sub',tx:'1. Reguláris tachycardia (keskeny vagy széles)'},
+{tp:'bl',items:['Vagus manőverek (módosított Valsalva).','Ha hatástalan: Adenozin (kivéve preexcitatio). 6 mg gyors iv. bólus, sikertelenség esetén 12 mg, majd 18 mg. 10-20 ml NaCl-lal gyorsan bemosva.','Ha adenozin is hatástalan és KESKENY QRS: Verapamil (5-10 mg) VAGY Metoprolol.','Ha adenozin hatástalan és SZÉLES QRS: Amiodaron (300 mg iv. 20 perc alatt). Verapamil adása TILOS!']},
+{tp:'sub',tx:'2. Irreguláris keskeny QRS (Pl. Pitvarfibrilláció)'},
+{tp:'bl',items:['Frekvenciakontroll béta-blokkolóval (Metoprolol 1-2 mg iv., max 15 mg).','Csökkent balkamra-funkciónál Amiodaron megfontolható.']},
+{tp:'sub',tx:'3. Irreguláris széles QRS'},
+{tp:'bl',items:['Pitvarfibrilláció + szárblokk: Kezeld keskeny QRS tachycardiaként.','Pitvarfibrilláció + WPW (FBI tachycardia): TILOS amiodaron/béta-blokkoló. Gyors transzport, instabilitásnál ECV.','Polimorf VT (TdP): Magnézium-szulfát 2 g iv. (10 perc alatt). TILOS amiodaron.']}
+]},
+{t:'B. Instabil beteg',bk:[
+{tp:'al',lv:'d',tx:'Kompetencia birtokában azonnali szinkronizált cardioversio (ECV). Kompetencia hiányában segélykocsi kérése!'},
+{tp:'steps',items:[
+{n:'1',t:'Előkészület és PSA',x:'O2, véna, szinkron üzemmód beállítása az EKG-n. Szedáció (fentanil/morfin vagy etomidát).'},
+{n:'2',t:'Első sokk',x:'Bifázisos: 120-125 J (készüléktől függ). Sokk után pulzus és ritmus ellenőrzése.'},
+{n:'3',t:'Ismétlés',x:'Sikertelenség esetén 150-200 J, majd 3. sokk maximális energiával (360 J/200 J). MINDIG újra szinkron módba kell tenni!'},
+{n:'4',t:'Ha 3 sokk sikertelen',x:'Amiodaron 300 mg iv. (10-20 perc alatt), majd 4. sokk maximális energiával.'}
+]}
+]}
+]},
+{id:'pm_icd',title:'PM és ICD zavarok',icon:'⚡',acc:'#8b5cf6',secs:[
+{t:'Pacemaker hibák',bk:[
+{tp:'bl',items:['Undersensing: A PM nem ismeri fel a saját ütést, ráüthet a T-hullámra (malignus ritmuszavart okozhat).','Oversensing: A PM zajt érzékel ütésként, így nem ad le impulzust -> asystolia / súlyos bradycardia alakulhat ki. Keringési megingásnál: atropin / külső PM.']}
+]},
+{t:'ICD zavarok',bk:[
+{tp:'bl',items:['Malignus ritmuszavar, de az ICD nem ad sokkot: Kezeld úgy, mintha nem lenne ICD. (Figyelem: az ICD először overdrive pacinggel próbálkozhat 30-60 mp-ig).','Gyakori/Indokolatlan sokkleadás: Mágnes ( >90 Gauss) felhelyezése az ICD fölé kikapcsolja a terápiát. Ekkor szoros monitorozás kell, ritmuszavar esetén külső defibrilláció szükséges! Gyakori sokknál PSA (szedáció/analgézia) indokolt a beteg nyugtatására.']}
+]}
+]},
+{id:'gyermek',title:'Gyermek Specifikumok',icon:'👶',acc:'#ec4899',secs:[
+{t:'Gyermekkori ritmuszavarok',bk:[
+{tp:'al',lv:'w',tx:'A gyermekkori ritmuszavarok leggyakrabban szekunderek (hypoxia, acidosis, hypovolaemia). Elsősorban oxigénadás és folyadékpótlás (10 ml/kg) javasolt!'},
+{tp:'sub',tx:'Bradycardia'},
+{tp:'bl',items:['A leggyakoribb periarrest helyzet.','Ha HR < 60/perc ÉS rossz perfúzió társul, ami O2-re nem javul: ÚJRAÉLESZTÉS megkezdése és Adrenalin (0,01 mg/kg) adása.','Atropin csak vagustónus fokozódás esetén.']},
+{tp:'sub',tx:'Tachycardia'},
+{tp:'bl',items:['SVT gyanú: vagus manőver (jeges zacskó arcon 15-30 mp), majd Adenozin (0,1-0,2 mg/kg, max 6mg). Verapamil adása TILOS (súlyos hypotensiot okoz).','Instabil Tachycardia: Elektromos cardioversio 1 J/kg, majd 2 J/kg, 4 J/kg energiával.']}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Bradycardia',f:'Mi a szekunder bradycardia leggyakoribb oka felnőttben és gyermekben?',b:'Felnőttben: ICP fokozódás, hypothermia, gyógyszermérgezés (béta-blokkoló).\nGyermekben: Hypoxia!'},
+{cat:'Bradycardia',f:'Melyik esetben tilos Atropint adni primer bradycardiában?',b:'Szívtranszplantált betegnek NE adjunk Atropint!'},
+{cat:'Bradycardia',f:'Mik az asystolia kockázatára utaló jelek (potenciálisan instabil bradycardia)?',b:'1. Közelmúltban fellépett asystolia\n2. Mobitz II. AV-blokk\n3. III° AV-blokk széles QRS-el\n4. >3 mp kamrai pauza'},
+{cat:'Bradycardia',f:'Mi az instabil bradycardia 2. lépcsős terápiája (ha Atropin hatástalan)?',b:'Adrenalin perfúzorban (2-10 µg/perc)\nVAGY\nTranscutan pacemaker felhelyezése.'},
+{cat:'Bradycardia',f:'Melyek a transcutan pacemaker "capture" jelei?',b:'Elektromos: A pacemaker spike-ot széles QRS követi.\nMechanikus: Tapintható pulzus a spike-kal szinkronban (pl. a. femoralis). Az EKG kép önmagában nem elég!'},
+{cat:'Tachycardia',f:'Mi az instabilitás (shock) határa a szisztolés vérnyomás tekintetében felnőttnél?',b:'RRsys < 90 Hgmm.'},
+{cat:'Tachycardia',f:'Melyik gyógyszer adandó KESKENY QRS reguláris tachycardiában, ha a vagus manőver hatástalan?',b:'Adenozin (6 mg gyors bólus, majd 12 mg, 18 mg).\nKivéve: preexcitatio gyanúja.'},
+{cat:'Tachycardia',f:'Mi a teendő Pitvarfibrilláció + WPW szindróma (FBI tachycardia) esetén?',b:'TILOS bármilyen antiarrhythmiás szer (Amiodaron, Béta-blokkoló, Verapamil) adása!\nGyors transzport, instabilitás esetén Elektromos Cardioversio (ECV).'},
+{cat:'Tachycardia',f:'Milyen gyógyszer adható Torsades de pointes (polimorf) kamrai tachycardiában?',b:'Magnézium-szulfát (2 g 10 perc alatt iv.).\nAmiodaron adása TILOS!'},
+{cat:'Cardioversio',f:'Mi a legfontosabb különbség a defibrilláció és a cardioversio között a gép beállításában?',b:'Cardioversiónál a SYNC gombot BE KELL KAPCSOLNI, hogy a gép az R-hullámra szinkronizálva adja le a sokkot, elkerülve a T-hullámot (és a kamrafibrillációt).'},
+{cat:'Cardioversio',f:'Melyik sedato-analgetikumok javasoltak instabil beteg ECV-hez (PSA)?',b:'Fentanil (1-2 µg/kg)\nMorfin (max 0,05 mg/kg)\nVAGY etomidát (0,15-0,3 mg/kg) megtartott tudatnál.'},
+{cat:'Speciális',f:'Mi a teendő, ha az ICD indokolatlanul gyakran ad le sokkot?',b:'Mágnes (>90 Gauss) felhelyezése a telep fölé, ami kikapcsolja a terápiát. Ekkor szoros monitorozás kötelező, valódi VT/VF esetén külső defibrilláció szükséges.'},
+{cat:'Gyermek',f:'Mikor kell azonnal megkezdeni a CPR-t bradycard gyermeknél?',b:'Ha a pulzus < 60/perc ÉS a perifériás perfúzió rossz, ami oxigén adására nem javul.\nIlyenkor Adrenalin (0,01 mg/kg) javasolt.'},
+{cat:'Gyermek',f:'Mennyi az adenozin kezdő dózisa gyermeknél?',b:'0,1 - 0,2 mg/ttkg (maximum 6 mg kezdésnek).'},
+{cat:'Gyermek',f:'Mekkora energiával végezzük a cardioversiót gyermekeknél?',b:'Első sokk: 1 J/ttkg\nMásodik: 2 J/ttkg\nHarmadik: 4 J/ttkg'}
+];
+
+var QUIZ=[
+{q:'Melyik EKG jel/ritmus NEM utal az asystolia kiemelt kockázatára bradycardia esetén?',opts:['Mobitz II. AV-blokk','Több mint 3 másodperces kamrai pauza','I. fokú AV blokk','III. fokú AV-blokk széles QRS-pótritmussal'],ok:2,exp:'Az I. fokú AV blokk önmagában nem jelent magas asystolia kockázatot az eljárásrend szerint.'},
+{q:'Mekkora adagban és hogyan javasolt az Adenozin beadása elsőként felnőttben?',opts:['3 mg lassan iv.','6 mg gyors iv. bólus, hígítás nélkül, azonnal bemosva 10-20 ml NaCl-lal','12 mg infúzióban 5 perc alatt','300 mg iv. perfúzorral'],ok:1,exp:'6 mg gyors iv. bólus, folyadékkal azonnal bemosva. A felezési ideje nagyon rövid, így gyors bejutás kell.'},
+{q:'A reguláris széles QRS tachycardia gyógyszeres kezelésére melyik szer a választandó stabil esetben (ha vagus manőver és adenozin hatástalan)?',opts:['Verapamil 5-10 mg iv.','Amiodaron 300 mg iv. 20 perc alatt','Lidokain 1 mg/kg','Metoprolol 5 mg iv.'],ok:1,exp:'Széles QRS esetén Amiodaron 300 mg a javasolt. Verapamil adása széles QRS-ben TILOS!'},
+{q:'Melyik állítás IGAZ az Elektromos Cardioversio (ECV) kivitelezésével kapcsolatban?',opts:['A gombot csak egy pillanatra kell megnyomni, mint defibrillációnál.','Az áramütést aszinkron módban kell leadni.','A gombokat lenyomva kell tartani, míg a gép az R-hullámra szinkronizálva leadja a sokkot.','Lapáteletkródákkal sokkal biztonságosabb a szinkronizáció, mint öntapadós elektródával.'],ok:2,exp:'ECV-nél a gombokat lenyomva kell tartani, amíg a készülék az R-hullámra szinkronizálva leadja az ütést (ez pár másodperc is lehet).'},
+{q:'Mi a teendő Torsades de pointes (polimorf VT) ritmuszavar észlelésekor stabil hemodinamika esetén?',opts:['Amiodaron azonnali adása','Verapamil adása','Magnézium-szulfát 2 g iv. 10 perc alatt adása, amiodaron TILOS','Szinkron cardioversio 360 J-lal'],ok:2,exp:'TdP esetén Magnézium adandó, amiodaron adása (ami nyújtja a QT-t) TILOS!'},
+{q:'Egy gyermek bradycard (HR=50/perc), sápadt, eszméletlen. Oxigén adására nem javul. Mi a teendő?',opts:['Atropin 0,5 mg adása azonnal','CPR (mellkaskompresszió) megkezdése és Adrenalin 0,01 mg/kg adása','Pacemaker felhelyezése azonnal','Transzport orvosi felügyelet nélkül'],ok:1,exp:'Gyermeknél <60/perc pulzus és rossz perfúzió (ha O2-re nem javul) = CPR és adrenalin!'},
+{q:'Melyik antiarrhythmiás szer alkalmazása KONTRAINDIKÁLT (tilos) pitvarfibrilláció + preexcitatio (WPW, FBI tachycardia) esetén?',opts:['Minden antiarrhythmiás szer (pl. Amiodaron, Béta-blokkoló, Verapamil)','Csak a Lidokain','Csak a Magnézium','Csak az Adenozin'],ok:0,exp:'FBI tachycardia esetén TILOS amiodaront és bármilyen más szokásos antiarrhythmiás szert adni, mert felgyorsíthatja a kamrai átvezetést.'},
+{q:'Mi a teendő, ha a transcutan pacemaker alkalmazása során az EKG-n látod a spike-ot és utána a széles QRS-t, de a betegen nem tapintasz pulzust?',opts:['A PM megfelelően működik, folytatom az ellátást.','Ez mechanikus capture hiány. Növelni kell az áramerősséget.','Kikapcsolom a PM-et, mert tönkrement.','Atropint adok rá.'],ok:1,exp:'Az EKG kép önmagában nem elég, a mechanikus befogás (capture) hiánya esetén emelni kell az áramerősséget.'},
+{q:'Melyik gyógyszer javasolt Béta-blokkoló túladagolás okozta bradycardia esetén?',opts:['Kalcium-klorid','Glükagon 3-10 mg iv.','Amiodaron','Adenozin'],ok:1,exp:'Szekunder bradycardia béta-blokkoló mérgezés miatt: Glükagon 3-10 mg adandó.'},
+{q:'Mekkora energiával történik a 2. sokk leadása elektromos cardioversió (ECV) során egy 10 kg-os gyermeknél?',opts:['10 Joule','20 Joule','40 Joule','150 Joule'],ok:1,exp:'Gyermek ECV energiák: 1 J/kg, majd 2 J/kg, majd 4 J/kg. 10 kg * 2 J/kg = 20 Joule.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Instabil Bradycardia (B kompetencia)',diff:'B kompetencia',desc:'Egy 65 éves férfihöz riasztanak. A beteg sápadt, verejtékes, mellkasi fájdalomra panaszkodik. B kompetencia (gyógyszerelés NINCS).',steps:[
+{sit:'Megérkezel a beteghez. Az ABCDE vizsgálat során a "C" pontnál a pulzusa nagyon lassú, 35/perc. A vérnyomása 80/50 Hgmm. A beteg mellkasi fájdalomra panaszkodik. Mi az első benyomás az eljárásrend alapján?',opts:[{tx:'A beteg stabil, csak megfigyelést igényel.',ok:false,fb:'Hibás! A mellkasi fájdalom (ischaemia) és alacsony vérnyomás (shock) instabilitást jelent.'},{tx:'A beteg hemodinamikailag instabil bradycardiás, sürgős beavatkozást és magasabb kompetenciát (segélykocsit) igényel.',ok:true,fb:'Helyes! Az ischaemia és shock jelei instabilitásra utalnak.'},{tx:'A bradycardia nem okozhat ilyet, biztos stroke.',ok:false,fb:'Hibás! A <40/min frekvencia okozhat jelentős instabilitást.'}]},
+{sit:'B kompetenciával érkeztél. Mi az a KÖTELEZŐ protokolláris lépés, amit instabil ritmuszavar észlelésekor azonnal meg kell tenned?',opts:[{tx:'Azonnal atropint adok.',ok:false,fb:'Hibás! B kompetencia nem adhat atropint.'},{tx:'Segélykocsit (orvost/mentőtisztet) kérek a helyszínre.',ok:true,fb:'Helyes! Instabilitás esetén kompetencia hiányában a segélykocsi kérése kötelező.'},{tx:'Azonnal CPR-t kezdek.',ok:false,fb:'Hibás! A betegnek van pulzusa és eszmélete.'}]},
+{sit:'A segélykocsi úton van. Milyen monitorozást teszel fel a betegre a "párhuzamos teendők" alapján?',opts:[{tx:'Csak vérnyomásmérőt, mert B kompetencia nem tud EKG-t értékelni.',ok:false,fb:'Hibás! Monitorozás és 12-elvezetéses EKG mindenkinél kötelező, ha a helyzet engedi.'},{tx:'EKG monitor, NIBP, SpO2, és 12-elvezetéses EKG-t készítek, oxigént adok szükség szerint.',ok:true,fb:'Helyes! Ez az alapvető ritmuszavar teendő.'},{tx:'Semmit, várom az orvost.',ok:false,fb:'Hibás! A monitorozás és állapotfelmérés folyamatos.'}]},
+{sit:'A 12-elvezetéses EKG elkészült. A gép III. fokú AV blokkot (teljes disszociáció) jelez. Mi a helyzet a reverzibilis okokkal?',opts:[{tx:'Mérlegelem, hogy lehet-e szekunder (pl. mérgezés, hypoxia), és kikérdezem a gyógyszerszedésről (béta-blokkolók).',ok:true,fb:'Helyes! Szekunder okok kizárása mindig elsődleges.'},{tx:'Minden blokk primer, nem kell anamnézis.',ok:false,fb:'Hibás! Lehet gyógyszermérgezés is.'},{tx:'Adok glükagont mindenképp.',ok:false,fb:'Hibás! B szinten nem adsz gyógyszert, és még nincs gyanú.'}]},
+{sit:'A beteg állapota romlik, a tudata beszűkül. Milyen fizikai beavatkozást kell előkészítened az ALS egység megérkezéséig?',opts:[{tx:'Lélegeztetőgépet szerelékkel.',ok:false,fb:'Hibás! A keringéssel van a baj.'},{tx:'A defibrillátor öntapadós elektródáit (pacemaker/cardioversio céljából) felhelyezem a betegre.',ok:true,fb:'Helyes! Az ALS egység transcutan pacemakert fog használni az instabil bradycardia miatt.'},{tx:'Mellkasi kompressziós gépet.',ok:false,fb:'Hibás! A beteg még nem asystoliás.'}]},
+{sit:'Az elektródák felhelyezése megtörtént. Milyen elektródapozíciót ajánl az eljárásrend felragasztható elektródák esetén?',opts:[{tx:'Kizárólag az anterolateralis (mellkas jobb fele és bal hónalj) pozíciót.',ok:false,fb:'Hibás! A protokoll mást is javasol.'},{tx:'Anteroposterior (AP) pozíció ajánlott (elöl a szív felett, hátul a lapocka alatt).',ok:true,fb:'Helyes! Felragasztható elektródáknál a jobb átívelés érdekében ez javasolt.'},{tx:'A nyakra és a mellkasra.',ok:false,fb:'Hibás! Tilos a nyakra tenni.'}]},
+{sit:'Megérkezik a rohamkocsi (ALS). Az orvos utasítást ad a transcutan pacemaker (PM) bekapcsolására 70/perc fix frekvenciával. Emelik az áramerősséget. Mit kell figyelned az EKG monitoron?',opts:[{tx:'A vérnyomás emelkedését a monitoron.',ok:false,fb:'Hibás! A NIBP mérés nem ad másodperces visszajelzést.'},{tx:'Az elektromos vezérlés (capture) megjelenését: a PM spike-ok után széles QRS és T-hullám látható.',ok:true,fb:'Helyes! Ez az elektromos válasz bizonyítéka.'},{tx:'A P-hullámok megjelenését a spike után.',ok:false,fb:'Hibás! A PM a kamrát ingerli (QRS).'}]},
+{sit:'A monitoron megjelent az elektromos capture. Ezzel kész is vagyunk, a beteg keringése biztosított?',opts:[{tx:'Igen, az EKG kép mindent elmond.',ok:false,fb:'Hibás! Az EKG elektromos jelenség, a szívizom mechanikus válasza nem garantált (PEA).'},{tx:'Nem! A mechanikus capture-t is ellenőrizni kell a perifériás (vagy a. femoralis) pulzus tapintásával és az SpO2 pulzushullámával.',ok:true,fb:'Helyes! Az eljárásrend kiemeli, hogy a spike és a QRS nem egyenlő a hatásos keringéssel.'},{tx:'Csak ha a gép kiírja, hogy "Keringés OK".',ok:false,fb:'Hibás! Gép nem ír ilyet.'}]},
+{sit:'A pulzus jól tapintható, megegyezik a PM frekvenciájával (70/min). A beteg tudata tisztul. Milyen üzemmódba érdemes váltani a pacemakert a stabilitás elérése után?',opts:[{tx:'Ki kell kapcsolni, mert már jól van.',ok:false,fb:'Hibás! Vissza fog esni a pulzusa.'},{tx:'Demand (készenléti) üzemmódba javasolt váltani.',ok:true,fb:'Helyes! Így csak akkor üt, ha a beteg saját frekvenciája a beállított alá esik.'},{tx:'Defibrillátor módba.',ok:false,fb:'Hibás! Az áramütést okozna.'}]},
+{sit:'A szállítás során a beteg nyugtalan a PM kellemetlen ingerlése miatt. Az eljárásrend alapján mi a megfelelő lépés az ALS egység részéről?',opts:[{tx:'Ki kell kapcsolni a pacemakert.',ok:false,fb:'Hibás! A keringés fenntartása kritikus.'},{tx:'PSA (Procedurális Szedáció és Analgézia) alkalmazása (pl. Fentanil, Ketamin) a komfort biztosítására.',ok:true,fb:'Helyes! A transcutan PM fájdalmas, szedációt/analgéziát igényel.'},{tx:'Szorosan le kell kötözni a beteget.',ok:false,fb:'Hibás! Ez nem humánus és nem oldja meg a fájdalmat.'}]}
+],summary:'Összefoglaló (Instabil Bradycardia, B kompetencia): A sápadt, alacsony vérnyomású (80/50), mellkasi fájdalommal küzdő bradycardiás beteg egyértelműen instabil. B kompetencia hiányában (nincs gyógyszer, pl. Atropin) azonnal segélykocsit kellett kérni! A várakozás alatt megtörtént a monitorozás, O2 adás és az EKG felvétele. Az állapot romlása miatt az ALS megérkezéséig előkészítettük a defibrillátort és feltettük a ragasztható elektródákat anteroposterior pozícióban. Az ALS egység transcutan pacemakert indított. Figyeltük a monitort az elektromos capture (spike + QRS) miatt, és kötelezően ellenőriztük a mechanikus capture-t (a. femoralis tapintása), mivel az EKG önmagában nem garantálja a pulzust. A stabilizáció után a PM-et demand módba tették, és a fájdalmas ingerlés miatt a beteg PSA-t (analgéziát/szedációt) kapott a szállításhoz.'},
+
+{id:2,title:'2. Szimuláció: Szűk QRS Reguláris Tachycardia (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 35 éves nő hirtelen szívdobogásérzésre panaszkodik. A monitoron 180/perc reguláris, szűk QRS tachycardia látható. B+ kompetencia (gyógyszerelés lehetséges protokoll szerint).',steps:[
+{sit:'Megérkezel a beteghez. Panasza a heves szívdobogás. A vérnyomása 120/80 Hgmm, tiszta tudatú, nincs mellkasi fájdalma, nem fullad. Mi az állapot besorolása?',opts:[{tx:'Instabil tachycardia.',ok:false,fb:'Hibás! Nincsenek hypoperfusiora (shock, syncope, ischaemia) utaló jelei.'},{tx:'Stabil, riasztó tüneteket NEM mutató beteg.',ok:true,fb:'Helyes! A normál vérnyomás és tiszta tudat stabilitásra utal.'},{tx:'Szekunder tachycardia.',ok:false,fb:'Hibás! A hirtelen 180-as frekvencia alapbetegség nélkül primer ritmuszavart feltételez (pl. PSVT).'}]},
+{sit:'Mi a fő cél a helyszínen stabil tachycardia esetén?',opts:[{tx:'A ritmuszavar mindenáron történő megszüntetése elektroterápiával.',ok:false,fb:'Hibás! Stabil betegnél ez kórházi feladat vagy gyógyszeres.'},{tx:'A frekvencia kontrollja (csökkentése), ill. próbálkozás a konverzióval biztonságos keretek között, kórházba szállítás mellett.',ok:true,fb:'Helyes! A cél a tünetek enyhítése és a kórházba szállítás.'},{tx:'Atropin adása.',ok:false,fb:'Hibás! Atropin tachycardiában kontraindikált.'}]},
+{sit:'Készítesz egy 12-elvezetéses EKG-t. Reguláris, keskeny QRS (<0,12 s) tachycardiát látsz. A betegnek nincs láza, fájdalma (ami szekunder ok lenne). Mi a terápiás algoritmus első lépése az eljárásrend szerint?',opts:[{tx:'Azonnali Adenozin 6 mg.',ok:false,fb:'Hibás! Van egy nem gyógyszeres lépés előtte.'},{tx:'Vagus manőverek alkalmazása (preferált: módosított Valsalva-manőver).',ok:true,fb:'Helyes! Ez a legbiztonságosabb első próbálkozás.'},{tx:'Verapamil adása.',ok:false,fb:'Hibás! Csak később jön szóba.'}]},
+{sit:'Hogyan hajtod végre a módosított Valsalva-manővert?',opts:[{tx:'A beteget hanyatt fektetem és megnyomom a szemgolyóját.',ok:false,fb:'Hibás! A bulbusnyomás kontraindikált.'},{tx:'A beteg félülő (45°) helyzetben 15 mp-ig egy fecskendőt fúj, majd hanyatt fektetem és mindkét lábát megemelem 15 mp-ig.',ok:true,fb:'Helyes! Ez a módosított Valsalva-manőver hivatalos leírása.'},{tx:'Megkérem, hogy köhögjön nagyokat állva.',ok:false,fb:'Hibás! Nem ez a leghatékonyabb.'}]},
+{sit:'A manőver hatástalan. A frekvencia továbbra is 180/perc. Nincs preexcitatio az EKG-n. Mi a következő farmakológiai lépés?',opts:[{tx:'Amiodaron 300 mg perfúzorban.',ok:false,fb:'Hibás! Amiodaron széles QRS-nél preferált.'},{tx:'Adenozin adása gyors iv. bólusban.',ok:true,fb:'Helyes! Keskeny QRS reguláris tachycardiában az Adenozin az első választandó szer.'},{tx:'Lidokain adása.',ok:false,fb:'Hibás! Nem protokoll része itt.'}]},
+{sit:'Hogyan adod be az Adenozint az eljárásrend szerint?',opts:[{tx:'Lassú infúzióban 5 perc alatt.',ok:false,fb:'Hibás! Az adenozin felezési ideje másodpercek, lassan beadva hatástalan.'},{tx:'Nagy lumenű kanülön (cubitalis) 6 mg hígítás nélkül, 1-2 mp alatt, majd AZONNAL bemosva 10-20 ml NaCl-lal a végtag felemelése mellett.',ok:true,fb:'Helyes! A nagyon gyors bejutás (csap használatával) kritikus a sikerhez.'},{tx:'Izomba (im.) adom.',ok:false,fb:'Hibás! Csak intravénásan hat.'}]},
+{sit:'Mielőtt beadod az Adenozint, mit KELL mindenképpen közölni a beteggel?',opts:[{tx:'Hogy el fog aludni.',ok:false,fb:'Hibás! Nem altatószer.'},{tx:'Fel kell készíteni az átmeneti kellemetlenségre (arckipirulás, mellkasi nyomás, pulzuskimaradás, nehézlégzés érzése).',ok:true,fb:'Helyes! Ezek ijesztő, de normális hatások, a beteg pánikba eshet, ha nem tud róla.'},{tx:'Hogy ez egy fájdalomcsillapító.',ok:false,fb:'Hibás! Ez hazugság lenne.'}]},
+{sit:'Beadtad a 6 mg Adenozint. 1 perc elteltével a ritmus még mindig tachycardia. Mi a teendő?',opts:[{tx:'Nem próbálkozom tovább, irány a kórház.',ok:false,fb:'Hibás! A protokoll ismétlést javasol.'},{tx:'Megismétlem a dózist, ezúttal 12 mg gyors iv. bólusban.',ok:true,fb:'Helyes! A 6 mg sikertelensége esetén 12 mg adandó.'},{tx:'Cardioversiót végzek.',ok:false,fb:'Hibás! A beteg stabil.'}]},
+{sit:'A 12 mg Adenozin is hatástalan. A gép továbbra is 180/percet jelez. Az EKG-n továbbra is keskeny, reguláris QRS van. Az algoritmus szerint milyen gyógyszer megfontolása jöhet még szóba stabil, keskeny QRS tachycardiánál az adenozin után?',opts:[{tx:'Amiodaron.',ok:false,fb:'Hibás! Keskeny QRS-nél nem ez a fő vonal.'},{tx:'Verapamil (5-10 mg lassan) VAGY Metoprolol (1-2 mg bólusokban).',ok:true,fb:'Helyes! Ezek a következő vonalbeli frekvencia/ritmuskontroll szerek stabil esetben.'},{tx:'Magnézium-szulfát.',ok:false,fb:'Hibás! Az a TdP kamrai tachycardiára való.'}]},
+{sit:'Dönthetsz úgy, hogy nem adsz több gyógyszert, mivel a beteg stabil. Mi a legmegfelelőbb eljárás a kórházba szállítás során?',opts:[{tx:'Lekötöm az EKG-t, hogy kényelmesebb legyen az út.',ok:false,fb:'Hibás! A ritmuszavar bármikor instabillá válhat.'},{tx:'Folyamatos monitorozás (EKG, vérnyomás, SpO2) és a beteg állapotának szoros megfigyelése.',ok:true,fb:'Helyes! A folyamatos obszerváció kötelező stabil ritmuszavarok esetén is a szállítás alatt.'},{tx:'A beteg a saját autójával is bemehet.',ok:false,fb:'Hibás! A mentő monitorozása szükséges.'}]}
+],summary:'Összefoglaló (Szűk QRS Tachycardia, B+ kompetencia): A 35 éves beteg 180/perc pulzussal, de normál vérnyomással és tiszta tudattal stabil állapotúnak minősült. Reguláris, keskeny QRS tachycardia (valószínűleg PSVT) esetén első lépésben módosított Valsalva-manővert alkalmaztunk (45 fokos pozíció, fecskendő fújása 15 mp-ig, majd hanyatt fekvés lábemeléssel). Mivel ez hatástalan volt, B+ protokoll szerint Adenozin következett. A beteget felvilágosítottuk az ijesztő mellékhatásokról (mellkasi nyomás, "halálfélelem"), majd 6 mg-ot adtunk gyors iv. bólusban egy háromágú csapon keresztül, azonnal rátolva 20 ml NaCl-t, a végtagot megemelve. A hatástalanság miatt 1 perc múlva ismételtünk 12 mg-mal. Miután ez sem hozott sikert, a protokoll Verapamil vagy Metoprolol adását tenné lehetővé, de dönthettünk a folyamatos monitorozás és szállítás mellett is, lévén a beteg mindvégig hemodinamikailag stabil maradt.'},
+
+{id:3,title:'3. Szimuláció: Instabil Széles QRS Tachycardia (ECV) (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 55 éves férfi eszméletlenül fekszik az ágyon. Felesége szerint hirtelen esett össze, mellkasát fájlalta. B+ kompetencia (orvosi vagy mentőtiszti telekonzultációval támogatva).',steps:[
+{sit:'A beteg eszméletlen. Az ABCDE alapján a pulzus tapintható, de extrém szapora és gyenge. A vérnyomás nem mérhető (shock). Az EKG monitoron széles (>0,12s), reguláris tachycardia látható 190/perc frekvenciával. Mi a teendő az eljárásrend alapján?',opts:[{tx:'Stabil széles QRS tachycardia, Amiodaron adása 20 perc alatt.',ok:false,fb:'Hibás! A beteg eszméletlen és shockos, ez INSTABIL periarrest állapot.'},{tx:'Azonnali elektromos szinkron cardioversio (ECV) előkészítése és segélykocsi / telefonos szakmai segítség kérése.',ok:true,fb:'Helyes! Az eszméletlen, shockos beteg instabil tachycardiával azonnali ECV-t igényel.'},{tx:'Aszinkron defibrilláció (ütés) maximális energiával.',ok:false,fb:'Hibás! Van pulzusa, így szinkron sokk kell.'}]},
+{sit:'A telefonos konzultáns jóváhagyja az ECV-t, a rohamkocsi úton van. A beteg eszméletlen (GCS=3). Szükséges-e fájdalomcsillapítás/szedáció (PSA) a sokk előtt?',opts:[{tx:'Igen, minden esetben etomidátot adunk.',ok:false,fb:'Hibás! Eszméletlen beteg nem kaphat etomidátot feleslegesen.'},{tx:'Nem feltétlenül; ha a beteg teljesen eszméletlen (periarrest helyzet), a sokk leadható PSA nélkül is, de készenlétben kell tartani.',ok:true,fb:'Helyes! Az eljárásrend szerint "nyilvánvalóan periarrest helyzetben (eszméletlen, shockos) ... PSA halasztható".'},{tx:'Igen, morfin 10 mg mindig kell.',ok:false,fb:'Hibás! Keringésdepressziót okozhat instabil betegben.'}]},
+{sit:'A defibrillátort szinkron üzemmódba állítod (SYNC gomb). Mit kell ellenőrizned a monitoron?',opts:[{tx:'Hogy minden P-hullámon van egy pötty.',ok:false,fb:'Hibás! A QRS-en (R-hullámon) kell lennie.'},{tx:'Hogy minden R- (vagy S) hullám csúcsán megjelenik egy jól látható háromszög/jelölés, ami a szinkronizációt mutatja.',ok:true,fb:'Helyes! Ha nincs szinkronjel, a gép T-hullámra is üthet, ami VF-t okoz.'},{tx:'Csak azt, hogy "SYNC" ki van írva, a hullámokat nem kell figyelni.',ok:false,fb:'Hibás! Vizuálisan is ellenőrizni kell az R-hullámra illeszkedést.'}]},
+{sit:'A gép szinkronizál. Milyen energiaszintet javasolt beállítani a bifázisos defibrillátoron az ELSŐ sokkhoz felnőttnél az OMSZ protokoll (Zoll X vagy Lifepak) szerint?',opts:[{tx:'50 Joule',ok:false,fb:'Hibás! Ez túl alacsony széles QRS tachycardiához.'},{tx:'120-125 Joule (készüléktípustól függően)',ok:true,fb:'Helyes! A kezdő energia bifázisos gépeknél 120-125 J.'},{tx:'360 Joule',ok:false,fb:'Hibás! A maximum energiát csak a 3. sokknál használjuk.'}]},
+{sit:'A sokk biztonságos leadásához melyik lépést HAGYTAD KI, ami életveszélyes lehet a környezetre?',opts:[{tx:'Nem távolítottam el a szabadon áramló oxigént a beteg arcától.',ok:true,fb:'Helyes! A szikra és a magas O2 koncentráció tüzet/robbanást okozhat. A maszkot el kell venni.'},{tx:'Nem adtam atropint.',ok:false,fb:'Hibás! Atropin ide nem kell.'},{tx:'Nem vettem le az EKG kábeleket.',ok:false,fb:'Hibás! Az EKG kábelt nem kell feltétlenül levenni (monitorozni kell).'}]},
+{sit:'Oxigént eltávolítottad. Felszólítod a környezetet: "Mindenki el!" A gombokat lenyomod a sokk leadásához, de a gép nem üt azonnal. Miért?',opts:[{tx:'A gép elromlott.',ok:false,fb:'Hibás! Valószínűleg nem ez az ok.'},{tx:'Szinkron üzemmódban a gép az R-hullámra vár, ezért a gombokat folyamatosan lenyomva kell tartani a sokk leadásáig (ez pár másodperc is lehet).',ok:true,fb:'Helyes! A szinkronizáció miatt van a késleltetés.'},{tx:'Mert nincs zselé a lapáton.',ok:false,fb:'Hibás! Az a minőséget befolyásolja, nem a gép időzítését.'}]},
+{sit:'A sokk sikertelen volt, a ritmus maradt a régi (VT). A 2. sokkot 150-200 J energiával tervezed. Mi a legfontosabb technikai beállítás a gépen az ütés előtt?',opts:[{tx:'Kikapcsolom a gépet és újraindítom.',ok:false,fb:'Hibás! Időveszteség.'},{tx:'ÚJRA be kell nyomni a SYNC (szinkron) gombot, mert a gép sokk után automatikusan aszinkron módba (defibrilláció) áll vissza!',ok:true,fb:'Helyes! Ezt nagyon könnyű elfelejteni, biztonsági okokból ugrik vissza aszinkronba.'},{tx:'Át kell tenni az elektródákat.',ok:false,fb:'Hibás! Az elektródák maradhatnak (ha jól voltak feltéve).'}]},
+{sit:'A 2. és 3. (maximális energiájú) sokk is hatástalan. Széles QRS tachycardia van még mindig. Mi az algoritmus következő lépése?',opts:[{tx:'Folytatom a sokkolást a végtelenségig.',ok:false,fb:'Hibás! Van egy protokoll.'},{tx:'Amiodaron 300 mg iv. beadása 10-20 perc alatt.',ok:true,fb:'Helyes! A 3. sikertelen sokk után farmakológiai támogatás (Amiodaron) kell.'},{tx:'Aszinkron defibrillációt próbálok.',ok:false,fb:'Hibás! Stabil ritmusnál ez tilos (pulzus van).'}]},
+{sit:'Az Amiodaron 300 mg lefolyt. Ezt követően hányszor kísérelhető még meg a cardioversio az OMSZ eljárásrend alapján?',opts:[{tx:'Többször már nem szabad.',ok:false,fb:'Hibás! Egyszer még szabad.'},{tx:'Maximális energiával (360J/200J) EGYSZER megismételhető.',ok:true,fb:'Helyes! Az Amiodaron után egy 4. sokk leadható maximális energiával.'},{tx:'Még 3-szor.',ok:false,fb:'Hibás! Csak egyszer ismételhető a szer után.'}]},
+{sit:'A 4. sokk hatására a beteg szinusritmusba konvertál, a pulzusa 85/perc, a vérnyomása 110/70-re emelkedik. Milyen infúziós fenntartó kezelés javasolt az algoritmus alapján a transzport alatt?',opts:[{tx:'Amiodaron folytatása 900 mg / 24 óra dózisban.',ok:true,fb:'Helyes! A konverzió fenntartásához a telítődózis után fenntartó dózis kell.'},{tx:'Adenozin infúzió.',ok:false,fb:'Hibás! Adenozint nem adunk infúzióban.'},{tx:'Semmi, a szinusritmus már tartós lesz.',ok:false,fb:'Hibás! A VT nagy eséllyel visszatérne az amiodaron fenntartás nélkül.'}]}
+],summary:'Összefoglaló (Instabil Széles QRS Tachycardia, ECV, B+): A földön eszméletlenül fekvő, vérnyomás nélküli beteg a 190/perces széles QRS tachycardiával extrém instabil, periarrest helyzetben volt. A B+ egység haladéktalanul telekonzultációt és segélykocsit kért, miközben előkészítette a szinkron cardioversiót (ECV). Mivel a beteg eszméletlen és shockos volt, a szedáció (PSA) halasztható volt. A defibrillátoron KÖTELEZŐ volt a SYNC mód bekapcsolása és az R-hullámra illeszkedés ellenőrzése. A szabadon áramló O2 eltávolítása után 120-125 J (bifázisos) energiával indítottunk. A gombokat a sikeres szinkronizáció érdekében hosszan nyomva tartottuk. A sikertelen első sokk után a gépet ÚJRA szinkron módba kellett állítani, majd az energiát 150-200 J-ra, majd maximumra emeltük. Három sikertelen ütés után 300 mg Amiodaron követte intravénásan, 10-20 perc alatt. A gyógyszer lefolyása után a negyedik, maximális energiájú (360/200 J) sokk sikeres konverziót eredményezett. A hemodinamika stabilizálódott, az ellátást 900 mg/24 óra Amiodaron perfúzoros fenntartó terápiával zártuk a kórházba szállítás alatt.'}
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Render blocks for Chapters
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+linkGlos(h(b.tx))+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+linkGlos(h(i))+'</li>').join('')+'</ul>';
+  if(b.tp==='kr') return '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+linkGlos(h(i))+'</div>').join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+linkGlos(h(b.tx))+'</div>';
+  if(b.tp==='note') return '<div class="note">'+linkGlos(h(b.tx))+'</div>';
+  if(b.tp==='steps') return b.items.map(s=>'<div class="step-wrap"><div class="step-num">'+s.n+'</div><div class="step-body"><div class="step-t">'+linkGlos(h(s.t))+'</div><div class="step-x">'+linkGlos(h(s.x))+'</div></div></div>').join('');
+  return '';
+}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Ritmuszavarok Ellátása</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v3.0 · 2022.08.16.</div></div>'+
+'<div class="al al-i" style="margin-bottom:1rem">Ez az alkalmazás a ritmuszavarok sürgősségi, prehospitális ellátását dolgozza fel. A szavak alatti szaggatott vonalra (pl. <span class="glos" onclick="showGlos(\'cardioversio\')">cardioversio</span>) kattintva megjelenik a fogalommagyarázat.</div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','Protokollok, algoritmusok'],['flash','🃏','Flashkártyák','15 vizsgakártya'],['quiz','❓','Kvíz','10 kérdés tesztelésre'],['sim','🚑','Szimuláció','3 interaktív betegeset'],['calc','🧮','Kalkulátor','Gyermek energiaigény']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az OMSZ valamennyi kivonuló dolgozójára, kompetenciaszintnek megfelelően.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend Fejezetek</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza a fejezetekhez</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+h(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+h(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+h(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+h(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs Esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function updateCalc() {
+  let e1 = CA.w * 1;
+  let e2 = CA.w * 2;
+  let e3 = CA.w * 4;
+  let res = `<div style="font-size:13px;color:#bfdbfe;margin-bottom:4px">1. Sokk energia (1 J/kg):</div><div style="font-size:24px;font-weight:700;color:#60a5fa;margin-bottom:1rem">${e1} J</div>
+  <div style="font-size:13px;color:#bfdbfe;margin-bottom:4px">2. Sokk energia (2 J/kg):</div><div style="font-size:24px;font-weight:700;color:#fde68a;margin-bottom:1rem">${e2} J</div>
+  <div style="font-size:13px;color:#bfdbfe;margin-bottom:4px">3. Sokk energia (4 J/kg):</div><div style="font-size:24px;font-weight:700;color:#fca5a5">${e3} J</div>`;
+  document.getElementById('calc-res').innerHTML = res;
+}
+
+window.setWeight = function(v) {
+  CA.w = +v;
+  updateCalc();
+}
+
+function renderCalc(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Gyermek Energia Kalkulátor (ECV)</h2>'+
+'<div class="card">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px">Gyermek testsúlya (kg)</div>'+
+'<input type="number" min="1" max="100" value="'+CA.w+'" oninput="setWeight(this.value)" onchange="setWeight(this.value)">'+
+'<div class="res-box" style="background:#172554;border:1px solid #1e3a8a;margin-top:1rem" id="calc-res">'+
+'</div><div style="font-size:12px;color:#9ca3af;margin-top:1rem;line-height:1.5">A számítás a gyermekek instabil tachycardiájának elektromos cardioversió (ECV) energiaszintjeit mutatja az eljárásrend alapján (1 J/kg, majd 2 J/kg, végül 4 J/kg).</div></div>';
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc') { c.innerHTML=renderCalc(); setTimeout(updateCalc,0); }
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>

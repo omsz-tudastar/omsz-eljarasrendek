@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Folyadékterápia & Keringéstámogatás</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #121212; color: #e5e7eb; min-height: 100vh; padding-bottom: 72px; }
+.app { max-width: 720px; margin: 0 auto; background: #1e1e1e; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,.4); position: relative; }
+/* NAV */
+.nav { display: flex; background: #242424; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.nb { flex: 1; padding: 9px 2px 6px; background: none; border: none; border-top: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: border-color .2s; }
+.nb.act { border-top-color: #14b8a6; }
+.ni { font-size: 16px; }
+.nl { font-size: 9px; color: #9ca3af; font-weight: 400; }
+.nb.act .nl { color: #14b8a6; font-weight: 600; }
+/* CONTENT */
+.ct { padding: 1rem; }
+/* CARDS */
+.card { background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: 1rem; margin-bottom: .75rem; }
+.card-btn { background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: .85rem 1rem; margin-bottom: 7px; cursor: pointer; text-align: left; width: 100%; font-family: inherit; transition: background .15s; color: #e5e7eb; }
+.card-btn:hover { background: #333; }
+/* ALERTS */
+.al { border-radius: 8px; padding: .75rem 1rem; margin-bottom: .75rem; font-size: 13px; line-height: 1.6; white-space: pre-line; }
+.al-d { background: #450a0a; color: #fecaca; border: 1px solid #7f1d1d; }
+.al-w { background: #451a03; color: #fde68a; border: 1px solid #78350f; }
+.al-i { background: #172554; color: #bfdbfe; border: 1px solid #1e3a8a; }
+.al-s { background: #064e3b; color: #bbf7d0; border: 1px solid #065f46; }
+.note { font-size: 12px; color: #9ca3af; padding: .5rem .75rem; background: #262626; border-radius: 8px; margin-bottom: .5rem; line-height: 1.5; border: 1px solid #333; }
+.sub { font-size: 13px; font-weight: 600; color: #d1d5db; margin: .75rem 0 .35rem; }
+ul.bl { margin: 0 0 .5rem; padding-left: 1.3rem; }
+ul.bl li { font-size: 13px; color: #d1d5db; line-height: 1.65; margin-bottom: .2rem; }
+.kr { display: flex; gap: 8px; align-items: flex-start; padding: .5rem .75rem; background: #064e3b20; border-radius: 8px; margin-bottom: 5px; font-size: 13px; color: #d1d5db; line-height: 1.5; border-left: 3px solid #14b8a6; }
+/* TABLES */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.tbl th { padding: 6px 8px; text-align: left; font-weight: 600; color: #9ca3af; border-bottom: 1px solid #3f3f3f; background: #262626; }
+table.tbl td { padding: 6px 8px; border-bottom: 1px solid #333; vertical-align: middle; color: #d1d5db; }
+.tbl-wrap { overflow-x: auto; margin-bottom: .75rem; background: #262626; border-radius: 8px; border: 1px solid #3f3f3f; }
+/* PROGRESS */
+.prog { height: 4px; background: #333; border-radius: 2px; margin-bottom: 1rem; }
+.progb { height: 4px; border-radius: 2px; transition: width .3s; }
+/* BUTTONS */
+.btn { padding: .55rem 1rem; border: 1px solid #4b5563; border-radius: 8px; background: #2a2a2a; cursor: pointer; font-size: 13px; color: #e5e7eb; font-family: inherit; transition: all .15s; }
+.btn:hover { background: #374151; }
+.btn-g { background: #0d9488; color: #fff; border-color: #0d9488; }
+.btn-g:hover { background: #0f766e; }
+.btn-r { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+.btn-v { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+.btn-fw { width: 100%; display: block; text-align: center; padding: .75rem; font-weight: 600; }
+.btn-row { display: flex; gap: 8px; }
+.btn-row .btn { flex: 1; text-align: center; }
+/* QUIZ/SIM OPTIONS */
+.opt { width: 100%; display: block; padding: .8rem 1rem; margin-bottom: 8px; border: 1px solid #3f3f3f; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; color: #d1d5db; background: #2a2a2a; font-family: inherit; line-height: 1.5; transition: background .1s; }
+.opt:hover { background: #374151; }
+.opt-ok { background: #064e3b !important; border-color: #059669 !important; color: #ecfdf5 !important; cursor: default !important; }
+.opt-no { background: #7f1d1d !important; border-color: #b91c1c !important; color: #fef2f2 !important; cursor: default !important; }
+/* FLIP CARD */
+.flip { border: 2px solid #3f3f3f; border-radius: 12px; padding: 1.5rem; min-height: 190px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: border-color .2s; margin-bottom: .75rem; background: #262626; }
+.flip.on { border-color: #14b8a6; }
+/* GRID */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* RESULT */
+.res-box { border-radius: 12px; padding: 1rem; text-align: center; margin-top: .75rem; }
+.res-num { font-size: 38px; font-weight: 700; }
+.res-lbl { font-size: 14px; margin: .3rem 0; }
+/* INPUTS */
+input[type=number] { width: 100%; background: transparent; border: 1px solid #4b5563; border-radius: 8px; padding: 10px; color: #e5e7eb; font-family: inherit; background: #2a2a2a; margin-bottom: 10px; font-size: 14px; }
+select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid #4b5563; background: #2a2a2a; font-size: 13px; color: #e5e7eb; font-family: inherit; margin-bottom: 10px; }
+/* TAGS */
+.tag { display: inline-block; font-size: 10px; padding: 3px 8px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
+.tag-g { background: #064e3b; color: #ecfdf5; border: 1px solid #059669; }
+.tag-y { background: #78350f; color: #fef3c7; border: 1px solid #b45309; }
+/* HOME GRID */
+.home-mod { background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: 1.25rem 1rem; cursor: pointer; text-align: center; font-family: inherit; transition: all .15s; color: #e5e7eb; display: flex; flex-direction: column; align-items: center; }
+.home-mod:hover { background: #333; border-color: #4b5563; transform: translateY(-2px); }
+.home-mod-icon { font-size: 32px; margin-bottom: 8px; }
+.home-mod-title { font-size: 15px; font-weight: 600; color: #f3f4f6; margin-bottom: 4px; }
+.home-mod-desc { font-size: 11px; color: #9ca3af; line-height: 1.4; }
+/* CHAPTER LIST */
+.ch-row { display: flex; align-items: center; gap: 12px; background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: 1rem; margin-bottom: 8px; cursor: pointer; width: 100%; text-align: left; font-family: inherit; transition: background .15s; color: #e5e7eb; }
+.ch-row:hover { background: #333; }
+/* GLOSSARY TERM */
+.term { color: #38bdf8; border-bottom: 1px dashed #38bdf8; cursor: pointer; font-weight: 600; transition: color 0.2s; }
+.term:hover { color: #7dd3fc; border-bottom-color: #7dd3fc; }
+/* MODAL */
+#mdl { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(3px); }
+.mdl-c { background: #1e1e1e; border: 1px solid #3f3f3f; border-radius: 16px; padding: 1.5rem; max-width: 400px; width: 100%; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.mdl-x { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; background: #333; border: none; color: #e5e7eb; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.mdl-x:hover { background: #4b5563; }
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+
+<div id="mdl" onclick="if(event.target===this) hideTerm()">
+  <div class="mdl-c">
+    <button class="mdl-x" onclick="hideTerm()">&times;</button>
+    <h3 id="mdl-t" style="margin-top:0; color:#38bdf8; margin-bottom:12px; font-size:18px;"></h3>
+    <div id="mdl-d" style="color:#d1d5db; font-size:14px; line-height:1.6;"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// --- GLOBALS ---
+var SCR='home', CHID=null;
+var FC={cat:'Összes', idx:0, flip:false};
+var QZ={idx:0, sel:null, score:0, done:false, ans:[]};
+var SI={id:null, step:0, chosen:null, hist:[], fin:false};
+
+// Form data for calculators
+var CL={
+  tab:'burn',
+  burn: {w:80, a:50, i:'0'},
+  child: {a:5, w:20},
+  drug: {type:'noradrenalin', w:70, dose:0.1}
+};
+
+// --- GLOSSARY DICTIONARY ---
+var G = {
+  'intracelluláris': 'Sejten belüli folyadéktér. Itt található a testben lévő folyadék kétharmada, itt zajlanak a főbb anyagcsere-folyamatok.',
+  'interstitialis': 'Szövetközti folyadéktér, amely a sejteket veszi körül, és folyamatos kapcsolatot biztosít a sejtek és az érpálya között.',
+  'intravasalis': 'Érpályán belüli folyadéktér. A keringő vértérfogat felnőttben kb. 70 ml/kg.',
+  'krisztalloid': 'Vízből és kismolekulájú ásványi sókból (ionokból) álló intravénás oldat. Prehospitálisan preferált (pl. balanszírozott sóoldat).',
+  'kolloid': 'Nagy molekulasúlyú anyagokat (pl. hidroxietil-keményítő, zselatin) tartalmazó infúzió. Prehospitális adása kontraindikált a halálozást nem javító, de vesekárosító és véralvadásgátló hatásai miatt!',
+  'permisszív hypotensio': 'Nem kontrollálható vérzés (pl. belső vérzés) esetén alkalmazott elv. Célja a létfontosságú szervek minimális perfúziója anélkül, hogy a magasabb vérnyomás kilökné a kialakult vérrögöt. (Nem alkalmazható: várandósok, gyermekek, idősek, fejsérültek).',
+  'tranexámsav': 'Véralvadást támogató gyógyszer (fibrinolízis gátló). Súlyos traumás vérzés, illetve koponyasérülés (GCS < 13) esetén indikált.',
+  'inotróp': 'A szívizom összehúzódási erejét befolyásoló hatás/gyógyszer (pozitív inotróp = erőt fokozó, pl. Dobutamin).',
+  'kronotróp': 'A szívfrekvenciát befolyásoló hatás (pozitív kronotróp = frekvenciát növelő).',
+  'vazopresszor': 'A perifériás érellenállást (értónust) növelő, érszűkítő hatású szer (pl. Noradrenalin).',
+  'ARSD': 'Akut respirációs distressz szindróma (súlyos tüdőkárosodás).',
+  'MOF': 'Többszervi elégtelenség (Multiple Organ Failure).',
+  'ROSC': 'Spontán keringés visszatérése (Return of Spontaneous Circulation) újraélesztés során.',
+  'neurogen shock': 'Gerincvelői trauma esetén az autonóm idegrostok kiesésével kialakuló sokk, melyet gyors vérnyomásesés és bradycardia jellemez.',
+  'cardiogen shock': 'A szív pumpafunkciójának elsődleges zavara miatti keringési elégtelenség. A folyadékpótlás itt csak másodlagos vagy óvatosan kezelendő.',
+  'Parkland-formula': 'A folyadékpótlás ütemének meghatározására szolgáló képlet II-III. fokú égés esetén. (Égett felület % × ttkg × 4 ml = 24 órás szükséglet).',
+  'perfúzió': 'Szöveti vérátáramlás. Megfelelő perfúzió hiányában a sejtek nem kapnak elég oxigént és tápanyagot.',
+  'bőrturgor': 'A bőr rugalmassága, feszessége. Csökkent bőrturgor (pl. ráncban marad a bőr) a kiszáradás (dehidráció) jele.'
+};
+
+// Helper to wrap glossary terms
+function t(key, display) {
+  return '<span class="term" onclick="showTerm(\''+key+'\')">'+(display || key)+'</span>';
+}
+function showTerm(key) {
+  var d = G[key];
+  if(!d) return;
+  document.getElementById('mdl-t').innerText = key.toUpperCase();
+  document.getElementById('mdl-d').innerText = d;
+  document.getElementById('mdl').style.display = 'flex';
+}
+function hideTerm() {
+  document.getElementById('mdl').style.display = 'none';
+}
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// --- CONTENT DATA ---
+var CDATA = [
+{ id:'alap', title:'Élettani alapok', icon:'🩸', secs:[
+  {t:'Folyadékterek és perfúzió', bk:[
+    {tp:'bl', items:[
+      'A felnőtt emberi test 50-60%-a folyadék (csecsemőknél ~70%).',
+      'Eloszlása: '+t('intracelluláris')+' (2/3 rész) és sejten kívüli (1/3 rész) tér.',
+      'Sejten kívüli tér részei: '+t('interstitialis')+' és '+t('intravasalis')+' (érpályán belüli).',
+      'Keringő vértérfogat felnőttben: ~70 ml/kg (70 kg-os embernél 4,5-5,0 liter). Gyermekeknél életkortól függően 75-100 ml/kg.',
+      'Az életfontosságú szervek '+t('perfúzió', 'perfúzióját')+' a vértérfogat, a perctérfogat, a perifériás értónus és a szabályozó mechanizmusok együttesen biztosítják.'
+    ]},
+    {tp:'al', lv:'w', tx:'Az infúzió csak egy része marad az érpályában! A túlzott bevitel káros (ödéma, halálozás nő). Cél: az optimális szöveti '+t('perfúzió')+' helyreállítása.'}
+  ]}
+]},
+{ id:'ind', title:'Folyadékpótlás Indikációja & Módja', icon:'💧', secs:[
+  {t:'Mikor adjunk folyadékot?', bk:[
+    {tp:'al', lv:'d', tx:'A vérnyomásesés KÉSŐI jele a folyadékhiánynak (főleg fekvő helyzetben és gyermekeknél). A terápiát a perfúzió romlásának korai jeleikor meg kell kezdeni!'},
+    {tp:'sub', tx:'A szöveti perfúzió romlásának korai jelei:'},
+    {tp:'bl', items:[
+      'Hűvös, márványozott bőr (szepszis korai szakában lehet meleg, kipirult is)',
+      'Megnyúlt kapilláris újratelődési idő (CRT > 3 másodperc)',
+      'Életkorhoz mérten magas pulzusszám (kizárandó: félelem, fájdalom, láz)',
+      'Romló tudatállapot',
+      'Csökkent '+t('bőrturgor')+', száraz nyálkahártya, lepedékes nyelv'
+    ]},
+    {tp:'sub', tx:'A folyadékpótlás alapelvei:'},
+    {tp:'kr', items:[
+      'Prehospitálisan BÓLUSOKBAN adjuk! Felnőtt: 250 ml. Gyermek (pubertás előtt): 10 ml/kg.',
+      'Bólus után újraértékelés kötelező (javul-e a perfúzió, tudat, pulzus, CRT).',
+      'Túltöltés jeleinél (nyaki vénák tágulata, tüdő/májpangás) a pótlást le kell állítani.',
+      'Vénafenntartó (csepegő) infúzió alkalmazása KERÜLENDŐ! Indikáció hiányában a kanült bemosva le kell zárni.'
+    ]}
+  ]},
+  {t:'Infúziók fajtái és hőmérséklete', bk:[
+    {tp:'al', lv:'d', tx:'A '+t('kolloid', 'kolloid infúziók')+' (pl. Voluven, HAES) prehospitális adása NEM INDOKOLT (kontraindikált)! Halálozást nem csökkentik, de veseelégtelenséget és alvadási zavart okoznak.'},
+    {tp:'bl', items:[
+      'Preferált: Balanszírozott '+t('krisztalloid')+' infúzió.',
+      'A 0.9% NaCl, glükóz, és hypertoniás sóoldatok prehospitális folyadékpótlásra nem alkalmasak.',
+      'Folyadékpótlásra lehetőség szerint testhőmérsékletre (36-40°C) melegített infúziót kell használni.',
+      'HŰTÖTT infúzió csak hőgutában (≥ 40°C), illetve '+t('ROSC')+' utáni prehospitális ellátásban adható (utóbbiban is csak akkor, ha eleve hypovolaemiás a beteg).'
+    ]}
+  ]}
+]},
+{ id:'trauma', title:'Trauma és Vérzés', icon:'🚨', secs:[
+  {t:'Traumás folyadékterápia', bk:[
+    {tp:'al', lv:'w', tx:'Elsődleges fontosságú a külső vérzés csillapítása (direkt nyomás, tourniquet, medencerögzítő).'},
+    {tp:'sub', tx:'Folyadék stratégiák:'},
+    {tp:'bl', items:[
+      'Sikeres vérzéscsillapítás után hypotensio esetén: cél a vérnyomás célon túl nem lövő normalizálása.',
+      'Nem kontrollálható vérzés (belső vérzés, penetráló trauma): '+t('permisszív hypotensio')+' elve!'
+    ]},
+    {tp:'kr', items:[
+      'A permisszív hypotensio célja: létfontosságú szervek minimálisan elégséges perfúziója.',
+      'Nem cél a normál vérnyomás, mert az felhígítja a faktorokat és lelöki a kialakult vérrögöt.',
+      'NEM kell folyadék, ha a beteg kontaktusképes, radiális pulzusa tapintható, VAGY a célvérnyomást elérte.'
+    ]},
+    {tp:'ftable', rows:[
+      ['Koponyasérülés önmagában','110 - 120 Hgmm'],
+      ['Koponyasérülés + vérzés','100 - 110 Hgmm'],
+      ['Súlyos tompa sérülés','80 - 90 Hgmm'],
+      ['Penetráló sérülés','70 - 80 Hgmm']
+    ]},
+    {tp:'al', lv:'d', tx:'KIVÉTELEK! A permisszív hypotensio NEM alkalmazható: várandósoknál, gyermekeknél, idős magas vérnyomásos betegeknél, és izolált súlyos koponyasérültnél! Esetükben az életkornak megfelelő vérnyomásra kell törekedni.'}
+  ]},
+  {t:'Tranexámsav és Gyógyszer', bk:[
+    {tp:'bl', items:[
+      ''+t('tranexámsav')+' indikáció: nem kontrollálható súlyos vérzés, vagy GCS < 13 koponyasérült.',
+      'Tranexámsav dózis: Felnőtt 1 g IV/IO (10 perc alatt). Gyermek 20 mg/kg IV/IO (max 1 g).',
+      'Ha ismételt folyadékbólusok (>1000ml) ellenére sem érjük el a célvérnyomást agyi perfúzióhoz, alacsony dózisú '+t('vazopresszor', 'Noradrenalin')+' indítható.',
+      'Ha a SBP < 90 Hgmm bólusok után is, azonnal vérkészítmény kell (előzetes kórházi értesítés vagy HEMS hívása).'
+    ]}
+  ]}
+]},
+{ id:'spec', title:'Speciális Állapotok', icon:'🔥', secs:[
+  {t:'Égésbetegség', bk:[
+    {tp:'bl', items:[
+      'Égésnél generalizált kapilláris permeabilitás fokozódás = intravasalis folyadékvesztés.',
+      'Túltöltés elkerülése kötelező ('+t('ARSD')+', '+t('MOF')+' veszély).',
+      'Számítás: '+t('Parkland-formula')+' (Felnőtt >15%, Gyermek >10% II-III. fokú égésnél).'
+    ]},
+    {tp:'kr', items:[
+      'Légúti égés gyanúja: korai intubáció. ETI előtt TARTÓZKODJ a nagy volumenű folyadéktól (ödéma veszély).',
+      'Képlet: Égett testfelszín % × ttkg × 4 ml (ha intubált: × 5 ml). Ennek FELÉT az első 8 órában kell beadni.',
+      'Gyermekeknél gyakori az iatrogén hypothermia túlzott hűtés és melegítetlen infúziók miatt!'
+    ]}
+  ]},
+  {t:'Gerincvelői trauma (Neurogén shock)', bk:[
+    {tp:'bl', items:[
+      'Autonóm rostok kiesése = gyors vérnyomásesés, bradycardia ('+t('neurogen shock')+').',
+      'Kezdeti folyadékbólus után korán adjunk vazoaktív szert ('+t('vazopresszor', 'Noradrenalin')+').'
+    ]}
+  ]},
+  {t:'Egyéb kórképek', bk:[
+    {tp:'bl', items:[
+      'Hányás/hasmenés: 1 napja nem evett/ivott felnőttnél 2-3000 ml hiány várható. 250 ml bólusokban pótolni.',
+      'Intubáció előtt (megtartott keringésnél): Az RSI során a gépi lélegeztetés rontja a vénás visszafolyást, keringésösszeomlás lehet. Indukció ELŐTT 10 ml/kg krisztalloid bólus adható.',
+      'Várandósság (vérzés): Permisszív hypotensio TILOS. Fektetés bal oldalra a V. cava inferior felszabadítására.'
+    ]}
+  ]}
+]},
+{ id:'ped', title:'Gyermekek Ellátása', icon:'🧸', secs:[
+  {t:'Gyermekkori folyadékpótlás', bk:[
+    {tp:'al', lv:'w', tx:'Gyermekeknél a vérnyomásesés nagyon késői jel! A megtartott vérnyomás nem jelenti a megfelelő perfúziót.'},
+    {tp:'bl', items:[
+      'Azonnali pótlás kell: megnyúlt CRT, tachykardia, csökkent bőrturgor, letargia esetén.',
+      'Bólus mérete: 10 ml/kg, intravénásan, 10 perc alatt (1 éves kor alatt perfúzor kötelező!).',
+      'Ha nincs javulás, bólus ismételhető. Első órában max. 40-60 ml/kg.'
+    ]},
+    {tp:'kr', items:[
+      'Permisszív hypotensio NEM alkalmazható!',
+      'Élettani SBP: 90 + (2 × életkor évben).',
+      'Alsó tolerabilis SBP: 70 + (2 × életkor évben). Alatta agresszív pótlás kell.'
+    ]},
+    {tp:'al', lv:'d', tx:'Gyermekkori szepszis gyors lefolyású. Mielőbb 10 ml/kg bólus. Ha a harmadik bólusra sem javul a keringés, Noradrenalin (0.10 μg/kg/perc) indítandó!'}
+  ]}
+]},
+{ id:'drugs', title:'Gyógyszeres Keringéstámogatás', icon:'💉', secs:[
+  {t:'Alapelvek & Szerek', bk:[
+    {tp:'al', lv:'w', tx:'Katekolaminok csak vénás/IO kapcsolaton át, kizárólag perfúzorral adagolhatók (kivéve adrenalin újraélesztésnél vagy anaphylaxiánál). Paravazális adás nekrózist okoz!'},
+    {tp:'bl', items:[
+      '<strong>1. Noradrenalin:</strong> Érszűkítő ('+t('vazopresszor')+'), pozitív '+t('inotróp')+' és '+t('kronotróp')+'. Elsőként választandó folyadékra refrakter esetekben (kivéve anaphylaxia). Kezdő dózis: 0.10 μg/kg/perc.',
+      '<strong>2. Adrenalin:</strong> Indikált: CPR, anaphylaxia, instabil bradycardia, vagy szeptikus shockban 2. szerként. Kezdő dózis perfúzorban: 0.10 μg/kg/perc.',
+      '<strong>3. Dobutamin:</strong> Pozitív '+t('inotróp')+' hatás. Ultimum refugium '+t('cardiogen shock', 'cardiogen shockban')+', vagy szepszisben 2. szer. Konzultáció javasolt. Dózis: 5-20 μg/kg/perc.'
+    ]}
+  ]}
+]}
+];
+
+var CARDS = [
+  {cat:'Alapok', f:'Mi a felnőtt emberi test folyadékaránya?', b:'50-60%. (Csecsemőknél kb. 70%).\nA folyadék 2/3-a intracelluláris, 1/3-a sejten kívüli.'},
+  {cat:'Alapok', f:'Mennyi a felnőtt keringő vértérfogata?', b:'Körülbelül 70 ml/kg (egy 70 kg-os embernél kb. 4,5-5,0 liter).'},
+  {cat:'Alapok', f:'Mekkora egy prehospitális folyadékbólus mérete?', b:'Felnőttnél: 250 ml.\nGyermekeknél (pubertás előtt): 10 ml/kg.'},
+  {cat:'Indikáció', f:'Mikor indokolt a folyadékterápia elindítása?', b:'A szöveti perfúzió romlásának korai jeleikor (CRT >3s, hűvös/márványos bőr, tachykardia, csökkent bőrturgor).\nNE várd meg a vérnyomásesést, mert az késői jel!'},
+  {cat:'Tiltás', f:'Adható-e prehospitálisan kolloid oldat?', b:'NEM. A Voluven, HAES adása ellenjavallt (kontraindikált)!\nHalálozást nem csökkentik, de vesekárosodást és alvadási zavart okoznak.'},
+  {cat:'Trauma', f:'Mi a permisszív hypotensio elve?', b:'Nem kontrollálható vérzésnél (pl. belső vérzés) nem cél a normál vérnyomás elérése.\nElegendő a létfontosságú szervek minimális perfúziója, hogy a vérnyomásemelkedés ne lökje le a kialakult vérrögöt.'},
+  {cat:'Trauma', f:'Kiknél TILOS a permisszív hypotensio?', b:'- Várandósok\n- Gyermekek\n- Idős, magas vérnyomásos betegek\n- Súlyos, de nem vérző (izolált) koponyasérültek (cél 110-120 Hgmm)'},
+  {cat:'Trauma', f:'Mik a tranexámsav dózisai?', b:'Felnőtt: 1 g IV/IO (10 perc alatt).\nGyermek: 20 mg/ttkg IV/IO (max 1 g, 10 perc alatt).'},
+  {cat:'Égés', f:'Mikor indokolt a Parkland-formula használata?', b:'Felnőtteknél >15%, gyermekeknél >10% II-III. fokú égett testfelszín esetén.'},
+  {cat:'Égés', f:'Mi a Parkland-formula képlete?', b:'Égett felszín % × testtömeg (kg) × 4 ml = 24 órás szükséglet.\n(Intubált beteg esetén 4 helyett 5 ml a szorzó).\nA számított mennyiség FELÉT az első 8 órában kell beadni.'},
+  {cat:'Gyermek', f:'Mikor indikált gyermeknél az agresszív folyadékterápia?', b:'Ha a SBP beesik a tolerabilis határ alá.\n(70 + 2 × életkor évben) Hgmm.'},
+  {cat:'Gyermek', f:'Milyen gyorsan haladjunk gyermekkori szepszis gyanújánál?', b:'10 ml/kg bólus azonnal (5-10 perc alatt). Ha a 3. bólusra sincs javulás, Noradrenalin perfúzoros adagolása indokolt (0.10 μg/kg/perc).'},
+  {cat:'Gyógyszerek', f:'Mi az elsőként választandó vazopresszor prehospitálisan?', b:'Noradrenalin (folyadékra refrakter shockban).\nKivétel az anaphylaxia, ott Adrenalin.'},
+  {cat:'Gyógyszerek', f:'Adható-e bólusban a Noradrenalin?', b:'NEM. A katekolaminok kizárólag perfúzorral adagolhatók, perifériás vagy centrális vénán/IO-n keresztül.\nParavazális adás nekrózist okoz.'}
+];
+
+var QUIZ = [
+  {q:'Melyik intravénás folyadék a preferált a prehospitális ellátásban?', opts:['0.9% NaCl ("fiziológiás" sóoldat)','Kolloid oldatok (pl. HAES)','Balanszírozott krisztalloid oldatok','5% Glükóz'], ok:2, exp:'Korszerű balanszírozott krisztalloid a preferált. A 0.9% NaCl túl sok kloridot tartalmaz, a kolloidok ellenjavalltak.'},
+  {q:'Melyik kórképben indokolt kolloid (pl. Voluven) infúzió adása prehospitálisan?', opts:['Súlyos égés','Szeptikus shock','Traumás vérzéses shock','Egyikben sem, adása kontraindikált'], ok:3, exp:'A kolloidok prehospitális adása kontraindikált minden kritikus állapotban (szepszis, égés, vérzés) a vese- és alvadási károsodás miatt.'},
+  {q:'Mennyi a felnőtt prehospitális folyadékbólus mérete az eljárásrend szerint?', opts:['100 ml','250 ml','500 ml','1000 ml'], ok:1, exp:'A felnőtt folyadékbólus mérete 250 ml, mely után az állapot újraértékelendő.'},
+  {q:'Mikor beszélünk sikeres vérzéscsillapításról traumában?', opts:['Ha a vérzés jelentősen csillapodott','Ha a kötés már csak lassan vérzik át','Ha a vérzés teljesen elállt, egyáltalán nem látható vérzés','Ha a vérnyomás stabilizálódott'], ok:2, exp:'Sikeres, ha teljesen elállt. Belső vérzés gyanúja esetén szigorúan véve nem beszélhetünk vérzéscsillapításról.'},
+  {q:'Mi a célvérnyomás (permisszív hypotensio) súlyos, belső vérzéssel gyanúsított tompa sérültnél?', opts:['60-70 Hgmm','80-90 Hgmm','100-110 Hgmm','120/80 Hgmm'], ok:1, exp:'Tompa sérülésnél (koponyasérülés nélkül) a célvérnyomás 80-90 Hgmm.'},
+  {q:'Melyik betegcsoportban TILOS a permisszív hypotensio alkalmazása?', opts:['Férfiaknál','Fiatal felnőtteknél','Várandósoknál és gyermekeknél','Végtag amputáltaknál'], ok:2, exp:'Várandósoknál, gyermekeknél, idős hypertoniásoknál és izolált GCS<13 koponyasérülteknél a permisszív hypotensio tilos.'},
+  {q:'Felnőtt súlyos traumás koponyasérültnél, GCS < 13 esetén (vérzéssel): mi a Tranexámsav dózisa?', opts:['500 mg IV 1 perc alatt','1 g IV bólusban','1 g IV/IO 10 perc alatt','2 g IV cseppinfúzióban'], ok:2, exp:'A Tranexámsav felnőtt dózisa 1 g, amit lassan, 10 perc alatt kell beadni.'},
+  {q:'Égésbetegségnél a Parkland-formula alapján kiszámolt folyadékmennyiség mekkora részét kell beadni az első 8 órában?', opts:['A negyedét','A felét','A kétharmadát','A teljes mennyiséget'], ok:1, exp:'Az első 24 órára számolt (pl. ttkg × % × 4ml) mennyiség felét az első 8 órában kell beadni.'},
+  {q:'Intubáció előtt (megtartott keringésnél) indikált a folyadékpótlás, mert:', opts:['A gyógyszerek hígítása miatt kell','A pozitív nyomású lélegeztetés csökkenti a vénás visszaáramlást, ami vérnyomásesést okoz','Növelni kell az oxigénszállító kapacitást','Így könnyebb bevezetni a tubust'], ok:1, exp:'A pozitív nyomású lélegeztetés csökkenti a vénás visszafolyást és a perctérfogatot. Ezért indukció előtt 10 ml/kg bolus adása javasolt hypovolaemiás gyanú esetén.'},
+  {q:'Mennyi a 4 éves gyermek normál szisztolés vérnyomása a képlet alapján?', opts:['88 Hgmm','98 Hgmm','108 Hgmm','78 Hgmm'], ok:1, exp:'A képlet: 90 + (2 × életkor). 90 + (2 × 4) = 98 Hgmm.'},
+  {q:'Gyermekeknél a folyadékbólus prehospitálisan mekkora adagokban történik?', opts:['5 ml/kg','10 ml/kg','20 ml/kg','Fél liter fixen'], ok:1, exp:'Pubertás előtt a bólus mérete 10 ml/kg.'},
+  {q:'Ha gyermekkori szepszisben a 3. folyadékbólus (max 40-60 ml/kg) után sem rendeződik a keringés, mi a teendő?', opts:['További folyadék korlátlan adása','Vazopresszor (Noradrenalin 0.10 μg/kg/perc) adagolás indítása','Dobutamin adása','Azonnali intubáció'], ok:1, exp:'A 3. bólus után vazopresszor támogatás (Noradrenalin) indokolt.'},
+  {q:'Milyen gyógyszer az Adrenalin?', opts:['Csak érszűkítő hatású','Kizárólag a szívfrekvenciát növeli','Vazopresszor, de pozitív inotrop és kronotrop hatása is van','Vérnyomáscsökkentő'], ok:2, exp:'Az adrenalin és noradrenalin is alfa (érszűkítő) és béta (inotróp, kronotróp) receptorokon is hatnak.'},
+  {q:'Hol KELL hűtött infúziót (36°C alatt) alkalmazni?', opts:['Minden traumás shockban','Vérző terheseknél','Hőguta esetén (maghő > 40°C) és pROSC állapotban (kivéve traumás)','Gyermekkori szepszisben'], ok:2, exp:'Hűtött infúzió csak extrém hyperthermia (hőguta) és egyes poszt-reszuszcitációs ellátások esetén indokolt.'},
+  {q:'Hogyan kell adagolni a noradrenalint prehospitálisan?', opts:['Kizárólag perfúzorral vénás/IO kapcsolaton át','Perifériás vénába fecskendőből bólusokban','Bemosással, cseppinfúzióban','Izomba (IM)'], ok:0, exp:'Kizárólag perfúzorral adagolható, a véletlen túladagolás elkerülése végett.'}
+];
+
+var SIMS = [
+  {
+    id: 1, title: '1. Súlyos Tompa Trauma & Belső Vérzés (B+ kompetencia)', diff: 'B+ kompetencia', desc: '40 éves férfi, magasról esett. A medencéje deformált, arca sápadt. B+ mentőápolóként gyógyszerezhetsz és vénát biztosíthatsz.',
+    steps: [
+      {sit:'A helyszínbiztonság és ruházat eltávolítása után (ccABCDE) a "C" vizsgálathoz érsz. A medence szemmel láthatóan deformált. Mit teszel a vizsgálatkor?', opts:[
+        {tx:'Óvatosan megnyomom két oldalról a medencét, hogy érezzem a crepitatiót.', ok:false, fb:'Hibás! A medence vizsgálata bármilyen nyomással SZIGORÚAN TILOS!'},{tx:'Nem nyomkodom! Csak megtekintéssel és mechanizmus alapján értékelem, majd medencerögzítőt helyezek fel.', ok:true, fb:'Helyes! Mechanizmus és látvány alapján rögzíteni kell, nyomkodni tilos.'},{tx:'Megkérem a beteget, hogy álljon fel.', ok:false, fb:'Hibás! Ez életveszélyes.'}
+      ]},
+      {sit:'A CRT 4 mp, pulzus 130/perc. A vérnyomása 75/50 Hgmm. GCS 14 (zavart). Melyik stratégiát követed a folyadékpótlás során?', opts:[
+        {tx:'Gyorsan feltöltöm 120/80 Hgmm-re a megfelelő agyi perfúzióért.', ok:false, fb:'Hibás! Kifejezett agyi sérülés nem dominál, a belső vérzés a fő gond. A túl magas vérnyomás lelöki a vérrögöt.'},{tx:'A permisszív hypotensio elvét alkalmazom, cél SBP: 80-90 Hgmm (súlyos tompa sérülés).', ok:true, fb:'Helyes! Tompa sérülésnél (belső vérzéssel) a cél a 80-90 Hgmm SBP fenntartása.'},{tx:'Nem adok folyadékot, amíg kórházba nem ér.', ok:false, fb:'Hibás! A 75 Hgmm túl alacsony, a minimális perfúziót biztosítani kell.'}
+      ]},
+      {sit:'Vénát biztosítasz. Milyen típusú folyadékot kezdesz el adagolni BÓLUSOKBAN a 80-90 Hgmm eléréséhez?', opts:[
+        {tx:'Voluven (kolloid) oldatot 500 ml-es bólusban.', ok:false, fb:'Hibás! A kolloid oldat prehospitálisan kontraindikált.'},{tx:'0.9% NaCl folyamatos cseppinfúzióban.', ok:false, fb:'Hibás! Bólusokban kell adni, és a balanszírozott krisztalloid a preferált.'},{tx:'Balanszírozott krisztalloid infúziót, 250 ml-es bólusokban, a hatás újraértékelésével.', ok:true, fb:'Helyes! A prehospitális pótlás 250 ml-es bólusokban krisztalloiddal történik.'}
+      ]},
+      {sit:'A beteg belső vérzése és a sérülés mechanizmusa miatt az eljárásrend alapján egy specifikus gyógyszer korai adása kötelező. Mi ez?', opts:[
+        {tx:'Tranexámsav 1 g IV 10 perc alatt.', ok:true, fb:'Helyes! Nem kontrollálható belső vérzés gyanúja esetén azonnal 1 g TXA adandó.'},{tx:'Adrenalin bólus.', ok:false, fb:'Hibás! Vérzéses shockban az Adrenalin bólus rontja a perifériás perfúziót és nem javítja a túlélést.'},{tx:'Fájdalomcsillapító maximális dózisban.', ok:false, fb:'Hibás! A fájdalomcsillapítás fontos, de a TXA az életmentő véralvadási lépés.'}
+      ]},
+      {sit:'Beadod a 250 ml krisztalloidot. Újraértékeléskor az SBP 85 Hgmm, a pulzus 120/perc. A radiális pulzus tapintható, a beteg orientáltabb. Mit teszel?', opts:[
+        {tx:'Folytatom a folyadék adását további bólusokkal 120 Hgmm-ig.', ok:false, fb:'Hibás! Elérted a permisszív cél vérnyomást (80-90 Hgmm), a további folyadék káros.'},{tx:'Leállítom a folyadékpótlást, a vénát lezárom, folyamatos monitorozás mellett transzport.', ok:true, fb:'Helyes! Ha a célértéket elértük, nem szabad túltölteni a beteget.'},{tx:'Megemelem a lábait.', ok:false, fb:'Hibás! Medencesérültnél tilos a lábak emelgetése.'}
+      ]},
+      {sit:'A szállítás közben hirtelen a beteg állapota romlik. A vérnyomás beesik 60/40 Hgmm-re. Ismét adsz összesen > 1000 ml folyadékbólust, de a szisztolés vérnyomás továbbra is 65 Hgmm. Mi a B+ kompetenciájú teendő?', opts:[
+        {tx:'Korlátlanul nyomom bele a folyadékot.', ok:false, fb:'Hibás! Az 1000 ml után refrakter shock esetén vazopresszor kell.'},{tx:'Alacsony dózisú Noradrenalin (0.10 μg/kg/perc) perfúzoros adagolását indítom.', ok:true, fb:'Helyes! Ha a volumenpótlás (>1000 ml) hatástalan, Noradrenalin indítása szükséges a perfúzióhoz.'},{tx:'Dobutamint indítok.', ok:false, fb:'Hibás! A Dobutamin inotrop szer, vérzéses shockban a vazopresszor az elsődleges.'}
+      ]},
+      {sit:'A folyadékot és a gyógyszert milyen hőmérsékleten javasolt bejuttatni súlyos traumánál?', opts:[
+        {tx:'Testhőmérsékletre (36-40°C) melegítve.', ok:true, fb:'Helyes! A traumás hypothermia halálos triászhoz vezet, melegített infúzió kötelező.'},{tx:'Hidegen, egyenesen a hűtőből a "hűtés védelem" miatt.', ok:false, fb:'Hibás! A traumás beteget óvni kell a kihűléstől!'},{tx:'Szobahőmérsékleten.', ok:false, fb:'Hibás! A melegített a preferált.'}
+      ]},
+      {sit:'Miközben a Noradrenalint adagolod, megfigyeled a vénás kanült. Miért fontos ezt rendszeresen ellenőrizni?', opts:[
+        {tx:'Hogy ne alvadjon be a vér.', ok:false, fb:'Hibás! Ha perfúzor megy, nem alvad be.'},{tx:'Mert a katekolaminok paravazális adása (véna mellé futása) súlyos szöveti nekrózist okozhat.', ok:true, fb:'Helyes! A Noradrenalin szöveti nekrózist okoz, mindig biztos perifériás vagy centrális kapu kell.'},{tx:'Csak rutinból.', ok:false, fb:'Hibás! Konkrét életveszélyes szövődménye van.'}
+      ]},
+      {sit:'A cél kórház egy távoli baleseti centrum. Látva a permisszív hypotensiót és a Noradrenalin igényt, mit kell megtenned a logisztika során?', opts:[
+        {tx:'Helikopter (HEMS) riasztását mérlegelem a gyors vérkészítményhez jutás érdekében, és előre értesítem a kórházat a sürgős vérigényről.', ok:true, fb:'Helyes! A refrakter vérzéses shock azonnali vért igényel.'},{tx:'Semmit, lassan haladunk szirénázva.', ok:false, fb:'Hibás! A beteget elveszítjük transzport közben vérkészítmény nélkül.'},{tx:'A közeli kis ügyeletre viszem.', ok:false, fb:'Hibás! Súlyos traumás csak megfelelő szintű traumatológiára vihető.'}
+      ]},
+      {sit:'Beérkeztek a Sürgősségi Osztályra. Milyen paramétert vagy beavatkozást NEM kellett mérned/megtenned a helyszínen az eljárásrend alapján az időhiány miatt?', opts:[
+        {tx:'A vércukormérést (D vizsgálat).', ok:false, fb:'Hibás! A tudatállapot változás miatt az kötelező.'},{tx:'A Tranexámsav beadását.', ok:false, fb:'Hibás! Az életmentő, kötelező teendő.'},{tx:'A 12-elvezetéses EKG készítését.', ok:true, fb:'Helyes! Súlyos sérültnél az időveszteség miatt a 12-elvezetéses EKG készítése prehospitálisan nem indokolt.'}
+      ]}
+    ],
+    summary: 'Trauma & Vérzés Összefoglaló: A tompa medencesérült beteg kritikus shockos állapotban volt. A medence nyomkodását az eljárásrend tiltja. A belső vérzés miatt permisszív hypotensio elvét követtük (Cél SBP: 80-90 Hgmm). Melegített krisztalloid infúziót adtunk 250 ml-es bólusokban (a kolloidok tiltottak!). Korán 1g Tranexámsavat adagoltunk intravénásan 10 perc alatt. Amikor a vérnyomás stabilizálódott, a folyadékot leállítottuk. Állapotromlás és >1000ml bólus után Noradrenalin perfúzort (0.10 μg/kg/perc) indítottunk. Végig figyeltünk a véna épségére (nekrózis veszélye) és a beteg hővédelmére. A sürgős vérigény miatt helikoptert és célkórházat riasztottunk, a 12-elvezetéses EKG-t mellőztük az időnyerés miatt.'
+  },
+  {
+    id: 2, title: '2. Kiterjedt Égésbetegség & Folyadékterápia (B+ kompetencia)', diff: 'B+ kompetencia', desc: 'Robbanás történt, egy 80 kg-os beteg arca és mellkasa (kb. 30%) másod- és harmadfokban megégett. B+ kompetencia.',
+    steps: [
+      {sit:'Milyen patofiziológiai folyamat indul meg az égés miatt az érrendszerben, ami a folyadékterápiát indokolja?', opts:[
+        {tx:'Azonnali vörösvértest szétesés.', ok:false, fb:'Hibás! Bár van némi haemolysis, nem ez a fő ok.'},{tx:'Generalizáltan fokozott kapilláris permeabilitás, ami miatt a folyadék kilép az érpályából (intravasalis volumen csökken).', ok:true, fb:'Helyes! A kapilláris szivárgás masszív folyadékvesztést és hypovolaemiás shockot okoz.'},{tx:'Kizárólag a bőrfelszíni párolgás okozza a hiányt.', ok:false, fb:'Hibás! A szisztémás kapilláris szivárgás a fő probléma.'}
+      ]},
+      {sit:'Az arca megégett, a szőrzet perzselt, és a beteg rekedt. GCS 15. Mi az azonnali teendő/figyelmeztetés a folyadékpótlást megelőzően az eljárásrend szerint?', opts:[
+        {tx:'Légúti égés gyanúja miatt a nagymennyiségű folyadék adásától TARTÓZKODNI kell az emelt szintű légútbiztosításig (ETI), mert gyorsítja a légúti ödémát.', ok:true, fb:'Helyes! A nagy volumen bejuttatása drasztikusan rontja a felső légúti duzzanatot intubáció előtt.'},{tx:'Azonnal maximális folyadékot kell adni.', ok:false, fb:'Hibás! Az a légút teljes elzáródását okozhatja.'},{tx:'Nem kell folyadékot adni egyáltalán.', ok:false, fb:'Hibás! Késleltetve, az ETI után kell pótolni.'}
+      ]},
+      {sit:'Az ALS egység megérkezik, az orvos sikeresen intubálja a beteget (ETI). Most el kell indítanod a folyadékpótlást. Melyik formulát használod a mennyiség számítására?', opts:[
+        {tx:'A Parkland-formulát (II-III fokban égett testfelszín% × ttkg × X ml).', ok:true, fb:'Helyes! A Parkland-formula az eljárásrend által preferált prehospitális becslés (bár pontatlan, de a legjobb ami van).'},{tx:'Fix 1000 ml/óra mindenkinek.', ok:false, fb:'Hibás! Súlyhoz és %-hoz kötött.'},{tx:'A NEWS2 pontszám alapján adok bólust.', ok:false, fb:'Hibás! Égésnél dedikált számítás van.'}
+      ]},
+      {sit:'A beteg 80 kg, a sérülés 30%. Intubálva van. Számold ki a Parkland formula alapján az ELSŐ 24 ÓRA folyadékszükségletét az ETI-s képlettel!', opts:[
+        {tx:'30 × 80 × 4 = 9600 ml.', ok:false, fb:'Hibás! Intubált betegnél az ETI utáni szorzó 5 ml!'},{tx:'30 × 80 × 5 = 12 000 ml.', ok:true, fb:'Helyes! Intubált beteg képlete: égett% × ttkg × 5 ml. (30 × 80 × 5 = 12000).'},{tx:'30 × 80 × 2 = 4800 ml.', ok:false, fb:'Hibás! A szorzó 5.'}
+      ]},
+      {sit:'Az első 24 órás mennyiség 12 000 ml. Ebből mennyit kell beadni az első 8 órában?', opts:[
+        {tx:'A teljes mennyiséget (12 000 ml).', ok:false, fb:'Hibás! Az túltöltést (ARDS, MOF) okoz.'},{tx:'A felét, azaz 6000 ml-t.', ok:true, fb:'Helyes! A kiszámolt mennyiség felét az első 8 órában kell pótolni.'},{tx:'A negyedét (3000 ml-t).', ok:false, fb:'Hibás! Az első 8 órában a felét kell beadni.'}
+      ]},
+      {sit:'Ha az első 8 órában 6000 ml-t kell kapnia, mennyi az óránkénti folyadékbevitel? Hogyan oldod ezt meg fizikailag prehospitálisan?', opts:[
+        {tx:'750 ml/óra. Két nagy lumenű perifériás véna biztosításával adom a melegített krisztalloidot.', ok:true, fb:'Helyes! 6000/8 = 750 ml/h. Nagy kiterjedésű égésnél kell a 2 nagy lumenű kanül.'},{tx:'1000 ml/óra centrális vénán.', ok:false, fb:'Hibás! A számítás rossz, és prehospitálisan preferált a dupla vastag perifériás véna.'},{tx:'75 ml/óra cseppinfúzióban.', ok:false, fb:'Hibás! Ez nagyságrendi tévedés.'}
+      ]},
+      {sit:'A mentésirányító orvosa rádión megkérdezi, hogy a keringés támogatására HAES (kolloid) oldatot bekötöttél-e az égési shock megelőzésére. Mi a válaszod?', opts:[
+        {tx:'Igen, egy 500 ml-es Voluvent elindítottam.', ok:false, fb:'Hibás! Súlyos hiba.'},{tx:'Nem, mert a hidroxietil-keményítő (HAES) alapú kolloid oldatok égésbetegségben KONTRAINDIKÁLTAK, veseelégtelenséget okoznak.', ok:true, fb:'Helyes! Az eljárásrend egyértelműen tiltja a kolloidok adását égésben és szepszisben is.'},{tx:'Igen, de csak kis adagban.', ok:false, fb:'Hibás! Teljesen kontraindikált.'}
+      ]},
+      {sit:'Mivel a sérülés robbanás (blast injury) miatt történt, milyen további klinikai gyanúra KELL figyelned a folyadékterápia során?', opts:[
+        {tx:'Kizárólag az égés mélységére.', ok:false, fb:'Hibás! Robbanásnál összetett trauma van.'},{tx:'Robbanás gyanúja esetén az égésen felül egyéb sérülésre (pl. belső vérzés) is gondolni kell, ami módosíthatja a shockképet és a pótlást.', ok:true, fb:'Helyes! A robbanás nyomáshulláma (primer blast) tompa belső sérüléseket okoz.'},{tx:'Arra, hogy a beteg pszichésen stabil-e.', ok:false, fb:'Hibás! A belső vérzés az elsődleges vitális veszély.'}
+      ]},
+      {sit:'Gyermek égéssérült esetén mire kell fokozottan vigyázni az eljárásrend "Égésbetegség" fejezete szerint a helyszínen?', opts:[
+        {tx:'A túlzott felszíni hűtés és a nagymennyiségű melegítetlen infúziók együttesen iatrogén hypothermiát (kihűlést) okoznak, ami életveszélyes.', ok:true, fb:'Helyes! A gyermekek testfelszín/tömeg aránya nagy, a hűtés és hideg infúzió halálos kihűlésbe kergetheti őket.'},{tx:'Hogy ne adjunk nekik oxigént.', ok:false, fb:'Hibás! Oxigén mindig kell a hypoxiás állapotokban.'},{tx:'Hogy gyorsan tegyük jégre a megégett végtagokat.', ok:false, fb:'Hibás! A jegelés amúgy is tilos égésnél.'}
+      ]},
+      {sit:'Megérkeztek a kórházba. Mit KELL pontosan dokumentálnod és átadnod az átvevő orvosnak az égési folyadékterápiával kapcsolatban?', opts:[
+        {tx:'Csak a beteg korát.', ok:false, fb:'Hibás! Az kevés.'},{tx:'Az égett testfelszín nagyságát, a becsült testsúlyt és a prehospitálisan MÁR beadott folyadékmennyiséget pontosan.', ok:true, fb:'Helyes! Az átvevő intézmény ezekből számolja újra és folytatja a terápiát (levonva a már beadottat).'},{tx:'Hogy mennyi idő alatt értünk be.', ok:false, fb:'Hibás! Fontos, de a klinikai adatok a mérvadók.'}
+      ]}
+    ],
+    summary: 'Égésbetegség Összefoglaló: A 80 kg-os, 30%-os égést szenvedett betegnél légúti égés jelei (perzselt szőrzet, rekedtség) mutatkoztak. Emelt szintű légútbiztosítás (ETI) előtt tartózkodtunk a nagymennyiségű folyadéktól az ödéma megelőzése végett. Intubáció után a Parkland formulát használtuk a szorzóval (ETI esetén: 30% × 80kg × 5ml = 12000 ml / 24h). Ennek felét (6000 ml) az első 8 órában kell beadni, tehát a helyszínen 750 ml/óra ütemben melegített krisztalloidot kezdtünk 2 nagy perifériás vénán. A kolloidokat (HAES) szigorúan elkerültük, mert égésben kontraindikáltak. Mivel robbanás történt, figyeltünk az esetleges belső vérzés jeleire is. Kórházba érkezéskor pontosan átadtuk az égett felület %, a testtömeg és az eddig beadott folyadék adatait.'
+  },
+  {
+    id: 3, title: '3. Gyermekkori Szepszis (B+ kompetencia)', diff: 'B+ kompetencia', desc: '5 éves (kb. 20 kg) kisfiú otthonában. 3 napja magas láza van (40°C), letargikus, a CRT 5 másodperc, bőre márványozott. B+ kompetencia.',
+    steps: [
+      {sit:'Megérkezel, a PAT (Állapotfelmérés háromszöge) kóros Küllem és Keringés jeleket mutat. A gyermek vérnyomását mérve SBP 78 Hgmm. Mi az alsó tolerabilis vérnyomáshatár egy 5 évesnél?', opts:[
+        {tx:'70 + (2 × 5) = 80 Hgmm.', ok:true, fb:'Helyes! A képlet: 70+2x(év). 80 Hgmm alatt már a kardiovaszkuláris összeomlás határán van a gyerek.'},{tx:'90 + (2 × 5) = 100 Hgmm.', ok:false, fb:'Hibás! Ez a NORMÁL, nem a tolerabilis minimum.'},{tx:'60 Hgmm.', ok:false, fb:'Hibás! Az rossz képlet.'}
+      ]},
+      {sit:'A mért 78 Hgmm az alsó határ (80 Hgmm) alatt van. Mit mond az eljárásrend a gyermekek vérnyomáseséséről?', opts:[
+        {tx:'Ez egy korai és gyakori jelenség, csak itatni kell.', ok:false, fb:'Hibás! Nagyon rossz jel.'},{tx:'Késői jel, fenyegető keringési összeomlást jelez! Már enyhén csökkent érték esetén is azonnali, agresszív folyadékterápia (és ALS segítség) szükséges!', ok:true, fb:'Helyes! Gyermekek sokáig kompenzálnak; ha a vérnyomás esik, a kompenzáció kimerült.'},{tx:'Semmit nem jelent, ha pulzus még van.', ok:false, fb:'Hibás! Kritikus tünet.'}
+      ]},
+      {sit:'A diagnózisod szepszis/szeptikus shock gyanúja (láz + rossz perfúzió). Alkalmazható-e a permisszív hypotensio elve ebben az esetben?', opts:[
+        {tx:'Igen, hogy ne terheljük a szívét.', ok:false, fb:'Hibás! A permisszív hypotensio gyereknél tilos.'},{tx:'NEM. Gyermekeknél és szepszisben a permisszív hypotensio elvei nem alkalmazhatóak! Életkornak megfelelő (vagy a fölötti) vérnyomás elérésére kell törekedni.', ok:true, fb:'Helyes! Permisszív hypo csak felnőtt traumás vérzőnél játszik.'},{tx:'Csak ha vérzik is.', ok:false, fb:'Hibás! Akkor is tilos gyermeknél.'}
+      ]},
+      {sit:'Vénát vagy IO-t (intraossealis) biztosítotok az ALS egységgel közösen. Mennyi a folyadékbólus mérete a 20 kg-os gyermeknél, és milyen ütemben adod?', opts:[
+        {tx:'250 ml gyorsan.', ok:false, fb:'Hibás! Ez a felnőtt adag.'},{tx:'10 ml/kg = 200 ml, 5-10 perc alatt.', ok:true, fb:'Helyes! A gyermekkori bólus szepszisben 10 ml/kg (itt 200 ml), gyorsan (5-10 perc).'},{tx:'20 ml/kg = 400 ml, egy óra alatt csepegtetve.', ok:false, fb:'Hibás! Bólusban, gyorsan kell adni, hogy felmérjük a hatást.'}
+      ]},
+      {sit:'Beadod a 200 ml bólust. Újraértékeled a gyermeket. A CRT továbbra is 5 mp, a vérnyomás 78 Hgmm. Melyik a helyes folytatás?', opts:[
+        {tx:'Várok 1 órát.', ok:false, fb:'Hibás! Azonnal reagálni kell.'},{tx:'Ismétlem a 10 ml/kg bólust a hatás függvényében. Az első órában maximum 40-60 ml/kg adható összesen.', ok:true, fb:'Helyes! Ha nincs javulás és nincs túltöltés jele, ismételjük a bólust a limitig.'},{tx:'Azonnal intubálom.', ok:false, fb:'Hibás! A volumen az első lépés szepszisben.'}
+      ]},
+      {sit:'Beadtátok a 3. bólust is (összesen 600 ml, ami a max 30 ml/kg). A gyermek perfúziója és vérnyomása (75 Hgmm) továbbra is elégtelen (refrakter shock). Mi a KÖTELEZŐ gyógyszeres teendő az eljárásrend alapján?', opts:[
+        {tx:'Még több folyadékot adunk korlátlanul.', ok:false, fb:'Hibás! Folyadék túltöltéshez (tüdőödéma) vezet.'},{tx:'Vazopresszor (Noradrenalin) adagolást kell indítani 0.10 μg/kg/perc kezdő dózissal, perfúzorban.', ok:true, fb:'Helyes! A szepszis protokoll egyértelmű: 3 hatástalan bólus után Noradrenalin indítandó.'},{tx:'Aspirint adok a lázra.', ok:false, fb:'Hibás! A shock reverzálása az életmentő priorítás.'}
+      ]},
+      {sit:'Számoljuk ki a Noradrenalin adagolását! A gyermek 20 kg. A Noradrenalin dózis 0.10 μg/kg/perc. (Ampulla: 1 mg hígítva 50 ml-re). Mennyi lesz az induló perfúzor sebesség (ml/h)? (Használd a függeléket/számolást: 20kg × 0.1 × 60 / 20)', opts:[
+        {tx:'10 ml/h', ok:false, fb:'Hibás! A képlet: 0.1(dose) * 20(kg) * 60(min) = 120 ug/h. 50ml-ben van 1000ug -> 20ug/ml. 120/20 = 6.'},{tx:'1.8 ml/h', ok:false, fb:'Hibás! Rossz a számítás.'},{tx:'6 ml/h', ok:true, fb:'Helyes! A táblázat szerint is 20 kg-ra 0.10 μg/kg/perc az 6 ml/h.'}
+      ]},
+      {sit:'Elindítod a Noradrenalint 6 ml/h sebességgel. Milyen gyógyszert köthetsz még be MÁSODIK keringéstámogatóként, ha a beteg szív pumpafunkciója is elégtelen (hideg shock)?', opts:[
+        {tx:'Adrenalin (0.10 μg/kg/perc) vagy Dobutamin.', ok:true, fb:'Helyes! Az eljárásrend szerint az Adrenalin vagy a Dobutamin használható második szerként szeptikus shockban.'},{tx:'Amiodaron.', ok:false, fb:'Hibás! Antiaritmiás szer.'},{tx:'Nincs második szer.', ok:false, fb:'Hibás! Van.'}
+      ]},
+      {sit:'Mivel a gyermek 40°C lázas, milyen hőmérsékletű infúziót kell adni?', opts:[
+        {tx:'Hideget, egyenesen a hűtőből a lázcsillapítás miatt.', ok:false, fb:'Hibás! A jéghideg folyadék (ha nem extrém hőguta) didergést, shockot provokál és növeli az O2 fogyasztást.'},{tx:'Testhőmérsékletre melegített krisztalloidot, míg a test külső hűtését kíméletesen (fizikális) végezzük.', ok:true, fb:'Helyes! Az alap folyadékpótlás melegített infúzióval történjen (a lázat fizikálisan/gyógyszerrel csillapítjuk, nem mélyhűtött infúzióval).'},{tx:'Szobahőmérsékletűt.', ok:false, fb:'Hibás! Melegítettet preferálunk.'}
+      ]},
+      {sit:'Szállítás közben a gyermek állapota hirtelen javul, a pulzus lassul, CRT 2 mp, SBP 95 Hgmm. Mit teszel a Noradrenalin perfúzorral?', opts:[
+        {tx:'Azonnal lekapcsolom és kimosom a vénát.', ok:false, fb:'Hibás! A katekolaminok hirtelen megvonása rebound hypotensiot (összeomlást) okoz.'},{tx:'Fokozatosan csökkentem a dózist (a fokozatosság elve követendő), folyamatos vérnyomásmérés mellett.', ok:true, fb:'Helyes! Csökkentés esetén is az 5-10 percenkénti, fokozatos léptékezés a protokoll.'},{tx:'Emelem az adagot.', ok:false, fb:'Hibás! Ha stabil a beteg, nem emelünk.'}
+      ]}
+    ],
+    summary: 'Gyermek Szepszis Összefoglaló: A 5 éves gyermek kritikus hypotensióban volt (78 Hgmm < 80 Hgmm alsó határ). Gyermekeknél a vérnyomás beesése végső jel. A permisszív hypotensio tilos! Azonnal megkezdtük a balanszírozott krisztalloid pótlását 10 ml/kg (200 ml) bólusban 5-10 perc alatt. Miután 3 bólus (összesen max. megengedett a primer órában) hatástalan volt, az eljárásrend alapján azonnal Noradrenalin perfúzort indítottunk (Kezdő dózis 0.10 μg/kg/perc -> ami 20 kg-nál 6 ml/h sebesség). A gyermek láza ellenére melegített infúziót adtunk, nehogy didergést/shockot provokáljunk. Mikor a beteg állapota javult, a katekolamint csak szigorúan fokozatosan csökkentettük.'
+  }
+];
+
+// --- RENDER LOGIC ---
+function renderHome(){
+  return `
+    <div style="margin-bottom:1.5rem; text-align:center;">
+      <div style="font-size:11px;font-weight:800;color:#14b8a6;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Országos Mentőszolgálat</div>
+      <h1 style="font-size:24px;font-weight:700;color:#f3f4f6;margin-bottom:6px;line-height:1.2;">Folyadékpótlás és<br>Keringéstámogatás</h1>
+      <div style="font-size:12px;color:#9ca3af;">Szabványos Eljárásrend v2.0 / Prehospitális ellátás</div>
+    </div>
+    <div class="g2" style="margin-bottom:.75rem">
+      <button onclick="go('chapters')" class="home-mod"><div class="home-mod-icon">📚</div><div class="home-mod-title">Tananyag</div><div class="home-mod-desc">Elméleti háttér és protokollok</div></button>
+      <button onclick="go('flash')" class="home-mod"><div class="home-mod-icon">🃏</div><div class="home-mod-title">Kártyák</div><div class="home-mod-desc">Definíciók és képletek tanulása</div></button>
+      <button onclick="go('quiz')" class="home-mod"><div class="home-mod-icon">❓</div><div class="home-mod-title">Kvíz</div><div class="home-mod-desc">Tudásfelmérő tesztek</div></button>
+      <button onclick="go('sim')" class="home-mod"><div class="home-mod-icon">🚑</div><div class="home-mod-title">Szimuláció</div><div class="home-mod-desc">Klinikai esetek és döntések</div></button>
+      <button onclick="go('calc')" class="home-mod" style="grid-column: span 2;"><div class="home-mod-icon" style="font-size:24px;margin-bottom:4px;">🧮</div><div class="home-mod-title">Kalkulátorok</div><div class="home-mod-desc">Égés, Gyermek RR, Gyógyszerhígítás</div></button>
+    </div>
+    <div class="card" style="background:#064e3b20; border-color:#065f46;">
+      <div style="font-size:12px;color:#d1d5db;text-align:center;">
+        <b>Tipp:</b> A szövegben kékkel aláhúzott szavakra kattintva megjelenik a pontos definíciójuk.
+      </div>
+    </div>
+  `;
+}
+
+function renderChapters(){
+  let html = `<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Tananyag (Eljárásrend)</h2>`;
+  CDATA.forEach(c => {
+    html += `
+      <button class="ch-row" onclick="go('chapter','${c.id}')">
+        <div style="width:42px;height:42px;border-radius:12px;background:#14b8a620;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${c.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;">${c.title}</div>
+          <div style="font-size:11px;color:#9ca3af">${c.secs.length} fejezet</div>
+        </div>
+        <div style="color:#9ca3af;font-size:18px">›</div>
+      </button>
+    `;
+  });
+  return html;
+}
+
+function rb(b){
+  if(b.tp==='sub') return `<div class="sub">${b.tx}</div>`;
+  if(b.tp==='bl') return `<ul class="bl">${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+  if(b.tp==='kr') return `<div>${b.items.map(i=>`<div class="kr">✓ &nbsp;${i}</div>`).join('')}</div>`;
+  if(b.tp==='al') return `<div class="al al-${b.lv}">${b.tx}</div>`;
+  if(b.tp==='note') return `<div class="note">${b.tx}</div>`;
+  if(b.tp==='ftable'){
+    return `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Kategória</th><th>Célérték / Dózis</th></tr></thead><tbody>
+      ${b.rows.map(r=>`<tr><td style="font-weight:600;color:#c4b5fd">${r[0]}</td><td style="color:#e5e7eb">${r[1]}</td></tr>`).join('')}
+      </tbody></table></div>`;
+  }
+  return '';
+}
+
+function renderChapter(id){
+  let c = CDATA.find(x => x.id === id);
+  if(!c) return '';
+  let html = `
+    <button onclick="go('chapters')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+      <div style="width:46px;height:46px;border-radius:12px;background:#14b8a620;display:flex;align-items:center;justify-content:center;font-size:24px">${c.icon}</div>
+      <h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">${c.title}</h2>
+    </div>
+  `;
+  c.secs.forEach(s => {
+    html += `<div class="card"><h3 style="font-size:15px;font-weight:700;color:#14b8a6;margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">${s.t}</h3>`;
+    s.bk.forEach(b => { html += rb(b); });
+    html += `</div>`;
+  });
+  return html;
+}
+
+function renderFlash(){
+  let cats = ['Összes', ...[...new Set(CARDS.map(c=>c.cat))]];
+  let filtered = FC.cat === 'Összes' ? CARDS : CARDS.filter(c=>c.cat === FC.cat);
+  let card = filtered[Math.min(FC.idx, filtered.length-1)];
+  
+  let html = `
+    <h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">
+      ${cats.map(c=>`<button onclick="setCat('${c}')" style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid ${FC.cat===c?'#14b8a6':'#3f3f3f'};background:${FC.cat===c?'#14b8a6':'#2a2a2a'};color:${FC.cat===c?'#111827':'#9ca3af'};cursor:pointer;font-family:inherit">${c}</button>`).join('')}
+    </div>
+    <div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">${FC.idx+1} / ${filtered.length} • Kattints a kártyára a fordításhoz</div>
+    <div class="flip ${FC.flip?'on':''}" onclick="flipCard()">
+  `;
+  if(FC.flip) {
+    html += `
+      <div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Válasz</div>
+      <div style="font-size:14px;color:#d1d5db;line-height:1.7;text-align:center;white-space:pre-line">${card.b}</div>
+    `;
+  } else {
+    html += `
+      <div style="font-size:11px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">${card.cat}</div>
+      <div style="font-size:16px;font-weight:600;color:#f3f4f6;line-height:1.5">${card.f}</div>
+      <div style="font-size:11px;color:#9ca3af;margin-top:20px">Kattints a válaszért ↻</div>
+    `;
+  }
+  html += `
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button>
+      <button class="btn btn-fw" style="background:#14b8a620; color:#14b8a6; border-color:#14b8a6;" onclick="flipCard()">Fordít</button>
+      <button class="btn btn-fw" onclick="navCard(1)">Következő ›</button>
+    </div>
+  `;
+  return html;
+}
+
+function renderQuiz(){
+  if(QZ.done){
+    let pct = Math.round(QZ.score/QUIZ.length*100);
+    let good = pct >= 80;
+    let html = `
+      <h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>
+      <div style="background:${good?'#064e3b':'#451a03'};border:1px solid ${good?'#065f46':'#78350f'};border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1rem">
+        <div style="font-size:48px;font-weight:700;color:${good?'#4ade80':'#fde68a'}">${QZ.score}/${QUIZ.length}</div>
+        <div style="font-size:16px;font-weight:600;color:${good?'#4ade80':'#fde68a'};margin-top:8px;">${pct}% – ${good?'Kiválóan ismered az eljárásrendet!':'Ismételd át a tananyagot.'}</div>
+      </div>
+    `;
+    let wr = QZ.ans.filter(a=>!a.ok);
+    if(wr.length) {
+      html += `<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Hibás válaszaid elemzése:</h3>`;
+      wr.forEach(a => {
+        html += `
+          <div class="card" style="margin-bottom:8px">
+            <div style="font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:6px">${QUIZ[a.qi].q}</div>
+            <div style="font-size:12px;color:#fca5a5;margin-bottom:4px">✗ Te válaszod: ${QUIZ[a.qi].opts[a.pi]}</div>
+            <div style="font-size:12px;color:#4ade80;margin-bottom:8px">✓ Helyes: ${QUIZ[a.qi].opts[QUIZ[a.qi].ok]}</div>
+            <div style="font-size:12px;color:#9ca3af;border-top:1px solid #3f3f3f;padding-top:6px;">${QUIZ[a.qi].exp}</div>
+          </div>
+        `;
+      });
+    } else {
+      html += `<div class="al al-s">Tökéletes! Egyetlen hibát sem vétettél.</div>`;
+    }
+    html += `<button class="btn btn-g btn-fw" style="margin-top:10px" onclick="resetQuiz()">Kvíz Újraindítása</button>`;
+    return html;
+  }
+  
+  let q = QUIZ[QZ.idx];
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2>
+      <span style="font-size:12px;color:#9ca3af;font-weight:600;">${QZ.idx+1} / ${QUIZ.length}</span>
+    </div>
+    <div class="prog"><div class="progb" style="width:${((QZ.idx+1)/QUIZ.length*100)}%;background:#14b8a6"></div></div>
+    <div class="card" style="margin-bottom:.75rem;background:#262626;border-color:#4b5563;">
+      <p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">${q.q}</p>
+    </div>
+  `;
+  q.opts.forEach((opt, i) => {
+    let cls = 'opt';
+    if(QZ.sel !== null) {
+      if(i === q.ok) cls += ' opt-ok';
+      else if(i === QZ.sel) cls += ' opt-no';
+    }
+    html += `<button class="${cls}" ${QZ.sel===null?`onclick="pickQ(${i})"`:''}>${opt}</button>`;
+  });
+  if(QZ.sel !== null) {
+    html += `
+      <div class="al al-i" style="margin-bottom:.75rem; border-color:#3b82f6;">${q.exp}</div>
+      <button class="btn btn-g btn-fw" onclick="nextQ()">${QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények Megtekintése'}</button>
+    `;
+  }
+  return html;
+}
+
+function renderSim(){
+  if(!SI.id){
+    let html = `<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Klinikai Szimulációk</h2>
+    <div class="al al-w">Válaszd ki az esetet! Minden szimuláció a protokoll minden lépésén végigkísér az elejétől a kórházba szállításig.</div>`;
+    SIMS.forEach(s => {
+      html += `
+        <button class="card-btn" onclick="startSim(${s.id})">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+            <div style="font-size:15px;font-weight:700;color:#14b8a6;max-width:70%">${s.title}</div>
+            <span class="tag tag-y">${s.diff}</span>
+          </div>
+          <div style="font-size:12px;color:#9ca3af;margin-bottom:8px;line-height:1.4">${s.desc}</div>
+          <div style="font-size:11px;color:#6b7280;font-weight:600;">${s.steps.length} klinikai döntési pont</div>
+        </button>
+      `;
+    });
+    return html;
+  }
+  
+  let sim = SIMS.find(s => s.id === SI.id);
+  if(SI.fin){
+    let correct = SI.hist.filter(h => sim.steps[h.step].opts[h.oi].ok).length;
+    let good = correct >= sim.steps.length * 0.8;
+    let html = `
+      <h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">${sim.title} - Zárójelentés</h2>
+      <div style="background:${good?'#064e3b':'#451a03'};border:1px solid ${good?'#065f46':'#78350f'};border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">
+        <div style="font-size:42px;font-weight:700;color:${good?'#4ade80':'#fde68a'}">${correct}/${sim.steps.length}</div>
+        <div style="font-size:13px;color:${good?'#4ade80':'#fde68a'};font-weight:600">Helyes klinikai döntés</div>
+      </div>
+      <div class="al al-i" style="background:#17255420;">
+        <strong style="color:#60a5fa;display:block;margin-bottom:6px;">Eset Összefoglaló:</strong>
+        <span style="color:#e5e7eb;font-size:13px;line-height:1.6;">${sim.summary}</span>
+      </div>
+      <h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Lépéseid elemzése:</h3>
+    `;
+    SI.hist.forEach((hh, i) => {
+      let st = sim.steps[hh.step];
+      let opt = st.opts[hh.oi];
+      html += `
+        <div class="card" style="margin-bottom:8px; border-left: 4px solid ${opt.ok?'#059669':'#b91c1c'};">
+          <div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">${i+1}. Lépés: ${st.sit}</div>
+          <div style="font-size:11px;margin-bottom:4px;color:${opt.ok?'#4ade80':'#fca5a5'};font-weight:600;">${opt.ok?'✓ Helyes:':'✗ Hibás:'} ${opt.tx}</div>
+          <div style="font-size:11px;color:#9ca3af;padding-top:4px;border-top:1px dashed #3f3f3f;">${opt.fb}</div>
+        </div>
+      `;
+    });
+    html += `<button class="btn btn-fw" style="margin-top:12px; background:#1e3a8a; border-color:#1e40af;" onclick="resetSim()">Vissza az esetekhez</button>`;
+    return html;
+  }
+  
+  let step = sim.steps[SI.step];
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+      <div style="font-size:14px;font-weight:700;color:#14b8a6;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;max-width:80%;">${sim.title}</div>
+      <span style="font-size:12px;color:#9ca3af;font-weight:600;">${SI.step+1} / ${sim.steps.length}</span>
+    </div>
+    <div class="prog"><div class="progb" style="width:${((SI.step+1)/sim.steps.length*100)}%;background:#14b8a6"></div></div>
+    ${SI.step===0 ? `<div class="al al-i" style="font-size:12px;">${sim.desc}</div>` : ''}
+    <div class="card" style="margin-bottom:.75rem;background:#262626;border-color:#4b5563;">
+      <p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">${step.sit}</p>
+    </div>
+  `;
+  step.opts.forEach((opt, i) => {
+    let cls = 'opt';
+    if(SI.chosen !== null) {
+      if(opt.ok) cls += ' opt-ok';
+      else if(i === SI.chosen) cls += ' opt-no';
+    }
+    html += `<button class="${cls}" ${SI.chosen===null?`onclick="chooseSim(${i})"`:''}>${opt.tx}</button>`;
+  });
+  if(SI.chosen !== null) {
+    let chosenOpt = step.opts[SI.chosen];
+    html += `
+      <div class="al ${chosenOpt.ok?'al-s':'al-d'}" style="margin-bottom:.75rem;">${chosenOpt.fb}</div>
+      <button class="btn btn-g btn-fw" onclick="nextSim()">${SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló elkészítése'}</button>
+    `;
+  }
+  return html;
+}
+
+function renderCalc(){
+  let html = `<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>
+    <div style="display:flex;gap:6px;margin-bottom:1rem;">
+      <button onclick="CL.tab='burn'; render()" class="btn" style="flex:1; background:${CL.tab==='burn'?'#14b8a6':'#2a2a2a'}; color:${CL.tab==='burn'?'#111827':'#e5e7eb'}; border-color:${CL.tab==='burn'?'#14b8a6':'#3f3f3f'};">Égés (Parkland)</button>
+      <button onclick="CL.tab='child'; render()" class="btn" style="flex:1; background:${CL.tab==='child'?'#14b8a6':'#2a2a2a'}; color:${CL.tab==='child'?'#111827':'#e5e7eb'}; border-color:${CL.tab==='child'?'#14b8a6':'#3f3f3f'};">Gyermek RR</button>
+      <button onclick="CL.tab='drug'; render()" class="btn" style="flex:1; background:${CL.tab==='drug'?'#14b8a6':'#2a2a2a'}; color:${CL.tab==='drug'?'#111827':'#e5e7eb'}; border-color:${CL.tab==='drug'?'#14b8a6':'#3f3f3f'};">Gyógyszer (ml/h)</button>
+    </div>`;
+
+  if(CL.tab === 'burn') {
+    let rate24 = CL.burn.a * CL.burn.w * (CL.burn.i === '1' ? 5 : 4);
+    let rate8 = rate24 / 2;
+    let mlh = rate8 / 8;
+    html += `
+      <div class="card">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Testsúly (kg)</label>
+          <input type="number" value="${CL.burn.w}" onchange="CL.burn.w=this.value; render()">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Égett felület II-III fok (%)</label>
+          <input type="number" value="${CL.burn.a}" onchange="CL.burn.a=this.value; render()">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Légútbiztosítás</label>
+          <select onchange="CL.burn.i=this.value; render()">
+            <option value="0" ${CL.burn.i==='0'?'selected':''}>Nincs ETI (Szorzó: 4 ml)</option>
+            <option value="1" ${CL.burn.i==='1'?'selected':''}>Intubált beteg (Szorzó: 5 ml)</option>
+          </select>
+        </div>
+        <div class="res-box" style="background:#17255420; border:1px solid #1e3a8a;">
+          <div style="font-size:12px;color:#9ca3af;">24 órás teljes szükséglet: <b style="color:#e5e7eb">${rate24} ml</b></div>
+          <div style="font-size:12px;color:#9ca3af;margin-top:4px;">Első 8 óra alatt beadandó: <b style="color:#e5e7eb">${rate8} ml</b></div>
+          <div style="font-size:28px;font-weight:700;color:#38bdf8;margin-top:10px;">${mlh.toFixed(0)} ml / óra</div>
+          <div style="font-size:11px;color:#60a5fa;margin-top:4px;">Kezdeti infúziós sebesség</div>
+        </div>
+      </div>
+    `;
+  } 
+  else if (CL.tab === 'child') {
+    let norm = 90 + (2 * CL.child.a);
+    let min = 70 + (2 * CL.child.a);
+    let bolus = CL.child.w * 10;
+    let max = CL.child.w * 60;
+    html += `
+      <div class="card">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Életkor (év)</label>
+          <input type="number" value="${CL.child.a}" onchange="CL.child.a=this.value; render()">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Testtömeg (kg)</label>
+          <input type="number" value="${CL.child.w}" onchange="CL.child.w=this.value; render()">
+        </div>
+        <div class="res-box" style="background:#450a0a20; border:1px solid #7f1d1d;">
+          <div style="font-size:12px;color:#9ca3af;">Élettani szisztolés RR: <b style="color:#4ade80">${norm} Hgmm</b></div>
+          <div style="font-size:12px;color:#9ca3af;margin-top:4px;">Tolerabilis Alsó SBP határ: <b style="color:#fca5a5">${min} Hgmm</b></div>
+          <div style="font-size:28px;font-weight:700;color:#14b8a6;margin-top:10px;">${bolus} ml</div>
+          <div style="font-size:11px;color:#5eead4;margin-top:4px;">1 db Bólus (10 ml/kg)</div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:8px;">Max mennyiség 1. órában: ${max} ml</div>
+        </div>
+      </div>
+    `;
+  }
+  else if (CL.tab === 'drug') {
+    let isDobutamine = CL.drug.type === 'dobutamin';
+    // Adrenalin/Noradrenalin: 1mg in 50ml -> 1000ug / 50ml = 20ug/ml
+    // Dobutamin: 250mg in 50ml -> 250000ug / 50ml = 5000ug/ml
+    let conc = isDobutamine ? 5000 : 20;
+    let ug_min = CL.drug.w * CL.drug.dose;
+    let mlh = (ug_min * 60) / conc;
+    
+    html += `
+      <div class="card">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Hatóanyag (Standard OMSZ hígítás 50 ml-re)</label>
+          <select onchange="CL.drug.type=this.value; CL.drug.dose=(this.value==='dobutamin'?5.0:0.1); render()">
+            <option value="noradrenalin" ${!isDobutamine?'selected':''}>Noradrenalin / Adrenalin (1 mg / 50 ml)</option>
+            <option value="dobutamin" ${isDobutamine?'selected':''}>Dobutamin (250 mg / 50 ml)</option>
+          </select>
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Testtömeg (kg)</label>
+          <input type="number" value="${CL.drug.w}" onchange="CL.drug.w=this.value; render()">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px;color:#9ca3af;display:block;margin-bottom:4px;">Dózis (μg/ttkg/perc)</label>
+          <input type="number" step="0.01" value="${CL.drug.dose}" onchange="CL.drug.dose=this.value; render()">
+        </div>
+        <div class="res-box" style="background:#2e106540; border:1px solid #4c1d95;">
+          <div style="font-size:12px;color:#9ca3af;">Koncentráció: <b style="color:#c4b5fd">${conc} μg/ml</b></div>
+          <div style="font-size:28px;font-weight:700;color:#a855f7;margin-top:10px;">${mlh.toFixed(1).replace('.0','')} ml / óra</div>
+          <div style="font-size:11px;color:#d8b4fe;margin-top:4px;">Perfúzor sebesség beállítás</div>
+        </div>
+      </div>
+    `;
+  }
+  return html;
+}
+
+function render(){
+  let c = document.getElementById('ct');
+  c.innerHTML = '';
+  if(SCR==='home') c.innerHTML = renderHome();
+  else if(SCR==='chapters') c.innerHTML = renderChapters();
+  else if(SCR==='chapter') c.innerHTML = renderChapter(CHID);
+  else if(SCR==='flash') c.innerHTML = renderFlash();
+  else if(SCR==='quiz') c.innerHTML = renderQuiz();
+  else if(SCR==='sim') c.innerHTML = renderSim();
+  else if(SCR==='calc') c.innerHTML = renderCalc();
+  
+  let tabs = ['home','chapters','flash','quiz','sim','calc'];
+  let active = SCR === 'chapter' ? 'chapters' : SCR;
+  document.querySelectorAll('.nb').forEach((b,i) => { b.classList.toggle('act', tabs[i]===active); });
+  window.scrollTo(0,0);
+}
+
+// --- ACTIONS ---
+window.go = function(s, id){ SCR=s; CHID=id||null; render(); };
+window.setCat = function(c){ FC.cat=c; FC.idx=0; FC.flip=false; render(); };
+window.flipCard = function(){ FC.flip=!FC.flip; render(); };
+window.navCard = function(d){ let f = FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat); FC.flip=false; FC.idx=(FC.idx+d+f.length)%f.length; render(); };
+window.pickQ = function(i){ if(QZ.sel!==null)return; QZ.sel=i; let ok = i===QUIZ[QZ.idx].ok; if(ok)QZ.score++; QZ.ans.push({qi:QZ.idx, pi:i, ok:ok}); render(); };
+window.nextQ = function(){ if(QZ.idx<QUIZ.length-1){QZ.idx++; QZ.sel=null;}else QZ.done=true; render(); };
+window.resetQuiz = function(){ QZ={idx:0, sel:null, score:0, done:false, ans:[]}; render(); };
+window.startSim = function(id){ SI.id=id; SI.step=0; SI.chosen=null; SI.hist=[]; SI.fin=false; render(); };
+window.chooseSim = function(i){ if(SI.chosen!==null)return; SI.chosen=i; SI.hist.push({step:SI.step, oi:i}); render(); };
+window.nextSim = function(){ let sim=SIMS.find(s=>s.id===SI.id); if(SI.step<sim.steps.length-1){SI.step++; SI.chosen=null;}else SI.fin=true; render(); };
+window.resetSim = function(){ SI={id:null, step:0, chosen:null, hist:[], fin:false}; render(); };
+
+// INITIAL RENDER
+render();
+
+</script>
+</body>
+</html>

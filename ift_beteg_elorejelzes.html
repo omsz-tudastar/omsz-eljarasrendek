@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Beteg/sérült előrejelzése és átadása</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+.step-wrap{display:flex;gap:10px;margin-bottom:10px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#14b8a6;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-body{flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;}
+.step-t{font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;}
+.step-x{font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+/* INPUTS */
+input[type=text], input[type=number], input[type=time]{width:100%;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:10px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;margin-bottom:10px;font-size:13px;}
+select{width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:13px;color:#e5e7eb;font-family:inherit;margin-bottom:10px;}
+textarea{width:100%;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:10px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;margin-bottom:10px;font-size:13px;min-height:80px;resize:vertical;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* FOREIGN WORDS */
+.fw{border-bottom:1px dashed #a78bfa;color:#c4b5fd;cursor:help;transition:color 0.2s;}
+.fw:hover{color:#ddd6fe;}
+/* MODAL */
+.modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background-color:rgba(0,0,0,0.6);backdrop-filter:blur(2px);}
+.modal-content{background-color:#1e1e1e;margin:40% auto;padding:1.5rem;border:1px solid #3f3f3f;border-radius:12px;width:85%;max-width:400px;position:relative;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.close{color:#9ca3af;position:absolute;top:10px;right:15px;font-size:28px;font-weight:bold;cursor:pointer;}
+.close:hover{color:#f3f4f6;}
+@media(max-width:480px){.tbl-wrap table{min-width:340px;}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátorok</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<!-- SZÓTÁR MODAL -->
+<div id="dictModal" class="modal" onclick="if(event.target==this) closeDict()">
+  <div class="modal-content">
+    <span class="close" onclick="closeDict()">&times;</span>
+    <h3 id="dictWord" style="color:#14b8a6;margin-bottom:0.5rem;font-size:18px;"></h3>
+    <p id="dictDef" style="color:#e5e7eb;font-size:14px;line-height:1.6;"></p>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={tab:'isbar'};
+
+// Szótár az idegen/speciális szavakhoz
+var DICT = {
+  "prehospitális": "Kórházba kerülés előtti, a mentőellátás szakasza.",
+  "indikáció": "Javallat, indok egy adott orvosi vagy mentési beavatkozásra, eljárásra.",
+  "adaptáció": "Alkalmazkodás, egy meglévő módszer átvétele és a helyi viszonyokhoz való igazítása.",
+  "PCI-labor": "Percutan Coronaria Interventio - szívkatéteres laboratórium, ahol az érelzáródásokat hárítják el.",
+  "STEMI": "ST-elevációval járó szívizominfarktus (a szívinfarktus egyik legsúlyosabb, azonnali beavatkozást igénylő típusa).",
+  "stroke": "Agyérkatasztrófa (szélütés), az agy vérellátási zavara miatt kialakuló akut állapot.",
+  "nonverbális": "Szavakon kívüli kommunikáció (pl. mimika, gesztikuláció, testbeszéd).",
+  "gesztikuláció": "Kéz- és karmozdulatokkal, testtartással történő kommunikáció.",
+  "definitív": "Végleges, befejező (pl. definitív ellátás = a végleges kórházi gyógykezelés).",
+  "szekunder transzport": "Kórházak közötti betegszállítás (amikor a beteget egy alacsonyabb szintű ellátóhelyről egy magasabb szintűre szállítják).",
+  "hemodinamika": "A vérkeringés fizikai feltételeit (pl. vérnyomás, pulzus, perctérfogat) jelentő fogalom.",
+  "aorta dissectio": "A főütőér (aorta) falának életveszélyes, hosszanti hasadása.",
+  "hands off": "Szó szerint: 'kezeket el'. Olyan betegátadási módszer, ahol az átadás 0,5-1 perce alatt a személyzet nem végez beavatkozást, csak a kommunikációra figyel.",
+  "CT": "Kompjuter tomográfia, speciális rétegfelvételes röntgenvizsgálat.",
+  "TETRA": "Zárt láncú, digitális rádiókommunikációs rendszer, amit a készenléti szervek (pl. OMSZ) használnak.",
+  "konferenciabeszélgetés": "Olyan telefonbeszélgetés, amelyben egyszerre kettőnél több fél vesz részt.",
+  "TEK": "Területi Ellátási Kötelezettség. A beteget lakóhelye vagy tartózkodási helye alapján fogadni köteles intézmény.",
+  "ICS": "Irányító Csoport. A mentésirányítás szervezeti egysége, amely a hívásokat fogadja és a mentőket irányítja."
+};
+
+function showDict(word) {
+  var key = Object.keys(DICT).find(k => k.toLowerCase() === word.toLowerCase());
+  if (key) {
+    document.getElementById('dictWord').innerText = key;
+    document.getElementById('dictDef').innerText = DICT[key];
+    document.getElementById('dictModal').style.display = 'block';
+  }
+}
+
+function closeDict() {
+  document.getElementById('dictModal').style.display = 'none';
+}
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function w(text) {
+  let res = h(text);
+  let keys = Object.keys(DICT).sort((a,b) => b.length - a.length);
+  keys.forEach(key => {
+    let regex = new RegExp("\\b(" + key + ")\\b", "gi");
+    res = res.replace(regex, '<span class="fw" onclick="showDict(\'$1\')">$1</span>');
+  });
+  return res;
+}
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Célok és Háttér',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Célok',bk:[{tp:'bl',items:['A célintézmény meghatározásának bemutatása','Az ISBAR szerinti előrejelzés indikációinak és menetének ismertetése','A betegátadás folyamatának bemutatása','A kommunikáció egységesítése a betegellátók között']}]},
+{t:'II. Háttér',bk:[{tp:'bl',items:['A nemzetközi sürgősségi gyakorlatban az ellátók közötti kommunikáció hatékonnyá tételére az ISBAR terjedt el','ISBAR = Identify (Azonosítás) - Situation (Helyzet) - Background (Háttér) - Assesment (Értékelés) - Recommendation (Javaslat)','Elterjedt még az ATMISTER betűszó is a pontos információátadás felidézésére','E rendszerek megteremtik a pontos, tömör információcsere feltételeit és növelik a betegbiztonságot']}]}
+]},
+{id:'celintezmeny',title:'Célintézmény meghatározása',icon:'🏥',acc:'#3b82f6',secs:[
+{t:'III. A célintézmény meghatározása és betegút szervezése',bk:[
+{tp:'bl',items:['Alapvetően a jogszabályok szerinti TEK (Területi Ellátási Kötelezettség), Budapesten pedig az Ügyeleti Rend szabályozza a kórházi elhelyezést.']},
+{tp:'al',lv:'d',tx:'KIVÉTEL: Magas időfaktorú kórképnél (pl. súlyos sérülés, STEMI, időablakon belüli stroke) NEM a TEK az irányadó, hanem a leggyorsabban elérhető, szakmailag alkalmas fogadóhely!'},
+{tp:'bl',items:['A beteget bármilyen akut helyzetben el lehet helyezni a feltalálási helye szerint is (pl. külföldi, más megyebeli, hajléktalan).','Időkritikus kórkép esetén a célintézmény kiválasztásakor nem a kilométertávolság, hanem az időbeli elérhetőség a mérvadó!','A mentésirányítás (ICS) online térképekkel is segíthet. A betegelhelyezési nehézséget a Szolgálatvezető Főorvosnak jelezni kell.']}
+]}
+]},
+{id:'isbar_hasznalat',title:'Az ISBAR használata',icon:'📞',acc:'#f59e0b',secs:[
+{t:'Mikor kötelező az ISBAR használata?',bk:[
+{tp:'sub',tx:'a) Kritikus beteg, instabil állapot, magas időfaktor (előrejelzés)'},
+{tp:'bl',items:['Törekedjünk az átvevő osztállyal KÖZVETLENÜL kapcsolatba lépni. (Az ICS közvetítése késedelemhez és infóvesztéshez vezethet).','Folyamatosan, párbeszéd nélkül referáljunk 0,5-1 perc alatt. A célintézmény csak a végén kérdezzen.','Alapeszköz a TETRA rádió, szükség esetén konferenciabeszélgetés.']},
+{tp:'al',lv:'w',tx:'Képtovábbítás: Ha az ellátáshoz szükséges, fénykép küldhető (pl. EKG), de SEMMILYEN személyes azonosító (név, kor, eset száma, időpont) nem szerepelhet rajta! A felvételt utána azonnal törölni kell az eszközről!'},
+{tp:'sub',tx:'b) Segélykocsi / speciális egység hívásakor'},
+{tp:'bl',items:['Bármely egység vezetőjének kötelessége segélykocsit hívni, ha a kompetenciáját vagy a felszerelést meghaladja az eset.','A hívás ISBAR szerint történik. Az egyetlen KIVÉTEL az újraélesztés (ezt egyértelműen jelezni kell és nem kell részletezni).','Ha magas időfaktorú a kórkép, kötelező mérlegelni a helyben várakozás vs. szállítás+randevú előnyeit.']},
+{tp:'sub',tx:'c) Segélykocsi lemondása'},
+{tp:'al',lv:'d',tx:'Segélykocsi lemondása ISBAR nélkül SZIGORÚAN TILOS! Ha az egység mégsincs rászorulva a segítségre, a lemondásnál is strukturáltan kell jelenteni a beteg állapotát.'},
+{tp:'sub',tx:'d) Prehospitális telefonos konzultáció'},
+{tp:'bl',items:['Szintén ISBAR szerint történik.']},
+{tp:'sub',tx:'e) Kórházi átadás ("hands off" módszer)'},
+{tp:'bl',items:['Átemelés előtt a teljes átvevő team figyel, semmilyen beavatkozás nem történik 0,5-1 percig, amíg a mentőegység ISBAR szerint átadja a beteget.','Kivétel: azonnali beavatkozásra szoruló beteg (pl. CPR, légúti elzáródás).','Az átadás udvarias bemutatkozással kezdődik.','Átemelés előtt a monitorkábelek levétele javasolt. A lélegeztetett betegnél átemelés alatt a fejnél lévő személy fixálja a tubust!']}
+]}
+]},
+{id:'isbar_elemek',title:'ISBAR és ATMISTER Elemek',icon:'📋',acc:'#8b5cf6',secs:[
+{t:'Az ISBAR struktúra elemei',bk:[
+{tp:'bl',items:[
+'Identify (Azonosítás): köszönés, bemutatkozás, a hívott fél azonosítása.',
+'Situation (Helyzet): az aktuális probléma megnevezése.',
+'Background (Háttér): vezető panasz, állapot megnevezése, objektív infók, releváns anamnézis.',
+'Assesment (Értékelés): vitális paraméterek változásai, stabilitás megítélése.',
+'Recommendation (Javaslat): további ellátási igény megnevezése, időbeliség, terápiás lépések.'
+]}]},
+{t:'Az ATMISTER rendszer',bk:[
+{tp:'bl',items:[
+'Age (Életkor): felnőtt vagy gyermek (korral).',
+'Time (Időpont): baleset/tünetek kezdete.',
+'Mechanism (Mechanizmus): betegség vagy sérülés mechanizmusa.',
+'Injuries (Sérülések, tünetek): fejtől lefelé, vagy szervrendszerenként. Lényeges ABCD eltérés.',
+'Signs (Vitális paraméterek): Csak a normál tartományon kívüli értékeket közöljük!',
+'Treatment (Terápia): lényeges terápia (pl. intubált-e).',
+'Estimated time (Várható érkezés): óra, perc.',
+'Requirements (Azonnali szükséglet): pl. vér, műtő, PCI, sokktalanító.'
+]},
+{tp:'al',lv:'w',tx:'Vitális paraméterekből csak a normál tartományon KÍVÜLI értékeket közöljük, majd a végén mondjuk: "egyéb vitális paraméterek rendben."\nNormál tartományok:\n- Szívfrekvencia: 40-150 között nem mondjuk be.\n- Légzésszám: 10-29 között nem mondjuk be.\n- Szisztolés vérnyomás: 100-220 között nem mondjuk be.\n- Szaturáció: csak 90% alatt, vagy ha nem mérhető mondjuk be.\n- Tudat: P, U, vagy részletes GCS ha zavart.'}
+]}
+]},
+{id:'szallithatosag',title:'Szállíthatóság megítélése',icon:'🚑',acc:'#ec4899',secs:[
+{t:'Mikor kell megkezdeni a szállítás?',bk:[
+{tp:'bl',items:['Alapelv: minden beteg szállítható, ha a szállítás okozta megterhelést felülmúlja a célintézet elérésének gyorsasága és a definitív ellátás. A legtöbb beteg szállítását mielőbb meg kell kezdeni.']}]},
+{t:'Mikor kell megvárni a segélykocsit a szállítás előtt?',bk:[
+{tp:'al',lv:'d',tx:'KÖTELEZŐ megvárni a segélykocsit az alábbi esetekben:\n- Újraélesztés BLS-szinten.\n- Adott kompetencián nem kezelhető, mozdítással romló, tűrhetetlen fájdalom.\n- Adott kompetencián nem kezelhető, agitált, küzdő beteg.\n- Szülés kitolási szakban.'}]},
+{t:'Szekunder (kórházak közötti) transzport',bk:[
+{tp:'bl',items:[
+'Szekunder szállítást a küldő orvos és a mentőegység vezetőjének konzultációja alapján kell eldönteni.',
+'ABC-instabil beteg szekunder szállítása alapvetően NEM kezdhető meg.',
+'Kivétel: ha az instabilitást csak a fogadó helyen tudják megszüntetni (pl. aorta dissectio).',
+'Ha a mentőegység vezetője szállíthatatlannak tartja a beteget, de a küldő orvos ragaszkodik hozzá: mindkét véleményt dokumentálni kell, majd a szállítást végre kell hajtani.'
+]}]}
+]}
+];
+
+var CARDS=[
+{cat:'Alapok',f:'Mi az ISBAR rövidítés feloldása?',b:'Identify (Azonosítás)\nSituation (Helyzet)\nBackground (Háttér)\nAssesment (Értékelés)\nRecommendation (Javaslat)'},
+{cat:'Alapok',f:'Mi az ATMISTER rövidítés jelentése?',b:'Age (Életkor)\nTime (Idő)\nMechanism (Mechanizmus)\nInjuries (Sérülések/Tünetek)\nSigns (Vitális paraméterek)\nTreatment (Terápia)\nEstimated time (Érkezés)\nRequirements (Szükségletek)'},
+{cat:'Előrejelzés',f:'Kinek kell jelenteni az időkritikus beteget a kórház felé?',b:'Törekedjünk a célintézménnyel (az átvevő osztállyal) közvetlenül kapcsolatba lépni! Az Irányító Csoport közvetítése információvesztéshez vezet.'},
+{cat:'Előrejelzés',f:'Mennyi ideig tarthat ideálisan az ISBAR szerinti előrejelzés?',b:'A jó előrejelzés tömör, rövid, lehetőleg ne tartson tovább 0,5 - 1 percnél, és párbeszéd (megszakítás) nélkül történjen.'},
+{cat:'Előrejelzés',f:'Mi a szabály az EKG képének továbbítására?',b:'Elküldhető fényképen, DE nem szerepelhet rajta sem a beteg neve, kora, sem a mentőegység/eset azonosítója. A felvételt továbbítás után azonnal törölni kell!'},
+{cat:'Segélykocsi',f:'Mi az EGYETLEN kivétel az ISBAR használati kötelezettség alól segélykocsi hívásakor?',b:'Az újraélesztés (CPR). Ezt egyértelműen jelezni kell, de nem kell ISBAR szerint részletezni a híváskor.'},
+{cat:'Segélykocsi',f:'Le lehet-e mondani a segélykocsit ISBAR jelentés nélkül, ha már jobban van a beteg?',b:'NEM! Segélykocsi lemondása ISBAR nélkül SZIGORÚAN TILOS.'},
+{cat:'Jelentés',f:'Mely vitális paramétereket kell bemondani az ATMISTER jelentés "Signs" részében?',b:'Kizárólag azokat a paramétereket, amelyek egy meghatározott NORMÁL tartományon KÍVÜL esnek. A végén jelezzük, hogy "egyéb vitális paraméterek rendben".'},
+{cat:'Jelentés',f:'Mik a "normál" paraméter tartományok, amiket NEM kell bemondani?',b:'Szívfrekvencia: 40-150 /perc között.\nLégzésszám: 10-29 /perc között.\nSzisztolés RR: 100-220 Hgmm között.\nSzaturáció: 90% felett.'},
+{cat:'Átadás',f:'Mi a "hands off" módszer a kórházi átadásnál?',b:'A kórházi ágyra átemelés előtt mindenki az átadóra figyel, semmilyen beavatkozást vagy kommunikációt nem végeznek 0,5-1 percig, hogy az infó átadása zavartalan legyen.'},
+{cat:'Átadás',f:'Mikor NEM alkalmazzuk a "hands off" átadást?',b:'Ha a beteg érkezéskor azonnali, megszakítás nélküli beavatkozásra szorul (pl. keringésmegállás, hirtelen légúti elzáródás).'},
+{cat:'Transzport',f:'Sorold fel azt a 4 esetet, amikor a szállítás megkezdése előtt KÖTELEZŐ megvárni a segélykocsit!',b:'1. Újraélesztés BLS-szinten\n2. Tűrhetetlen, mozdítással romló fájdalom\n3. Csillapíthatatlanul agitált, küzdő beteg\n4. Szülés kitolási szakban'},
+{cat:'Transzport',f:'Szekunder transzportnál elkezdhető-e ABC-instabil beteg szállítása?',b:'Alapelvként NEM. Kivétel, ha az instabilitást okozó tényezőt újraélesztést csak a fogadó intézetben tudják megszüntetni (pl. aorta dissectio).'},
+{cat:'Transzport',f:'Mi a teendő, ha a mentőegység vezetője szerint a beteg szállíthatatlan, de a küldő kórházi orvos ragaszkodik a szekunder transzporthoz?',b:'Mindkettőjük (rövid indoklást tartalmazó) véleményét rögzíteni kell a dokumentációban, és ezután a szállítást végre kell hajtani.'}
+];
+
+var QUIZ=[
+{q:'Időkritikus kórkép (pl. STEMI) esetén mi az irányadó a célintézmény kiválasztásakor?',opts:['Kizárólag a Területi Ellátási Kötelezettség (TEK)','Az adott szakma szerinti, leggyorsabban (időben) elérhető fogadóhely','A kilométerben mért legrövidebb távolság','A mentésirányítás (ICS) címe'],ok:1,exp:'Magas időfaktorú kórképnél nem a TEK és nem a kilométer az irányadó, hanem a legrövidebb IDŐN belül elérhető, szakmailag megfelelő intézmény.'},
+{q:'Kivel érdemes KÖZVETLENÜL kommunikálni a kritikus beteg kórházi előrejelzése során?',opts:['Az Irányító Csoporttal (ICS)','A célintézmény átvevő osztályával','A Szolgálatvezető Főorvossal','A beteg hozzátartozójával'],ok:1,exp:'A célintézménnyel közvetlenül kell kapcsolatba lépni. Az ICS közvetítése akaratlanul is információvesztéshez vezethet.'},
+{q:'Milyen struktúrában kell átadni a telefonos előrejelzést?',opts:['A beteg teljes élettörténetét részletesen ismertetve','Kérdezz-felelek formában a fogadó orvossal','ISBAR szerinti referálással, folyamatosan, megszakítás nélkül, 0,5-1 perc alatt','ATMISTER betűszó nélkül, csak GCS pontszámot mondva'],ok:2,exp:'Az ISBAR jelentés tömör, ne tartson tovább 0,5-1 percnél, és párbeszéd nélkül javasolt elmondani, utána lehet válaszolni a kérdésekre.'},
+{q:'Küldhető-e EKG kép a kórháznak a betegről telefonon keresztül?',opts:['Nem, szigorúan tilos.','Igen, de semmilyen a beteg vagy az eset azonosítására alkalmas adat nem szerepelhet rajta.','Igen, névvel és tajszámmal együtt kell küldeni.','Csak akkor, ha a beteg aláírt egy papírt.'],ok:1,exp:'Fénykép küldhető (pl. csak maga az EKG görbe), de beteg vagy eset azonosítására alkalmas adat nélkül, és utána a képet törölni kell az adathordozóról.'},
+{q:'Melyik az EGYETLEN eset, amikor a segélykocsi hívásakor NEM kötelező az ISBAR használata?',opts:['Stroke','Újraélesztés (CPR)','Trauma','Légzési elégtelenség'],ok:1,exp:'Az újraélesztést egyértelműen jelezni kell, de tovább nem kell részletezni az ISBAR keretrendszerében a híváskor.'},
+{q:'Ha a mentőegység rájön, hogy mégsem kell a segélykocsi, mi a teendő?',opts:['Szó nélkül elindulnak a kórházba','Lemondják a segélykocsit az "Inkább mégsem kell" mondattal','A lemondást is kötelezően az ISBAR keretrendszer szerint kell megtenni','A segélykocsit nem lehet lemondani, ha már elindult'],ok:2,exp:'Segélykocsi lemondása ISBAR nélkül TILOS! Pontosan jelenteni kell a beteg aktuális (stabilizálódott) állapotát.'},
+{q:'Mi a "hands off" módszer a kórházi átadásnál?',opts:['A mentőápoló elengedi a hordágyat és elmegy','Az átemelés előtt senki nem csinál semmit 0,5-1 percig, mindenki az átadóra és az információra figyel','A beteg kezeit lefogják a hordágyon','Gumis kesztyű nélküli átadás'],ok:1,exp:'A hands off lényege: az átadás ideje alatt a team teljes figyelme a kommunikáción van, beavatkozás nélkül.'},
+{q:'ATMISTER jelentés során melyik vitális paramétert KELL bemondani?',opts:['Légzésszám 16/perc','Szisztolés vérnyomás 120 Hgmm','Szívfrekvencia 165/perc','Szaturáció 96%'],ok:2,exp:'Csak a NORMÁL tartományon kívüli értékeket mondjuk. A pulzus normál tartománya (amit nem mondunk) 40-150. A 165/perc ezen kívül esik, tehát közölni kell.'},
+{q:'Melyik esetben KÖTELEZŐ megvárni a segélykocsit a helyszínen, ahelyett hogy elindulnátok?',opts:['Enyhe boka ficam','Kezelhető, magas vérnyomás','Szülés kitolási szakban','Ismert cukorbeteg magas vércukorral'],ok:2,exp:'A szülés kitolási szakban, BLS újraélesztésnél, küzdő betegnél, és tűrhetetlen fájdalomnál meg kell várni a segélykocsit.'},
+{q:'Ha az SBO-n működő kapnográf és légzőkör van, mikor váltsunk át rá a mentőeszközről az átadáskor?',opts:['Még a mentőben','Az átemelés előtt, hogy az áthelyezés alatt a tubus helyzete monitorozva legyen','Csak 10 perccel az átemelés után','Nem kell átváltani, a mentő felszerelését kell otthagyni'],ok:1,exp:'Az átemelés előtt javasolt az átváltás, hogy a betegmozgatás során a tubus (EtCO2) folyamatosan monitorozva legyen.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Kritikus beteg előrejelzése (B kompetencia)',diff:'B kompetencia',desc:'Egy 65 éves férfi mellkasi fájdalomra panaszkodik. A 12-elvezetéses EKG-t a tablet értékeli, STEMI-t jelez. B kompetenciaszint (gyógyszerelés nélkül, de EKG küldés lehetséges).',steps:[
+{sit:'A beteg panaszai egy órája kezdődtek, típusos anginás fájdalma van. Az EKG STEMI-t mutat. Kinek kell jelentened az állapotot (előrejelzés) a kórház felé az eljárásrend szerint?',opts:[{tx:'Csak az Irányító Csoportnak, majd ők felhívják a kórházat.',ok:false,fb:'Hibás! Az ICS közvetítése infóvesztéshez vezethet.'},{tx:'Törekszem a célintézménnyel (a kijelölt PCI-laborral vagy SBO-val) közvetlenül kapcsolatba lépni (TETRA rádió vagy telefon).',ok:true,fb:'Helyes! A kritikus beteget közvetlenül az átvevő osztálynak kell előrejelezni.'},{tx:'Nem jelentem, beviszem a legközelebbi városi kórházba, ahol nincs PCI.',ok:false,fb:'Hibás! Magas időfaktorú kórképnél a megfelelő ellátóhelyet (PCI) kell keresni.'}]},
+{sit:'Hogyan kell felépíteni a telefonos előrejelzést?',opts:[{tx:'Folyamatosan, párbeszéd nélkül mondom el az ISBAR struktúra szerint, maximum 1 perc alatt.',ok:true,fb:'Helyes! Az előrejelzés megszakítás nélkül, tömören a leghatékonyabb.'},{tx:'Hosszasan, minden eddigi betegségét felsorolva referálok.',ok:false,fb:'Hibás! Túl hosszú és információvesztéshez vezet.'},{tx:'Megvárom, amíg a kórházi orvos kérdez, és csak arra válaszolok.',ok:false,fb:'Hibás! A strukturált információátadás a mi feladatunk kezdésként.'}]},
+{sit:'Kezded az ISBAR "I" és "S" részét. Melyik a helyes forma?',opts:[{tx:'"Jó napot, hozok egy szívinfarktusos beteget.".',ok:false,fb:'Hibás! Hiányzik az azonosítás (saját egység).'},{tx:'"Jó napot! 13/162-es mentőgépkocsi mentőápolója vagyok. STEMI gyanús beteg miatt hívom a kardiológiai ügyeletet."',ok:true,fb:'Helyes! "I" (Azonosítás: ki vagyok, kit hívok), "S" (Helyzet: STEMI).'},{tx:'"Mentő, van egy STEMI, jövünk."',ok:false,fb:'Hibás! Nem kollegiális és hiányos.'}]},
+{sit:'Következik a "B" (Background - Háttér) az ATMISTER logika mentén. Melyik mondat felel meg a szabványnak?',opts:[{tx:'"A beteg férfi, 65 éves. A tünetei egy órája kezdődtek típusos mellkasi fájdalommal."',ok:true,fb:'Helyes! Megvan az Életkor, az Időpont, és a Mechanizmus/Sérülés jellege.'},{tx:'"A beteget Kovács Jánosnak hívják, a Taj száma 123-456-789, és egy órája fáj a mellkasa."',ok:false,fb:'Hibás! Név és Taj szám felesleges a rádiós előrejelzésnél.'},{tx:'"Sokat fáj a mellkasa."',ok:false,fb:'Hibás! Nincs időpont és kor.'}]},
+{sit:'A beteg vérnyomása 130/80 Hgmm, pulzusa 85/perc, légzése 16/perc, szaturációja 98%, tudata tiszta (GCS 15). Mit mondasz az "A" (Assesment) részben a vitális paraméterekről?',opts:[{tx:'Felsorolom az összes paramétert számokkal.',ok:false,fb:'Hibás! Feleslegesen húzza az időt.'},{tx:'"A vitális paraméterei normál tartományban vannak."',ok:true,fb:'Helyes! Ha egyik paraméter sem esik a kritikus sávba, elég ezt közölni.'},{tx:'Nem mondok róluk semmit.',ok:false,fb:'Hibás! Valamilyen formában jelezni kell az értékelést (stabil állapot).'}]},
+{sit:'A kórházi orvos kéri, hogy mutasd meg neki az EKG görbét, mielőtt aktiválja a katéteres labort. Mit teszel?',opts:[{tx:'Készítek egy képet a saját mobilommal, amin látszik a görbe, elküldöm, majd azonnal törlöm a képet a telefonról.',ok:true,fb:'Helyes! Kép küldhető, ha nincs rajta személyes adat, és utána törölni kell.'},{tx:'Lefotózom az EKG-t úgy, hogy rajta van a beteg neve és az esetszám is, hogy biztosan azonosítsák.',ok:false,fb:'Hibás! Személyes adat SOHA nem szerepelhet a képen!'},{tx:'Megtagadom a küldést, mert a szabályzat tiltja a telefonos fényképezést.',ok:false,fb:'Hibás! Az eljárásrend engedi a képküldést az ellátás érdekében.'}]},
+{sit:'Az "R" (Recommendation - Javaslat/Érkezés) részben mit kell mondanod?',opts:[{tx:'"Kérek egy kávét érkezéskor."',ok:false,fb:'Hibás! Csak a beteg érdekeit szolgáló azonnali szükségletet mondjuk.'},{tx:'"Várható érkezésünk 10:45. A beteg azonnali kardiológiai felvételt (PCI labor) igényel."',ok:true,fb:'Helyes! Pontos érkezési idő és az azonnali szükséglet (PCI).'},{tx:'"Jövünk, ahogy tudunk."',ok:false,fb:'Hibás! Pontatlan.'}]},
+{sit:'Megérkeztek a kórházba a beteggel. A beteg állapotában nem volt változás (stabil STEMI). Milyen átadási módszert javasolt alkalmazni az SBO/Kardiológia ágyánál?',opts:[{tx:'A "hands off" módszert: átemelés előtt fél percig mindenki figyel, amíg én átadom az információkat az ISBAR szerint.',ok:true,fb:'Helyes! Ez minimalizálja az információvesztést és a káoszt.'},{tx:'Futva betoljuk, egyből átdobjuk az ágyra és közben kiabálok.',ok:false,fb:'Hibás! A kapkodás hibához vezet.'},{tx:'Mindent leírok a papírra, szóban nem mondok semmit.',ok:false,fb:'Hibás! A szóbeli kommunikáció (ISBAR) kötelező.'}]},
+{sit:'Mielőtt a beteget átemelitek a hordágyról a kórházi ágyra, mi a teendő a mentő monitorkábeleivel az eljárásrend szerint?',opts:[{tx:'Rajta kell hagyni a betegen az utolsó pillanatig, még az ágyon is a miénk legyen rajta.',ok:false,fb:'Hibás! Ez lassítja az átvételt és a kábelek beakadhatnak.'},{tx:'Javasolt az átemelés előtt eltávolítani a monitorkábeleket (a valós biztonságtöbblet hiánya és az akadályozás miatt).',ok:true,fb:'Helyes! Stabil betegnél a mentő monitorkábelei eltávolíthatók az átemelés megkönnyítésére.'},{tx:'A monitort a beteggel együtt a kórház ágyán kell hagyni tartósan.',ok:false,fb:'Hibás!'}]},
+{sit:'Az átadás után mi a mentőegység utolsó dokumentációs feladata a beteggel kapcsolatban az átvevő orvos felé?',opts:[{tx:'Átadom a beteg TAJ kártyáját és elmegyek.',ok:false,fb:'Hibás! A szakmai dokumentáció hiányzik.'},{tx:'A beteg átadása során KÖTELEZŐ csatolni az ellátásról készült, paramétereket tartalmazó dokumentumot (pl. Code Summary a defibrillátorból).',ok:true,fb:'Helyes! A kinyomtatott Code Summary / adatlap kötelező része az átadásnak.'},{tx:'Nem kell papír, a szóbeli átadás elég.',ok:false,fb:'Hibás! A dokumentált paraméterek átadása kötelező.'}]}
+],summary:'Részletes Összefoglaló (Sim 1 - B kompetencia): A STEMI gyanús betegnél magas az időfaktor, így a célintézmény az időben leggyorsabban elérhető PCI-labor volt. Az előrejelzést KÖZVETLENÜL az átvevő osztállyal vettük fel (nem az ICS közvetítésével). A kommunikáció során a struktúra megszakítása nélkül mondtuk el az ISBAR jelentést (Azonosítás, Helyzet, Háttér, Értékelés, Javaslat). Mivel a vitális paraméterek a normál tartományban voltak, nem részleteztük azokat számszerűen, csak jeleztük, hogy rendben vannak. Az orvos kérésére készítettünk fotót az EKG-ról, ügyelve arra, hogy személyes adatok NE szerepeljenek rajta, a továbbítás után a képet töröltük. Érkezéskor a "hands off" módszert alkalmaztuk: átemelés előtt, miután eltávolítottuk a mentő monitorkábeleit, mindenki rá figyelt, amíg az ISBAR alapján szóban referáltunk. A folyamat végén a Code Summary dokumentumot kötelezően átadtuk.'},
+
+{id:2,title:'2. Szimuláció: Segélykocsi hívás magas időfaktorú traumánál (B+ kompetencia)',diff:'B+ kompetencia',desc:'Közlekedési baleset, a sérült egy 25 éves férfi, akit gépkocsi gázolt el. A beteg medence- és combcsonttörést szenvedett, vérnyomása 80 Hgmm (instabil). B+ kompetencia.',steps:[
+{sit:'A beteget megvizsgáltad, medence- és combcsonttörést találtál, a beteg shockos állapotban van. Meghaladja-e az ellátása a B+ kompetenciát (kell-e segélykocsit hívni)?',opts:[{tx:'Nem, B+ szinten minden traumát el tudok látni egyedül.',ok:false,fb:'Hibás! Az instabil, kritikus polytrauma ALS (mentőtiszt/orvos) kompetenciát és fájdalomcsillapítást igényel.'},{tx:'Igen, kritikus állapotú beteg, az ellátásához haladéktalanul magasabb kompetenciájú segélykocsi / helikopter (ALS/HEMS) szükséges.',ok:true,fb:'Helyes! A beteg shockos, magasabb szintű fájdalomcsillapítás és terápiás beavatkozás szükséges.'},{tx:'Nem, beviszem egyedül sziréna nélkül.',ok:false,fb:'Hibás! A beteg kritikus állapotban van.'}]},
+{sit:'A segélykocsi kérését az Irányító Csoporttól az ISBAR / ATMISTER struktúra alapján végzed. Melyik az "I" és "A" elem helyes közlése?',opts:[{tx:'"12/34 esetkocsi hívja az ICS-t, segélykocsi kell egy 25 éves férfihoz!"',ok:true,fb:'Helyes! Identify (Ki vagyok, kit hívok), Age (25 éves férfi).'},{tx:'"Baleset volt, küldjetek egy orvost!"',ok:false,fb:'Hibás! Hiányzik az azonosítás és az életkor/neme.'},{tx:'"Itt Varga ápoló, van egy súlyos sérült."',ok:false,fb:'Hibás! Strukturálatlan.'}]},
+{sit:'ATMISTER szerint a "T" és "M" jön (Idő és Mechanizmus). Melyik a megfelelő forma?',opts:[{tx:'"Körülbelül 20 perce gyalogosként személyautó gázolta el."',ok:true,fb:'Helyes! Idő (20 perce) és Mechanizmus (gyalogos gázolás).'},{tx:'"Nagyon vérzik a lába és fáj a medencéje."',ok:false,fb:'Hibás! Ez már a sérülés kategória, nem a mechanizmus.'},{tx:'"Gázolás történt."',ok:false,fb:'Hibás! Hiányzik az időadat.'}]},
+{sit:'ATMISTER "I" (Injuries) - ABCD eltérések. Melyik a legjobb leírás?',opts:[{tx:'"C - hemodinamikailag instabil, feltételezett belső vérzése van a medencetörésből, és jobb oldali combcsonttörése van."',ok:true,fb:'Helyes! Tömören leírja a sérüléseket fejtől lefelé és az ABCD problémát (C-instabil).'},{tx:'"Eltörött mindene, nagyon rosszul van."',ok:false,fb:'Hibás! Szakmaiatlan.'},{tx:'"Horzsolás van a bal kezén."',ok:false,fb:'Hibás! A kritikus, vezető sérüléseket kell mondani.'}]},
+{sit:'ATMISTER "S" (Signs/Vitális paraméterek). Vérnyomása 80 Hgmm, szívfrekvenciája 135/perc, légzése 20/perc, szaturációja 96%, tudata tiszta. Mik a kötelező elemek az elmondásban?',opts:[{tx:'"Tudata tiszta, pulzusa 135, légzése 20, vérnyomása 80, szaturációja 96%."',ok:false,fb:'Hibás! Csak a normál tartományon kívüli értékeket mondjuk!'},{tx:'"Szisztolés vérnyomása 80 Hgmm, egyéb vitális paraméterei rendben vannak (tartományon belül)."',ok:true,fb:'Helyes! A 80 Hgmm alacsonyabb a 100-220-as sávnál. A többi (135, 20, 96%, GCS15) a tartományon belül van, így nem kell mondani.'},{tx:'Csak a pulzust mondom.',ok:false,fb:'Hibás! A vérnyomás a kritikus eltérés itt.'}]},
+{sit:'ATMISTER "T" (Terápia). B+ kompetenciával milyen fontos beavatkozást kezdtél, amit jelenteni kell?',opts:[{tx:'"Kapott egy takarót."',ok:false,fb:'Hibás! Ez alapellátás, nem kiemelkedő terápia az ISBAR-ban.'},{tx:'"Két perifériás vénát biztosítottam és medencerögzítő övet, húzósínt helyeztünk fel, folyadékpótlás indult."',ok:true,fb:'Helyes! Ezek kritikus terápiás lépések instabil traumánál, amit a segélykocsinak/ICS-nek tudnia kell.'},{tx:'"Nem csináltam semmit, várom a segítséget."',ok:false,fb:'Hibás! B+ kompetenciával dolgozni kell a mentés során.'}]},
+{sit:'A segélykocsi (esetkocsi orvossal) elindul, de 20 percre vannak a helyszíntől. A célkórház (Traumacentrum) 15 percre van. Mit kell mérlegelned (és a mentésirányítónak) az eljárásrend alapján?',opts:[{tx:'Helyben kell várni a segélykocsit, bármi történik.',ok:false,fb:'Hibás! A várakozás 20 percet vesz igénybe, a kórház 15 percre van, a beteg belső vérző.'},{tx:'Kötelező mérlegelni a helyben várakozás időveszteségét. Mivel a kórkép magas időfaktorú (belső vérzés) és a kórház közelebb van, mint a segélykocsi, kötelező a kórházba szállítás megkezdése és szükség esetén a randevú egyeztetése.',ok:true,fb:'Helyes! Magas időfaktornál a "load and go" (szállítás és randevú elv) érvényesül.'},{tx:'Felhívni a rendőrséget.',ok:false,fb:'Hibás! Orvosszakmai döntést kell hozni.'}]},
+{sit:'Elindultok a beteggel a kórház felé (randevú elv). A beteg állapota útközben romlik, eszméletét veszti. Mit kell haladéktalanul megtenni a mentőben?',opts:[{tx:'Azonnal gyorsítani a gépkocsin.',ok:false,fb:'Hibás! A beavatkozás a fontosabb.'},{tx:'Állapotváltozás miatt a szisztematikus ABCDE vizsgálatot az elejéről újra elvégezni, az "A" (légút) szintjétől kezdve.',ok:true,fb:'Helyes! Bármilyen állapotváltozás esetén az ABCDE elölről indul.'},{tx:'Azonnal megkezdeni a mellkasi kompressziót.',ok:false,fb:'Hibás! Előbb az "A" és "B" vizsgálat szükséges (van-e légzés).'}]},
+{sit:'Sikerül a randevú a segélykocsival az úton. Az esetkocsi orvosa átveszi a beteget. Az orvos úgy dönt, a kritikus állapot ellenére nehéz intubáció várható a mentőben, ezért emelt szintű légútbiztosítás nélkül (csak maszkkal) futtok be a kórházba. A "hands off" átadásra készültök az SBO sokktalanítójában. Mit kell kérni előre?',opts:[{tx:'"R" (Requirements): A beteg azonnali sürgősségi műtéti beavatkozásra és emelt szintű légútbiztosításra fog szorulni érkezéskor.',ok:true,fb:'Helyes! Az előrejelzésben jelezni kell az azonnali kórházi szükségletet (műtő, team, légútbiztosítás).'},{tx:'Nincs szükség előrejelzésre, beviszitek.',ok:false,fb:'Hibás! A sokktalanító csapatnak fel kell készülnie.'},{tx:'"Kérek egy kerekesszéket."',ok:false,fb:'Hibás! Hordágyas, kritikus beteg.'}]},
+{sit:'A sokktalanítóban sikeres a "hands off" átadás. A hordágyról átemelitek a beteget a CT asztalra, de rajta van a húzósín és a medencerögzítő (amit a kórház azonnal nem tud cserélni). Mit mond az eljárásrend?',opts:[{tx:'Azonnal le kell tépni a betegről az eszközeinket, hogy mehessünk.',ok:false,fb:'Hibás! Ez károsítja a beteget.'},{tx:'A rögzítő eszközök cseréjére törekedni kell, de ha nincs csereeszköz, akár rövid várakozás is megengedett a beteg érdekében (amíg pl. a műtőben leveszik).',ok:true,fb:'Helyes! A beteg stabilitása az első, ha kell, az eszközök rajta maradnak egy ideig.'},{tx:'Az eszközöket a kórháznak ki kell fizetnie a mentőknek.',ok:false,fb:'Hibás!'}]}
+],summary:'Részletes Összefoglaló (Sim 2 - B+ kompetencia): A gázolás miatt shockos, instabil, medence- és combcsonttörést szenvedett beteg ellátása meghaladja a B+ szintet, így haladéktalanul ALS segélykocsit kértünk. Az ICS felé a kommunikáció szigorúan az ISBAR/ATMISTER struktúrát követte. Pontosan jeleztük a mechanizmust (gázolás 20 perce), az ABCD eltérést (C-instabil) és a vitális paraméterek közül CSAK az eltérőt (RR 80 Hgmm). Bejelentettük az alkalmazott terápiát (vénák, medencerögzítő, húzósín). Mivel a magas időfaktorú kórképnél a célkórház (15 p) közelebb volt, mint a segélykocsi (20 p), az eljárásrend értelmében a várakozás helyett elindultunk a kórház felé, és az úton randevúztunk a segélykocsival. Állapotromláskor (eszméletvesztés) az ABCDE-t elölről kezdtük. A kórház felé tartva előrejeleztük (Requirement) a trauma team és az azonnali légútbiztosítás igényét. Az SBO-n "hands off" átadást hajtottunk végre. Bár a mentő eszközeinek (húzósín, medencerögzítő) cseréjére törekedni kell, csereeszköz hiányában a beteg érdekében rövid ideig azokon hagytuk őt a műtőig/CT-ig.'},
+
+{id:3,title:'3. Szimuláció: Segélykocsi lemondása (B kompetencia)',diff:'B kompetencia',desc:'Egy fiatal lányhoz riasztanak, akinek "görcsrohama van". B kompetenciával (gyógyszerelés nélkül) érkezel ki.',steps:[
+{sit:'A helyszínre érsz. A lány a földön fekszik, még tart a tónusos-klónusos epilepsziás roham. Mit teszel elsőként a helyszínbiztonság után?',opts:[{tx:'Azonnal megpróbálom lefogni, hogy ne verje be a fejét.',ok:false,fb:'Hibás! A rohamozó beteget nem szabad lefogni, csak a fejét védeni.'},{tx:'Mivel tartós rohama van és B kompetenciájú vagyok, azonnal segélykocsit kérek ISBAR struktúrában, és védem a fejét a sérüléstől.',ok:true,fb:'Helyes! A tartós roham gyógyszeres beavatkozást igényel (orvos/mentőtiszt), azonnal ALS egység kell.'},{tx:'Beadok neki egy nyugtató tablettát.',ok:false,fb:'Hibás! Rohamozó betegnek tilos szájon át bármit adni, plusz B kompetenciával nem is adhatsz.'}]},
+{sit:'Hogyan kezded az ISBAR szerinti jelentést a rádión a segélykocsi kéréshez?',opts:[{tx:'"Itt az 54-es autó, a lánynak rohama van!"',ok:false,fb:'Hibás! Hiányos és szakszerűtlen.'},{tx:'"Identify: 12/54 mentőgépkocsi. Situation: Elhúzódó epilepsziás roham miatt segélykocsit kérünk egy 20 éves nőbeteghez."',ok:true,fb:'Helyes! Egyértelmű azonosítás és a helyzet pontos megnevezése.'},{tx:'"Kérek egy orvost!"',ok:false,fb:'Hibás!'}]},
+{sit:'5 perccel a segélykocsi kérése után a beteg rohama spontán oldódik. A beteg tudata fokozatosan tisztul. Mit mond a Szabványos Eljárásrend a segélykocsi lemondásáról?',opts:[{tx:'Csak annyit mondok a rádión: "Irányítás, már jól van, nem kell a kocsi, lemondom."',ok:false,fb:'Hibás! Ez szigorúan tilos!'},{tx:'A lemondásnál is KÖTELEZŐ az ISBAR formula használata, a lemondás segélykocsi lemondása ISBAR nélkül TILOS!',ok:true,fb:'Helyes! Az állapot stabilizálódását strukturáltan kell jelenteni.'},{tx:'Nem mondom le, hadd jöjjenek ki megvizsgálni.',ok:false,fb:'Hibás! Indokolatlan erőforrás pazarolás, ha stabil és ellátható.'}]},
+{sit:'Megkezded a lemondást ISBAR formátumban. "I" (Identify): "12/54-es autó vagyok, hívom a 11/32-es esetkocsit és az ICS-t". "S" (Situation): Mi a helyes szöveg?',opts:[{tx:'"A beteg jól van."',ok:false,fb:'Hibás! Túlságosan leegyszerűsített.'},{tx:'"Korábban segítséget kértünk egy 20 éves beteghez epilepsziás roham miatt. Jelenleg a roham lezajlott, az állapot stabilizálódott."',ok:true,fb:'Helyes! Visszautal a korábbi problémára és tisztázza a jelenlegi helyzetet.'},{tx:'"Nem kell jönni, ébred."',ok:false,fb:'Hibás! Nem szakmai.'}]},
+{sit:'Következik az "A" (Assesment) a lemondásnál. A beteg GCS-e 14, RR 120 Hgmm, pulzus 90/perc, légzés 14/perc. Hogyan kommunikálod le?',opts:[{tx:'Mindent felsorolok egyenként.',ok:false,fb:'Hibás! Felesleges, mert minden paraméter normál.'},{tx:'"A beteg vitális paraméterei normál tartományban vannak, tudata tisztul, stabil ABCD állapotú."',ok:true,fb:'Helyes! Tökéletes és tömör értékelés a lemondáshoz.'},{tx:'Nem mondok vitális paramétert.',ok:false,fb:'Hibás! Az "A" részben értékelni kell a stabilitást.'}]},
+{sit:'Végül az "R" (Recommendation - Javaslat) a lemondásban. Mit javasolsz?',opts:[{tx:'"A beteg további ellátását és szállítását B kompetenciaszinten meg tudjuk oldani, így a segélykocsit lemondjuk."',ok:true,fb:'Helyes! Egyértelmű javaslat a szállításra és a lemondásra.'},{tx:'"Kérem, hogy írjatok le mindent a naplóba."',ok:false,fb:'Hibás! Nem a dokumentációra vonatkozik a javaslat.'},{tx:'"Kérjük a beteget gyalog hazaküldeni."',ok:false,fb:'Hibás! Szállítani kell a Sürgősségire.'}]},
+{sit:'A lemondás során kinek a megszólítása kötelező a rádión?',opts:[{tx:'Csak az Irányító Csoporté.',ok:false,fb:'Hibás! Az úton lévő kocsit is értesíteni kell.'},{tx:'Csak a Segélykocsié.',ok:false,fb:'Hibás! Az ICS-nek is tudnia kell, hogy az egység felszabadult.'},{tx:'Mind a mentésirányítóé (ICS), mind pedig a riasztott segélykocsié.',ok:true,fb:'Helyes! Az eljárásrend szerint mindkét felet meg kell szólítani.'}]},
+{sit:'Az ICS elfogadja a lemondást, az esetkocsi visszafordul. A beteg járóképes és fel akar állni, hogy a mentőhöz sétáljon. Beültetheted-e az autóba?',opts:[{tx:'Igen, ha akar, sétálhat.',ok:false,fb:'Hibás! Roham utáni kimerültség, elesés veszélye fennáll.'},{tx:'A betegmozgatást kíméletesen (!) kell végrehajtani. Inkább hordágyon vagy hordszéken javasolt a mentőbe vinni, elkerülve a megerőltetést.',ok:true,fb:'Helyes! A kíméletes betegmozgatás a stabil állapot fenntartásának kulcsa.'},{tx:'Csak akkor, ha a roham alatt megütötte magát.',ok:false,fb:'Hibás!'}]},
+{sit:'Úton vagytok a kórházba. Milyen gyakran kell a szisztematikus ABCDE vizsgálatot ismételni ezen a már "stabilizálódott", de roham utáni betegen?',opts:[{tx:'Csak ha újra rángatózni kezd.',ok:false,fb:'Hibás! Megelőző megfigyelés szükséges.'},{tx:'Kritikus/potenciálisan instabil betegnél (roham után) az automatikus ismétlés 5-10 percenként indokolt.',ok:true,fb:'Helyes! A roham ismétlődhet, a szoros megfigyelés kötelező.'},{tx:'Óránként egyszer.',ok:false,fb:'Hibás! Mentőben rövidebb az időablak.'}]},
+{sit:'A kórházi átadás megtörtént. A mentőjárműben egy kis hányadék van a padlón a roham utánról. Mi a teendő a dokumentáció írása közben?',opts:[{tx:'A mentőjármű gyors rendbetételére kell törekedni (kisebb szennyeződés letörlése, eszközök pótlása a táskából), hogy a legrövidebb időn belül újra riaszthatók legyünk.',ok:true,fb:'Helyes! Az eljárásrend pontosan ezt írja elő a gyors bevethetőség érdekében.'},{tx:'Megvárom, amíg visszaérünk az állomásra és ott kimosom.',ok:false,fb:'Hibás! Kisebb szennyeződést azonnal kell takarítani.'},{tx:'Kérem az ICS-t, hogy küldjenek takarítószemélyzetet.',ok:false,fb:'Hibás!'}]}
+],summary:'Részletes Összefoglaló (Sim 3 - B kompetencia): A kiérkezéskor a beteg tónusos-klónusos rohamban volt, ami B kompetenciával nem áttörhető, így haladéktalanul segélykocsit kértünk az ISBAR struktúra szerint. 5 perccel később a roham spontán oldódott és a vitális paraméterek a normál tartományba tértek vissza. Mivel a beteg B szinten is szállíthatóvá vált, a riasztott segélykocsit le kellett mondani. A segélykocsi lemondása ISBAR nélkül szigorúan tilos! A rádión azonosítottuk magunkat, megszólítottuk mind az ICS-t, mind az esetkocsit (I). Elmondtuk, hogy a roham lezajlott (S), a vitális paraméterek normálisak (A), és kérjük a lemondást, mivel a szállítást meg tudjuk oldani (R). A lemondást elfogadták. A beteget kíméletesen, hordágyon/hordszéken a mentőbe vittük, és a kórház felé tartva 5-10 percenként megismételtük az ABCDE vizsgálatot. Az átadás után az előírásoknak megfelelően a gépkocsit azonnal, még a helyszínen rendbetettük (kisebb szennyeződés eltávolítása, készletpótlás), hogy ismét bevethetők legyünk.'},
+
+{id:4,title:'4. Szimuláció: Szekunder transzport (B+ kompetencia)',diff:'B+ kompetencia',desc:'Városi kórház intenzív osztályáról (küldő intézmény) hívják a B+ egységet egy szeptikus shockban lévő, instabil légzésű beteg szekunder (kórházak közötti) transzportjára megyei centrumba.',steps:[
+{sit:'Megérkeztek a küldő intenzív osztályra. A beteg ABCDE szerint instabil (RR 75/40 Hgmm, szaturáció 85% oxigénen, tachypnoe). Mi a szekunder szállítás alapelve az eljárásrend szerint?',opts:[{tx:'Minden beteget azonnal el kell vinni, ha a küldő orvos kéri.',ok:false,fb:'Hibás! Instabil beteg szállítása speciális szabályokhoz kötött.'},{tx:'Adekvát terápia ellenére ABC-instabil beteg szekunder szállítása alapvetően NEM kezdhető meg (kivéve, ha csak a fogadó intézetben tudják stabilizálni, pl. aorta dissectio).',ok:true,fb:'Helyes! Az ABC-instabil beteget ott kell stabilizálni szállítás előtt.'},{tx:'B+ kompetenciával vihető, mert útközben adhatunk oxigént.',ok:false,fb:'Hibás! Oxigénnel is hypoxiás a beteg.'}]},
+{sit:'A mentőegység vezetőjeként úgy ítéled meg, hogy a beteg jelen állapotában szállíthatatlan, mert az úton meghalhat, de a küldő kórházi orvos ragaszkodik a szállítás megkezdéséhez. Mi az utasítás?',opts:[{tx:'Megtagadom a szállítást és elhagyom a helyszínt.',ok:false,fb:'Hibás! Nem hagyhatod ott a vitát következmények nélkül.'},{tx:'Mindkettőnk (rövid indoklást tartalmazó) véleményét rögzíteni kell a betegdokumentációban, és EZUTÁN a szállítást végre kell hajtani.',ok:true,fb:'Helyes! Ha a küldő orvos ragaszkodik, az ő felelősségére, dokumentálás után el kell indulni.'},{tx:'Felhívom a rendőrséget, hogy oldják meg.',ok:false,fb:'Hibás!'}]},
+{sit:'A papírok kitöltése után átemelitek a beteget a mentő hordágyára. A beteg intubált, lélegeztetett. Milyen fontos teendőd van betegmozgatás (átemelés) közben az endotrachealis tubussal?',opts:[{tx:'Semmi, a gép fújja.',ok:false,fb:'Hibás! A tubus kicsúszhat.'},{tx:'A betegmozgatás során mindig szükséges az endotrachealis tubus manuális rögzítése, melyet a fej felől lévő ellátó végez (az ő számolására történik az átemelés).',ok:true,fb:'Helyes! A fej felől álló fogja a tubust és a nyakat/fejet, ő irányítja az átemelést.'},{tx:'Leragasztom szigetelőszalaggal.',ok:false,fb:'Hibás!'}]},
+{sit:'Elindultok a centrum felé. Közben telefonos konzultációt kell folytatnod a mentésirányítással az oxigénellátásotok logisztikája miatt. Hogyan kommunikálsz?',opts:[{tx:'Csak egy gyors kérdést teszek fel.',ok:false,fb:'Hibás! A prehospitális telefonos konzultációnak is strukturáltnak kell lennie.'},{tx:'A prehospitális telefonos konzultáció során is az ISBAR szerinti jelentés a kötelező.',ok:true,fb:'Helyes! Az ISBAR minden formális klinikai kommunikáció alapja.'},{tx:'SMS-t írok az ICS-nek.',ok:false,fb:'Hibás!'}]},
+{sit:'Megérkeztek a fogadó intézetbe (megyei centrum intenzív osztálya). Érkezéskor a beteg NEM szorul azonnali újraélesztésre. Milyen átadási módszert fogsz alkalmazni?',opts:[{tx:'Rögtön átdobjuk az ágyra és futunk el.',ok:false,fb:'Hibás!'},{tx:'A "hands off" módszert: az átemelés előtt 0,5-1 percet hagyunk a szóbeli átadásra (ISBAR), miközben a teljes team az átadóra figyel, beavatkozás nélkül.',ok:true,fb:'Helyes! Ez a standard átadási folyamat stabilizált, de kritikus betegnél.'},{tx:'Közben folyamatosan szívom a légútját, miközben beszélek.',ok:false,fb:'Hibás! A "hands off" alatt nincs beavatkozás, kivéve ha az életmentő (de itt nem az).'}]},
+{sit:'A fogadó helyen van saját működőkész kapnográf (EtCO2 mérő) és légzőkör. Mi a teendő a mentő gépéről való átváltással kapcsolatban?',opts:[{tx:'Javasolt az arra történő, átemelés ELŐTTI átváltás, hogy a beteg áthelyezése alatt az endotrachealis tubus helyzete mindig monitorozva legyen.',ok:true,fb:'Helyes! Az EtCO2 folyamatos ellenőrzése kritikus az átemelés alatti csőcsúszás felismeréséhez.'},{tx:'Csak átemelés után szabad átkötni.',ok:false,fb:'Hibás! Átemelés alatt monitorozás (EtCO2) kell.'},{tx:'A mentő gépét kell a kórházban hagyni.',ok:false,fb:'Hibás!'}]},
+{sit:'Az átemelés előtt melyik kábeleket kell eltávolítani a "hands off" végén?',opts:[{tx:'A pulzoximétert csak.',ok:false,fb:'Hibás!'},{tx:'Javasolt a betegen található mentős monitorkábelek eltávolítása, mert lassíthatják az átvételt és valós biztonságtöbbletet átemelés közben már nem adnak.',ok:true,fb:'Helyes! A beakadó kábelek veszélyesek.'},{tx:'Egyik kábelt sem szabad levenni.',ok:false,fb:'Hibás!'}]},
+{sit:'A beteg alatt maradt a mentő lapáthordágya az intenzív ágyon. Mit kell tenned az átemelést követően?',opts:[{tx:'Mindenképpen vissza kell kérni azonnal, ha kell, fellökve az ápolókat.',ok:false,fb:'Hibás!'},{tx:'Törekedni kell a rögzítő eszközök (lapátágy) cseréjére. Ha csereeszköz nincs, akár rövid várakozás is megengedett a beteg érdekében.',ok:true,fb:'Helyes! Ha nincs csereágy, megvárjuk, amíg biztonságosan le lehet venni a beteget róla.'},{tx:'Ott kell hagyni örökre.',ok:false,fb:'Hibás!'}]},
+{sit:'Melyik dokumentumot KÖTELEZŐ csatolni az átadás során a mentőnapló mellé ennél a szeptikus, sok monitorozott paraméterrel bíró betegnél?',opts:[{tx:'ACode Summary-t (vagy az ellátásról készült, monitor paramétereket tartalmazó egyéb nyomtatott dokumentumot).',ok:true,fb:'Helyes! A gépi adatlap átadása kötelező kritikus betegnél.'},{tx:'A beteg TAJ kártyájának másolatát.',ok:false,fb:'Hibás! A klinikai adat a fontos.'},{tx:'Nem kell semmilyen plusz papír.',ok:false,fb:'Hibás!'}]},
+{sit:'Az átadás lezárult. A mentő kocsiból kifogyott sok O2 és fecskendő, az egységnek készlethiánya van. Mi a protokoll szerinti lehetőség/teendő?',opts:[{tx:'Saját zsebből kell venni a patikában.',ok:false,fb:'Hibás!'},{tx:'Nagyobb készlethiány esetén az egység jelezze ezt az ICS felé. Emellett egyes kórházakban lehetőség van az OMSZ által kihelyezett készletből cserélni is.',ok:true,fb:'Helyes! Az ICS-t értesíteni kell az inoperabilitásról, és a cserepontokat használni kell.'},{tx:'Így kell elmenni a következő beteghez.',ok:false,fb:'Hibás! A felszerelés hiánya betegveszélyeztetés.'}]}
+],summary:'Részletes Összefoglaló (Sim 4 - B+ kompetencia): A szekunder transzportra hívott B+ egység egy szeptikus, intubált, ABC-instabil beteget talált. Az eljárásrend értelmében ilyen beteg szállítása csak akkor kezdhető meg, ha a stabilizálás ott nem lehetséges. Mivel az egységvezető szállíthatatlannak ítélte, de a küldő orvos ragaszkodott a szekunder transzporthoz, a kötelező lépés a véleménykülönbség rövid dokumentálása volt, ami után a szállítás megkezdődött. Az átemelés alatt a fej felől lévő ápoló manuálisan rögzítette a tubust és irányította az emelést. Az oxigénlogisztika miatti rádiós konzultáció során szintén az ISBAR-t alkalmaztuk. Megérkezve a célintézménybe a "hands off" módszerrel adtuk át a beteget (fél perc kommunikáció beavatkozás nélkül). Átemelés előtt levettük a mentő monitorkábeleit, és a légzést átkapcsoltuk a kórházi kapnográfra/lélegeztetőre, hogy a tubuspozíció átemelés alatt is (EtCO2-vel) monitorozva legyen. A mentő lapáthordágyának visszavételére törekedtünk, kivárva az ápolók biztonságos manőverét. Az adminisztráció részeként kötelezően átadtuk a monitorból nyomtatott Code Summary-t. Mivel az O2 és egyéb készlet erősen megcsappant, jelentettük az ICS-nek a készlethiányt, majd pótoltuk azt a kórházi OMSZ cserepontról.'}
+];
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Tananyag</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+w(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+w(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+w(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+w(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+w(i)+'</li>').join('')+'</ul>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+w(b.tx)+'</div>';
+  return '';
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+w(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+w(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+w(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+w(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+w(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+w(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+w(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+w(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+w(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+w(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+w(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+w(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+w(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+w(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+w(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+w(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+w(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+w(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+w(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+w(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+w(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+// KALKULÁTOR RÉSZLEG: ISBAR és ATMISTER Szöveggenerátor
+function updateISBAR() {
+  var egység = document.getElementById('calc_egyseg').value || '[Azonosítás hiányzik]';
+  var cel = document.getElementById('calc_cel').value || '[Hívott fél hiányzik]';
+  var kor = document.getElementById('calc_kor').value || '[Életkor?]';
+  var ido = document.getElementById('calc_ido').value || '[Kezdet ideje?]';
+  var mech = document.getElementById('calc_mech').value || '[Panasz/Mechanizmus?]';
+  var serules = document.getElementById('calc_serules').value || '[ABCD eltérés/Sérülés?]';
+  
+  var bp = document.getElementById('calc_bp').value;
+  var hr = document.getElementById('calc_hr').value;
+  var rr = document.getElementById('calc_rr').value;
+  var spo2 = document.getElementById('calc_spo2').value;
+  var gcs = document.getElementById('calc_gcs').value;
+  
+  var v_arr = [];
+  if(bp && (bp < 100 || bp > 220)) v_arr.push("RR: " + bp + " Hgmm");
+  if(hr && (hr < 40 || hr > 150)) v_arr.push("Pulzus: " + hr + " /perc");
+  if(rr && (rr < 10 || rr > 29)) v_arr.push("Légzés: " + rr + " /perc");
+  if(spo2 && spo2 < 90) v_arr.push("SpO2: " + spo2 + "%");
+  if(gcs && gcs !== 'Éber (GCS 15)') v_arr.push("Tudat: " + gcs);
+  
+  var vitalsText = v_arr.length > 0 ? v_arr.join(", ") + ". Egyéb paraméterek rendben." : "Minden vitális paraméter a normál tartományban van.";
+
+  var terápia = document.getElementById('calc_ter').value || 'Nem történt lényeges beavatkozás';
+  var erkezes = document.getElementById('calc_erkezes').value || '[Érkezés?]';
+  var javaslat = document.getElementById('calc_jav').value || '[Nincs különleges igény]';
+
+  var isbar = "I (Azonosítás): " + egység + " vagyok, " + cel + "-t keresem.\n" +
+              "S (Helyzet): Előrejelzés (vagy segélykérés) egy beteghez.\n" +
+              "B (Háttér): " + kor + " éves beteg. " + ido + " óta a panasz: " + mech + ".\n" +
+              "A (Értékelés): Sérülések/Tünetek: " + serules + ". Vitális paraméterek: " + vitalsText + ".\n" +
+              "R (Javaslat): Terápia indult: " + terápia + ". Várható érkezésünk: " + erkezes + ". Szükséglet: " + javaslat + ".";
+
+  document.getElementById('isbar_out').innerText = isbar;
+}
+
+function renderCalc(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>'+
+'<div class="card" style="margin-bottom:.75rem">'+
+'<h3 style="font-size:15px;color:#14b8a6;margin-bottom:10px;">ISBAR / ATMISTER Generátor</h3>'+
+'<div style="font-size:11px;color:#9ca3af;margin-bottom:15px;">Töltsd ki a mezőket a szabványos ISBAR/ATMISTER mondatok legenerálásához. (Minden adatot be kell kérni az eljárásrend alapján)</div>'+
+
+'<label style="font-size:12px;color:#d1d5db;">Beszállító egység azonosítója (I)</label>'+
+'<input type="text" id="calc_egyseg" placeholder="Pl. 13/51-es esetkocsi mentőápolója" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Hívott fél (I)</label>'+
+'<input type="text" id="calc_cel" placeholder="Pl. SBO sokktalanító" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Életkor (A)</label>'+
+'<input type="text" id="calc_kor" placeholder="Pl. 65 éves, vagy középkorú férfi" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Időpont / Tünetek kezdete (T)</label>'+
+'<input type="text" id="calc_ido" placeholder="Pl. ma 11:30-kor, vagy egy órája" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Mechanizmus / Anamnézis (M)</label>'+
+'<input type="text" id="calc_mech" placeholder="Pl. gyalogos gázolás, típusos anginás fájdalom" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Sérülések / ABCD eltérés (I)</label>'+
+'<input type="text" id="calc_serules" placeholder="Pl. instabil keringés, fejtől lefelé a főbb tünetek" oninput="updateISBAR()">'+
+
+'<div style="background:#1e1e1e;border:1px solid #3f3f3f;padding:10px;border-radius:8px;margin-bottom:10px;">'+
+'<div style="font-size:12px;color:#f3f4f6;margin-bottom:8px;font-weight:600;">Vitális paraméterek (S) - Csak a normáltól eltérő kerül bemondásra!</div>'+
+'<div class="g2">'+
+'<div><label style="font-size:11px;color:#9ca3af;">Szisztolés RR (Hgmm)</label><input type="number" id="calc_bp" placeholder="Normál: 100-220" oninput="updateISBAR()"></div>'+
+'<div><label style="font-size:11px;color:#9ca3af;">Pulzus (/perc)</label><input type="number" id="calc_hr" placeholder="Normál: 40-150" oninput="updateISBAR()"></div>'+
+'<div><label style="font-size:11px;color:#9ca3af;">Légzés (/perc)</label><input type="number" id="calc_rr" placeholder="Normál: 10-29" oninput="updateISBAR()"></div>'+
+'<div><label style="font-size:11px;color:#9ca3af;">Szaturáció (%)</label><input type="number" id="calc_spo2" placeholder="Normál: 90% felett" oninput="updateISBAR()"></div>'+
+'</div>'+
+'<label style="font-size:11px;color:#9ca3af;">Tudatállapot</label>'+
+'<select id="calc_gcs" onchange="updateISBAR()"><option value="Éber (GCS 15)">Éber (GCS 15)</option><option value="V (Felszólításra)">V (Felszólításra reagál)</option><option value="P (Fájdalomra)">P (Fájdalomra reagál)</option><option value="U (Eszméletlen)">U (Nincs reakció)</option></select>'+
+'</div>'+
+
+'<label style="font-size:12px;color:#d1d5db;">Lényeges terápia (T)</label>'+
+'<input type="text" id="calc_ter" placeholder="Pl. intubált, 2 véna, húzósín felhelyezve" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Várható érkezés (E)</label>'+
+'<input type="time" id="calc_erkezes" oninput="updateISBAR()">'+
+
+'<label style="font-size:12px;color:#d1d5db;">Azonnali szükséglet (R)</label>'+
+'<input type="text" id="calc_jav" placeholder="Pl. azonnali vér, műtő, PCI labor, CT" oninput="updateISBAR()">'+
+
+'<div style="margin-top:15px;background:#064e3b;border:1px solid #059669;padding:12px;border-radius:8px;">'+
+'<div style="font-size:11px;color:#bbf7d0;margin-bottom:6px;font-weight:600;">Generált ISBAR/ATMISTER mondat a kommunikációhoz:</div>'+
+'<div id="isbar_out" style="font-size:13px;color:#ecfdf5;white-space:pre-wrap;line-height:1.5;">Kérlek töltsd ki a mezőket!</div>'+
+'</div>'+
+'</div>';
+}
+
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Előrejelzés és Betegátadás</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v3.0 · 2026.02.25.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Tananyag','Minden eljárásrendi szabály'],['flash','🃏','Flashkártyák','Rövid ismeret-visszakérdezés'],['quiz','❓','Kvíz','Tudáspróba, 10 kérdés'],['sim','🚑','Szimuláció','B és B+ szintű esetek'],['calc','🧮','Kalkulátorok','ISBAR jelentés generátor']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af">Kattints a <span class="fw" onclick="showDict(\'prehospitális\')">lila szaggatott vonallal</span> jelölt kifejezésekre a szótárhoz!</div></div>';
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc') { c.innerHTML=renderCalc(); setTimeout(updateISBAR, 100); }
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>

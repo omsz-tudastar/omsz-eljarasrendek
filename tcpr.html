@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – T-CPR Eljárásrend</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS & BUTTONS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* ALERTS & LISTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* QUIZ & SIM OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* DICTIONARY WORD */
+.dw{color:#14b8a6;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer;font-weight:600;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST (FIXED) */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* MODAL */
+#dictModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.2s;}
+#dictModal.show{display:flex;opacity:1;}
+.mod-box{background:#262626;border:1px solid #3f3f3f;border-radius:12px;padding:20px;max-width:400px;width:100%;box-shadow:0 10px 25px rgba(0,0,0,0.5);transform:translateY(20px);transition:transform 0.2s;}
+#dictModal.show .mod-box{transform:translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div id="dictModal">
+    <div class="mod-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+            <h3 id="dictTitle" style="color:#14b8a6;margin:0;font-size:18px;"></h3>
+            <button onclick="cD()" style="background:none;border:none;color:#9ca3af;font-size:24px;cursor:pointer;">&times;</button>
+        </div>
+        <p id="dictDesc" style="color:#e5e7eb;font-size:14px;line-height:1.5;margin:0;"></p>
+        <button class="btn btn-fw" style="margin-top:15px;" onclick="cD()">Bezárás</button>
+    </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+
+// ── DICTIONARY ──────────────────────────────────────────────────────
+var DICT = {
+  "T-CPR": "Telefonon irányított újraélesztés (Telephone CPR). A laikus bejelentő instruálása a mentésirányító által.",
+  "AED": "Félautomata defibrillátor (Automated External Defibrillator). Laikusok által is könnyen használható életmentő gép.",
+  "P1": "Legmagasabb prioritású riasztási fokozat, ami azonnali indítást követel meg (pl. keringésmegállás gyanúja).",
+  "ROKO": "Rohammentő, magasabb orvosi/mentőtiszti/B+ szintű kompetenciákkal rendelkező mentőegység.",
+  "MOK": "Mentőorvosi kocsi.",
+  "MTK": "Mentőtiszti kocsi.",
+  "Allokáció": "A riasztási szoftver azon funkciója, amely automatikusan megkeresi és riasztja a legközelebbi megfelelő mentőegységet.",
+  "Gaspoló": "Agonális, terminális légzés. Furcsa, ritka levegővétel, hörgés, tátogás. NEM biztosít hatásos légcserét, keringésmegállás jele!",
+  "Terminális légzés": "Lásd: Gaspoló légzés. A nyúltvelő oxigénhiányos állapotának utolsó, erőlködő megnyilvánulása.",
+  "Grand mal": "Epilepsziás nagyroham, amely kiterjedt tónusos-klónusos (feszülő-rángó) görcstevékenységgel jár.",
+  "Szív City": "Életmentő mobilalkalmazás. Riasztja a közeli regisztrált önkénteseket közterületi keringésmegállás esetén.",
+  "Konferenciahívás": "A mentésirányítás azon képessége, hogy egyidőben más társszervek (rendőrség, tűzoltóság) ügyeletével is összekapcsolja a hívást.",
+  "CPR": "Cardiopulmonary Resuscitation, azaz cardiopulmonalis resuscitatio (szív-tüdő újraélesztés, mellkasi kompresszió és lélegeztetés)."
+};
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function proc(tx){
+    var str = h(tx);
+    var keys = Object.keys(DICT).sort(function(a,b){return b.length-a.length;});
+    keys.forEach(function(k){
+        var regexKey = k.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var re = new RegExp('(^|[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ])(' + regexKey + ')(?=[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]|$)(?![^<]*>)', 'gi');
+        str = str.replace(re, '$1<span class="dw" onclick="sD(\'' + k + '\')">$2</span>');
+    });
+    return str;
+}
+function sD(k){
+    document.getElementById('dictTitle').textContent = k;
+    document.getElementById('dictDesc').textContent = DICT[k];
+    var m = document.getElementById('dictModal');
+    m.style.display = 'flex';
+    setTimeout(function(){ m.classList.add('show'); }, 10);
+}
+function cD(){
+    var m = document.getElementById('dictModal');
+    m.classList.remove('show');
+    setTimeout(function(){ m.style.display = 'none'; }, 200);
+}
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Bevezetés és Kulcslépések',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Célok és Bevezetés',bk:[
+{tp:'bl',items:['A telefonon irányított laikus újraélesztés (T-CPR) minden életkorban bizonyítottan javítja a túlélést.','Törekedni kell a keringésmegállás mielőbbi felismerésére (hívásfogadástól számított 2 percen belül).','A mellkasi kompressziók elkezdése legkésőbb 3 percen belül történjen meg.','A bejelentőt egyszerű, határozott, érthető utasításokkal kell a betegvizsgálatra és a kompresszióra rávenni.']}
+]},
+{t:'II. Kulcslépések és Általános Szabályok',bk:[
+{tp:'al',lv:'w',tx:'Kiemelt elsődleges feladat: A pontos helyszín, megközelíthetőség kiderítése, és a visszahívható telefonszám elkérése (ha megszakadna a vonal).'},
+{tp:'bl',items:['Keringésmegállás gyanújakor AZONNAL (még a kérdezés folytatása előtt) riasszuk az autó-allokációt használva a legközelebbi P1 mentőegységet (eset/ROKO/helikopter) és párhuzamosan más egységeket (MOK, MTK).','Ha lehetséges, a riasztás kivitelezését adja át a mentésirányító egy kollégának, hogy a vonalban maradhasson.','Helyszín biztonságának tisztázása (pl. áramtalanítás, forgalom) – szükség esetén társszervek riasztása konferenciahívás segítségével.','Törekedjünk a telefon mielőbbi kihangosíttatására, hogy a bejelentő mindkét keze szabad legyen.']}
+]}
+]},
+{id:'folyamat',title:'A T-CPR Szokványos Folyamata',icon:'📞',acc:'#3b82f6',secs:[
+{t:'I. Betegvizsgálat telefonon keresztül',bk:[
+{tp:'kr',items:['Beteg reakcióinak vizsgálata: hangos megszólítás, vállak megrázása. Ha BÁRMILYEN (hang- vagy mozgási) választ észlelünk, T-CPR-t NEM folytatunk. (Kivétel: gaspoló légzés vagy görcsroham!).','Hanyatt fektetés, majd légútfelszabadítás (fej hátrahajtása, áll emelése) és 10 mp-es légzésvizsgálat.','Idegentest eltávolítása a légútból CSAK AKKOR, ha jól látható, és egy mozdulattal kivehető.']},
+{tp:'al',lv:'d',tx:'FONTOS: A gaspoló légzés esetén mindig járjunk el úgy, mintha a betegnek nem lenne légzése! Kifejezések erre: furcsa, ritka levegővétel, hörög, tátog, mintha pipálna, akadozó, mintha hal lenne.'},
+{tp:'bl',items:['Görcstevékenység esetén mindig fel kell merülnie a keringésmegállásnak (a keringésmegállást bevezető görcs gyorsan csillapodik a grand mal rohammal szemben).']}
+]},
+{t:'II. Mellkasi kompresszió és defibrillátor',bk:[
+{tp:'bl',items:['Felnőtt, nem légző betegnél azonnal meg kell kezdeni a FOLYAMATOS mellkasi kompressziókat. Kemény alap, mellkas közepe.','Ha van jelen képzett/hajlandó személy, 2 percenként váltsák egymást.','Közterületi bejelentés esetén AZONNAL riasszuk a Szív City alkalmazást.','Kérjük további személytől félautomata defibrillátor (AED) helyszínre hozását.']},
+{tp:'kr',items:['Ha az AED megérkezik: kérdezzük meg "mi van ráírva?".','A segélynyújtó a gép utasításait kövesse. Helyezzék a beteg feje mellé, kapcsolják be.','A mentésirányító folyamatosan biztassa a segélynyújtót és tájékoztassa a mentő érkezéséről.']},
+{tp:'al',lv:'i',tx:'Mentő megérkezése: A segélynyújtó NE hagyja abba a mellkasi kompressziókat, amíg azt a mentőegység egyértelműen át nem vette! (Kivétel: ha egyedül van és ajtót kell nyitnia, akkor nyissa ki a zárt ajtót, majd AZONNAL folytassa).'}
+]}
+]},
+{id:'covid',title:'COVID-19 Módosítások',icon:'🦠',acc:'#ef4444',secs:[
+{t:'I. A Keringésmegállás Felismerése COVID-19 Idején',bk:[
+{tp:'bl',items:['Tisztázni kell: a jelenlévő bejelentő/segélynyújtó a beteggel KÖZÖS HÁZTARTÁSBAN él-e?','Ha IGEN (vagy nem élnek közösben, de COVID-19 gyanú NEM merül fel): A T-CPR a szokásos szabályok szerint végzendő.','Ha NEM élnek közös háztartásban ÉS COVID-19 felmerül (vagy a helyzet nem tisztázható): Életbe lépnek a biztonsági módosítások.']}
+]},
+{t:'II. Módosított Teendők (Idegen, COVID gyanús eset)',bk:[
+{tp:'kr',items:['Figyelmeztetés a fertőzésveszélyre és védőfelszerelés (maszk, kesztyű, szemüveg) szükségességére.','Légzésvizsgálat: a fej hátrahajtása és az áll kiemelése NÉLKÜL, kizárólag a mellkas megtekintésével! TILOS a beteg arca fölé hajolni!','Kompressziók előtt a beteg arcát (orrát, száját) takarja le textíliával vagy maszkkal!','Lélegeztetés TILOS laikus felnőtt ellátónál. Csak folyamatos kompresszió.']},
+{tp:'al',lv:'w',tx:'Ha az alkalmi segélynyújtó a fertőzés veszélye miatt vonakodik, ne erőltessük! Próbáljunk a környezetben más segélynyújtót keresni.'},
+{tp:'bl',items:['A CPR befejezése után az ellátót figyelmeztessük: fertőtlenítse kezét, cseréljen maszkot, tünetek esetén forduljon orvoshoz.']}
+]}
+]},
+{id:'gyermek',title:'Gyermek és Újszülött T-CPR',icon:'👶',acc:'#f59e0b',secs:[
+{t:'I. Gyermek újraélesztési arányok',bk:[
+{tp:'bl',items:['Nem légző gyermek újraélesztését 5 BEFÚVÁSOS lélegeztetéssel kezdjük.','Az 5. befúvás után légzésvizsgálat / keringés jeleinek (mozgás, köhögés) értékelése.','Ha nincs életjel: 30 mellkasi kompresszió és 2 befúvás felváltva.']},
+{tp:'al',lv:'i',tx:'Gyermek esetén COVID gyanúban is ajánlott a lélegeztetés! Sokkal több előnyt jelent a betegnek, mint amekkora veszélyt a segélynyújtóra. Ha hajlandó, végezze el. Ha nem, legalább kompressziót csináljon.'}
+]},
+{t:'II. Újszülött ellátása',bk:[
+{tp:'kr',items:['Újszülött: valóban rövid idővel ezelőtt született csecsemő.','Újszülött újraélesztésekor a helyes arány: MINDEN HARMADIK kompresszió után kell EGYET befújni (3:1 arány).']}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Időcélok',f:'Mi a T-CPR két legfontosabb időcélja?',b:'1. Keringésmegállás felismerése a hívásfogadástól számított 2 percen belül.\n\n2. Mellkasi kompressziók megkezdése legkésőbb 3 percen belül.'},
+{cat:'Alapok',f:'Mi a teendő, ha a híváskor azonnal keringésmegállás gyanúja merül fel?',b:'Még a további kérdezés előtt azonnal riasztani kell az autó-allokációt használva a legközelebbi P1 szintű mentőegységet (eset/ROKO/helikopter), valamint párhuzamosan más egységeket.'},
+{cat:'Alapok',f:'A hívás során milyen technikai beállítást kell mielőbb kérni a bejelentőtől?',b:'Törekedjünk a telefonkészülék minél hamarabb történő KIHANGOSÍTTATÁSÁRA, hogy mindkét keze szabad legyen az ellátáshoz.'},
+{cat:'Vizsgálat',f:'Mi az az agonális vagy gaspoló légzés?',b:'A terminális légzés: furcsa, ritka levegővétel, hörgés, tátogás, erőlködés (mintha pipálna, mint egy hal).\n\nNEM hatásos légzés, keringésmegállásként kezelendő!'},
+{cat:'Vizsgálat',f:'Ha a betegnek epilepsziás görcsrohama (grand mal gyanú) van, mire kell gondolnunk?',b:'Minden esetben fel kell merülnie a keringésmegállás gyanújának!\n\nA keringésmegállást bevezető görcs gyorsan csillapodik, szemben a valódi epilepsziával. A roham után légzésvizsgálat kell.'},
+{cat:'Arányok',f:'Mivel kell kezdeni az újraélesztést Felnőttnél?',b:'FOLYAMATOS mellkasi kompresszióval (laikusoknak).\n\nHa a hívó képzett és gyakorlott, akkor felnőttnél is biztassuk a 30:2 arányú váltogatásra.'},
+{cat:'Arányok',f:'Mivel kell kezdeni az újraélesztést Gyermeknél?',b:'5 befúvásos lélegeztetéssel.\n\nUtána újra ellenőrizni kell az életjeleket (mozgás, köhögés). Ha nincsenek, a kompresszió:lélegeztetés arány 30:2.'},
+{cat:'Arányok',f:'Mi az újraélesztési arány ÚJSZÜLÖTTNÉL (rövid idővel ezelőtt születettnél)?',b:'3 : 1 arány.\n\nMinden harmadik kompresszió után kell egyet befújni.'},
+{cat:'COVID-19',f:'COVID-19 gyanú: Mi az első tisztázandó kérdés a hívótól?',b:'Közös háztartásban él-e a beteggel?\n\nHa igen: normál T-CPR.\nHa nem/idegen: COVID módosított szabályok lépnek életbe.'},
+{cat:'COVID-19',f:'COVID módosítás: Hogyan kell a légzést vizsgálni idegen felnőtt betegnél?',b:'Fej hátrahajtása és áll kiemelése NÉLKÜL!\n\nKizárólag a mellkas megtekintésével vizsgálandó, TILOS a beteg arca fölé hajolni!'},
+{cat:'COVID-19',f:'COVID módosítás: Mit kell tenni a kompressziók megkezdése előtt felnőtt betegnél?',b:'A beteg arcát (orrát és száját) textíliával le kell takarni a fertőzésveszély minimalizálása érdekében (vagy ha van rajta maszk, az is jó).'},
+{cat:'Társszervek',f:'Közterületi újraélesztés esetén az esetkocsin kívül mit kell még riasztani?',b:'A Szív City mobilalkalmazást (amely a közeli regisztrált önkénteseket hívja a helyszínre).'},
+{cat:'Eszköz',f:'Mi a teendő, ha megérkezik a helyszínre az AED?',b:'Kérjük a bekapcsolását.\nA bejelentő szorosan kövesse a gép utasításait.\nA gép hangját a mentésirányítónak is hallania kell a kihangosított telefonon keresztül.'},
+{cat:'Mentők',f:'Mikor hagyhatja abba a segélynyújtó a kompressziót a mentők megérkezésekor?',b:'Soha ne hagyja abba, amíg a mentőegység egyértelműen azt nem mondja, hogy átvette az újraélesztést!\n\n(Kivétel: ha egyedül van, kinyitja az ajtót, de utána rögtön folytatnia kell).'}
+];
+
+var QUIZ=[
+{q:'Mi a legfontosabb első lépés a hívás fogadásakor (a T-CPR protokoll szerint)?',opts:['A beteg nevének és életkorának pontos rögzítése','Pontos helyszín, megközelíthetőség kiderítése, hívószám ellenőrzése/elkérése','A beteg gyógyszeres anamnézisének kikérdezése','Az orvosi ügyelet értesítése'],ok:1,exp:'Kiemelt és korai feladat a pontos helyszín, speciális megközelíthetőség kiderítése, és a hívószám ellenőrzése (ha megszakadna a vonal).'},
+{q:'Ha a bejelentés alapján már az elején keringésmegállás gyanúja merül fel (P1 szintű állapot), mi a teendő?',opts:['Még a kérdezés folytatása előtt, a hívás alatt AZONNAL riasztjuk az autó-allokációval a legközelebbi mentőegységet (eset/ROKO)','Befejezzük a teljes kikérdezést, majd riasztunk','Csak a Szív City-t riasztjuk','Megkérjük a hívót, hogy vigye a beteget az utcára'],ok:0,exp:'Azonnal riasztani kell a megfelelő egységet, ha lehetséges, a riasztást egy másik irányítónak átadva, hogy vonalban lehessen maradni.'},
+{q:'Melyik esetben NEM kezdünk T-CPR-t?',opts:['Ha a beteg epilepsziás görcsrohamban van','Ha a beteg gaspoló légzést mutat','Ha a beteg a megszólításra vagy rázásra bármilyen (hang/mozgás) választ ad (kivéve terminális légzés/görcs)','Ha a bejelentő egyedül van'],ok:2,exp:'Ha bármilyen válasz van a betegen (eszméletnél van, nem gaspol, nem görcsöl), akkor NEM folytatunk T-CPR-t.'},
+{q:'Hogyan kell értelmezni a "furcsa, mintha hal tátogna, ritkán horkant egyet" légzést?',opts:['Ez normális légzés, stabil oldalfekvés javasolt','Agonális (gaspoló) légzés, mindig úgy kell eljárni, mintha nem lenne légzése (keringésmegállás)','Felső légúti idegentest, tilos komprimálni','Ez az epilepszia biztos jele'],ok:1,exp:'A gaspoló légzés nem biztosít hatásos légcserét, azonnali CPR szükséges!'},
+{q:'Egyedülálló felnőtt beteg, COVID-19 gyanú nem merül fel. Mennyi ideig vizsgáltatjuk a légzést a légút felszabadítása után?',opts:['5 másodpercig','10 másodpercig','15 másodpercig','Csak megkérdezzük, hall-e valamit'],ok:1,exp:'A légzésvizsgálat az eljárásrend szerint pontosan 10 másodpercig tart.'},
+{q:'Felnőtt, közterületi keringésmegállás. A segélynyújtó teljesen idegen, és felmerül a COVID-19 gyanú. Hogyan vizsgálja a légzést?',opts:['A fej hátrahajtásával, az arc fölé hajolva (hármas érzékelés)','A fej hátrahajtása NÉLKÜL, kizárólag a mellkas megtekintésével. TILOS az arc fölé hajolni!','Fonendoszkóppal meghallgatva','COVID esetén tilos megvizsgálni a beteget'],ok:1,exp:'Idegen beteg, COVID gyanú: légútmegnyitás és arc fölé hajolás TILOS! Csak a mellkas megtekintésével vizsgálandó.'},
+{q:'Idegen beteg, COVID-19 gyanúja esetén mi a kötelező lépés a mellkasi kompresszió MEGKEDZÉSE ELŐTT?',opts:['Lélegeztetés 5 befúvással','A beteg arcának (orrának, szájának) letakarása valamilyen textíliával/maszkkal','A pulzus tapintása a nyakon','Stabil oldalfekvésbe helyezés'],ok:1,exp:'Az aeroszol képződés miatt a beteg arcát a kompressziók előtt le kell takarni textíliával.'},
+{q:'Gyermek (nem újszülött) újraélesztését a laikus segélynyújtó mivel kell, hogy kezdje?',opts:['Folytonos mellkasi kompresszióval','30 mellkasi kompresszióval','5 befúvásos lélegeztetéssel','AED sokk leadásával azonnal'],ok:2,exp:'Gyermek újraélesztése 5 kezdeti befúvással indul, utána következik az életjelek értékelése.'},
+{q:'Laikus szülő otthon, 4 éves nem légző gyermeke újraélesztését végzi. Mi az alkalmazandó kompresszió és lélegeztetés aránya az első 5 befúvás után?',opts:['15 kompresszió, 2 lélegeztetés','30 kompresszió, 2 lélegeztetés','Csak folyamatos kompresszió (lélegeztetés tilos)','3 kompresszió, 1 lélegeztetés'],ok:1,exp:'Laikus újraélesztő esetén gyermeknél az arány (az 5 befúvás után) 30:2.'},
+{q:'Valóban rövid idővel ezelőtt született ÚJSZÜLÖTT újraélesztési aránya?',opts:['30:2','15:2','3:1 (minden 3. kompresszió után egyet fúj be)','Folyamatos kompresszió'],ok:2,exp:'Újszülött esetén az újraélesztés aránya 3:1.'},
+{q:'COVID-19 gyanú merül fel egy csecsemő/gyermek keringésmegállása esetén (közterületen, idegen). Javasolod-e a lélegeztetést az alkalmi segélynyújtónak?',opts:['Szigorúan TILOS a lélegeztetés, csak kompresszió.','Mérlegelendő, mert sokkal több előnyt jelent a gyermeknek, mint amennyire veszélyes a segítőre. Javasolt a lélegeztetés!','Csak akkor, ha van nála ambuballon.','Csak AED felhelyezése javasolt, hozzáérni tilos.'],ok:1,exp:'Gyermekeknél a hypoxia a vezető ok, így a lélegeztetés haszna jelentősen felülmúlja az ellátóra leselkedő kockázatot.'},
+{q:'Közterületi bejelentés (felnőtt). Kit riaszt a mentésirányító a mentőegységeken kívül AZONNAL?',opts:['A katasztrófavédelmet','A Szív City alkalmazás önkénteseit','Az ÁNTSZ-t','A helyi önkormányzatot'],ok:1,exp:'Közterületi keringésmegállásnál a Szív City önkéntesek azonnali riasztása kötelező.'},
+{q:'Hogyan kell eljárni légúti idegentest okozta fulladás gyanúja esetén (ha az eszméletlen betegnél a tárgy a szájban van)?',opts:['Minden esetben ujjunkkal mélyre nyúlva ki kell söpörni','CSAK akkor, ha jól látható, egy mozdulattal, a szem ellenőrzése mellett távolítjuk el','Szigorúan tilos hozzányúlni, csak háton veregetni szabad az eszméletlen beteget','Várunk a mentőkre'],ok:1,exp:'Csak akkor szabad kivenni, ha jól látható és nem toljuk mélyebbre.'},
+{q:'A kompressziókat végző egyedülálló segélynyújtó mikor nyisson ajtót a megérkező mentőknek?',opts:['Azonnal menjen ki az utcára várni őket','Mentő kopogtatásakor nyissa ki az ajtót, majd azonnal folytassa a kompressziókat','Soha, törjék be a mentők az ajtót','Csak ha az AED sokkot javasolt'],ok:1,exp:'Ha egyedül van, a mentő érkezésekor az ajtó kinyitása szükséges, de utána AZONNAL vissza kell térnie a kompresszióhoz.'},
+{q:'T-CPR közben megérkezik a laikusokhoz egy AED. Mit kell elsőként kérniük/tenniük?',opts:['Azonnal nyomják meg a piros villám gombot','Csatlakoztassák a hálózati konnektorba','Kapcsolják be a készüléket, a mentésirányító pedig a kihangosított telefonon hallgassa az utasításokat','Várják meg a mentőket az AED felnyitásával'],ok:2,exp:'A legfontosabb a bekapcsolás és a gépi utasítások követése, amit a mentésirányító is hallgat a telefonon.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Felnőtt normál (Mentésirányító mentőápoló)',diff:'B kompetencia',desc:'A hívást egy mentőápolói kompetenciájú mentésirányító fogadja az ICS-ben. Egy nő telefonál lakásból: a férje összeesett.',steps:[
+{sit:'Mentésirányítóként fogadod a hívást. A bejelentő pánikban van. Mi az a KÉT legfontosabb információ, amit azonnal meg kell tudnod?',opts:[{tx:'A beteg életkora és alapbetegségei.',ok:false,fb:'Hibás! Ez fontos, de nem a legelső.'},{tx:'A pontos helyszín (cím) és a hívó telefonszáma (ha megszakadna a vonal).',ok:true,fb:'Helyes! A cím és a visszahívhatóság a legelső az eljárásrend szerint.'},{tx:'Lélegzik-e a beteg.',ok:false,fb:'Hibás! A helyszín hiányában nem tudsz mentőt küldeni.'}]},
+{sit:'A helyszín megvan (lakás). A nő azt mondja, a 60 éves férje "csak összeesett, a földön fekszik mozdulatlanul". Keringésmegállás gyanúja merül fel. Mi az első TEENDŐD a kérdezés folytatása előtt?',opts:[{tx:'Azonnal riasztom az autó-allokációval a legközelebbi P1 mentőegységet (eset/ROKO/helikopter).',ok:true,fb:'Helyes! A P1 riasztást haladéktalanul, párhuzamosan el kell indítani.'},{tx:'Megkérem, hogy kezdje el a kompressziót.',ok:false,fb:'Hibás! Még nem is vizsgáltátok meg a beteget.'},{tx:'Megkérdezem, van-e a férjének pacemakere.',ok:false,fb:'Hibás! Időveszteség.'}]},
+{sit:'A riasztás elindult, a vonalban maradtál. A T-CPR technikai előkészítéséhez mit kérsz a bejelentőtől?',opts:[{tx:'Hogy kapcsolja ki a telefont a mentő érkezéséig.',ok:false,fb:'Hibás!'},{tx:'Kapcsolja a telefont kihangosításra, és tegye a beteg mellé.',ok:true,fb:'Helyes! Így mindkét keze szabaddá válik az újraélesztéshez.'},{tx:'Adja át a telefont a szomszédnak.',ok:false,fb:'Hibás! Nem biztos, hogy van ott szomszéd.'}]},
+{sit:'A telefon kihangosítva. Utasítod a reakcióképesség vizsgálatára. Hogyan?',opts:[{tx:'Csípjen bele a beteg fülcimpájába.',ok:false,fb:'Hibás! Nem protokollszerű fájdalominger a laikusnál.'},{tx:'Szólítsa meg hangosan a férjét, és egyszerre rázza meg kíméletesen a vállait.',ok:true,fb:'Helyes! Hangos megszólítás és váll rázása az előírás.'},{tx:'Öntsön rá egy pohár hideg vizet.',ok:false,fb:'Hibás! Szakszerűtlen és időveszteség.'}]},
+{sit:'A nő jelzi: "Nem reagál semmire!" Mit kérsz tőle a légút felszabadításához?',opts:[{tx:'Húzza a beteget egy puha ágyra, majd fordítsa oldalra.',ok:false,fb:'Hibás! Újraélesztéshez kemény alap kell, hanyatt fekve.'},{tx:'Fektesse a hátára a földön. Egyik kezét tegye a férje homlokára, másikkal emelje meg az állát, és hajtsa hátra a fejét.',ok:true,fb:'Helyes! Hanyatt fekvés, fej hátrahajtása és áll kiemelése a standard légútmegnyitás.'},{tx:'Nyúljon be az ujjával és húzza ki a nyelvét.',ok:false,fb:'Hibás! Tilos vakon a szájba nyúlni.'}]},
+{sit:'A fej hátrahajtva. Hogyan vizsgáltatod a légzést?',opts:[{tx:'Hajoljon az arca fölé, 10 másodpercig figyelje a mellkast, hallgassa és érezze a levegővételt.',ok:true,fb:'Helyes! Ez a hármas érzékelés, normál COVID-mentes helyzetben (közös háztartásban élnek).'},{tx:'Nézze a mellkasát 5 másodpercig.',ok:false,fb:'Hibás! 10 másodpercig kell.'},{tx:'Tegyen egy tükröt a szája elé.',ok:false,fb:'Hibás! Elavult, nem protokolláris módszer.'}]},
+{sit:'A 10 másodperc letelt. A feleség azt mondja: "Néha horkant egyet, és ritkán tátog, mintha hal lenne, de semmi több." Mit jelent ez?',opts:[{tx:'Ez egy asztmás roham, keressen inhalátort.',ok:false,fb:'Hibás! A tátogás nem asztma jele itt.'},{tx:'Ez a beteg horkol, tehát alszik, stabil oldalfekvés kell.',ok:false,fb:'Hibás!'},{tx:'Ez gaspoló (agonális) légzés, a keringésmegállás jele. Úgy kell eljárni, mintha nem lélegezne.',ok:true,fb:'Helyes! A gaspoló légzés nem hatásos, azonnali CPR-t igényel.'}]},
+{sit:'Nincs normális légzés. Felnőtt beteg lévén mi a mentésirányítói utasítás a CPR megkezdésére egy laikusnak?',opts:[{tx:'Fújjon be kétszer a szájába, majd nyomja a mellkasát 15-ször.',ok:false,fb:'Hibás! Laikusoknak felnőttnél az első és legfontosabb a kompresszió, nem a befúvás.'},{tx:'Tegye a kezeit a mellkas közepére, és FOLYAMATOSAN nyomja le a mellkast megfelelő mélységben és sebességgel.',ok:true,fb:'Helyes! Laikus T-CPR során felnőttnél a hangsúly a folyamatos kompresszión van.'},{tx:'Nyomja a gyomrát, mint a Heimlich-műfogásnál.',ok:false,fb:'Hibás! Ez mellkasi kompresszió.'}]},
+{sit:'A feleség egyedül van a lakásban, fárad. A mentő már nagyon közel jár (1 perc). Mit teszel irányítóként?',opts:[{tx:'Azt mondom neki, hogy nyugodtan tartson szünetet.',ok:false,fb:'Hibás! A kompresszió megszakítása rontja a túlélést.'},{tx:'Folyamatosan biztatom (pozitív visszajelzés), mondom neki a ritmust, és közlöm, hogy a mentő mindjárt ottvár, ne adja fel.',ok:true,fb:'Helyes! A folyamatos biztatás a protokoll kritikus eleme.'},{tx:'Leteszem a telefont, mert a lényegi részt elmondtam.',ok:false,fb:'Hibás! A mentő érkezéséig vonalban kell maradni.'}]},
+{sit:'Megérkezik a ROKO, dörömbölnek. A feleség egyedül van otthon. Mit mondasz neki?',opts:[{tx:'Szaladjon ki, engedje be őket, pakolja el az útból a székeket, aztán várjon.',ok:false,fb:'Hibás! Nem hagyhatja abba hosszasan.'},{tx:'Nyissa ki a zárt ajtót a mentőknek, de utána AZONNAL rohanjon vissza, és folytassa a kompressziókat, amíg a mentő át nem veszi!',ok:true,fb:'Helyes! Ajtónyitás muszáj, de utána azonnal CPR, amíg a mentő verbálisan/fizikálisan át nem veszi.'},{tx:'Hagyja nyitva az ablakot, a mentők majd bejönnek.',ok:false,fb:'Hibás! A zárt ajtót ki kell nyitni.'}]}
+],summary:'Részletes Összefoglaló (Sim 1 - Normál Felnőtt T-CPR): A hívásfogadáskor az első lépés a pontos helyszín és visszahívó telefonszám rögzítése volt. A keringésmegállás gyanújakor azonnal P1-es szintű egységet (eset/ROKO) riasztottunk az allokáció segítségével. A telefont kihangosíttattuk. A beteg reakcióját hangos megszólítással és vállrázással vizsgáltattuk. Reakció hiányában a beteget hanyatt fektettük, fejét hátrahajtva légutat biztosítottunk. A 10 másodperces légzésvizsgálat során a feleség gaspoló (tátogó, halhoz hasonló) légzést észlelt, amit azonnal keringésmegállásnak értékeltünk. Laikus ellátó lévén azonnali, folyamatos mellkasi kompressziókat indítottunk a mellkas közepén. Az irányító folyamatos biztatással tartotta a lelket a fáradó feleségben. Amikor a mentő megérkezett, az egyedül lévő nő kinyitotta az ajtót, majd a protokoll szerint azonnal visszatért a kompressziókhoz, amit csak akkor hagyott abba, amikor a mentőszemélyzet egyértelműen átvette az ellátást.'},
+
+{id:2,title:'2. Szimuláció: Közterület, COVID-19 gyanú (Mentésirányító B+ mentőápoló)',diff:'B+ kompetencia',desc:'Utcán összeesett felnőtt beteg. Egy járókelő hívja a mentőket. Járványidőszak / COVID-19 gyanús környezet.',steps:[
+{sit:'Hívásfogadás: közterületen, az utcán esett össze egy idős férfi. A hívó egy fiatal járókelő. A P1 riasztás azonnal megtörtént. A COVID-19 szabályok miatt mi az első tisztázandó?',opts:[{tx:'Hogy be van-e oltva a bejelentő.',ok:false,fb:'Hibás! Ezt nem tudjuk percek alatt ellenőrizni és nem ez a protokoll.'},{tx:'Megkérdezem, hogy a jelenlévő segélynyújtó KÖZÖS HÁZTARTÁSBAN él-e a beteggel?',ok:true,fb:'Helyes! Ez dönti el, hogy normál vagy COVID specifikus CPR-t kell-e vezényelni.'},{tx:'Volt-e a beteg külföldön.',ok:false,fb:'Hibás! Irreleváns időveszteség.'}]},
+{sit:'A fiatalember teljesen idegen, a beteg lázasan köhögött mielőtt összeesett (COVID gyanú felmerül). Mit kell közölnöd a bejelentővel a helyszínbiztonság részeként?',opts:[{tx:'Azonnal meneküljön onnan, nehogy elkapja.',ok:false,fb:'Hibás! Törekszünk az ellátásra.'},{tx:'Figyelmeztetem a fokozott fertőzésveszélyre, és megkérdezem, hajlandó-e segíteni. Ha igen, vegyen fel maszkot, ha van nála.',ok:true,fb:'Helyes! A biztonság az első, és idegen beteg esetén nem erőltethetjük a segítségnyújtást.'},{tx:'Nem mondok semmit a COVID-ról, mert megijed.',ok:false,fb:'Hibás! Tájékoztatási kötelezettségünk van.'}]},
+{sit:'A srác vállalja. Kihangosítja a telefont. Megszólításra/rázásra nincs reakció. Hogyan vizsgáltatod a légzést COVID-19 gyanú/idegen beteg esetén?',opts:[{tx:'Hajoljon mélyen az arca fölé, hogy érezze a légáramlást.',ok:false,fb:'Hibás! COVID gyanú esetén az arc fölé hajolás SZIGORÚAN TILOS!'},{tx:'Hajtsa hátra a fejét, és 10 másodpercig figyelje a mellkasát.',ok:false,fb:'Hibás! A fej hátrahajtása tilos az aeroszol képződés miatt.'},{tx:'A fej hátrahajtása és az áll kiemelése NÉLKÜL, kizárólag a mellkas megtekintésével vizsgálja a légzést (tilos az arc fölé hajolni).',ok:true,fb:'Helyes! Ez a speciális COVID-19 protokoll.'}]},
+{sit:'A mellkas nem mozog. Nincs légzés. Mielőtt a segélynyújtó megkezdi a kompressziót, mit kell megtennie a fertőzésveszély csökkentésére?',opts:[{tx:'Takarja le a beteg arcát (orrát és száját) valamilyen textíliával, ruhadarabbal vagy maszkkal.',ok:true,fb:'Helyes! Ez blokkolja a kompresszió során kiáramló aeroszolokat.'},{tx:'Fújja be a beteget fertőtlenítővel.',ok:false,fb:'Hibás! Nincs ilyen.'},{tx:'Mossa meg a kezét szappannal, mielőtt a mellkashoz ér.',ok:false,fb:'Hibás! Időveszteség, a beteg meghal.'}]},
+{sit:'A beteg arca letakarva. Közterületen vagytok, az irányítás P1 esetkocsit indított. Melyik másik platformot/társaságot KELL riasztania a mentésirányításnak közterületi esetben?',opts:[{tx:'A tűzoltóságot, hogy mossák le az utcát.',ok:false,fb:'Hibás!'},{tx:'A Szív City alkalmazást, hogy a közeli önkéntesek (AED-vel) a helyszínre siessenek.',ok:true,fb:'Helyes! Közterületi keringésmegállásnál a Szív City riasztása protokolláris elvárás.'},{tx:'A polgárőrséget.',ok:false,fb:'Hibás! Bár segíthetnek, nem a specifikus riasztási pont.'}]},
+{sit:'A segélynyújtó megkezdi a FOLYAMATOS kompressziókat (lélegeztetés tilos a COVID miatt). Két perc múlva futva érkezik egy Szív City önkéntes egy AED-vel (defibrillátor). Mi a teendő a kompressziókkal?',opts:[{tx:'Hagyják abba a kompressziót azonnal, és várják meg, amíg az AED elemez.',ok:false,fb:'Hibás! Az AED bekapcsolása és felragasztása alatt is menni kell a CPR-nek.'},{tx:'A kompressziók megkezdése előtt (vagy ha már megy, akkor párhuzamosan megszakítás nélkül) használják az AED-t azonnal.',ok:true,fb:'Helyes! A COVID protokoll hangsúlyozza: "ha AED kezdettől rendelkezésre áll, még a mellkaskompressziók megkezdése előtt használja". Itt már megy a CPR, tehát a gépet azonnal be kell vetni.'},{tx:'Ne használják az AED-t, mert közterületen a COVID miatt veszélyes.',ok:false,fb:'Hibás! Az AED életmentő.'}]},
+{sit:'Melyik kérdéssel próbálod tisztázni az irányítópult mögül, hogy milyen típusú AED érkezett?',opts:[{tx:'"Milyen színű a gép doboza?"',ok:false,fb:'Hibás! Ez nem ad egzakt információt.'},{tx:'"Mi van ráírva a gépre?"',ok:true,fb:'Helyes! Rövid kérdéssel tisztázható a típus, így jobban tudod vezetni a folyamatot.'},{tx:'"Hány voltos a gép?"',ok:false,fb:'Hibás! A laikus ezt nem tudja és nem is releváns.'}]},
+{sit:'A Szív City önkéntes felragasztja az elektródákat. A gép azt mondja: "Ritmusanalízis. Ne érjen a beteghez." Mit teszel?',opts:[{tx:'Utasítom az önkéntest, hogy azonnal vegye el a kezét, senki ne érjen a beteghez a gép elemzése alatt.',ok:true,fb:'Helyes! Az analízis alatt a beteg érintése műterméket okoz.'},{tx:'Azt mondom, nyomják nyugodtan tovább.',ok:false,fb:'Hibás! Megzavarja az elemzést.'},{tx:'Azt mondom, most vegyék le az arcról a textilt.',ok:false,fb:'Hibás! A textil marad.'}]},
+{sit:'A gép sokkot javasolt, az önkéntes megnyomta a villogó gombot (sokk leadva). Mi a közvetlen teendő utána COVID-19 gyanús felnőtt esetén?',opts:[{tx:'Pulzusvizsgálat a nyakon 10 mp-ig.',ok:false,fb:'Hibás! Sokk után azonnal CPR.'},{tx:'Azonnal folytatni kell a FOLYAMATOS mellkasi kompressziókat (lélegeztetés nélkül, letakart arccal).',ok:true,fb:'Helyes! Sokk leadása után nincs késlekedés, azonnal kompresszió indul.'},{tx:'Két befúvás a szájba.',ok:false,fb:'Hibás! Felnőtt, COVID gyanús, idegen beteg – lélegeztetés tilos.'}]},
+{sit:'Megérkezik a mentőegység, átveszik az újraélesztést, a beteget intubálják. Mit kell elmondanod a hívás befejezésekor a laikus segélynyújtóknak a COVID miatt?',opts:[{tx:'Menjenek azonnal házi karanténba 14 napra.',ok:false,fb:'Hibás! Ezt mentésirányító nem rendelheti el.'},{tx:'Figyelmeztetem őket: az újraélesztés befejezése után fertőtlenítsék a kezüket, cseréljék ki a maszkjukat; ha a későbbiekben COVID tünetek jelentkeznek, forduljanak orvoshoz.',ok:true,fb:'Helyes! Ez a protokolláris befejező lépés a laikusok védelmében.'},{tx:'Mondom, hogy a mentők adnak nekik egy antibiotikumot.',ok:false,fb:'Hibás! Az antibiotikum nem vírusra való, és a mentő nem ad ilyet laikusoknak.'}]}
+],summary:'Részletes Összefoglaló (Sim 2 - COVID gyanús T-CPR): A közterületi hívásnál azonnal indítottuk a P1 egységet és a Szív City alkalmazást. Mivel a bejelentő idegen volt, tisztáztuk a közös háztartás hiányát, és COVID-19 gyanú esetén figyelmeztettük a fertőzésveszélyre. A segélynyújtó vállalta az ellátást. A reakcióvizsgálatot követően a légzést a fej hátrahajtása nélkül, arc fölé hajolás nélkül, kizárólag a mellkas mozgásának figyelésével értékeltük. Légzés hiányában, mielőtt a mellkasra tették volna a kezüket, a beteg arcát (orrát, száját) textíliával letakartuk az aeroszol blokkolása érdekében. A felnőtt idegennél a lélegeztetést mellőztük, kizárólag folyamatos mellkasi kompressziókat instruáltunk. A megérkező Szív City önkéntes bekapcsolta az AED-t, amelynek típusát a "Mi van ráírva?" kérdéssel tisztáztuk. A gép sokkot javasolt, melynek leadása után azonnal folytattattuk a kompressziókat. A mentők átvétele után a hívást a kötelező higiéniai figyelmeztetéssel (kézfertőtlenítés, maszkcsere, orvoshoz fordulás tünetek esetén) zártuk.'},
+
+{id:3,title:'3. Szimuláció: Gyermek normál eset (Mentésirányító mentőápoló)',diff:'B kompetencia',desc:'Lakásból telefonál egy szülő, az 5 éves gyermeke eszméletlen. Közös háztartás (COVID szabályok nem módosítják a lélegeztetést gyermeknél amúgy sem).',steps:[
+{sit:'A szülő hív. Helyszín megvan. P1 (Gyermek MOK / esetkocsi) indítva. A gyermek nem reagál a hangos megszólításra és rázásra. T-CPR indul. Hogyan biztosít légutat az 5 évesnél?',opts:[{tx:'A gyermeket hanyatt fekteti kemény alapra, egyik kezét a homlokára teszi, másikkal az állát emeli, és a fejét óvatosan hátrahajtja.',ok:true,fb:'Helyes! A standard légútmegnyitás gyermeknél is érvényes.'},{tx:'Csak egy kispárnát tesz a feje alá.',ok:false,fb:'Hibás! A párna elzárhatja a légutat a fej előrehajtása miatt.'},{tx:'Fejre állítja a gyermeket.',ok:false,fb:'Hibás! Szakszerűtlen és veszélyes.'}]},
+{sit:'A szülő szerint a gyermek evés közben esett össze, félrenyelt. Mit mondasz az idegentest eltávolításáról?',opts:[{tx:'Nyúljon be az ujjával, és vakon kotorásszon, hátha megtalálja.',ok:false,fb:'Hibás! A vak ujjazás mélyebbre tolhatja a tárgyat.'},{tx:'Ha JÓL LÁTHATÓ az idegentest a szájban, akkor, és csak akkor próbálja meg egyetlen mozdulattal, a szem ellenőrzése mellett eltávolítani.',ok:true,fb:'Helyes! Csak látható idegentestet szabad eltávolítani, ügyelve, hogy ne nyomja mélyebbre.'},{tx:'Fordítsa fejjel lefelé és rázza.',ok:false,fb:'Hibás! Eszméletlen betegnél ezt nem alkalmazzuk.'}]},
+{sit:'Nincs látható idegentest. A légzésvizsgálat 10 mp alatt kimutatja: a gyermek nem lélegzik normálisan (csak gurgulázik, tátog). MIVEL KEZDŐDIK a nem légző gyermek újraélesztése az eljárásrend szerint?',opts:[{tx:'30 mellkasi kompresszióval.',ok:false,fb:'Hibás! Az a felnőttek protokollja.'},{tx:'AED azonnali felhelyezésével.',ok:false,fb:'Hibás! Ha nincs gép, fizikálisan kell kezdeni.'},{tx:'Azonnali BEFÚVÁSOS lélegeztetéssel, összesen 5 kezdő befúvással.',ok:true,fb:'Helyes! A gyermekek keringésmegállása döntően légzőszervi eredetű, ezért 5 befúvással indítunk.'}]},
+{sit:'A szülő a kihangosított telefon mellett megcsinálja az 5 befúvást. Mi a KÖZVETLENÜL EZUTÁN következő lépés gyermeknél?',opts:[{tx:'Azonnal meg kell kezdeni a kompressziót.',ok:false,fb:'Hibás! Előbb egy gyors ellenőrzés kell.'},{tx:'Ismételt légzésvizsgálat, illetve a keringés jeleinek (mozgás, köhögés, életjel) értékelése.',ok:true,fb:'Helyes! Az 5 befúvás hatására visszatérhet az életjel, ezt ellenőrizni kell.'},{tx:'Várni kell 1 percet a hatásra.',ok:false,fb:'Hibás! Nincs várakozási idő.'}]},
+{sit:'A gyermek nem mozdul, nem köhög, nem lélegzik. Most indul a mellkasi kompresszió. Mi az arány laikus (szülő) újraélesztő esetén gyermeknél?',opts:[{tx:'30 mellkasi kompresszió és 2 befúvás felváltva (30:2).',ok:true,fb:'Helyes! Laikusoknak (és mentésirányítónak a laikus felé) a 30:2 arány az előírt, ha hajlandó lélegeztetni.'},{tx:'15 kompresszió és 2 befúvás (15:2).',ok:false,fb:'Hibás! A 15:2 a két professzionális egészségügyi dolgozó (ALS) által végzett arány.'},{tx:'Csak folyamatos kompresszió.',ok:false,fb:'Hibás! Gyermeknél kritikus a lélegeztetés.'}]},
+{sit:'Hol és hogyan végezze a szülő a mellkasi kompressziót az 5 éves gyermeknél?',opts:[{tx:'A szegycsont alsó harmadán, két ujjal.',ok:false,fb:'Hibás! Két ujj csecsemőknél használt technika.'},{tx:'A mellkas közepén (szegycsont alsó felén), egy vagy két kézzel (a gyermek méretétől függően), megfelelő mélységben.',ok:true,fb:'Helyes! 5 évesnél mérettől függően egy vagy két kéz a mellkas közepén.'},{tx:'A gyomorszájon.',ok:false,fb:'Hibás! Az sérülést okoz.'}]},
+{sit:'A szülő elkezdi a 30:2-t. Látod/hallod, hogy nagyon gyorsan elfárad. Egyedül van otthon. Mit teszel mentésirányítóként?',opts:[{tx:'Megkérdezem, be akarja-e fejezni.',ok:false,fb:'Hibás! Soha nem ajánlunk fel ilyet.'},{tx:'Határozottan, de empátiával biztatom: "Nagyon jól csinálja! Tartson ki, a gyermekének szüksége van magára! A mentőautó már csak 2 utcára van."',ok:true,fb:'Helyes! A folyamatos pozitív visszajelzés és a mentő közeledtének bemondása kritikus laikusoknál.'},{tx:'Átkapcsolom zenére, amíg a mentő odaér.',ok:false,fb:'Hibás! Vonalban kell maradni és figyelni az ütemet.'}]},
+{sit:'Közben eszébe jut a szülőnek, hogy a gyermeknek van ismert epilepsziája. Ez a tény módosítja a jelenlegi újraélesztési folyamatot (hiszen nincs légzése)?',opts:[{tx:'Igen, akkor hagyja abba az újraélesztést, mert ez csak egy elhúzódó roham.',ok:false,fb:'Hibás! Ha nincs légzés, újra kell éleszteni, a görcs gyakran bevezeti a megállást.'},{tx:'Nem, mivel a légzésvizsgálat egyértelműen kimutatta, hogy nincs légzés, az újraélesztés a helyes út.',ok:true,fb:'Helyes! Az epilepszia ténye nem írja felül a keringésmegállás (légzéshiány) fizikai tüneteit.'},{tx:'Igen, adjon be neki egy végbélkúpot a rohamra.',ok:false,fb:'Hibás! CPR közben tilos megszakítani ilyesmivel.'}]},
+{sit:'A szülő hallja a mentő szirénáját az utcán, és látja a kék fényt az ablakból. Mit mondasz neki?',opts:[{tx:'Menjen le az utcára és integessen nekik.',ok:false,fb:'Hibás! A gyermeket nem hagyhatja ott.'},{tx:'Folytassa az újraélesztést. Csak ha a mentők az ajtó előtt vannak, ugorjon oda, nyissa ki a zárt ajtót, majd AZONNAL ugorjon vissza a gyermekhez a kompressziók folytatására.',ok:true,fb:'Helyes! A zárt ajtót ki kell nyitni egyedül lévő segítőnél, de rögtön folytatni kell a CPR-t.'},{tx:'Hagyja abba a CPR-t, innentől a mentő dolga.',ok:false,fb:'Hibás! Amíg a mentő fizikálisan nem lép be, neki kell csinálnia.'}]},
+{sit:'A mentőegység (MOK) belép a szobába, a szülő zokogva mondja: "Átadjuk a mentőnek?" Mit válaszolsz?',opts:[{tx:'Igen, most már lefeküdhet pihenni a kanapéra.',ok:false,fb:'Hibás! Szakszerűtlen.'},{tx:'Csak abban a pillanatban hagyja abba, amikor a mentőegység egyértelműen mondja, hogy átveszi az újraélesztést. Amíg nem mondják, nyomja tovább!',ok:true,fb:'Helyes! A kézi átadás kritikus pillanat, a mentő felszerelkezéséig a laikus nyomja.'},{tx:'Igen, álljon fel gyorsan.',ok:false,fb:'Hibás!'}]}
+],summary:'Részletes Összefoglaló (Sim 3 - Gyermek T-CPR): Az 5 éves gyermek eszméletlenségéről szóló hívás során azonnal P1-es gyermekrohamkocsit indítottunk. A hanyatt fekvő gyermeknél a légutat normál módon, a fej hátrahajtásával nyitottuk meg. Idegentestet csak azért engedtünk eltávolítani, ha jól látható és egy mozdulattal kivehető, de itt nem volt. A 10 másodperces légzésvizsgálat légzéshiányt (gurgulázó gaspolás) mutatott. Mivel gyermekről volt szó, az eljárásrend értelmében a T-CPR-t azonnali 5 befúvásos lélegeztetéssel indítottuk. Ezután újra ellenőriztük az életjeleket (mozgás, köhögés). Mivel ezek hiányoztak, a laikus szülővel a 30:2 arányú mellkasi kompresszió (mellkas közepén) és lélegeztetés váltakozását kezdtük el. A mentésirányító folyamatos, hangsúlyos pozitív megerősítéssel tartotta a lelket a szülőben. Bár kiderült a gyermek epilepsziája, a keringésmegállás ténye felülírta ezt. A mentők megérkezésekor az egyedül lévő szülő csak egy pillanatra nyitott ajtót, azonnal folytatta az ellátást, és kizárólag a mentőszemélyzet konkrét, verbális átvételére hagyta abba az újraélesztést.'},
+
+{id:4,title:'4. Szimuláció: Újszülött, otthonszülés (Mentésirányító B+ mentőápoló)',diff:'B+ kompetencia',desc:'Mentésirányítás (ICS). Hívás érkezik: egy otthonszülésnél komplikáció lépett fel, az újszülött ("valóban rövid idővel ezelőtt született") nem mutat életjelet.',steps:[
+{sit:'"Segítség, a baba most született meg, de kék és nem mozdul, nem sír!" – ordítja az apa a telefonba. Mi az első intézkedés a mentésirányítói pultból?',opts:[{tx:'Azonnali P1 riasztás: koraszülött mentő és/vagy esetkocsi, ROKO a címre (autó-allokációval).',ok:true,fb:'Helyes! Ez egyértelmű azonnali életveszély, legmagasabb szintű ellátást igényel.'},{tx:'Megkérdezem, hány hetes volt a terhesség, mielőtt mentőt küldök.',ok:false,fb:'Hibás! Időveszteség.'},{tx:'Tanácsolom, hogy fürdessék meg meleg vízben.',ok:false,fb:'Hibás! Életveszélyes tanács.'}]},
+{sit:'A mentő elindult. Helyszínbiztonság és technika: kéred a telefon kihangosítását. A baba a fürdőszoba kövén fekszik egy törülközőn. Hogyan vizsgáltatod a reakciót?',opts:[{tx:'Óvatosan rázza meg a vállát, pöckölje meg a talpát, vagy dörzsölje a hátát, miközben hangosan beszél hozzá.',ok:true,fb:'Helyes! Újszülöttnél a talp stimulációja vagy a hát dörzsölése a megfelelő ébresztési inger.'},{tx:'Öntsön rá egy kis hideg vizet.',ok:false,fb:'Hibás! Tilos, a lehűlés amúgy is veszély újszülöttnél.'},{tx:'Rázza meg erősen a csecsemőt a levegőben.',ok:false,fb:'Hibás! Ez Shaken Baby Syndrome-hoz vezethet.'}]},
+{sit:'A baba tónustalan, nem sír, nincs reakció. A légút felszabadítása újszülöttnél hogyan történik?',opts:[{tx:'A fejet durván és erősen hátra kell hajtani (hiperextenzió).',ok:false,fb:'Hibás! Újszülöttnél ez elzárja a puha légcsövet.'},{tx:'A fejet neutrális (közép) állásba, úgynevezett "szimatoló" pozícióba helyezzük, minimális állkiemeléssel.',ok:true,fb:'Helyes! Az újszülött anatómiája miatt a semleges pozíció a legjobb.'},{tx:'A fejet a mellkasra hajtjuk.',ok:false,fb:'Hibás! Ez biztosan elzárja a légutat.'}]},
+{sit:'A 10 másodperces légzésvizsgálat alatt (mellkas mozgása) a szülő nem lát légzést. Mi a T-CPR KEZDŐ LÉPÉSE egy most született újszülöttnél?',opts:[{tx:'Azonnali mellkasi kompresszió.',ok:false,fb:'Hibás! Csecsemőnél/újszülöttnél is befúvással kezdünk.'},{tx:'Kezdjék 5 befúvásos lélegeztetéssel, oly módon, hogy a szülő szája egyszerre fedje a baba orrát és száját.',ok:true,fb:'Helyes! Újszülöttnél a tüdő folyadékkal telt lehet, a kezdő 5 befúvás kritikus az oxigenizációhoz.'},{tx:'A köldökzsinór azonnali elvágása.',ok:false,fb:'Hibás! Ez önmagában nem éleszt újra.'}]},
+{sit:'Az 5 befúvás megtörtént. Megvizsgálják a babát, van-e életjel (spontán légzés, mozgás). Nincs. A COVID gyanú nem merül fel. Mennyi az újraélesztés ARÁNYA újszülöttnél (valóban most születettnél) a mentésirányító szerint?',opts:[{tx:'30 kompresszió, 2 befúvás (30:2).',ok:false,fb:'Hibás! Ez nagyobb gyermekre / felnőttre igaz.'},{tx:'15 kompresszió, 2 befúvás (15:2).',ok:false,fb:'Hibás! Ez az ALS gyermek aránya.'},{tx:'Minden harmadik kompresszió után egy befúvás (3:1 arány).',ok:true,fb:'Helyes! Az eljárásrend kifejezetten rögzíti: újszülöttnél (rövid idővel ezelőtt született) a 3:1 az irányadó.'}]},
+{sit:'Hogyan kell a mellkasi kompressziót végezni az újszülöttnél a szülőnek?',opts:[{tx:'Két ujjával a szegycsont alsó felén (a mellbimbók vonala alatt), gyors ütemben (kb. 120/perc).',ok:true,fb:'Helyes! A kétujjas technika a megfelelő az egyedülálló laikus/csecsemő CPR esetén.'},{tx:'Két tenyérrel a mellkas közepén.',ok:false,fb:'Hibás! Eltöri a baba bordáit/szerveit.'},{tx:'Csak egy ujjal a gyomornál.',ok:false,fb:'Hibás! Hatástalan és veszélyes.'}]},
+{sit:'Mivel a helyszínen apuka és anyuka is ott van (több jelenlévő), mi a legoptimálisabb munkamegosztás a 3:1 újraélesztés alatt?',opts:[{tx:'Az egyik szülő végezze a folyamatos 3 kompressziót és a befúvást is, a másik menjen az utcára várni a mentőt.',ok:false,fb:'Hibás! Sokkal jobb, ha az ajtónyitás mellett is segítik egymást a betegnél.'},{tx:'Az egyik szülő csak komprimál (3 nyomás), a másik pedig készenlétben áll a fejnél és befúj egyet (1 befúvás), így folyamatos a ritmus. Ezt instruálja az irányító.',ok:true,fb:'Helyes! A kétemberes CPR (egyik nyom, másik fúj) sokkal hatékonyabb.'},{tx:'Csinálják 30:2 arányban, mert úgy könnyebb megjegyezni.',ok:false,fb:'Hibás! Újszülöttnél a 3:1 a protokoll.'}]},
+{sit:'A technikai feltételek adottak a helyszínen (jó internet, okostelefon). Kihasználhatja-e a mentésirányító a kamerakép kérését (video triage) a hatályos szabályok szerint?',opts:[{tx:'Szigorúan tilos bármilyen kamerát használni a betegjogok miatt.',ok:false,fb:'Hibás! Mentésirányítási célból lehetséges, ha megfelel a szabályoknak.'},{tx:'Igen, törekedjünk a helyszínről képanyagot nyerni mobiltelefonon keresztül, feltéve, hogy a jelenlévők valamelyike – NEM AZ, AKI A SEGÉLYNYÚJTÁST VÉGZI! – tud ebben segíteni.',ok:true,fb:'Helyes! A protokoll kifejezetten bátorítja a képi információszerzést, de nem akadályozhatja a CPR-t.'},{tx:'Igen, de csak a mentő kiérkezése után.',ok:false,fb:'Hibás! Késő.'}]},
+{sit:'A rokon (aki eddig tartotta a kamerát) látja, hogy megérkezett a mentő. Mivel többen vannak, ki menjen ajtót nyitni?',opts:[{tx:'Az, aki újraéleszt (az apuka).',ok:false,fb:'Hibás! Ne hagyja abba a kompressziót!'},{tx:'A rokon, aki a telefont/kamerát tartotta, azonnal szaladjon kinyitni a zárt ajtót és vezesse be a mentőket, miközben a szülők megállás nélkül folytatják a 3:1-es CPR-t.',ok:true,fb:'Helyes! Mivel többen vannak, a kompressziónak és a lélegeztetésnek egy pillanatra sem szabad megállnia.'},{tx:'Senki ne menjen, a mentő megoldja az ajtót.',ok:false,fb:'Hibás! A zárt ajtót ki kell nyitni.'}]},
+{sit:'A koraszülött mentő belép az ajtón, a mentőorvos leteszi a felszerelését a baba mellé. Mikor engedheted el a vonalat (és hagyhatják abba a szülők a T-CPR-t)?',opts:[{tx:'Amikor meghallod, hogy valaki azt mondja: "Jó napot kívánok".',ok:false,fb:'Hibás! A köszönés nem jelenti a beavatkozás átvételét.'},{tx:'Amikor a mentőegység verbálisan és fizikálisan jelzi a helyszínen: "Átvettük az újraélesztést", a mentésirányító elbúcsúzhat és bonthatja a vonalat.',ok:true,fb:'Helyes! Ez a kritikus mozzanata a laikus-professzionális átadásnak.'},{tx:'Amikor a mentő belép az utcáról a házba.',ok:false,fb:'Hibás!'}]}
+],summary:'Részletes Összefoglaló (Sim 4 - Újszülött T-CPR): Az otthonszülésnél fellépő szövődmény miatt az azonnali P1 riasztás (koraszülött mentő) megtörtént. A vonalban maradva az irányító kihangosíttatta a telefont. Az újszülött ("valóban rövid idővel ezelőtt született") tónustalan volt és nem reagált a talpingerlésre/hátdörzsölésre. A légutat neutrális ("szimatoló") pozícióban nyitottuk meg, elkerülve a durva hátrahajtást. A 10 másodperces légzésvizsgálat légzéshiányt jelzett. A protokollnak megfelelően az újraélesztést 5 kezdő befúvással indítottuk (a szülő szája egyszerre fedte az orrot és szájat). Mivel az életjelek továbbra is hiányoztak, a speciális újszülött CPR arányt, a 3:1-et instruáltuk (3 kétujjas kompresszió a szegycsont alsó felén, majd 1 befúvás). A jelenlévő rokon bevonásával az irányító élhetett a videós (okostelefonos) megtekintés lehetőségével, mivel a rokon nem vett részt a tényleges CPR-ben. A mentők megérkezésekor szintén a rokon végezte az ajtónyitást, így az újraélesztés folyamatos maradt a szülők által, egészen addig a másodpercig, amíg a mentőegység egyértelműen át nem vette az ellátást a fürdőszobában.'}
+];
+
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Telefonon irányított újraélesztés (T-CPR)</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v4.0 / 2023.12.19.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Tananyag','Eljárásrend teljes anyaga'],['flash','🃏','Flashkártyák','14 forgatható kártya'],['quiz','❓','Kvíz','15 kérdés visszajelzéssel'],['sim','🚑','Szimuláció','4 interaktív eset']].map(function(x){return '<button onclick="go(\''+x[0]+'\')" class="home-mod"><div class="home-mod-icon">'+x[1]+'</div><div class="home-mod-title">'+x[2]+'</div><div class="home-mod-desc">'+x[3]+'</div></button>'}).join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az Országos Mentőszolgálat valamennyi mentésirányítójára. A zölddel aláhúzott szavakra kattintva elérhető a szótár!</div></div>';
+}
+
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+proc(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(function(i){return '<li>'+proc(i)+'</li>';}).join('')+'</ul>';
+  if(b.tp==='kr') return '<div>'+b.items.map(function(i){return '<div class="kr">✓ &nbsp;'+proc(i)+'</div>';}).join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+proc(b.tx)+'</div>';
+  return '';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Tananyag</h2>'+
+CDATA.map(function(c){return '<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+proc(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>'}).join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(function(x){return x.id===id;});if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+proc(c.title)+'</h2></div>'+
+c.secs.map(function(s){return '<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+proc(s.t)+'</h3>'+s.bk.map(function(b){return rb(b);}).join('')+'</div>'}).join('');
+}
+
+function renderFlash(){
+var cats=['Összes'];
+CARDS.forEach(function(c){if(cats.indexOf(c.cat)===-1) cats.push(c.cat);});
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(function(c){return c.cat===FC.cat;});
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(function(c){return '<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>'}).join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+proc(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+proc(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(function(a){return !a.ok;}).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(function(a){return !a.ok;}).map(function(a){return '<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+proc(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+proc(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+proc(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+proc(QUIZ[a.qi].exp)+'</div></div>'}).join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+proc(q.q)+'</p></div>'+
+q.opts.map(function(opt,i){var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+proc(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+proc(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(function(s){return '<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+proc(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+proc(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont</div></button>'}).join('');
+}
+var sim=SIMS.find(function(s){return s.id===SI.id;});
+if(SI.fin){
+var correct=SI.hist.filter(function(h){return sim.steps[h.step].opts[h.oi].ok;}).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+proc(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+proc(sim.summary)+'</div>'+
+SI.hist.map(function(hh,i){var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+proc(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+proc(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+proc(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+proc(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+proc(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+proc(step.sit)+'</p></div>'+
+step.opts.map(function(opt,i){var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+proc(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+proc(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+var tabs=['home','chapters','flash','quiz','sim'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(function(c){return c.cat===FC.cat;});FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(function(s){return s.id===SI.id;});if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>

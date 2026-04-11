@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Szeptikus Beteg Ellátása - OMSZ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);overflow-x:auto;}
+.nb{flex:1;min-width:65px;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#ef4444;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#ef4444;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#ef444420;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #ef4444;}
+.step-wrap{display:flex;gap:10px;margin-bottom:10px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#ef4444;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-body{flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;}
+.step-t{font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;}
+.step-x{font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#ef4444;color:#fff;border-color:#ef4444;}
+.btn-g:hover{background:#dc2626;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#f59e0b;color:#111827;border-color:#f59e0b;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#ef4444;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+/* INPUTS */
+input[type=number]{width:100%;accent-color:#ef4444;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:8px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* DICTIONARY */
+.fw{color:#fde047;border-bottom:1px dashed #fde047;cursor:pointer;font-weight:600;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;justify-content:center;align-items:center;padding:1rem;}
+.modal-c{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1.5rem;width:100%;max-width:400px;position:relative;}
+.modal-x{position:absolute;top:10px;right:15px;cursor:pointer;font-size:24px;color:#9ca3af;line-height:1;}
+.modal-x:hover{color:#f3f4f6;}
+@media(max-width:480px){.tbl-wrap table{min-width:340px;}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📖</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="modal" id="dict-modal" onclick="if(event.target===this)closeDict()">
+  <div class="modal-c">
+    <div class="modal-x" onclick="closeDict()">×</div>
+    <h3 id="dict-w" style="color:#fde047;margin-bottom:10px;font-size:18px;font-weight:700;">Szó</h3>
+    <p id="dict-d" style="font-size:14px;color:#e5e7eb;line-height:1.5;">Jelentés</p>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={weight:75};
+
+const DICT = {
+  "infekció": "Fertőzés; kórokozó mikroorganizmusok bejutása és megtelepedése a szervezetben.",
+  "szepszis": "Életveszélyes szervfunkció-zavar, melyet a szervezet fertőzésre adott, kontrollálatlan válaszreakciója okoz.",
+  "prehospitális": "Kórházba érkezés előtti, helyszíni vagy mentőben történő (ellátás).",
+  "laktátszint": "A tejsav (laktát) mennyisége a vérben. A szöveti oxigénhiány (hypoxia) mutatója, 4 mmol/l felett kritikus.",
+  "shock": "Súlyos, életveszélyes állapot, melyben a szövetek vérellátása és oxigénellátása elégtelen.",
+  "hypotensio": "Alacsony vérnyomás.",
+  "dyspnoe": "Nehézlégzés, fulladásérzés.",
+  "tachypnoe": "Szapora légzés.",
+  "ileus": "Bélelzáródás.",
+  "peritonitis": "Hashártyagyulladás.",
+  "decubitus": "Felfekvés; tartós nyomás okozta szövetelhalás.",
+  "erysipelas": "Orbánc; a bőr felszínes, bakteriális fertőzése.",
+  "meningitis": "Agyhártyagyulladás.",
+  "petechia": "Pontszerű, gombostűfejnyi vérzések a bőrön vagy nyálkahártyán.",
+  "osteomyelitis": "Csontvelőgyulladás.",
+  "endocarditis": "Szívbelhártya-gyulladás.",
+  "splenectomia": "Lépeltávolító műtét. Növeli a fertőzésveszélyt.",
+  "krisztalloid": "Sókat (ionokat) és vizet tartalmazó infúziós oldat (pl. NaCl 0.9%, Ringer).",
+  "bólus": "Egy adott gyógyszer vagy folyadékadag gyors, folyamatos, viszonylag rövid idő (pl. 5-10 perc) alatti beadása.",
+  "somnolentia": "Aluszékonyság; a beteg ingerekre ébreszthető, de magára hagyva visszaalszik.",
+  "crt": "Capillary Refill Time (kapilláris telődési idő). A perifériás keringés mutatója.",
+  "etco2": "End-tidal CO2 (kilégzésvégi szén-dioxid szint). 25 Hgmm alatti értéke szepszisben szervelégtelenségre/laktát emelkedésre utal.",
+  "anasarca": "Kiterjedt, egész testre kiterjedő vizenyő (ödéma)."
+};
+
+function showDict(k, w){
+  var cleanWord = k.toLowerCase().trim();
+  document.getElementById('dict-w').innerText = (w || k).toUpperCase();
+  document.getElementById('dict-d').innerText = DICT[cleanWord] || 'Nincs adat a szótárban ehhez a kifejezéshez.';
+  document.getElementById('dict-modal').style.display = 'flex';
+}
+function closeDict(){ document.getElementById('dict-modal').style.display = 'none'; }
+
+function t(w, k) {
+  let key = k || w.toLowerCase().replace(/[^a-z0-9áéíóöőúüű]/g, '');
+  return '<span class="fw" onclick="showDict(\''+key+'\', \''+w+'\')">'+w+'</span>';
+}
+
+var CDATA = [
+  { id: 'celok', title: 'I-II. Célok és Háttér', icon: '🎯', acc: '#ef4444', secs: [
+    { t: 'Célok és Háttér', bk: [
+      { tp: 'bl', items: [
+        `Az eljárásrend célja a ${t('szepszis')} helyszíni és szekunder transzport előtti felismerésének alapjait, valamint a szeptikus felnőtt és gyermek ${t('prehospitális')} ellátását bemutatni.`,
+        `A szepszis életveszélyes szervfunkció-zavar, melyet a szervezet ${t('infekció')}-ra adott, kontrollálatlan válaszreakciója okoz.`,
+        `Magas időfaktorú kórfolyamat: az antimikrobás szer beadásának és a folyadékterápiának a késlekedésével nő a halálozás.`,
+        `Szervelégtelenséggel, emelkedett (4 mmol/l feletti) ${t('laktátszint', 'laktátszint')}-tel vagy ${t('shock')}-kal járó szepszis nagyobb halálozású csoportot jelöl.`
+      ]}
+    ]}
+  ]},
+  { id: 'felismeres', title: 'III. A szepszis felismerése', icon: '🔍', acc: '#f59e0b', secs: [
+    { t: 'A szepszis felismerése', bk: [
+      { tp: 'al', lv: 'i', tx: 'Cél a szeptikus esetek felismerése. Alapja az infekcióra hajlamosító előzmény VAGY típusos klinikai kép mellett háromból legalább <strong>KETTŐ</strong> kóros reakció azonosítása:' },
+      { tp: 'bl', items: [
+        'Újkeletű eszmélet/tudatzavar',
+        `22/perc vagy a feletti légzésszám (${t('tachypnoe')})`,
+        '100 Hgmm vagy az alatti szisztolés vérnyomás'
+      ]},
+      { tp: 'sub', tx: 'Infekció esélyét fokozó tényezők:' },
+      { tp: 'bl', items: [
+        '60 év feletti / 1 év alatti kor',
+        'Ápolási / rehabilitációs intézet lakója',
+        'Kórházi kezelés, antibiotikum, vagy invazív beavatkozás a közelmúltban',
+        'Tartós katéter / kanül',
+        `Csökkent immunitás (daganat, kemoterápia, steroid, ${t('splenectomia')})`,
+        'Tartós immobilitás'
+      ]},
+      { tp: 'sub', tx: 'Szervelégtelenségre utaló jelek (BÁRMELYIK IGAZ = Szepszis szervelégtelenséggel):' },
+      { tp: 'bl', items: [
+        'Oxigén nélkül 94% alatti SpO2 (újkeletű)',
+        `25 Hgmm alatti nasalis ${t('EtCO2')}`,
+        `90 Hgmm alatti szisztolés vérnyomás (${t('hypotensio')})`,
+        'Eszmélet/tudatzavar (újkeletű)',
+        '8 órája nem volt vizelete (újkeletű)',
+        `Hasi nyomásérzékenység, ${t('ileus')}, GI vérzés`,
+        `Nyálkahártya vérzés, véraláfutás (${t('petechia', 'petechia')})`,
+        'Icterus (sárgaság)'
+      ]}
+    ]}
+  ]},
+  { id: 'alapszint', title: 'IV. Alapszintű ellátás', icon: '🚑', acc: '#3b82f6', secs: [
+    { t: 'Alapszintű ellátás (Mentőápolók)', bk: [
+      { tp: 'al', lv: 'w', tx: 'B és B+ kompetenciaszintű ellátóknak (B: nincs gyógyszer, B+: van gyógyszer).' },
+      { tp: 'steps', items: [
+        { n: '1', t: 'Segélykocsi kérése', x: 'Indokolt esetben megfontolandó.' },
+        { n: '2', t: 'Pozicionálás', x: `Fektetés, légzési nehezítettség (${t('dyspnoe')}) esetén megemelt felső testféllel.` },
+        { n: '3', t: 'Légútbiztosítás', x: 'Eszmélet/tudatzavar esetén eszköz nélkül/egyszerű eszközzel.' },
+        { n: '4', t: 'Oxigénadás', x: 'Nem visszalégző maszkon át, <strong>15 l/perc</strong> áramlással (szaturációtól függetlenül folytatandó!).' },
+        { n: '5', t: 'Monitorozás', x: 'SpO2, EKG, 5 percenként vérnyomás, hőmérséklet.' },
+        { n: '6', t: 'Folyadék (B és B+ esetén)', x: `Vastag perifériás véna biztosítása. Vérnyomástól függetlenül legalább egyszeri <strong>250 ml ${t('krisztalloid')} ${t('bólus')}</strong> adása 5-10 perc alatt. Ha a szisztolés vérnyomás nem haladja meg a 100 Hgmm-t, a bólusokat <strong>ismételni kell (max 30 ml/kg összadagig)</strong>. Folyadék azonnal leállítandó dyspnoe megjelenésekor/fokozódásakor!` },
+        { n: '7', t: 'Hővédelem', x: 'Lehűlés elleni védelem kötelező! B+ kompetencia esetén 38°C felett lázcsillapítás megfontolandó.' },
+        { n: '8', t: 'Transzport', x: 'Segélykocsi (randevú) vagy SBO irányába szállítás megkezdésének mérlegelése. Átadáskor a "SZEPSZIS" szó használata.' }
+      ]}
+    ]}
+  ]},
+  { id: 'gyermek', title: 'VI. Gyermek specifikumok', icon: '👶', acc: '#10b981', secs: [
+    { t: 'Gyermek specifikumok', bk: [
+      { tp: 'bl', items: [
+        'A paramétereket életkor szerint kell értékelni.',
+        `A tachypnoe, csökkent vizelet vagy bármilyen tudatzavar (${t('somnolentia')}, letargia) felveti a szeptikus ${t('shock')} gyanúját.`,
+        `A ${t('hypotensio')} <strong>NEM szükséges</strong> a szeptikus shock diagnózisához! Megléte automatikusan egyenértékű vele és fenyegető jel.`
+      ]},
+      { tp: 'al', lv: 's', tx: `<strong>Folyadékterápia (Mentőápoló):</strong> <strong>10 ml/kg krisztalloid bólus</strong> 5-10 perc alatt. Túltöltés jelei hiányában ismétlendő <strong>legfeljebb 30 ml/kg</strong> összadagig. Cél a ${t('CRT')}, pulzus, tudat javulása.` }
+    ]}
+  ]}
+];
+
+var CARDS = [
+  { cat: 'Felismerés', f: "Mik a szepszis felismerésének klinikai reakció-kritériumai (3-ból 2 kell)?", b: "1. Újkeletű eszmélet/tudatzavar\n2. Légzésszám >= 22/perc\n3. Szisztolés vérnyomás <= 100 Hgmm" },
+  { cat: 'Ellátás', f: "Mennyi az alapszintű (B/B+) oxigénterápia dózisa szeptikus betegnél?", b: "15 liter/perc áramlással, nem visszalégző maszkon át. (Szaturációtól függetlenül megkezdendő és folytatandó!)" },
+  { cat: 'Folyadék', f: "Mennyi az egyszeri krisztalloid bólus dózisa felnőtt szeptikus betegnél alapszinten?", b: "250 ml (5-10 perc alatt beadva)." },
+  { cat: 'Folyadék', f: "Mennyi a krisztalloid folyadék maximális összadagja mentőápolók (B/B+) számára felnőttnél és gyermeknél?", b: "Maximum 30 ml/kg." },
+  { cat: 'Folyadék', f: "Mikor kell AZONNAL leállítani a folyadékterápiát?", b: "Ha a beadással párhuzamosan dyspnoe (nehézlégzés) jelenik meg, a meglévő fokozódik, vagy emelkedik a légzésszám/pulzusszám (túltöltés, tüdőödéma jelei)." },
+  { cat: 'Gyermek', f: "Gyermekeknél szükséges-e hypotensio (alacsony vérnyomás) a szeptikus shock klinikai diagnózisához?", b: "NEM szükséges! De ha van, az automatikusan egyenértékű vele és nagyon fenyegető jel (keringési decompensatio)." },
+  { cat: 'Gyermek', f: "Mennyi az egyszeri krisztalloid bólus dózisa gyermek szeptikus betegnél alapszinten?", b: "10 ml/kg (5-10 perc alatt)." },
+  { cat: 'Átadás', f: "Mely szavak használatát írja elő az eljárásrend az értesítés és átadás során?", b: "A \"szepszis\" vagy \"szeptikus\" szó egyértelmű kimondását, hogy rövidüljön a kórházi diagnózishoz szükséges idő." }
+];
+
+var SIMS = [
+  { id: 1, title: '1. Felnőtt, instabil szepszis', diff: 'B+ kompetencia', desc: 'Egy 68 éves idősotthoni lakóhoz kérnek mentőt, aki "zavart és lázas".', steps: [
+    { sit: "Megérkeztek a helyszínre. A beteg az ágyban fekszik, zavart (AVPU: V). Melyik az első legfontosabb lépés?", opts: [
+      {tx: "Azonnal vénát szúrok.", ok: false, fb: "Hibás! Betegvizsgálat nélkül ez nem indokolt."},
+      {tx: "Légút és légzés vizsgálata (ABCDE kezdése).", ok: true, fb: "Helyes! A szisztematikus betegvizsgálat (ABCDE) az első lépés."},
+      {tx: "Segélykocsit hívok vizsgálat nélkül.", ok: false, fb: "Hibás! Előbb fel kell mérni az állapotot."}
+    ]},
+    { sit: "A beteg légútja tiszta, de szaporán lélegzik (28/perc). A szepszis 3 kritériumából (tudatzavar, légzés >=22, sBP <=100) eddig hány teljesül?", opts: [
+      {tx: "Egy sem.", ok: false, fb: "Hibás!"},
+      {tx: "Egy.", ok: false, fb: "Hibás!"},
+      {tx: "Kettő.", ok: true, fb: "Helyes! Tudatzavar ÉS légzésszám >22. Ez már elég a szepszis gyanújához!"}
+    ]},
+    { sit: "B+ kompetenciával milyen oxigénterápiát kezdesz meg haladéktalanul a protokoll szerint?", opts: [
+      {tx: "Orrszondán 2 l/perc.", ok: false, fb: "Hibás! Szeptikus betegnél ez kevés."},
+      {tx: "Nem visszalégző maszkon 15 l/perc.", ok: true, fb: "Helyes! Szaturációtól függetlenül 15 l/perc maszkon."},
+      {tx: "Csak ha az SpO2 90% alatt van.", ok: false, fb: "Hibás! Függetlenül a szaturációtól el kell kezdeni."}
+    ]},
+    { sit: "A 'C' vizsgálatnál a vérnyomás 85/50 Hgmm. A beteg szeptikus shockban van. Mit teszel párhuzamosan?", opts: [
+      {tx: "Megemelem a lábait és várok.", ok: false, fb: "Hibás!"},
+      {tx: "Perifériás vénát biztosítok (vastag).", ok: true, fb: "Helyes! B+ szinten véna biztosítása a következő lépés a folyadékhoz."},
+      {tx: "Azonnal noradrenalint szívok fel.", ok: false, fb: "Hibás! Vasopressort B+ nem adhat."}
+    ]},
+    { sit: "A véna sikeres. Mennyi és milyen folyadékot adsz egyszeri bólusban (felnőtt beteg)?", opts: [
+      {tx: "500 ml krisztalloid.", ok: false, fb: "Hibás!"},
+      {tx: "250 ml krisztalloid 5-10 perc alatt.", ok: true, fb: "Helyes! Az eljárásrend felnőttnél 250 ml bólust ír elő alapszinten."},
+      {tx: "100 ml 5% glükóz.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A 250 ml bólus lement. A kontroll vérnyomás 90/55 Hgmm. Mi a teendő a folyadékkal (max 30 ml/kg-ig)?", opts: [
+      {tx: "Leállítom, mert nőtt a vérnyomás.", ok: false, fb: "Hibás! A szisztolés vérnyomás még nincs 100 Hgmm felett."},
+      {tx: "Ismételem a 250 ml-es bólust, mert sBP < 100 Hgmm.", ok: true, fb: "Helyes! A bólusokat 100 Hgmm szisztolés eléréséig ismételni kell."},
+      {tx: "1000 ml-t adok be gyorsan.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A második 250 ml bólus felénél a beteg fulladni kezd, légzése szörcsölő lesz. Mit teszel AZONNAL?", opts: [
+      {tx: "Folytatom a folyadékot, mert a BP még csak 95.", ok: false, fb: "Hibás!"},
+      {tx: "Azonnal leállítom a folyadékot!", ok: true, fb: "Helyes! Dyspnoe megjelenése/fokozódása esetén a folyadékot AZONNAL le kell állítani!"},
+      {tx: "Fektetem a beteget.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A 'D' és 'E' vizsgálatnál: vércukor 6.2 mmol/l, hőmérséklet 39.5°C. B+ ápolóként mi a teendőd a lázzal?", opts: [
+      {tx: "Semmi, a láz öli a baktériumokat.", ok: false, fb: "Hibás!"},
+      {tx: "Megfontolom a lázcsillapítást (gyógyszeresen) és a fizikai hővédelmet.", ok: true, fb: "Helyes! 38°C felett lázcsillapítás javasolt, valamint a lehűlés elleni védelem."},
+      {tx: "Jéggel hűtöm a mellkasát.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A beteg instabil maradt folyadék ellenére (shock). Milyen döntést kell hoznod a transzportról?", opts: [
+      {tx: "Helyszínen maradok a háziorvosig.", ok: false, fb: "Hibás!"},
+      {tx: "Transzport mérlegelése SBO-ra vagy ALS randevú szervezése.", ok: true, fb: "Helyes! Szeptikus shock esetén magasabb szintű ellátás (ALS) vagy azonnali kórház szükséges."},
+      {tx: "Elküldöm saját autóval.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A kórházi átadásnál / értesítésnél melyik kulcsszót KELL kötelezően használnod?", opts: [
+      {tx: "Infekció", ok: false, fb: "Hibás!"},
+      {tx: "SZEPSZIS", ok: true, fb: "Helyes! A 'szepszis' szó kimondása felgyorsítja a kórházi ellátást."},
+      {tx: "Lázas állapot", ok: false, fb: "Hibás!"}
+    ]}
+  ], summary: "A 68 éves betegnél a zavartság, magas légzésszám és alacsony vérnyomás alapján szepszist diagnosztizáltunk. Az ellátás: 15L O2 maszkon. Vénabiztosítás után 250 ml krisztalloid bólust kapott. A bólust ismételtük, de dyspnoe jelentkezésekor azonnal leállítottuk. ALS randevú/SBO szállítás indult, átadáskor a 'SZEPSZIS' kulcsszót használva." },
+  
+  { id: 2, title: '2. Gyermek szeptikus shock', diff: 'B kompetencia', desc: 'Egy 3 éves kisfiúhoz riasztanak. Több napja lázas, most nagyon elesett, aluszékony.', steps: [
+    { sit: "Belépsz. A gyermek aluszékony (AVPU: V), bőre márványozott. A PAT (Állapotfelmérés háromszöge) kóros. Kell-e mérned vérnyomást a szeptikus shock gyanújához?", opts: [
+      {tx: "Igen, hypotensio nélkül nincs shock.", ok: false, fb: "Hibás!"},
+      {tx: "Nem szükséges a klinikai diagnózishoz, a tudatzavar és rossz perfúzió (márványozottság) már felveti a gyanút.", ok: true, fb: "Helyes! Gyermekeknél a hypotensio NEM feltétele a shock diagnózisának, nagyon késői tünet."},
+      {tx: "Csak pulzust kell mérni.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Milyen oxigénterápiát alkalmazol alapszinten egy ilyen elesett szeptikus gyermeknél?", opts: [
+      {tx: "Nem adok, ha az SpO2 95%.", ok: false, fb: "Hibás!"},
+      {tx: "15 l/perc, nem visszalégző maszkon át.", ok: true, fb: "Helyes! A kritikus állapotú szeptikus betegeknek szaturációtól függetlenül magas áramlású O2 kell."},
+      {tx: "Orrszondán 2 l/perc.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A beteg instabil. B kompetenciájú mentőápolóként (aki nem szúrhat vénát) mi a legfontosabb szervezési teendőd?", opts: [
+      {tx: "Azonnal elindulok a háziorvosi ügyeletre.", ok: false, fb: "Hibás!"},
+      {tx: "Haladéktalanul segélykocsit (gyermek ALS / mentőorvos) kérek.", ok: true, fb: "Helyes! A szeptikus shockos gyermek agresszív vénás folyadék/gyógyszer terápiát igényel."},
+      {tx: "Várok 10 percet, hátha javul az oxigéntől.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A CRT (kapilláris telődés) 4 másodperc, a pulzus 160/perc. Milyen folyadékbólust KAPHATNA a mentőápolótól (ha a kompetencia engedné)?", opts: [
+      {tx: "20 ml/kg", ok: false, fb: "Hibás!"},
+      {tx: "10 ml/kg krisztalloid 5-10 perc alatt.", ok: true, fb: "Helyes! Gyermeknél az egyszeri bólus alapszinten 10 ml/kg."},
+      {tx: "250 ml fixen.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Mennyi lenne a B szintű ápoló maximális folyadék összadagja egy gyermeknél?", opts: [
+      {tx: "Nincs felső határ.", ok: false, fb: "Hibás!"},
+      {tx: "30 ml/kg", ok: true, fb: "Helyes! Az alapszintű ellátóknál a maximum összadag 30 ml/kg (orvos/tiszt adhat többet)."},
+      {tx: "60 ml/kg", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A D vizsgálat során a vércukor 5.1 mmol/l. Az E vizsgálat során 40.1°C lázat mérsz, a bőrén apró, pontszerű bevérzések (petechiák) vannak. Mire utal a petechia lázzal és tudatzavarral?", opts: [
+      {tx: "Allergiás reakció.", ok: false, fb: "Hibás!"},
+      {tx: "Súlyos neuroinfekció (pl. meningococcus meningitis) és szepszis gyanúja.", ok: true, fb: "Helyes! A petechia kritikus szervelégtelenségi / neuroinfekciós tünet."},
+      {tx: "Bárányhimlő.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "B kompetenciával (nincs gyógyszer) hogyan jársz el a 40.1°C-os láz esetén?", opts: [
+      {tx: "Gyógyszer hiányában nem foglalkozom vele.", ok: false, fb: "Hibás!"},
+      {tx: "Jéghideg fürdőbe teszem.", ok: false, fb: "Hibás!"},
+      {tx: "Kíméletes fizikális hűtést (ruha eltávolítása, langyos vizes borogatás) alkalmazok.", ok: true, fb: "Helyes! B kompetenciával a fizikális hővédelem/hőkezelés a megoldás."}
+    ]},
+    { sit: "A segélykocsi 10 perc múlva érkezik. Milyen gyakran értékeled újra a gyermeket (ABCDE)?", opts: [
+      {tx: "Nem kell újraértékelni.", ok: false, fb: "Hibás!"},
+      {tx: "Minden 5-10 percben folyamatosan.", ok: true, fb: "Helyes! Kritikus betegnél az ABCDE vizsgálatot 5 percenként ismételni kell."},
+      {tx: "Csak az átadás előtt.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Az egyik újraértékelésnél a gyermek szisztolés vérnyomása 65 Hgmm. Mit jelent ez gyermeknél az eljárásrend szerint?", opts: [
+      {tx: "Fenyegető kardiovaszkuláris összeomlást jelez.", ok: true, fb: "Helyes! A hypotensio gyermeknél késői és rendkívül riasztó jel."},
+      {tx: "Normális egy kisgyermeknél.", ok: false, fb: "Hibás!"},
+      {tx: "Jó jel, mert csökken a pulzus.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Megérkezik az ALS segélykocsi. Hogyan adod át a beteget a mentőorvosnak?", opts: [
+      {tx: "\"Egy 3 éves lázas gyerek, várjuk a feladatot.\"", ok: false, fb: "Hibás!"},
+      {tx: "\"Egy 3 éves SZEPTIKUS SHOCK gyanús beteg, petechiákkal, hypotensióval, O2-t kap.\"", ok: true, fb: "Helyes! A 'szeptikus' kulcsszó és a pontos klinikai kép azonnal orientálja az orvost."},
+      {tx: "\"Nem tudom pontosan mi a baj, de rosszul van.\"", ok: false, fb: "Hibás!"}
+    ]}
+  ], summary: "A 3 éves, lázas gyermeknél szeptikus shock gyanúját mondtunk ki (ehhez gyermeknél nem kell hypotensio!). Azonnal 15 L O2-t kapott, ALS segélykocsit kértünk. A petechiák jelenléte megerősítette a súlyos infekciót. Kíméletes fizikális hűtést végeztünk a 40.1°C lázra. A beteget folyamatos monitorozás mellett adtuk át az orvosnak, a kötelező 'SZEPSZIS' kulcsszó használatával." },
+
+  { id: 3, title: '3. Felnőtt, normotenzív szepszis', diff: 'B+ kompetencia', desc: '45 éves férfi 3 napja hasi fájdalommal, hányással, hasmenéssel küzd. Gyenge, szédül.', steps: [
+    { sit: "Helyszínbiztonság rendben. A beteg éber (AVPU: A). Légzésszám: 24/perc. Szisztolés vérnyomás: 110 Hgmm. A szepszis 3 klinikai reakciójából (tudatzavar, légzés >=22, vérnyomás <=100) hány teljesül?", opts: [
+      {tx: "Csak egy (légzés >= 22).", ok: true, fb: "Helyes! Csak a légzésszám (24) éri el a kritériumot."},
+      {tx: "Kettő.", ok: false, fb: "Hibás!"},
+      {tx: "Mindhárom.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A 3 kritériumból csak 1 igaz. Viszont a betegnek hasi infekcióra utaló klinikai képe van. Mit mond az eljárásrend erről az esetről?", opts: [
+      {tx: "Szepszis kizárva, otthon hagyható.", ok: false, fb: "Hibás!"},
+      {tx: "Legfeljebb egy igaz esetén: Szepszis nem valószínű, DE klinikai gyanú továbbra is szepszis mellett szólhat.", ok: true, fb: "Helyes! Ha erős a klinikai gyanú, továbbra is gondolni kell szepszisre!"},
+      {tx: "Ez egyértelmű szeptikus shock.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A beteg azt mondja: 'Tegnap este (12 órája) pisiltem utoljára.' Ez számít szervelégtelenségi jelnek?", opts: [
+      {tx: "Nem, a nyár miatt kiszáradt.", ok: false, fb: "Hibás!"},
+      {tx: "Igen, a 8 órája hiányzó vizelet (újkeletű) szervelégtelenségre utaló jel a protokoll szerint.", ok: true, fb: "Helyes! A 8 órás anuria szervelégtelenséget jelez."},
+      {tx: "Csak a 24 órás anuria számít.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A diagnózis megvan. A 'B' vizsgálat során mit teszel a 24-es légzésszám láttán (SpO2: 97%)?", opts: [
+      {tx: "Oxigént adok, 15 l/perc, nem visszalégző maszkon, a szaturációtól függetlenül.", ok: true, fb: "Helyes! A protokoll szigorúan fogalmaz: szeptikus betegnek oxigén kell 15L-rel maszkban."},
+      {tx: "Nem adok oxigént, a szaturáció jó.", ok: false, fb: "Hibás!"},
+      {tx: "Orrszondát teszek fel 1 l/perccel.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A 'C' vizsgálatnál a vérnyomás 110/70. B+ kompetenciával milyen folyadékterápiát kezdesz?", opts: [
+      {tx: "Semmilyet, mert a vérnyomás 100 felett van.", ok: false, fb: "Hibás!"},
+      {tx: "Vénabiztosítás, majd VÉRNYOMÁSTÓL FÜGGETLENÜL egy 250 ml-es krisztalloid bólus.", ok: true, fb: "Helyes! Az eljárásrend szerint vérnyomástól függetlenül az ELSŐ 250 ml bólust be kell adni B+ szinten."},
+      {tx: "Azonnal 2 litert adok be.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Lement az első 250 ml. A vérnyomás most 115/75 Hgmm. Adsz-e újabb 250 ml bólust mentőápolóként?", opts: [
+      {tx: "Igen, amíg el nem érem a 30 ml/kg-ot.", ok: false, fb: "Hibás!"},
+      {tx: "Nem, a folyadék leállítandó a 100 Hgmm elérésekor (már afelett van).", ok: true, fb: "Helyes! A folyamatábra szerint a folyadék leállítandó, ha a sBP 100 felett van."},
+      {tx: "Igen, mert szeptikus.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Monitorozod a beteget. Milyen időközönként kell mérned a vérnyomást az eljárásrend IV/5. pontja alapján?", opts: [
+      {tx: "15 percenként.", ok: false, fb: "Hibás!"},
+      {tx: "5 percenként.", ok: true, fb: "Helyes! Kritikus szeptikus betegnél 5 percenkénti vérnyomásmérés kötelező."},
+      {tx: "Elég egyszer a helyszínen.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "A maghőmérséklet (végbélben) 35.8°C (normothermia alsó határa / enyhe hypothermia). Kell hővédelem?", opts: [
+      {tx: "Nem, lázasnak kéne lennie.", ok: false, fb: "Hibás!"},
+      {tx: "Igen, lehűlés elleni védelem (fólia, takaró, fűtés) hypothermiában és normothermiában is kötelező!", ok: true, fb: "Helyes! A lehűlés elleni védelem mindig kötelező a szepszis protokoll szerint."},
+      {tx: "Csak ha reszket.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Szükség van-e helyszíni ALS (mentőtiszt/orvos) egység riasztására, tekintve hogy a vérnyomás stabil, és nincs shock?", opts: [
+      {tx: "Igen, minden szeptikushoz kell ALS.", ok: false, fb: "Hibás!"},
+      {tx: "Nem feltétlenül, transzport mérlegelése (legközelebbi SBO) javasolt, miközben folyamatosan monitorozom.", ok: true, fb: "Helyes! Mivel normotenzív és folyadékra stabil, B+ egység megkezdheti a transzportot az SBO-ra."},
+      {tx: "Hagyjuk otthon gyógyszerrel.", ok: false, fb: "Hibás!"}
+    ]},
+    { sit: "Az SBO-ra érve hogyan kezded az átadást?", opts: [
+      {tx: "\"Hoztam egy hasmenéses urat.\"", ok: false, fb: "Hibás!"},
+      {tx: "\"A beteg egyértelműen SZEPSZIS gyanús (hasmenés, anuria 12 órája), 15L O2-t és 250ml bólust kapott, vitális paraméterei most stabilak.\"", ok: true, fb: "Helyes! A 'SZEPSZIS' kulcsszó elhangzása a legfontosabb az átadásnál."},
+      {tx: "\"Szerintem vakbélgyulladás.\"", ok: false, fb: "Hibás!"}
+    ]}
+  ], summary: "A betegnél a 3 felismerési kritériumból csak egy (légzés 24/p) teljesült, DE az anamnézis szerinti 12 órás anuria szervelégtelenségre utalt. Diagnózis: Szepszis (szervelégtelenséggel). B+ kompetenciával 15 L O2-t adtunk maszkon. A normális vérnyomás ellenére adtunk egy egyszeri 250 ml krisztalloid bólust. A sBP 100 felett maradt, így további folyadékot nem adtunk. A beteget stabil hemodinamika mellett szállítottuk be a legközelebbi SBO-ra, ahol a 'SZEPSZIS' kulcsszóval adtuk át." }
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+h(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+b.tx+'</div>';
+  if(b.tp==='note') return '<div class="note">'+b.tx+'</div>';
+  if(b.tp==='steps') return b.items.map(s=>'<div class="step-wrap"><div class="step-num">'+s.n+'</div><div class="step-body"><div class="step-t">'+s.t+'</div><div class="step-x">'+s.x+'</div></div></div>').join('');
+  return '';
+}
+
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Szeptikus beteg felismerése és ellátása</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v2.0 alkalmazás</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📖','Eljárásrend','A szepszis protokoll szövege'],['flash','🃏','Flashkártyák','Kikérdező kártyák'],['sim','🚑','Szimuláció','Döntéshozatal éles eseten'],['calc','🧮','Kalkulátor','Folyadék bólus kalkuláció']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#451a03;border-color:#78350f"><div style="font-size:12px;color:#fde68a"><b>Megjegyzés:</b> A sárga, szaggatott vonallal aláhúzott szavakra kattintva megjelenik a jelentésük az Eljárásrendben!</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend</h2>'+
+'<div class="note" style="margin-bottom:.75rem;">💡 Az aláhúzott sárga szavakra (pl. <span class="fw" onclick="showDict(\'szepszis\')">szepszis</span>) kattintva megnyílik a fogalommagyarázat.</div>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#ef4444':'#3f3f3f')+';background:'+(FC.cat===c?'#ef4444':'#2a2a2a')+';color:'+(FC.cat===c?'#fff':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" style="color:#fff" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+'<div class="al al-w" style="font-size:12px;">Az esetek szigorúan B és B+ (mentőápoló) kompetenciaszintnek megfelelően lettek kialakítva az eljárásrend alapján. 10 kérdés / szituáció.</div>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-y':'tag-g')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont (kérdés)</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#172554;border:1px solid #1e3a8a;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#60a5fa">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#bfdbfe;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-g btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő lépés →':'Eredmény megtekintése')+'</button>':'');
+}
+
+function renderCalc(){
+  var w = CA.weight || 75;
+  var cGy = (w * 10) + " ml";
+  var cMax = (w * 30) + " ml";
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Folyadék Kalkulátor</h2>'+
+  '<div class="card">'+
+  '<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px">Beteg testsúlya (kg):</div>'+
+  '<input type="number" min="1" max="200" value="'+w+'" onchange="CA.weight=parseFloat(this.value);render()">'+
+  '<div class="g2" style="margin-top:15px">'+
+  '<div class="res-box" style="background:#451a03;border:1px solid #78350f">'+
+  '<div style="font-size:11px;color:#fde68a;font-weight:700;text-transform:uppercase;margin-bottom:5px">Gyermek (10 ml/kg)</div>'+
+  '<div style="font-size:11px;color:#9ca3af;margin-bottom:5px">Egyszeri bólus:</div>'+
+  '<div style="font-size:24px;font-weight:700;color:#fbbf24">'+cGy+'</div>'+
+  '</div>'+
+  '<div class="res-box" style="background:#172554;border:1px solid #1e3a8a">'+
+  '<div style="font-size:11px;color:#bfdbfe;font-weight:700;text-transform:uppercase;margin-bottom:5px">Felnőtt (Fix)</div>'+
+  '<div style="font-size:11px;color:#9ca3af;margin-bottom:5px">Egyszeri bólus:</div>'+
+  '<div style="font-size:24px;font-weight:700;color:#60a5fa">250 ml</div>'+
+  '</div>'+
+  '</div>'+
+  '<div class="res-box" style="background:#064e3b;border:1px solid #065f46;margin-top:10px">'+
+  '<div style="font-size:12px;color:#bbf7d0;font-weight:700;margin-bottom:5px">Mentőápolói (B/B+) MAX Összadag (30 ml/kg):</div>'+
+  '<div style="font-size:32px;font-weight:700;color:#4ade80">'+cMax+'</div>'+
+  '</div>'+
+  '<div class="al al-d" style="margin-top:15px;font-size:12px;"><strong>Figyelem!</strong> A folyadékterápia AZONNAL leállítandó, ha beadásával párhuzamosan dyspnoe jelenik meg/fokozódik, vagy nő a légzésszám! A bólusokat csak addig ismételjük, amíg a sBP el nem éri a 100 Hgmm-t (gyermeknél amíg a perfúzió nem rendeződik).</div>'+
+  '</div>';
+}
+
+function render(){
+  var c=document.getElementById('ct');c.innerHTML='';
+  if(SCR==='home')c.innerHTML=renderHome();
+  else if(SCR==='chapters')c.innerHTML=renderChapters();
+  else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+  else if(SCR==='flash')c.innerHTML=renderFlash();
+  else if(SCR==='sim')c.innerHTML=renderSim();
+  else if(SCR==='calc')c.innerHTML=renderCalc();
+  
+  var tabs=['home','chapters','flash','sim','calc'];
+  var active=SCR==='chapter'?'chapters':SCR;
+  document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+  window.scrollTo(0,0);
+}
+
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>
