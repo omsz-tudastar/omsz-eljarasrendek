@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ Prehospitális Eljárásrend & Betegvizsgálat</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:800px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+
+/* NAVIGÁCIÓ */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);overflow-x:auto;}
+.nb{flex:1;min-width:70px;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:10px;color:#9ca3af;font-weight:400;text-transform:uppercase;letter-spacing:0.05em;}
+.nb.act .nl{color:#14b8a6;font-weight:700;}
+
+/* TARTALOM ÉS KÁRTYÁK */
+.ct{padding:1rem;}
+h1, h2, h3{color:#f3f4f6;line-height:1.3;}
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+
+/* KIEMELÉSEK */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.3rem;}
+.dict-word{color:#5eead4;border-bottom:1px dashed #5eead4;cursor:pointer;font-weight:600;}
+.dict-word:hover{color:#2dd4bf;border-bottom-color:#2dd4bf;}
+
+/* MODAL / SZÓTÁR */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;padding:1rem;}
+.modal{background:#262626;border:1px solid #3f3f3f;border-radius:12px;padding:1.5rem;width:100%;max-width:400px;position:relative;}
+.modal-close{position:absolute;top:10px;right:10px;background:none;border:none;color:#9ca3af;font-size:24px;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.modal-close:hover{background:#3f3f3f;color:#fff;}
+.modal-title{font-size:16px;font-weight:700;color:#f3f4f6;margin-bottom:.5rem;text-transform:capitalize;}
+.modal-desc{font-size:14px;color:#d1d5db;line-height:1.6;}
+
+/* GOMBOK */
+.btn{padding:.6rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;font-weight:600;transition:all .15s;text-align:center;display:inline-block;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-fw{width:100%;display:block;}
+
+/* SZIMULÁCIÓ / KVÍZ */
+.opt{width:100%;display:block;padding:.8rem 1rem;margin-bottom:8px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.5;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+.prog{height:6px;background:#333;border-radius:3px;margin-bottom:1rem;overflow:hidden;}
+.progb{height:100%;border-radius:3px;transition:width .3s;}
+.tag{display:inline-block;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;}
+.tag-b{background:#1e3a8a;color:#bfdbfe;}
+.tag-bp{background:#701a75;color:#fbcfe8;}
+
+/* TÁBLÁZATOK ÉS INPUTOK */
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:6px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:6px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+
+input[type=number], input[type=range]{width:100%;background:#2a2a2a;border:1px solid #4b5563;border-radius:8px;padding:10px;color:#e5e7eb;font-family:inherit;font-size:14px;margin-bottom:.5rem;accent-color:#14b8a6;}
+input[type=range]{padding:0;border:none;height:20px;background:transparent;}
+select{width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:14px;color:#e5e7eb;font-family:inherit;margin-bottom:.5rem;}
+
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('guide')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="modal-overlay" id="dictModal" onclick="closeDict(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDictBtn()">×</button>
+    <div class="modal-title" id="dictTitle">Szó</div>
+    <div class="modal-desc" id="dictDesc">Magyarázat</div>
+  </div>
+</div>
+
+<script>
+// --- GLOBÁLIS ÁLLAPOTOK ÉS VÁLTOZÓK ---
+var SCR = 'home';
+var CHID = null;
+var SI = {id: null, step: 0, chosen: null, hist: [], fin: false};
+
+// Kalkulátor állapotok
+var CA = {
+  tab: 'ped', 
+  pedAge: '', 
+  mode: 'adult', e: 4, v: 5, m: 6, // GCS
+  rr: 15, spo2: 96, o2: 0, sbp: 120, hr: 80, c: 0, t: 37.0 // NEWS2
+};
+
+// --- SZÓTÁR (MODAL TARTALOM) ---
+const DICT = {
+  'hypoxia': 'Oxigénhiány. Gyermekeknél és vízből mentetteknél a keringésmegállás vezető oka. Az újraélesztés során azonnal oxigén adása és hatékony lélegeztetés szükséges.',
+  'hypovolaemia': 'A keringő vérmennyiség súlyos csökkenése (pl. vérzés, szepszis miatt). Traumás keringésmegállásnál a leggyakoribb ok. Kezelése agresszív folyadékpótlás.',
+  'pneumothorax': 'Feszülő (tenziós) légmell. A levegő nyomása gátolja a vénás visszaáramlást a szívbe. Subcutan emphysema jelezheti. Prehospitálisan azonnali tűdekompressziót igényel.',
+  'tamponád': 'Folyadék/vér a pericardiumban (szívburok). Megakadályozza a szív telődését.',
+  'asystolia': 'A szív elektromos és mechanikai működésének teljes hiánya. Nem sokkolandó ritmus. Kezelése: kompresszió, azonnali 1 mg Adrenalin iv/io.',
+  'pea': 'Pulzus Nélküli Elektromos Aktivitás. A monitoron látható elektromos ritmus, de nincs tapintható pulzus. Nem sokkolandó ritmus.',
+  'vf': 'Kamrafibrilláció. A szív kaotikus elektromos tevékenysége. Sokkolandó ritmus. Azonnali aszinkron defibrillálás szükséges (150-200J).',
+  'rosc': 'Return of Spontaneous Circulation - Spontán keringés visszatérése. Kapnográfia (EtCO2) hirtelen, jelentős megemelkedése is jelezheti. ABCDE és postresuscitatios ellátás követi.',
+  'als': 'Advanced Life Support - Emelt Szintű Újraélesztés. Manuális defibrillátor, gyógyszerek, emelt légút, 4H-4T keresése.',
+  'cabcde': 'Súlyos traumás betegek algoritmusa. A "c" a katasztrofális külső vérzés azonnali csillapítását jelenti a nyaki gerinc védelme (MILS) mellett, mielőtt a légutat vizsgálnánk.',
+  'capnografia': 'A kilégzett CO2 (EtCO2) mérése. ALS során kötelező az emelt légúti eszközön! Mutatja a kompresszió hatékonyságát és a ROSC beálltát.',
+  'mils': 'Manual In-Line Stabilization - A nyaki gerinc kézi rögzítése trauma esetén. Ennek alkalmazása mellett a légutat csak az áll kiemelésével (fej hátrahajtása nélkül) szabad megnyitni.',
+  'avpu': 'Tudatállapot vizsgáló skála. A: Alert (éber), V: Verbal (hangra reagál), P: Pain (fájdalomra reagál), U: Unresponsive (nem reagál).',
+  'crt': 'Kapilláris Újratelődési Idő. A körömágyon vagy a szegycsonthoz nyomva 5 másodpercig. Normál értéke: ≤ 2 másodperc. A perifériás keringést mutatja.',
+  'szepszis': 'Súlyos, életveszélyes állapot, a szervezet fertőzésre adott kóros válasza. Ha a NEWS2 pontszám ≥ 5 ÉS fertőzés jelei vannak jelen, azonnal szepszisre kell gondolni!'
+};
+
+// --- TANANYAG / ELJÁRÁSREND TARTALOM ---
+const GUIDES = [
+{id:'alapok', t:'1. ABCDE Betegvizsgálat Alapelvei', txt:`
+<div class="al al-i">A prehospitális sürgősségi betegvizsgálat célja az életveszély azonosítása és azonnali elhárítása. Szisztematikus, ABCDE sorrendű vizsgálatot igényel.</div>
+<h3 style="color:#14b8a6;margin-bottom:5px;">Első benyomások (Nulladik lépés)</h3>
+<ul class="bl">
+  <li><b>Helyszínbiztonság:</b> Veszélyes helyszínen NE közelítsd meg a beteget! Egyéni védőfelszerelés felvétele.</li>
+  <li>Reakcióképesség vizsgálata: Hangos megszólítás és a váll kíméletes megrázása egyidőben.</li>
+  <li>Ha nincs reakció: azonnali ALS (segélykocsi) hívása és életjelenségek vizsgálata (Légút, Hármas érzékelés 10 mp-ig).</li>
+</ul>
+<h3 style="color:#14b8a6;margin-bottom:5px;margin-top:15px;">A szisztematikus ABCDE</h3>
+<ul class="bl">
+  <li><b>A (Légút):</b> Áttekinthetőség, horkolás, szörcsölés, stridor. Fenyegetett légút (pl. égés, trauma) felismerése.</li>
+  <li><b>B (Légzés):</b> Frekvencia, szimmetria, légzési munka. Minden kritikus betegnél AZONNAL 100% oxigén adása!</li>
+  <li><b>C (Keringés):</b> Pulzus, bőrszín, <span class="dict-word" onclick="shD('crt')">CRT</span>. Szükség esetén (B+ szinttől) vénabiztosítás, monitorozás.</li>
+  <li><b>D (Idegrendszer):</b> <span class="dict-word" onclick="shD('avpu')">AVPU</span> skála, pupillák. Megváltozott tudat esetén <b>kötelező a vércukormérés</b>!</li>
+  <li><b>E (Egyéb):</b> Testtájékok vizsgálata, lázmérés, hűtés/melegítés, SAMPLE anamnézis.</li>
+  <li>A vizsgálat elölről (A-tól) ismétlendő állapotváltozás, beavatkozás, vagy betegmozgatás után!</li>
+</ul>
+`},
+{id:'trauma', t:'2. Trauma és cABCDE', txt:`
+<div class="al al-d">Sérülés gyanúja esetén az ellátás kiegészül a <span class="dict-word" onclick="shD('cabcde')">cABCDE</span> elvvel, ami megelőzi a klasszikus légútvizsgálatot is.</div>
+<ul class="bl">
+  <li><b>C (Catastrophic hemorrhage):</b> A katasztrofális külső vérzés azonnali csillapítása (Tourniquet, direkt nyomás).</li>
+  <li><b>A (Légút) + Nyaki gerinc:</b> <span class="dict-word" onclick="shD('mils')">MILS</span> (nyaki gerinc kézi rögzítése) mellett a légutat <b>kizárólag az áll kiemelésével</b> biztosítjuk, a fej hátrahajtása TILOS!</li>
+  <li><b>B (Légzés):</b> A mellkas megtekintése és megtapintása kötelező. <span class="dict-word" onclick="shD('pneumothorax')">Feszülő légmell (PTX)</span> esetén azonnali tűdekompresszió szükséges (B+ kompetencia).</li>
+  <li><b>C (Keringés):</b> A medence vizsgálata <b>bármilyen irányú nyomással szigorúan tilos!</b> Ránézéssel és mechanizmus alapján kell dönteni a medencerögzítőről. Hypovolaemiás shock esetén agresszív folyadékterápia (krisztalloid, Tranexámsav).</li>
+  <li>A ruházatot teljesen el kell távolítani a sérülések felméréséhez, de utána azonnali hővédelem (kihűlés elleni védelem) szükséges.</li>
+</ul>
+`},
+{id:'cpr', t:'3. Újraélesztés (BLS és ALS)', txt:`
+<div class="al al-s">Keringésmegállás gyanújakor törekedjünk a beteg 360°-os körüljárhatóságának biztosítására!</div>
+<h3 style="color:#14b8a6;margin-bottom:5px;">Alapszintű Újraélesztés (BLS)</h3>
+<ul class="bl">
+  <li>Eszméletlen betegnél a hármas érzékelés pontosan 10 másodpercig tart. Az agonális (gaspoló, tátogó, furcsa) légzés <b>nem normális</b>, keringésmegállást jelent!</li>
+  <li>Felnőttnél azonnal mellkasi kompressziókkal kezdünk (30:2 arány). Mélység: 5-6 cm, frekvencia 100-120/perc.</li>
+  <li>Az AED érkezésekor azonnal fel kell rakni. A töltés alatt a kompresszió folytatódik.</li>
+  <li>Sokk leadása után AZONNAL 2 perc CPR következik, ritmus/pulzus ellenőrzés nélkül!</li>
+</ul>
+<h3 style="color:#14b8a6;margin-bottom:5px;margin-top:15px;">Emelt Szintű Újraélesztés (ALS)</h3>
+<ul class="bl">
+  <li><b>Sokkolandó ritmusok:</b> <span class="dict-word" onclick="shD('vf')">Kamrafibrilláció (VF)</span>, Pulzus nélküli VT. Sokk (150-200J). Adrenalin (1 mg) a 3. sokk után, majd 3-5 percenként.</li>
+  <li><b>Nem sokkolandó ritmusok:</b> <span class="dict-word" onclick="shD('asystolia')">Asystolia</span>, <span class="dict-word" onclick="shD('pea')">PEA</span>. Nincs sokk. Adrenalin (1 mg) AZONNAL, majd 3-5 percenként.</li>
+  <li>A kompressziót végzőt 2 percenként cserélni kell. A szünet (ritmusanalízishez) nem lehet több 5 másodpercnél!</li>
+  <li>Emelt légúti eszköz (LMA/Tubus) esetén: folyamatos kompresszió, és függetlenül 10/perc lélegeztetés. <span class="dict-word" onclick="shD('capnografia')">Kapnográfia</span> használata kötelező!</li>
+</ul>
+`},
+{id:'gyermek', t:'4. Gyermek Ellátás és CPR', txt:`
+<div class="al al-w">Gyermekeknél a keringésmegállás döntően <span class="dict-word" onclick="shD('hypoxia')">hypoxia</span> (oxigénhiány) talaján alakul ki, így az algoritmus némileg eltér a felnőttekétől.</div>
+<h3 style="color:#f472b6;margin-bottom:5px;">Gyermek Állapotfelmérés és ABCDE</h3>
+<ul class="bl">
+  <li>Első megközelítéskor a <b>PAT (Állapotfelmérés Háromszöge)</b> alkalmazandó: Küllem, Légzési munka, Keringés (bőrszín). Ha bármelyik kóros, a gyermek kritikus állapotú. Ez a vizuális felmérés nem helyettesíti a fizikális ABCDE-t!</li>
+  <li>A gyermekek sokáig kompenzálnak. A <b>vérnyomásesés nagyon későn jelenik meg</b>, és fenyegető kardiovaszkuláris összeomlást jelez! Enyhe csökkenésnél is azonnali, agresszív beavatkozás kell.</li>
+</ul>
+<h3 style="color:#f472b6;margin-bottom:5px;margin-top:15px;">Gyermek Újraélesztés (PBLS / ALS)</h3>
+<ul class="bl">
+  <li>A légzés hiánya esetén az ellátás <b>5 KEZDETI BEFÚVÁSSAL</b> indul! Csak ezután jönnek a kompressziók.</li>
+  <li>Szakellátói (mentős) kompresszió : lélegeztetés arány = <b>15 : 2</b>.</li>
+  <li>Kompresszió mélysége: a mellkas nyílirányú (AP) átmérőjének kb. 1/3-a.</li>
+  <li>Defibrillálás: 4 J/kg. Adrenalin: 10 µg/kg (0,01 mg/kg).</li>
+</ul>
+`}
+];
+
+// --- SZIMULÁCIÓS ADATOK (Szigorú 10 lépés, B/B+) ---
+const SIM_DATA = [
+{
+  id: 1, diff: 'B kompetencia', tag: 'tag-g', title: '1. Felnőtt Hirtelen Szívhalál (Utca)',
+  desc: 'Egy 55 éves férfi hirtelen összeesett a villamosmegállóban. Te B kompetenciájú (gyógyszerelés nélküli) mentőápolóként érkezel elsőként a helyszínre.',
+  steps: [
+    { q: 'A mentőautóból kiszállva mi az ABSZOLÚT ELSŐ teendőd az eljárásrend szerint?',
+      opts: ['Azonnal a beteghez futok és elkezdem a mellkasi kompressziókat.', 'Meggyőződöm a helyszín biztonságáról, felveszem az egyéni védőfelszerelést.', 'Kézirádión hívom a mentésirányítást és segélykocsit kérek.'],
+      ok: 1, fb: 'A helyszínbiztonság és a védőfelszerelés felvétele mindig a nulladik lépés.' },
+    { q: 'A helyszín biztonságos. A beteg hanyatt fekszik a kövön. Hogyan vizsgálod meg a reakcióképességét?',
+      opts: ['Erősen megdörzsölöm a szegycsontját (fájdalominger).', 'Hideg vizet locsolok az arcába.', 'Hangosan megszólítom és ezzel egyidőben kíméletesen megrázom a vállát.'],
+      ok: 2, fb: 'A hangos megszólítás és a váll kíméletes megrázása a hivatalos reakcióvizsgálat.' },
+    { q: 'A beteg semmilyen ingerre nem reagál. B kompetenciájú mentőként mi a KÖVETKEZŐ LÉPÉS, mielőtt a légzésvizsgálathoz hajolnál?',
+      opts: ['Azonnal stabil oldalfekvésbe fordítom.', 'Kézirádión haladéktalanul segélykocsit (ALS egységet) kérek.', 'Elkezdem a 30 mellkasi kompressziót.'],
+      ok: 1, fb: 'Eszméletlen/nem reagáló beteghez B kompetenciaszinten azonnal magasabb szintű segítséget kell hívni.' },
+    { q: 'Hogyan teszed szabaddá a légutakat ennél a betegnél (trauma nem gyanítható)?',
+      opts: ['A fejét oldalra fordítom.', 'Egyik kezem a homlokára, másik az álla alá: a fejet kíméletesen hátrahajtom és az állat megemelem.', 'Kinyitom a száját és vakon benyúlok ujjal.'],
+      ok: 1, fb: 'A fej hátrahajtása és az áll megemelése a standard, legbiztonságosabb technika.' },
+    { q: 'A légút megnyílt. Hogyan és pontosan mennyi ideig vizsgálod a légzést?',
+      opts: ['Csak a mellkas emelkedését nézem 5 másodpercig.', 'Fonendoszkóppal meghallgatom a tüdőt 15 másodpercig.', 'Hármas érzékeléssel (látom a mellkast, hallom és érzem a levegőt) pontosan 10 másodpercig.'],
+      ok: 2, fb: 'A 10 másodperces hármas érzékelés a kötelező BLS módszer.' },
+    { q: 'A 10 mp alatt a beteg kétszer, hörgő hanggal és tátogva vesz levegőt. Hogyan értékeled ezt?',
+      opts: ['A beteg él és lélegzik, stabil oldalfekvésbe helyezem.', 'Ez agonális (gaspoló) légzés, amely NEM normális, így keringésmegállásként kezelem!', 'Ez asztmás roham, inhalátort keresek.'],
+      ok: 1, fb: 'Az agonális légzés a nyúltvelő utolsó reakciója, nem biztosít gázcserét. Egyértelműen keringésmegállás.' },
+    { q: 'Keringésmegállás. Mi a BLS ELSŐ fizikai beavatkozása egy felnőtt esetében?',
+      opts: ['Két nagy befúvást végzek a szájába.', 'Vénát biztosítok.', 'Azonnal megkezdem a mellkasi kompressziókat (30 lenyomással).'],
+      ok: 2, fb: 'A felnőtt keringésmegállások többsége szíveredetű, azonnal kompressziókkal kezdünk.' },
+    { q: 'Milyen technikával végzed a mellkasi kompressziókat?',
+      opts: ['Szegycsont alsó felén, 5-6 cm mélyen, 100-120/perc frekvenciával, teljes felengedéssel.', 'Mellkas bal oldalán a szív felett, 3 cm mélyen, 80/perc.', 'A has felső részén, 140/perc.'],
+      ok: 0, fb: 'Tökéletes paraméterek. A teljes felengedés kritikus a koszorúerek telődéséhez.' },
+    { q: 'A társad megérkezik az AED-vel és bekapcsolja. Ragasztja az elektródákat. Mit csinálsz te ezalatt?',
+      opts: ['Megállok és segítek neki ragasztani.', 'A kompressziót a ragasztás alatt IS folytatom, csak a ritmusanalízis/sokk idejére állok meg.', 'Átadom a kompressziót egy laikusnak.'],
+      ok: 1, fb: 'Az "hands-off" időt minimalizálni kell. A ragasztás és a gép töltése alatt is mennie kell a kompressziónak.' },
+    { q: 'Az AED sokkot javasolt. Leadod a sokkot. Mi a legelső teendőd a gomb lenyomása után?',
+      opts: ['Megtapintom a carotis pulzust.', 'Megvárom az AED következő utasítását.', 'Ritmus és pulzus ellenőrzése NÉLKÜL azonnal folytatom a mellkasi kompressziókat 2 percig.'],
+      ok: 2, fb: 'Sokk leadása után a szívizom kimerült. Azonnali 2 perces CPR a protokoll pulzusvizsgálat nélkül!' }
+  ],
+  summary: 'Részletes Összefoglaló (BLS - B kompetencia): A helyszínbiztonság és a védőfelszerelés felvétele után a mozdulatlan betegnél a hangos megszólítás és vállrázás reakcióhiányt igazolt. B kompetenciájúként azonnal ALS egységet (segélykocsit) hívtál a rádión. A fej hátrahajtásával megnyitott légút mellett a 10 másodperces hármas érzékelés agonális (gaspoló) légzést mutatott, ami egyértelmű keringésmegállást jelent. A felnőtt protokoll szerint azonnal mellkasi kompressziókkal (30:2) kezdtél a mellkas közepén 5-6 cm mélyen, 100-120/perc ütemben. A társad az AED-t bekapcsolta, az elektródákat a folyamatos kompresszió mellett ragasztotta fel. A gép sokkot javasolt, a biztonságos sokkleadás után pedig mindenféle pulzusvizsgálat nélkül azonnal folytattad a kompressziót 2 percig. Az ellátás az ALS egység érkezéséig folyamatos, minőségi mellkaskompressziókon és AED ritmuselemzéseken alapult.'
+},
+{
+  id: 2, diff: 'B+ kompetencia', tag: 'tag-bp', title: '2. Súlyos Trauma és Szepszis Differenciálás',
+  desc: 'Egy építkezésen leesett (trauma) 40 éves férfihez riasztanak. A beteg zavart, légzése felületes. B+ kompetenciájú vagy (gyógyszer, véna, dekompresszió).',
+  steps: [
+    { q: 'A helyszín biztosítása után megközelíted a súlyos sérültet. Milyen kiegészített vizsgálattal kezded az ellátást?',
+      opts: ['Azonnal vérnyomást mérek a pontos képhez.', 'Trauma kiegészítéssel (cABCDE): katasztrofális vérzés keresése, csillapítása, és a nyaki gerinc manuális rögzítése (MILS).', 'Stabil oldalfekvésbe helyezem.'],
+      ok: 1, fb: 'Traumánál a katasztrofális külső vérzés elállítása és a nyaki gerinc védelme (MILS) az első lépés.' },
+    { q: 'Nincs katasztrofális vérzés. Társad tartja a fejet (MILS). Az "A" (Légút) vizsgálathoz hogyan nyitod meg a légutat?',
+      opts: ['Erősen hátrahajtom a fejét.', 'MILS mellett KIZÁRÓLAG az áll kiemelésével, a fej hátrahajtása NÉLKÜL!', 'Várok a merev nyakgallér felhelyezésére.'],
+      ok: 1, fb: 'A MILS melletti állkiemelés óvja a gerincvelőt a másodlagos sérüléstől.' },
+    { q: 'A légút szabad. A "B" vizsgálatnál a légzésszám 32/perc. Mit kell feltétlenül megvizsgálnod a mellkason traumás betegnél?',
+      opts: ['Csak fonendoszkóppal meghallgatom a ruhán keresztül.', 'Elengedhetetlen a mellkas megtekintése, és áttapintása paradox mozgás, crepitatio, vagy emphysema (levegő a bőr alatt) keresésére.', 'Megkérdezem, hogy fáj-e a levegővétel.'],
+      ok: 1, fb: 'A ruha eltávolítása után a mellkas vizuális és tapintásos vizsgálata kötelező lépés a feszülő PTX kizárására.' },
+    { q: 'A jobb mellkasfél nem emelkedik, a bőr alatt ropogó levegőt (subcutan emphysemát) tapintasz, a beteg instabil (pulzusa alig tapintható). Mi a teendő B+ szinten?',
+      opts: ['Kizárólag oxigént adok és azonnal indulok a kórházba.', 'Feszülő PTX gyanúja miatt 100% oxigén adása mellett tűvel azonnali mellkasi detenzionálást (dekompressziót) végzek.', 'Lefogom a mellkasát.'],
+      ok: 1, fb: 'A feszülő (tenziós) PTX életveszélyes, akadályozza a szív telődését. B+ szinten a tűdekompresszió azonnali életmentő beavatkozás.' },
+    { q: 'A detenzionálás után a légzés javul. Jön a "C" (Keringés) vizsgálat. Hogyan vizsgálod a medencét?',
+      opts: ['A MEDENCE VIZSGÁLATA BÁRMILYEN IRÁNYÚ NYOMÁSSAL SZIGORÚAN TILOS! Csak a mechanizmus és ránézés alapján értékelem.', 'Óvatosan megnyomom két oldalról.', 'Megkérem, hogy mozgassa a lábait.'],
+      ok: 0, fb: 'A nyomkodás újabb masszív belső vérzést indíthat. Szigorúan tilos!' },
+    { q: 'A beteg shockos. B+ kompetenciával milyen párhuzamos tevékenységet végzel a "C" fázisban?',
+      opts: ['Vénabiztosítást végzek, agresszív folyadékpótlást készítek elő (vérzés miatt), és monitorozom (EKG, vérnyomás).', 'Várom, hogy az orvos biztosítson vénát.', 'Csak pulzust tapintok 5 percenként.'],
+      ok: 0, fb: 'B+ ápoló vénát biztosít, folyadékot adhat és teljes monitorozást végez.' },
+    { q: 'Következik a "D" (Idegrendszer) vizsgálat. A beteg zavart (AVPU: V). Melyik mérést kell kötelezően elvégezni megváltozott tudat esetén?',
+      opts: ['Alkoholteszt.', 'Részletes reflexvizsgálat.', 'Vércukormérés a vénás kanül tűjéből.'],
+      ok: 2, fb: 'A vércukorszint mérése minden megváltozott tudatú betegnél kötelező a "D" fázisban.' },
+    { q: 'Az "E" (Exposure) vizsgálathoz eltávolítod a ruházatot, hogy átvizsgáld a testet. Mit kell azonnal megtenned utána?',
+      opts: ['Azonnali hővédelem (kihűlés elleni védelem) biztosítása takaróval/fóliával.', 'Lemosom a vért.', 'Csinálok egy 12-elvezetéses EKG-t.'],
+      ok: 0, fb: 'A trauma okozta kihűlés végzetes lehet (trauma triász). Az izoláció kritikus.' },
+    { q: 'Az eljárásrend alapján melyik vizsgálatot lehet és kell ELHAGYNI súlyos traumás betegnél az időveszteség elkerülése végett?',
+      opts: ['A vércukormérést.', 'A 12-elvezetéses EKG készítését.', 'A pupillavizsgálatot.'],
+      ok: 1, fb: 'Súlyos sérültnél a 12-elvezetéses EKG prehospitálisan nem indokolt és felesleges időveszteség.' },
+    { q: 'A beteget a mentőbe emelitek a szállítás megkezdéséhez. Mi a teendő a betegmozgatás után?',
+      opts: ['Innentől már csak a monitort figyelem.', 'A szisztematikus ABCDE vizsgálatot az elejéről (A-tól) megismétlem.', 'Kitöltöm az adminisztrációt.'],
+      ok: 1, fb: 'Betegmozgatás, állapotváltozás vagy jelentős beavatkozás után a teljes ABCDE felmérést elölről meg kell ismételni.' }
+  ],
+  summary: 'Részletes Összefoglaló (Trauma B+): A helyszínbiztonság után a trauma protokoll (cABCDE) lépett életbe: a nyaki gerinc manuális rögzítése (MILS) mellett történt a katasztrofális vérzések keresése. Az "A" (Légút) vizsgálatánál a fejet nem hajtottuk hátra, csak az állat emeltük ki a MILS mellett. A "B" (Légzés) fázisban a mellkas lemeztelenítése, megtekintése és megtapintása egyértelműen subcutan emphysemát és feszülő PTX-et igazolt. B+ kompetenciának megfelelően azonnali életmentő tűdekompressziót (detenzionálást) hajtottunk végre oxigén adása mellett. A "C" (Keringés) vizsgálata során a medencét csak vizuálisan értékeltük, a mechanikus nyomkodást szigorúan elkerültük. A shock jelei miatt vénát biztosítottunk és folyadékterápiát kezdtünk. A "D" (Tudat) fázisban a zavartság miatt kötelezően vércukrot mértünk a vénás tűből. Az "E" (Egyéb) lépésnél a ruházat eltávolítása után a hypothermia megelőzése érdekében azonnali hővédelmet alkalmaztunk. A 12-elvezetéses EKG-t elhagytuk az időnyerés érdekében. A mentőautóba helyezés (mozgatás) után a teljes szisztematikus ABCDE felmérést újra elölről kezdtük.'
+},
+{
+  id: 3, diff: 'B+ kompetencia', tag: 'tag-bp', title: '3. Magas Láz és Légzési Zavar',
+  desc: 'Egy idősotthonban élő 78 éves hölgyhöz hívnak. A bejelentő szerint nagyon magas a láza és szaporán lélegzik. B+ kompetencia.',
+  steps: [
+    { q: 'A beteg az ágyban fekszik, éber, de nagyon gyenge, arca kipirult, légzése szapora. Stabil állapotúnak minősül?',
+      opts: ['Igen, mert éber és ágyban fekszik.', 'Nem, kritikus beteg. A szapora légzés és a súlyos gyengeség miatt azonnali szisztematikus ABCDE vizsgálat szükséges.', 'Igen, ha tud válaszolni a kérdésekre.'],
+      ok: 1, fb: 'A tudatosság nem jelent stabilitást. A vitális jelek eltérése kritikus állapotot jelez.' },
+    { q: 'Az "A" légút átjárható. A "B" vizsgálatnál a légzésszám 28/perc, SpO2 88% szobalevegőn. Milyen párhuzamos tevékenység KÖTELEZŐ azonnal?',
+      opts: ['100%-os belégzési oxigén biztosítása (pl. nem visszalégző, rezervoáros maszkon át).', 'Hörgőtágító spray fújatása.', 'Mellkasi röntgen kérése.'],
+      ok: 0, fb: 'Minden vitálisan instabil, hypoxiás betegnél az első lépés a magas áramlású oxigénterápia.' },
+    { q: 'A "C" vizsgálat során a pulzus 120/perc, a szisztolés vérnyomás 95 Hgmm. B+ kompetenciával mit teszel?',
+      opts: ['Csak felírom az értékeket a papírra.', 'Vénabiztosítást végzek, és folyamatos EKG, vérnyomás monitorozást állítok be.', 'Centrális vénát szúrok a nyakon.'],
+      ok: 1, fb: 'B+ szinten a perifériás vénabiztosítás és a monitorozás a C vizsgálat fontos párhuzamos eleme.' },
+    { q: 'A "D" vizsgálatnál a beteg éber (AVPU: A). Mi a kötelező eszközös vizsgálat a D fázisban?',
+      opts: ['Pupillavizsgálat fénnyel.', 'Vércukormérés a vénás kanül tűjéből.', 'Reflexvizsgálat.'],
+      ok: 1, fb: 'Bár a beteg éber (AVPU: A), minden kritikus betegnél kötelező a vércukormérés.' },
+    { q: 'Az "E" vizsgálat: hőmérséklet 39,5 °C. Melyik pontrendszer kiszámítása KIFEJEZETTEN javasolt a felnőtt, lázas, légzési zavaros betegnél az eljárásrend szerint?',
+      opts: ['A Glasgow Coma Scale (GCS).', 'A NEWS2 (National Early Warning Score 2).', 'A PAT (Gyermek állapotfelmérő háromszög).'],
+      ok: 1, fb: 'A NEWS2 pontrendszer célzottan a felnőtt betegek romló állapotának (és szepszis rizikójának) korai felismerésére szolgál.' },
+    { q: 'A NEWS2 értékek: RR 28 (3p), SpO2 88% (3p), Oxigén kell (2p), SBP 95 (2p), Pulzus 120 (2p), Láz 39,5 (2p). Az eredmény >=7, magas "Red score". Mire KELL gondolnod a magas NEWS2 és a láz alapján?',
+      opts: ['Azonnal SZEPSZISRE kell gondolni (NEWS2 >= 5 + infekció jelei).', 'Ez csak egy egyszerű megfázás.', 'Allergiás reakcióra (anaphylaxia).'],
+      ok: 0, fb: 'Az eljárásrend egyértelmű: magas NEWS2 pontszám + fertőzésre utaló jel (láz) = gyanakodj szepszisre!' },
+    { q: 'A beteg a >=7-es NEWS2 pontszámmal milyen klinikai rizikócsoportba tartozik, és mi a teendő B+ szinten?',
+      opts: ['Közepes rizikó, helyszíni ellátás elegendő.', 'Magas rizikó: azonnali folyamatos monitorozás, és mivel magasabb szintű beavatkozás kellhet, haladéktalanul SEGÉLYKOCSI (ALS) kérése!', 'Alacsony rizikó, szállítás háziorvoshoz.'],
+      ok: 1, fb: 'A 7 pont feletti érték magas rizikót és ALS (orvos/mentőtiszt) jelenlétét igényli a stabilizáláshoz.' },
+    { q: 'A mentőtiszt kiérkezéséig hogyan jársz el a szisztematikus vizsgálat tekintetében?',
+      opts: ['Már csak a monitort figyelem.', 'A szisztematikus ABCDE vizsgálatot 5-10 percenként automatikusan megismétlem.', 'Hagyom a beteget pihenni.'],
+      ok: 1, fb: 'Kritikus betegnél a teljes fizikális vizsgálat (ABCDE) 5-10 percenkénti ismétlése elengedhetetlen a monitorozás mellett.' },
+    { q: 'A beteg állapota hirtelen romlik, nem reagál a hangra (AVPU: U), légzése hörgővé válik. Mit teszel?',
+      opts: ['Állapotváltozás történt! Az ABCDE-t elölről kezdem: az "A" légút hörgő, ezért pozicionálom a fejet és egyszerű légúti eszközt (OPA) teszek be.', 'Azonnal elkezdem a mellkasi kompressziókat.', 'Várom a segélykocsit.'],
+      ok: 0, fb: 'Bármilyen állapotváltozás esetén az ABCDE elölről indul. A hörgés/eszméletvesztés azonnali "A" (légútbiztosítási) beavatkozást kíván.' },
+    { q: 'A légút biztosítása után a hármas érzékelés során a légzés leáll. Mi a következő lépés?',
+      opts: ['Gyógyszert adok be.', 'Azonnal megkezdem az Újraélesztést (BLS): mellkasi kompressziókkal és ballonos-maszkos lélegeztetéssel, és kérem az AED-t.', 'Felültetem a beteget.'],
+      ok: 1, fb: 'A légzés leállása keringésmegállást jelent. Felnőttnél azonnal CPR indul (30:2) AED felhelyezésével.' }
+  ],
+  summary: 'Részletes Összefoglaló (Láz/Szepszis B+): Az idős, magas lázzal és szapora légzéssel küzdő beteg megközelítésekor azonnal megállapítottuk, hogy állapota kritikus. Az "A" (Légút) átjárható volt, de a "B" (Légzés) során mért hypoxia miatt azonnal 100% oxigénterápiát indítottunk. A "C" (Keringés) fázisban a hypotensio (95 Hgmm) és tachycardia miatt vénát biztosítottunk és folyamatos monitorozást építettünk ki. A "D" (Idegrendszer) alatt kötelező vércukormérést végeztünk a kanülből. Az "E" (Egyéb) vizsgálat magas lázat igazolt. A mért értékek alapján kiszámolt NEWS2 pontszám >7 lett ("Red score"), ami a lázzal kiegészülve egyértelműen SZEPSZIS gyanúját vetette fel. Mivel ez magas klinikai rizikót jelent, azonnal segélykocsit (ALS) kértünk. Az állapot folyamatos monitorozása és a 5-10 percenként ismételt ABCDE vizsgálat közben a beteg eszméletét vesztette, légútja elzáródott. Az eljárásrendnek megfelelően azonnal reagáltunk (ABCDE újra), pozicionáltuk a légutat, majd a légzés leállásakor haladéktalanul megkezdtük a mellkasi kompressziókat és a BLS protokollt a segélykocsi megérkezéséig.'
+},
+{
+  id: 4, diff: 'B kompetencia', tag: 'tag-g', title: '4. Vízből mentett Gyermek (PBLS)',
+  desc: 'Egy 5 éves kislányt húznak ki a medencéből. A szülők pánikban vannak. Te B kompetenciájú mentőápolóként érkezel.',
+  steps: [
+    { q: 'A kimentés után a gyermek kemény, száraz talajon fekszik. Mi az ELSŐ lépés a betegvizsgálat során?',
+      opts: ['Azonnal fejjel lefelé lógatom, hogy kifolyjon a víz.', 'Reakcióképesség vizsgálata (hangos megszólítás + óvatos rázás).', 'Vénát keresek.'],
+      ok: 1, fb: 'A reakcióképesség vizsgálata (és a helyszínbiztonság) mindig az első lépés a beteggel való kontaktuskor.' },
+    { q: 'A gyermek nem reagál. Mit kell azonnal tenned B kompetenciával?',
+      opts: ['Rádión azonnal segítséget (gyermek ALS egységet/segélykocsit) kérek.', 'Azonnal szívmasszázst kezdek 30 nyomással.', 'Betakarom és várok.'],
+      ok: 0, fb: 'Eszméletlen gyermekhez haladéktalanul magasabb szintű segítséget kell hívni.' },
+    { q: 'A fej óvatos hátrahajtásával megnyitod a légutat. A 10 másodperces hármas érzékelés során nincs légzés. A gyermek (PBLS) algoritmus mivel KEZDŐDIK felnőttekkel ellentétben?',
+      opts: ['Mellkasi kompresszióval.', '5 KEZDETI BEFÚVÁSSAL (rezervoáros ballon-maszkkal, 100% O2-vel).', 'Adrenalinnal.'],
+      ok: 1, fb: 'Gyermekeknél és vízből mentetteknél a hypoxia a vezető ok. A PBLS mindig 5 mentő befúvással indul!' },
+    { q: 'Hogyan adagolod a levegőt az 5 kezdeti befúvás során?',
+      opts: ['A lehető leggyorsabban, hatalmas nyomással.', 'Lassan, 1 másodperc alatt, csak annyi levegőt, ami éppen megemeli a mellkast.', 'Nem figyelem a mellkast, csak fújom teljes erőből.'],
+      ok: 1, fb: 'Túl nagy volumen a gyomor felfújódásához vezet. A mellkas emelkedése a mérce.' },
+    { q: 'Az 5 befúvás után ellenőrzöd az életjeleket. Nincs reakció, köhögés, mozgás. Mit kell tenned?',
+      opts: ['Újabb 5 befúvás.', 'Várok 1 percet.', 'Azonnal megkezdem a mellkasi kompressziókat.'],
+      ok: 2, fb: 'Ha nincs életjel az 5 befúvás után, indul a kompresszió.' },
+    { q: 'Szakellátóként (B szint) mi a kompresszió és a lélegeztetés ARÁNYA egy 5 éves gyermeknél?',
+      opts: ['30:2', '15:2', '3:1'],
+      ok: 1, fb: 'A szakellátói (mentős) arány gyermekeknél 15 kompresszió és 2 lélegeztetés (15:2).' },
+    { q: 'Milyen MÉLYEN végzed a kompressziót a gyermeknél?',
+      opts: ['A mellkas nyílirányú (AP) átmérőjének kb. 1/3-ával (kb. 5 cm).', 'A gerincig nyomom.', 'Mint a felnőtteknél, teljes testsúllyal.'],
+      ok: 0, fb: 'Gyermekeknél a mellkas AP átmérőjének 1/3-a (kb 5 cm) a megfelelő kompressziós mélység.' },
+    { q: 'A vizes ruhát eltávolítod. A társad hozza az AED-t. Mit kell tenni felragasztás előtt?',
+      opts: ['Egyből ráragasztom a vizes bőrre.', 'Szárazra törlöm a mellkasát.', 'Vizes betegen tilos az AED.'],
+      ok: 1, fb: 'Az elektromos áramütés elkerülése és a jó kontaktus érdekében a mellkast szárazra kell törölni.' },
+    { q: 'Vízből mentés esetén egy nagyon fontos reverzibilis okra (4H) kell azonnal gondolnod a hypoxia mellett. Mi ez?',
+      opts: ['Hyperthermia (hőguta).', 'Hypothermia (kihűlés).', 'Thrombosis.'],
+      ok: 1, fb: 'A vizes környezet gyors hővesztést okoz. A hypothermia elleni passzív védelem kulcsfontosságú.' },
+    { q: 'Az AED "nem sokkolandó" ritmust jelez. Mit teszel az ALS egység megérkezéséig?',
+      opts: ['Folyamatosan, megszakítás nélkül végzem a 15:2 arányú CPR-t, oxigénnel lélegeztetve, és óvom a gyermeket a kihűléstől.', 'Megállok, mert nincs mit tenni.', 'Csak lélegeztetem kompresszió nélkül.'],
+      ok: 0, fb: 'A minőségi 15:2 arányú CPR, az oxigenizáció és a hypothermia-védelem az életmentő kapocs a gyermek ALS érkezéséig.' }
+  ],
+  summary: 'Részletes Összefoglaló (Gyermek PBLS B kompetencia): A medencéből kimentett 5 éves kislány eszméletlen volt (a reakcióképesség vizsgálata negatív). B kompetenciájú egységként első dolgunk volt azonnal rádiózni gyermek ALS (segélykocsi) támogatásért. A légút óvatos megnyitása után a 10 másodperces hármas érzékelés igazolta a légzés hiányát. Mivel a gyermekkori (és vízbefulladásos) esetekben a hypoxia a domináns ok, az újraélesztést a felnőtt protokolltól eltérően 5 KEZDETI BEFÚVÁSSAL kezdtük (ballonos-maszkos, oxigénes módszerrel). Ezt követően, mivel nem jelent meg életjel, azonnal megkezdtük a mellkasi kompressziókat a mellkas 1/3-ának mélységéig (kb. 5 cm). Szakellátóként a PBLS arányt, azaz 15 kompresszió és 2 lélegeztetés (15:2) ciklusait alkalmaztuk. Az AED felhelyezése előtt a mellkast a vizes környezet miatt szárazra töröltük. A gép nem javasolt sokkot, így a 15:2 arányú BLS-t folyamatosan fenntartottuk. A vízi baleset miatt a hypothermia (reverzibilis ok) megelőzésére különös figyelmet fordítottunk a vizes ruhák eltávolításával és hőszigetelő izolációval a kiemelt szintű segítség megérkezéséig.'
+}
+];
+
+
+// --- RENDER FUNKCIÓK A NÉZETEKHEZ ---
+
+function renderHome() {
+  return `
+    <div style="text-align:center;padding:2rem 1rem;">
+      <div style="font-size:56px;margin-bottom:15px;text-shadow:0 0 20px rgba(20,184,166,0.4);">🚑</div>
+      <h1 style="font-size:24px;font-weight:800;color:#fff;margin-bottom:15px;letter-spacing:0.02em;">OMSZ Prehospitális Eljárásrend</h1>
+      <p style="font-size:14px;color:#d1d5db;margin-bottom:30px;line-height:1.6;">
+        A hivatalos prehospitális eljárásrend alapján készült egységes webalkalmazás. Tartalmazza a <b>betegvizsgálat (ABCDE)</b> alapelveit, a <b>trauma protokollt</b>, az <b>újraélesztést</b>, a <b>szimulációs gyakorlatokat</b>, és a beépített klinikai <b>kalkulátorokat</b>.
+      </p>
+      
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn btn-g" onclick="go('guide')" style="padding:16px;font-size:16px;">📚 Tananyag Olvasása</button>
+        <button class="btn btn-r" onclick="go('sim')" style="padding:16px;font-size:16px;">🚑 Szimulációk (B / B+)</button>
+        <button class="btn" style="background:#1f2937;border-color:#374151;padding:16px;font-size:16px;" onclick="go('calc')">🧮 Klinikai Kalkulátorok</button>
+      </div>
+      
+      <div style="margin-top:40px;padding:15px;background:#262626;border-radius:12px;border:1px solid #3f3f3f;text-align:left;">
+        <div style="font-size:12px;font-weight:700;color:#5eead4;margin-bottom:5px;text-transform:uppercase;">💡 Interaktív Szótár</div>
+        <div style="font-size:13px;color:#9ca3af;line-height:1.5;">Az eljárásrendben szereplő zöld, szaggatottan aláhúzott szavakra (pl. <span class="dict-word" onclick="shD('cabcde')">cABCDE</span>, <span class="dict-word" onclick="shD('szepszis')">szepszis</span>) kattintva felugró ablakban magyarázatot kapsz!</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderGuide() {
+  let html = `<h2 style="font-size:20px;font-weight:800;color:#14b8a6;margin-bottom:15px;">📚 Eljárásrend Fejezetek</h2>`;
+  if(!CHID) {
+    GUIDES.forEach(g => {
+      html += `
+        <button class="card-btn" onclick="go('guide', '${g.id}')">
+          <div style="font-size:15px;font-weight:700;color:#f3f4f6;display:flex;justify-content:space-between;align-items:center;">
+            <span>${g.t}</span>
+            <span style="color:#14b8a6;font-size:20px;">›</span>
+          </div>
+        </button>
+      `;
+    });
+  } else {
+    let g = GUIDES.find(x => x.id === CHID);
+    html += `
+      <button class="btn" style="margin-bottom:15px;background:transparent;border-color:#4b5563;color:#9ca3af;padding:8px 12px;" onclick="go('guide')">‹ Vissza a fejezetekhez</button>
+      <div class="card" style="background:#1f2937;border-color:#374151;">
+        <h2 style="color:#fff;margin-bottom:20px;border-bottom:2px solid #3f3f3f;padding-bottom:10px;font-size:18px;">${g.t}</h2>
+        <div style="font-size:14.5px;line-height:1.7;">
+          ${g.txt}
+        </div>
+      </div>
+    `;
+  }
+  return html;
+}
+
+function renderSim() {
+  if(!SI.id){
+    let html = `
+      <h2 style="font-size:20px;font-weight:800;color:#14b8a6;margin-bottom:10px;">🚑 Interaktív Szimulációk</h2>
+      <p style="font-size:13px;color:#9ca3af;margin-bottom:1rem;line-height:1.5;">Gyakorold az eljárásrendet valósághű, 10 lépéses szituációkon keresztül, B és B+ mentőápolói kompetenciaszinteken.</p>
+    `;
+    SIM_DATA.forEach(s => {
+      html += `
+        <button class="card-btn" onclick="startSim(${s.id})" style="padding:1.2rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div style="font-size:14px;font-weight:700;color:#f3f4f6;padding-right:10px;line-height:1.3;">${s.title}</div>
+            <span class="tag ${s.tag}">${s.diff}</span>
+          </div>
+          <div style="font-size:12px;color:#9ca3af;line-height:1.5;">${s.desc}</div>
+        </button>
+      `;
+    });
+    return html;
+  }
+  
+  let sim = SIM_DATA.find(s => s.id === SI.id);
+  
+  if(SI.fin){
+    let correct = SI.hist.filter(h => sim.steps[h.step].ok === h.oi).length;
+    let pct = Math.round((correct / sim.steps.length) * 100);
+    let html = `
+      <h2 style="font-size:18px;font-weight:800;margin-bottom:1rem;color:#fff;">${sim.title} - Eredmény</h2>
+      <div style="background:#064e3b;border:1px solid #059669;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1rem;">
+        <div style="font-size:42px;font-weight:800;color:#34d399;">${correct} / ${sim.steps.length}</div>
+        <div style="font-size:14px;color:#a7f3d0;font-weight:700;margin-top:5px;">Sikeres helyzetfelismerés (${pct}%)</div>
+      </div>
+      
+      <div class="card" style="background:#172554;border-color:#1e3a8a;padding:1.2rem;">
+        <h3 style="color:#60a5fa;font-size:15px;margin-top:0;margin-bottom:10px;border-bottom:1px solid #1e3a8a;padding-bottom:8px;">Eset Összefoglaló (Lépésről lépésre):</h3>
+        <p style="font-size:13px;color:#bfdbfe;line-height:1.7;text-align:justify;">${sim.summary}</p>
+      </div>
+      
+      <button class="btn btn-r btn-fw" style="padding:14px;font-size:15px;" onclick="resetSim()">Vissza a szimulációkhoz</button>
+    `;
+    return html;
+  }
+  
+  let step = sim.steps[SI.step];
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;">
+      <div style="font-size:13px;font-weight:700;color:#9ca3af;text-transform:uppercase;">Lépés ${SI.step + 1} / ${sim.steps.length}</div>
+      <span class="tag ${sim.tag}">${sim.diff}</span>
+    </div>
+    
+    <div class="prog"><div class="progb" style="width:${((SI.step+1)/sim.steps.length)*100}%;background:#14b8a6;"></div></div>
+    
+    <div class="card" style="background:#1f2937;border-color:#374151;border-left:4px solid #14b8a6;padding:1.2rem;">
+      <p style="font-size:15px;font-weight:600;color:#fff;line-height:1.5;margin:0;">${step.q}</p>
+    </div>
+  `;
+  
+  step.opts.forEach((opt, i) => {
+    let cls = 'opt';
+    if(SI.chosen !== null) {
+      if(i === step.ok) cls += ' opt-ok';
+      else if(i === SI.chosen && i !== step.ok) cls += ' opt-no';
+    }
+    html += `<button class="${cls}" ${SI.chosen === null ? `onclick="chooseSim(${i})"` : ''}>${opt}</button>`;
+  });
+  
+  if(SI.chosen !== null) {
+    let isOk = SI.chosen === step.ok;
+    html += `
+      <div class="al ${isOk ? 'al-s' : 'al-d'}" style="margin-top:15px;padding:12px;font-size:13.5px;">
+        <strong style="font-size:15px;display:block;margin-bottom:5px;">${isOk ? '✅ Helyes Döntés!' : '❌ Helytelen Döntés!'}</strong> 
+        ${step.fb}
+      </div>
+      <button class="btn btn-fw" style="background:#3b82f6;color:#fff;border:none;padding:14px;font-size:15px;margin-top:10px;" onclick="nextSim()">
+        ${SI.step < sim.steps.length - 1 ? 'Tovább a következő lépésre →' : 'Eredmény és Részletes Összefoglaló'}
+      </button>
+    `;
+  }
+  
+  return html;
+}
+
+// ==========================================
+// KALKULÁTOROK - CÉLZOTT DOM FRISSÍTÉSSEL
+// ==========================================
+
+function renderCalc() {
+  let html = `<h2 style="font-size:20px;font-weight:800;color:#14b8a6;margin-bottom:15px;">🧮 Klinikai Kalkulátorok</h2>`;
+  html += `
+    <div style="display:flex;gap:7px;margin-bottom:15px;">
+      <button onclick="setCalcTab('ped')" style="flex:1;padding:.6rem;border:1px solid ${CA.tab==='ped'?'#14b8a6':'#3f3f3f'};border-radius:8px;background:${CA.tab==='ped'?'#14b8a6':'#2a2a2a'};color:${CA.tab==='ped'?'#111827':'#d1d5db'};font-size:13px;font-weight:700;cursor:pointer;">Gyermek / ALS</button>
+      <button onclick="setCalcTab('news2')" style="flex:1;padding:.6rem;border:1px solid ${CA.tab==='news2'?'#14b8a6':'#3f3f3f'};border-radius:8px;background:${CA.tab==='news2'?'#14b8a6':'#2a2a2a'};color:${CA.tab==='news2'?'#111827':'#d1d5db'};font-size:13px;font-weight:700;cursor:pointer;">NEWS2</button>
+      <button onclick="setCalcTab('gcs')" style="flex:1;padding:.6rem;border:1px solid ${CA.tab==='gcs'?'#14b8a6':'#3f3f3f'};border-radius:8px;background:${CA.tab==='gcs'?'#14b8a6':'#2a2a2a'};color:${CA.tab==='gcs'?'#111827':'#d1d5db'};font-size:13px;font-weight:700;cursor:pointer;">GCS</button>
+    </div>
+  `;
+
+  if(CA.tab === 'ped') {
+    html += `
+      <div class="card" style="background:#1f2937;">
+        <label style="font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:5px;display:block;">Gyermek életkora (1-10 év között):</label>
+        <input type="number" value="${CA.pedAge}" oninput="upPed(this.value)" placeholder="Írd be az életkort (pl. 5)">
+        <p style="font-size:11px;color:#9ca3af;margin-bottom:15px;">Az APLS (Advanced Paediatric Life Support) formula alapján.</p>
+        
+        <div style="background:#064e3b;border:1px solid #059669;border-radius:12px;padding:1.5rem;box-shadow:inset 0 0 10px rgba(0,0,0,0.2);">
+          <div style="font-size:11px;color:#6ee7b7;font-weight:700;">BECSÜLT TESTSÚLY:</div>
+          <div id="ped_w" style="font-size:32px;font-weight:800;color:#fff;margin-bottom:15px;">-</div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:#022c22;padding:10px;border-radius:8px;border:1px solid #065f46;">
+              <div style="font-size:10px;color:#a7f3d0;">⚡ Defib. (4 J/kg)</div>
+              <div id="ped_e" style="font-size:16px;font-weight:700;color:#fff;">-</div>
+            </div>
+            <div style="background:#022c22;padding:10px;border-radius:8px;border:1px solid #065f46;">
+              <div style="font-size:10px;color:#a7f3d0;">💧 Folyadék (10 ml/kg)</div>
+              <div id="ped_fluid" style="font-size:16px;font-weight:700;color:#fff;">-</div>
+            </div>
+            <div style="background:#022c22;padding:10px;border-radius:8px;border:1px solid #065f46;">
+              <div style="font-size:10px;color:#a7f3d0;">💉 Adrenalin (10 µg/kg)</div>
+              <div id="ped_adr" style="font-size:16px;font-weight:700;color:#fff;">-</div>
+            </div>
+            <div style="background:#022c22;padding:10px;border-radius:8px;border:1px solid #065f46;">
+              <div style="font-size:10px;color:#a7f3d0;">💊 Amiodaron (5 mg/kg)</div>
+              <div id="ped_ami" style="font-size:16px;font-weight:700;color:#fff;">-</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:15px;border-top:1px dashed #065f46;padding-top:15px;">
+            <div style="font-size:10px;color:#a7f3d0;margin-bottom:4px;">SZISZTOLÉS VÉRNYOMÁS (RR):</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:13px;color:#d1d5db;">Normál: <span id="ped_norm" style="font-weight:700;color:#fff;">-</span></div>
+              <div style="font-size:13px;color:#fca5a5;">Alsó határ: <span id="ped_min" style="font-weight:700;">-</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    setTimeout(() => upPed(CA.pedAge), 50); // Kezdeti feltöltés
+  } 
+  else if (CA.tab === 'news2') {
+    let sl = (lbl, id, min, max, val, fn, unit) => `
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <div style="font-size:12px;font-weight:700;color:#9ca3af;">${lbl}</div>
+          <div id="${id}_v" style="font-size:14px;font-weight:800;color:#f3f4f6;">${val}${unit}</div>
+        </div>
+        <input type="range" min="${min}" max="${max}" step="1" value="${val}" oninput="${fn}(this.value)">
+      </div>
+    `;
+    html += `
+      <div class="card" style="background:#1f2937;">
+        ${sl('Légzésszám', 'n2rr', 4, 40, CA.rr, 'setN2rr', ' /perc')}
+        ${sl('SpO2', 'n2spo2', 80, 100, CA.spo2, 'setN2spo2', ' %')}
+        <div style="margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:5px;">Oxigén szükséges?</div>
+          <select onchange="setN2o2(this.value)"><option value="0" ${CA.o2==0?'selected':''}>Nem (0 pt)</option><option value="1" ${CA.o2==1?'selected':''}>Igen (+2 pt)</option></select>
+        </div>
+        ${sl('Szisztolés vérnyomás', 'n2sbp', 60, 240, CA.sbp, 'setN2sbp', ' Hgmm')}
+        ${sl('Pulzus', 'n2hr', 30, 180, CA.hr, 'setN2hr', ' /perc')}
+        <div style="margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:5px;">Tudatállapot</div>
+          <select onchange="setN2c(this.value)"><option value="0" ${CA.c==0?'selected':''}>Éber (A)</option><option value="3" ${CA.c==3?'selected':''}>Zavart / V / P / U (+3 pt)</option></select>
+        </div>
+        ${sl('Testhőmérséklet', 'n2temp', 34, 42, CA.t, 'setN2temp', ' °C')}
+        
+        <div id="n2_box" class="res-box" style="background:#064e3b;border:1px solid #4ade8040;margin-top:20px;">
+          <div id="n2_score" style="font-size:42px;font-weight:800;color:#4ade80;">0</div>
+          <div id="n2_risk" style="font-size:15px;font-weight:700;color:#4ade80;">Alacsony kockázat</div>
+          <div id="n2_desc" style="font-size:12px;color:#d1d5db;margin-top:5px;">Eszközös monitorozás nem szükséges.</div>
+          <div id="n2_warn" style="font-size:12px;color:#fdba74;margin-top:5px;display:none;">⚠ Ha infekció jelei is fennállnak: gondolj SZEPSZISRE!</div>
+        </div>
+      </div>
+    `;
+    setTimeout(upN2, 50);
+  }
+  else if (CA.tab === 'gcs') {
+    let sel = (lbl, id, opts, val, fn) => {
+      let optHtml = opts.map(o => `<option value="${o[0]}" ${o[0]==val?'selected':''}>${o[0]} - ${o[1]}</option>`).join('');
+      return `<div style="margin-bottom:12px;"><div style="font-size:12px;font-weight:700;color:#9ca3af;margin-bottom:5px;">${lbl}</div><select id="${id}" onchange="${fn}(this.value)">${optHtml}</select></div>`;
+    };
+    html += `
+      <div class="card" style="background:#1f2937;">
+        ${sel('Szemnyitás', 'gce', [['4','Spontán'],['3','Felszólításra'],['2','Fájdalomingerre'],['1','Nincs']], CA.e, 'setGCSE')}
+        ${sel('Verbális válasz', 'gcv', [['5','Orientált'],['4','Zavart'],['3','Nem megfelelő szavak'],['2','Érthetetlen hangok'],['1','Nincs']], CA.v, 'setGCSV')}
+        ${sel('Motoros válasz', 'gcm', [['6','Utasítást végrehajt'],['5','Ingert lokalizál'],['4','Ingert elhárít'],['3','Flexió (dekortikált)'],['2','Extenzió (decerebrált)'],['1','Nincs']], CA.m, 'setGCSM')}
+        
+        <div id="gcs_box" class="res-box" style="background:#064e3b;border:1px solid #4ade8040;margin-top:20px;">
+          <div id="gcs_score" style="font-size:42px;font-weight:800;color:#4ade80;">15</div>
+          <div id="gcs_desc" style="font-size:15px;font-weight:700;color:#4ade80;">Enyhe zavartság / Normál</div>
+        </div>
+      </div>
+    `;
+    setTimeout(upGCS, 50);
+  }
+
+  return html;
+}
+
+// Célzott DOM frissítők a kalkulátorokhoz (megakadályozza az input fókuszvesztését)
+function upPed(val) {
+  CA.pedAge = val;
+  let age = parseFloat(val);
+  
+  if (isNaN(age) || age < 1 || age > 12) {
+    ['ped_w','ped_e','ped_fluid','ped_adr','ped_ami','ped_norm','ped_min'].forEach(id => {
+      let el = document.getElementById(id);
+      if(el) el.innerText = '-';
+    });
+    return;
+  }
+  
+  let w = (age * 2) + 8; // 1-10 év APLS
+  let norm = 90 + (2 * age);
+  let min = 70 + (2 * age);
+  
+  document.getElementById('ped_w').innerText = w + ' kg';
+  document.getElementById('ped_e').innerText = (w * 4) + ' J';
+  document.getElementById('ped_fluid').innerText = (w * 10) + ' ml';
+  document.getElementById('ped_adr').innerText = (w * 10) + ' µg';
+  document.getElementById('ped_ami').innerText = (w * 5) + ' mg';
+  document.getElementById('ped_norm').innerText = norm + ' Hgmm';
+  document.getElementById('ped_min').innerText = min + ' Hgmm';
+}
+
+function upN2() {
+  let p=0;
+  if(CA.rr<=8)p+=3;else if(CA.rr<=11)p+=1;else if(CA.rr<=20)p+=0;else if(CA.rr<=24)p+=1;else p+=3;
+  if(CA.spo2<=91)p+=3;else if(CA.spo2<=93)p+=2;else if(CA.spo2<=95)p+=1;
+  p += parseInt(CA.o2);
+  if(CA.sbp<=90)p+=3;else if(CA.sbp<=100)p+=2;else if(CA.sbp<=110)p+=1;else if(CA.sbp>=220)p+=3;
+  if(CA.hr<=40)p+=3;else if(CA.hr<=50)p+=1;else if(CA.hr<=90)p+=0;else if(CA.hr<=110)p+=1;else if(CA.hr<=130)p+=2;else p+=3;
+  p += parseInt(CA.c);
+  if(CA.t<=35.0)p+=3;else if(CA.t<=36.0)p+=1;else if(CA.t<=38.0)p+=0;else if(CA.t<=39.0)p+=1;else p+=2;
+
+  let box = document.getElementById('n2_box');
+  let score = document.getElementById('n2_score');
+  let risk = document.getElementById('n2_risk');
+  let desc = document.getElementById('n2_desc');
+  let warn = document.getElementById('n2_warn');
+  
+  if(!box) return;
+
+  let col = p>=7?'#fca5a5':p>=5?'#fdba74':'#4ade80';
+  let bg = p>=7?'#450a0a':p>=5?'#431407':'#064e3b';
+  
+  box.style.background = bg;
+  box.style.borderColor = col+'40';
+  score.style.color = col;
+  risk.style.color = col;
+  
+  score.innerText = p;
+  if (p >= 7) {
+    risk.innerText = "MAGAS kockázat";
+    desc.innerText = "Azonnali eszközös monitorozás. Kompetenciaszerint beavatkozás. Haladéktalanul SEGÉLYKOCSI!";
+  } else if (p >= 5) {
+    risk.innerText = "Közepes kockázat";
+    desc.innerText = "Azonnali monitorozás. Nem megfelelő kompetencia esetén segélykocsi.";
+  } else {
+    risk.innerText = "Alacsony kockázat";
+    desc.innerText = "Eszközös monitorozás nem feltétlen szükséges. Folyamatos megfigyelés.";
+  }
+  
+  warn.style.display = p >= 5 ? 'block' : 'none';
+  
+  // Slider értékek frissítése
+  ['rr','spo2','sbp','hr','t'].forEach(k => {
+    let el = document.getElementById('n2'+k+'_v');
+    if(el) el.innerText = CA[k] + (k==='t'?' °C':k==='spo2'?' %':k==='sbp'?' Hgmm':' /perc');
+  });
+}
+
+function upGCS() {
+  let tot = parseInt(CA.e) + parseInt(CA.v) + parseInt(CA.m);
+  let box = document.getElementById('gcs_box');
+  let sc = document.getElementById('gcs_score');
+  let desc = document.getElementById('gcs_desc');
+  
+  if(!box) return;
+  
+  let col = tot>=13?'#4ade80':tot>=9?'#fde68a':'#fca5a5';
+  let bg = tot>=13?'#064e3b':tot>=9?'#451a03':'#450a0a';
+  
+  box.style.background = bg;
+  box.style.borderColor = col+'40';
+  sc.style.color = col;
+  desc.style.color = col;
+  
+  sc.innerText = tot;
+  desc.innerText = tot>=13 ? 'Enyhe zavartság (≥13)' : tot>=9 ? 'Közepes zavartság (9-12)' : 'Súlyos eszméletlenség (≤8)';
+}
+
+window.setCalcTab = function(t){ CA.tab=t; render(); };
+window.setN2rr = function(v){ CA.rr=v; upN2(); };
+window.setN2spo2 = function(v){ CA.spo2=v; upN2(); };
+window.setN2o2 = function(v){ CA.o2=v; upN2(); };
+window.setN2sbp = function(v){ CA.sbp=v; upN2(); };
+window.setN2hr = function(v){ CA.hr=v; upN2(); };
+window.setN2c = function(v){ CA.c=v; upN2(); };
+window.setN2temp = function(v){ CA.t=v; upN2(); };
+window.setGCSE = function(v){ CA.e=v; upGCS(); };
+window.setGCSV = function(v){ CA.v=v; upGCS(); };
+window.setGCSM = function(v){ CA.m=v; upGCS(); };
+
+// --- MODAL / SZÓTÁR FUNKCIÓK ---
+window.shD = function(word) {
+  const w = word.toLowerCase();
+  let desc = 'Nincs magyarázat a szótárban ehhez a kifejezéshez.';
+  if (DICT[w]) desc = DICT[w];
+  
+  document.getElementById('dictTitle').innerText = word.toUpperCase();
+  document.getElementById('dictDesc').innerText = desc;
+  document.getElementById('dictModal').style.display = 'flex';
+}
+window.closeDictBtn = function() { document.getElementById('dictModal').style.display = 'none'; }
+window.closeDict = function(e) { if (e.target.id === 'dictModal') closeDictBtn(); }
+
+// --- NAVIGÁCIÓ ÉS SIM FUNKCIÓK ---
+window.go = function(s, id) { SCR = s; CHID = id || null; render(); };
+window.startSim = function(id) { SI = {id: id, step: 0, chosen: null, hist: [], fin: false}; render(); };
+window.chooseSim = function(i) { if(SI.chosen !== null) return; SI.chosen = i; SI.hist.push({step: SI.step, oi: i}); render(); };
+window.nextSim = function() {
+  let sim = SIM_DATA.find(s => s.id === SI.id);
+  if(SI.step < sim.steps.length - 1) { SI.step++; SI.chosen = null; }
+  else { SI.fin = true; }
+  render();
+};
+window.resetSim = function() { SI = {id: null, step: 0, chosen: null, hist: [], fin: false}; render(); };
+
+// --- FŐ RENDER ---
+function render() {
+  let c = document.getElementById('ct');
+  c.innerHTML = '';
+  
+  if (SCR === 'home') c.innerHTML = renderHome();
+  else if (SCR === 'guide') c.innerHTML = renderGuide();
+  else if (SCR === 'sim') c.innerHTML = renderSim();
+  else if (SCR === 'calc') c.innerHTML = renderCalc();
+  
+  let tabs = ['home', 'guide', 'sim', 'calc'];
+  let active = SCR;
+  document.querySelectorAll('.nb').forEach((b, i) => {
+    b.classList.toggle('act', tabs[i] === active);
+  });
+  window.scrollTo(0, 0);
+}
+
+// Inicializálás
+render();
+</script>
+</body>
+</html>

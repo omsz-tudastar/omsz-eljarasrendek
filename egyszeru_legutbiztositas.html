@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Légútbiztosítás – OMSZ Eljárásrend</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;line-height:1.5;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS & BUTTONS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+.btn{padding:.6rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;font-weight:600;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* ALERTS & TEXTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.sub{font-size:14px;font-weight:700;color:#d1d5db;margin:.85rem 0 .4rem;border-bottom:1px solid #3f3f3f;padding-bottom:3px;}
+ul.bl{margin:0 0 .75rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.6;margin-bottom:.3rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;border-left:3px solid #14b8a6;}
+/* DICTIONARY WORD */
+.dict{color:#38bdf8;border-bottom:1px dashed #38bdf8;cursor:pointer;font-weight:600;}
+.dict:hover{color:#7dd3fc;border-bottom-color:#7dd3fc;}
+/* MODAL */
+.mod-over{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mod-over.act{opacity:1;pointer-events:auto;}
+.mod-box{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;width:90%;max-width:400px;padding:1.2rem;transform:translateY(20px);transition:transform .2s;box-shadow:0 10px 25px rgba(0,0,0,.5);}
+.mod-over.act .mod-box{transform:translateY(0);}
+.mod-title{font-size:16px;font-weight:700;color:#14b8a6;margin-bottom:8px;}
+.mod-desc{font-size:14px;color:#d1d5db;line-height:1.6;margin-bottom:1rem;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+table.tbl th{padding:6px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:6px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* QUIZ/SIM OPTIONS */
+.opt{width:100%;display:block;padding:.8rem 1rem;margin-bottom:8px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.5;transition:all .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* INPUTS */
+input[type=number], select{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:14px;color:#e5e7eb;font-family:inherit;margin-bottom:10px;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:700;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Eszközválasztó</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="mod-over" id="mod">
+  <div class="mod-box">
+    <div class="mod-title" id="mod-t">Szó</div>
+    <div class="mod-desc" id="mod-d">Magyarázat</div>
+    <button class="btn btn-fw" onclick="closeDict()">Bezárás</button>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={age:30,weight:70,conscious:false};
+
+// Szótár
+var DICT = {
+  'frusztrán': 'Eredménytelen, sikertelen. Frusztrán légzés: erőlködő légzőmozgás látható levegőáramlás nélkül (teljes elzáródás).',
+  'stridor': 'Húzó, sípoló jellegű légzési hang, mely a felső légutak szűkületére vagy szilárd idegentestre utal.',
+  'trismus': 'Szájzár. A rágóizmok görcsös összehúzódása.',
+  'septum': 'Orrsövény.',
+  'tragus': 'Fülcsap. A fülkagyló bemenete előtti porcos kiemelkedés.',
+  'angulus mandibulae': 'Állkapocsszöglet.',
+  'mils': 'Manual In-Line Stabilization. A nyaki gerinc kézi, tengelyirányú rögzítése trauma gyanúja esetén.',
+  'supraglotticus': 'Hangrés feletti. Supraglotticus eszköz (pl. LMA, i-gel): a hangszalagok felett elhelyezkedő légútbiztosító eszköz.',
+  'ccabcde': 'c (katasztrofális vérzés csillapítása) + c (cervicalis/nyaki gerinc manuális rögzítése) az ABCDE betegvizsgálat előtt.',
+  'aspiráció': 'Folyadék, hányadék, vér vagy idegentest bejutása a légutakba.',
+  'endotrachealis intubáció': 'Egy tubus bevezetése a légcsőbe, amely a definitív (végleges) légútbiztosítás legjobb módszere.',
+  'npa': 'Nasopharyngealis tubus. Orron át bevezetett, lágy légútbiztosító eszköz.',
+  'opa': 'Oropharyngealis tubus (Guedel). Szájon át bevezetett, merev légútbiztosító eszköz.',
+  'esmarch-heiberg': 'Légútmegnyitó műfogás: A fej hátrahajtása, az állkapocs előreemelése (jaw thrust) és a száj nyitása.',
+  'avpu': 'Tudatállapot vizsgáló skála (Alert, Verbal, Pain, Unresponsive).'
+};
+
+function dW(w, t) {
+  return '<span class="dict" onclick="openDict(\'' + w + '\')">' + (t || w) + '</span>';
+}
+
+var CDATA=[
+{id:'cel',title:'I-II. Célok és Bevezetés',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Célok',bk:[
+  {tp:'bl',items:[
+    'A légutak átjárhatóságának sürgősségi vizsgálata.',
+    'Az elzáródott légút felszabadításának módszerei, egyszerű eszközökkel.',
+    'A fenyegetett légút szabadon tartásának módszerei, egyszerű eszközökkel.',
+    'A magyar és nemzetközi irányelvek adaptációja, a dolgozók munkájának egységesítése.',
+    'Bizonyíték nélküli, haszontalan vagy káros beavatkozások mellőzése.'
+  ]}
+]},
+{t:'II. Bevezetés',bk:[
+  {tp:'bl',items:[
+    'A sürgősségi ellátás során alapvető a beteg légútjainak védelme, szabaddá tétele, átjárhatóságuk fenntartása.',
+    'Elsőként választandó módszer: pozicionálás, kézi manőverek, egyszerű eszközök.',
+    'A definitív módszer általában az '+dW('endotrachealis intubáció')+' (megfelelő feltételek mellett).',
+    'A '+dW('ccabcde','ccABCDE')+' elv alapján a "c" (nagy vérzés) és "c" (nyakrögzítés) megelőzheti az "A" (légút) vizsgálatát.'
+  ]},
+  {tp:'al',lv:'w',tx:'Megj.: A merev nyakrögzítő gallér felhelyezése csak az ellátás későbbi szakaszában jön szóba, a légutak szabaddá tétele előtt nem szabad vele időt vesztegetni!'}
+]}
+]},
+{id:'vizsg',title:'III. Légutak vizsgálata ("A")',icon:'🔍',acc:'#3b82f6',secs:[
+{t:'Mikor szükséges a vizsgálat?',bk:[
+  {tp:'al',lv:'i',tx:'Szükség van rá, ha a beteg eszméletlen, és/vagy a légzés zajos, erőlködő.\nSzokványos magatartás és beszéd a légútvizsgálatot feleslegessé teszi.'},
+  {tp:'kr',items:[
+    'Légúti hangok hallgatása szabad füllel',
+    'Légúti fenyegetettség felismerése'
+  ]},
+  {tp:'text',tx:'Eszméletlenség esetén az ellátó a beteg fejénél, oldalról elhelyezkedve hajtja végre a manővereket, a fülét a beteg szája/orra elé helyezve hallgatja/érzi a légáramlást, és figyeli a mellkas emelkedését.'}
+]},
+{t:'Hangok és jelentésük',bk:[
+  {tp:'sub',tx:'Teljes elzáródásra utal:'},
+  {tp:'bl',items:[
+    dW('frusztrán','Frusztrán légzőmozgás')+' (erőlködés levegőáramlás nélkül)',
+    'A légzés teljes hiánya (idegi vezérlés zavarától nehéz elkülöníteni)'
+  ]},
+  {tp:'sub',tx:'Részleges elzáródásra utal:'},
+  {tp:'tbl',rows:[
+    ['Lágyrészek okozta akadály','HORKOLÁS'],
+    ['Folyadék okozta akadály','Felső légúti SZÖRCSÖLŐ hang'],
+    ['Szilárd idegentest','STRIDOR ('+dW('stridor','kifejtés')+')']
+  ]},
+  {tp:'sub',tx:'Légúti fenyegetettségre utal:'},
+  {tp:'bl',items:[
+    'Eszméletlen beteg hanyatt fekvő helyzete (különösen nyakrögzítés mellett)',
+    'Légúti égés: kormos nyelv, száj/orr körüli bőr égése, perzselődött szőrzet',
+    'Allergia-gyanús betegnél a fokozódó rekedtség'
+  ]},
+  {tp:'al',lv:'d',tx:'Amennyiben elzáródás vagy fenyegetettség jeleit észleljük, AZONNALI beavatkozás szükséges!'}
+]}
+]},
+{id:'megnyitas',title:'IV. Elzáródott légút megnyitása',icon:'🔓',acc:'#8b5cf6',secs:[
+{t:'a) Lágyrészek felszabadítása manuálisan',bk:[
+  {tp:'bl',items:[
+    '<b>Fej hátrahajtása és áll előemelése (Head tilt - chin lift):</b> Egyik kéz a homlokon, másik az áll alatt. Kíméletes hátrahajtás és emelés.',
+    '<b>Csecsemők esetén:</b> Kerüljük a fej túlzott hátrahajtását, NEUTRÁLIS pozíció megtartása javasolt. 2 éves kor alatt a váll kiemelése segíthet (2-3 cm vastag lepedő).',
+    '<b>'+dW('esmarch-heiberg','Esmarch-Heiberg műfogás')+':</b> Fej hátrahajtása, négy ujjal mindkét oldalon az '+dW('angulus mandibulae')+' kiemelése előre-felfelé, hüvelykujjal a száj nyitása.',
+    '<b>Trauma / Nyaki gerincsérülés gyanúja:</b> Az áll kiemelését a fej hátrahajtása NÉLKÜL, '+dW('mils','MILS')+' mellett kell elvégezni!'
+  ]}
+]},
+{t:'b) Lágyrészek felszabadítása eszközökkel',bk:[
+  {tp:'text',tx:'Csak ha a beteg tudata beszűkült '+dW('avpu','AV(PU)')+', vagy mélyen eszméletlen. Ezek az eszközök az '+dW('aspiráció')+' ellen NEM védenek!'},
+  {tp:'sub',tx:'Nasopharyngealis tubus (NPA)'},
+  {tp:'bl',items:[
+    'Lágy, ívelt eszköz az orrjáratba.',
+    'Jobban tűrik a betegek, mint az OPA-t.',
+    'Koponyasérülés/koponyaalapi törés gyanúja esetén SEM ellenjavallt (kíméletes technikával).',
+    'Alkalmazható '+dW('trismus')+', szájüregi trauma esetén is.',
+    'Felnőtteknél törekedjünk 2 db (mindkét orrjáratba) behelyezésére.',
+    'Gyermekeknél (8 év alatt) kerülendő, de indokolt lehet 1 db behelyezése, ha a pozicionálás nem elég.',
+    '<b>Méret:</b> orrnyílás és '+dW('tragus')+' távolsága.',
+    '<b>Behelyezés:</b> "malacorr" képzése, levágott él a '+dW('septum')+' felé nézzen, pödrö-csavaró mozdulattal.'
+  ]},
+  {tp:'sub',tx:'Oropharyngealis tubus (OPA)'},
+  {tp:'bl',items:[
+    'Kemény, merev eszköz a szájüregbe. Csak mélyen eszméletlen betegek tűrik.',
+    '<b>Méret:</b> ajak és '+dW('angulus mandibulae')+' távolsága.',
+    '<b>Behelyezés:</b> fordított helyzetben bevezetjük a kemény/lágy szájpad határáig, majd 180°-kal elforgatjuk.',
+    '<b>Gyermekeknél:</b> Az eszközt az eredeti, domború oldalával a szájpad felé vezetjük be (elforgatás nélkül), elkerülve a sérülést.'
+  ]},
+  {tp:'al',lv:'w',tx:'KÖTELEZŐ 2 db NPA és 1 db OPA behelyezése mélyen eszméletlen betegeknél ÉS/VAGY ballonos-maszkos lélegeztetés során!'}
+]},
+{t:'c) Folyadék okozta elzáródás',bk:[
+  {tp:'bl',items:[
+    'Azonnali szívás a szájüregen keresztül, merev leszívó toldattal (akár közvetlenül a csővel, ha nagy a darab).',
+    'Ha a leszívás nem elég, a beteg TELJES TESTÉT oldalra fordítjuk (nyaki sérülésnél in-line rögzítéssel).'
+  ]}
+]},
+{t:'d) Szilárd idegentest',bk:[
+  {tp:'tbl',rows:[
+    ['Eszméleténél van + Erőteljes köhögés','Biztassuk köhögésre! Folyamatos megfigyelés.'],
+    ['Eszméleténél van + Erőtlen köhögés','5 háti ütés (lapockák közé) -> 5 hasi lökés. (1 éves kor alatt hasi lökés HELYETT mellkasi lökés). Váltogatva.'],
+    ['Eszméletlen felnőtt','Kezdjünk újraélesztést! (30:2)'],
+    ['Eszméletlen gyermek/csecsemő','Nyissuk meg a légutat! 5 befúvás -> Kezdjünk újraélesztést! (15:2)']
+  ]},
+  {tp:'bl',items:[
+    'Mellkasi lökés a választandó előrehaladott terhességben és nagyon elhízott betegeknél is.',
+    'Manuális eltávolítás csak szemellenőrzés mellett engedélyezett (ujjak védelme).',
+    'Kompetencia esetén (ALS): Laringoszkópos feltárás és Magill-fogó.'
+  ]}
+]}
+]},
+{id:'fenntart',title:'V-VI. Fenntartás és Újraélesztés',icon:'🛡️',acc:'#22c55e',secs:[
+{t:'V. Fenyegetett légút szabadon tartása',bk:[
+  {tp:'bl',items:[
+    'Megtartott tudatnál: hagyjuk, hogy a beteg tartsa fenn (pl. ülve).',
+    'Beszűkült tudatnál: Folyamatos szabadon tartás + nem-visszalégző rezervoáros maszkon át adagolt magas áramlású oxigén.',
+    'Lágyrész védelem: Áll kiemelése, 2 db NPA + 1 db OPA (gyermekeknél 2 év alatt váll alá lepedő, 8 év alatt sz.e. 1 db NPA).',
+    'Folyadék ellen: szakaszos szívás merev toldattal, vagy kis mennyiségnél folyamatos szívás puha katéterrel NPA-n keresztül.'
+  ]}
+]},
+{t:'VI. Légútbiztosítás keringésmegállás során',bk:[
+  {tp:'bl',items:[
+    'Hatásos lélegeztetés a jó CPR mellett életmentő.',
+    'Lépcsőzetes felépítés: Kezdve ballonos-maszkos lélegeztetéssel (NPA/OPA kiegészítéssel).',
+    'Csak megfelelő előkészület után intubáljunk.',
+    dW('supraglotticus')+' eszközök (LMA, i-gel) használata gyors, biztonságos és hatásos, az esetek többségében elégséges.'
+  ]}
+]}
+]}
+];
+
+var CARDS=[
+  {cat:'Alapok',f:'Mi a légútbiztosítás elsőként választandó módszere?',b:'Pozicionálás, kézi manőverek és egyszerű eszközökkel végzett beavatkozás.'},
+  {cat:'Alapok',f:'Mi előzheti meg időrendben az "A" (légút) vizsgálatát?',b:'A látható nagy vérzés csillapítása és a nyaki gerinc manuális rögzítése (ccABCDE elv).'},
+  {cat:'Diagnózis',f:'Mire utal a HORKOLÁS?',b:'Lágyrészek okozta részleges felső légúti elzáródásra.'},
+  {cat:'Diagnózis',f:'Mire utal a SZÖRCSÖLŐ hang?',b:'Folyadék (vér, hányadék, váladék) okozta részleges felső légúti elzáródásra.'},
+  {cat:'Diagnózis',f:'Mire utal a STRIDOR?',b:'Szilárd idegentestre vagy felső légúti szűkületre (pl. anaphylaxia, krupp).'},
+  {cat:'Diagnózis',f:'Mik a légúti fenyegetettség jelei?',b:'- Eszméletlen beteg hanyatt fekvése\n- Légúti égés (kormos nyelv, égett orrszőrzet)\n- Allergia gyanúnál fokozódó rekedtség'},
+  {cat:'Manőverek',f:'Hogyan biztosítunk légutat trauma / nyaki gerincsérülés gyanúja esetén?',b:'MILS (kézi nyakrögzítés) mellett az áll kiemelésével (Jaw Thrust), a fej hátrahajtása NÉLKÜL!'},
+  {cat:'Manőverek',f:'Csecsemőknél hogyan pozícionáljuk a fejet légútbiztosításhoz?',b:'Kerüljük a túlzott hátrahajtást, NEUTRÁLIS pozíciót tartunk. 2 éves kor alatt a vállak alá 2-3 cm vastag lepedőt teszünk.'},
+  {cat:'Eszközök',f:'Hogyan mérjük ki az NPA (Nasopharyngealis tubus) méretét?',b:'Az orrnyílás és a tragus (fülcimpa) közötti távolság alapján.'},
+  {cat:'Eszközök',f:'Hogyan mérjük ki az OPA (Guedel-tubus) méretét?',b:'Az ajak és az angulus mandibulae (állkapocsszöglet) közötti távolság alapján.'},
+  {cat:'Eszközök',f:'Mi az OPA behelyezésének szabálya gyermekeknél?',b:'Fordítás NÉLKÜL, a domború oldalával a szájpad felé csúsztatva vezetjük be, hogy ne okozzunk sérülést.'},
+  {cat:'Eszközök',f:'Hány egyszerű eszközt kell használni mélyen eszméletlen vagy ballonos lélegeztetésű betegnél?',b:'MINDIG indokolt 2 db NPA és 1 db OPA együttes használata (gyermekeknél életkori sajátosságok figyelembevételével).'},
+  {cat:'Idegentest',f:'Mi a teendő eszméleténél lévő, de erőtlenül köhögő felnőttnél idegentest esetén?',b:'5 háti ütés a lapockák közé, majd 5 hasi lökés váltogatva.'},
+  {cat:'Idegentest',f:'Mi a teendő 1 éves kor alatti csecsemőnél idegentest miatti erőtlen köhögésnél?',b:'5 háti ütés, majd 5 MELLKASI lökés (hasi lökés helyett!).'},
+  {cat:'Idegentest',f:'Mi a teendő eszméletlen felnőttnél idegentest elzáródás esetén?',b:'Azonnali újraélesztés megkezdése 30:2 arányban.'}
+];
+
+var QUIZ=[
+  {q:'Melyik esetben teheti feleslegessé a beteg állapota a légút célzott vizsgálatát?',opts:['Ha a beteg eszméletlen','Ha a betegnél szokványos magatartást és beszédet tapasztalunk','Ha stridort hallunk','Ha a beteg hasi fájdalomra panaszkodik, de nagyon rekedt'],ok:1,exp:'Szokványos magatartás és beszéd bizonyítja a légutak átjárhatóságát, feleslegessé teszi az "A" vizsgálatot.'},
+  {q:'Mire utal a felső légúti szörcsölő hang?',opts:['Szilárd idegentestre','Lágyrészek okozta akadályra','Folyadék okozta elzáródásra','Asztmás rohamra'],ok:2,exp:'A szörcsölő hang egyértelműen folyadék (vér, nyál, hányadék) jelenlétét jelzi a felső légutakban.'},
+  {q:'Légúti égés (fenyegetettség) gyanúja merül fel, ha:',opts:['A beteg nagyon sápadt','Kormos a nyelve, a száj körüli szőrzet perzselődött','A mellkasa aszimmetrikusan emelkedik','Csak az alsó végtagjai égtek meg'],ok:1,exp:'Kormos nyelv, arcégés, perzselődött szőrzet légúti égésre és ezáltal azonnali légúti fenyegetettségre utal.'},
+  {q:'Csecsemők manuális légút-megnyitásánál melyik állítás IGAZ az eljárásrend szerint?',opts:['A fejet maximálisan hátra kell hajtani','A fejet semleges (neutrális) pozícióban tartjuk, az állat előemeljük','Nyakrögzítő gallért kell felhelyezni','Csak a szájat nyitjuk ki'],ok:1,exp:'Csecsemőknél kerülni kell a fej túlzott hátrahajtását, a neutrális pozíció megtartása javasolt.'},
+  {q:'Nyaki gerincsérülés gyanúja esetén hogyan nyitunk légutat?',opts:['Fej hátrahajtásával','MILS mellett az áll kiemelésével, a fej hátrahajtása nélkül','MILS mellett a fej óvatos hátrahajtásával','Azonnal NPA-t helyezünk be manőver nélkül'],ok:1,exp:'Trauma/nyaki sérülés gyanújakor MILS (kézi rögzítés) és áll kiemelése (jaw thrust) a szabály, a fej hátrahajtása TILOS.'},
+  {q:'Hogyan kell kiválasztani a megfelelő méretű NPA-t (nasopharyngealis tubust)?',opts:['Ajak - angulus mandibulae távolság','Orrnyílás - tragus/fülcimpa távolság','Metszőfogak - fülcimpa távolság','Orrhegy - állcsúcs távolság'],ok:1,exp:'Az NPA méretét az orrnyílás és a fülcimpa (tragus) távolsága adja meg.'},
+  {q:'Ellenjavallt-e az NPA behelyezése koponyaalapi törés gyanúja esetén?',opts:['Igen, szigorúan tilos','Nem, helyes és kíméletes behelyezési technika mellett nem ellenjavallt','Csak felnőtteknél ellenjavallt','Csak gyermekeknél engedélyezett'],ok:1,exp:'Helyes, kíméletes technika mellett az NPA nem ellenjavallt koponyaalapi törés gyanúja esetén sem.'},
+  {q:'Hány légútbiztosító eszközt kell használni mélyen eszméletlen betegeknél / ballonos lélegeztetésnél?',opts:['Csak 1 OPA-t','1 NPA-t és 1 OPA-t','2 NPA-t és 1 OPA-t','Bármennyit, amennyi befér'],ok:2,exp:'Minden mélyen eszméletlen betegnél / ballonos lélegeztetésnél indokolt a 2 db NPA és 1 db OPA együttes használata.'},
+  {q:'Hogyan helyezzük be az OPA-t gyermekeknél az eljárásrend szerint?',opts:['Fordítva, majd 180 fokkal elforgatva mint a felnőtteknél','A domború oldalával a szájpad felé (elforgatás nélkül)','Oldalra fordítva vezetjük be','Gyermekeknél szigorúan tilos OPA-t használni'],ok:1,exp:'Gyermekeknél a sérülések elkerülése végett az eszközt az eredeti, végleges pozíciójában csúsztatjuk be, elforgatás nélkül.'},
+  {q:'Mi a teendő, ha a beteg eszméleténél van, de erőtlenül köhög (idegentest)?',opts:['Azonnal újraélesztést kezdeni','Biztatni köhögésre','Váltogatva 5 háti ütés, majd 5 hasi lökés alkalmazása','Szemellenőrzés nélkül benyúlni a szájába'],ok:2,exp:'Ha a köhögés erőtlen, de a beteg eszméleténél van, 5 háti ütés és 5 hasi lökés váltogatása szükséges.'},
+  {q:'Ha az idegentestes felnőtt beteg eszméletlenné válik, mi az első lépés?',opts:['5 befúvás','Újraélesztés megkezdése mellkasi kompressziókkal (30:2)','Magill fogó vakon történő bevezetése','A has nyomkodása (Heimlich) a földön'],ok:1,exp:'Eszméletlen felnőttnél azonnal újraélesztést kell kezdeni (30:2).'},
+  {q:'Melyik állítás igaz a merev nyakrögzítő gallér felhelyezésére az eljárásrend alapján?',opts:['Minden traumásnál azonnal fel kell tenni a légútvizsgálat előtt','Csak az ellátás későbbi szakaszában jön szóba, nem szabad vele időt vesztegetni a légút megnyitása előtt','Helyettesíti a MILS-t a légútmegnyitás alatt','Soha nem szabad felhelyezni'],ok:1,exp:'A merev nyakrögzítő gallér felhelyezésével nem szabad időt vesztegetni a légutak szabaddá tétele előtt.'},
+  {q:'Mi a teendő nagy mennyiségű, folyadék okozta légúti akadály esetén?',opts:['Leszívás, és ha elégtelen, a beteg teljes testét oldalra fordítjuk (sz.e. in-line)','NPA azonnali behelyezése szívás nélkül','Ballonos lélegeztetés nagy nyomással','Csak a fejének az oldalra fordítása traumánál is'],ok:1,exp:'Folyadéknál leszívás (merev toldattal), ha ez kevés, a beteg teljes testének oldalra fordítása.'},
+  {q:'Véd-e az NPA vagy OPA az aspiráció (hányadék tüdőbe jutása) ellen?',opts:['Igen, mindkettő véd','Csak az OPA véd','Nem védenek az aspiráció ellen','Igen, ha egyszerre használjuk őket'],ok:2,exp:'Az egyszerű légútbiztosító eszközök (OPA, NPA) NEM védenek az aspiráció ellen.'},
+  {q:'Keringésmegállás során mi az eljárásrendi javaslat a légútbiztosítás felépítésére?',opts:['Azonnali endotrachealis intubáció minden esetben','Lépcsőzetes felépítés: kezdve ballonos-maszkos lélegeztetésével, és supraglotticus eszközök alkalmazása','Kizárólag szájból-szájba lélegeztetés engedélyezett prehospitálisan','Nem kell lélegeztetni, csak kompresszió kell'],ok:1,exp:'Javasolt a lépcsőzetes felépítés, kezdve a ballonos-maszkos lélegeztetéssel. A supraglotticus eszközök használata gyors, biztonságos és az esetek többségében elégséges.'}
+];
+
+var SIMS=[
+  {
+    id:1,
+    title:'1. Szimuláció: Eszméletlen felnőtt lágyrész-elzáródással (B kompetencia)',
+    diff:'B kompetencia',
+    desc:'B kompetenciaszintű (mentőápoló) egységként érkezel egy 50 éves férfihoz, aki összeesett az utcán. Nincs trauma.',
+    steps:[
+      {sit:'Biztonságos a helyszín, védőfelszerelés rajtatok. A beteg a földön fekszik. Mi az első teendőd?',opts:[{tx:'Azonnal intubálom.',ok:false,fb:'Hibás. B kompetenciával nem is intubálhatsz, és az ABCDE elején tartunk.'},{tx:'Megvizsgálom a légútjait azonnal, mert a légút a legfontosabb.',ok:false,fb:'Hibás. Előbb a tudat/reagálás vizsgálata szükséges.'},{tx:'Hangosan megszólítom, és a vállát kíméletesen megrázom (reagál-e).',ok:true,fb:'Helyes! Első lépés a tudatállapot felmérése.'}]},
+      {sit:'A beteg eszméletlen, semmilyen ingerre nem reagál. Hallod, hogy zajosan veszi a levegőt. Mi a következő lépés (B kompetenciával)?',opts:[{tx:'Rögtön mentőtisztet/orvost (ALS egységet) hívok (segélykocsi kérő funkció) és megkezdem az "A" (légút) vizsgálatot.',ok:true,fb:'Helyes! Eszméletlen beteghez mindig magasabb szintű segítség kell.'},{tx:'Megkezdem a mellkasi kompressziókat.',ok:false,fb:'Hibás. Még van légzése, csak zajos.'},{tx:'Beteszek egy Guedel (OPA) tubust azonnal.',ok:false,fb:'Hibás. Előbb manuálisan kell felszabadítani és megvizsgálni a légutat.'}]},
+      {sit:'A beteg a hátán fekszik. Hogyan vizsgálod meg a légútjait (nincs trauma)?',opts:[{tx:'Fejét oldalra fordítom, és hallgatózom fonendoszkóppal.',ok:false,fb:'Hibás. A légútvizsgálat szabad füllel történik a beteg feje mellett.'},{tx:'Egyik kezem a homlokára, másik az álla alá: fej kíméletes hátrahajtása és az áll megemelése. Közben fülemet az arca fölé hajtva nézem, hallgatom, érzem a légzést.',ok:true,fb:'Helyes! Ez a manuális megnyitás (head tilt - chin lift) és a hármas érzékelés.'},{tx:'Ujjaimmal betörlök a szájába vakon.',ok:false,fb:'Hibás. Vakon nem nyúlunk a beteg szájába.'}]},
+      {sit:'A beteg légzése erőlködő, és a belégzésekkor hangos HORKOLÁST hallasz. Mire utal ez?',opts:[{tx:'Lágyrészek okozta részleges légúti elzáródásra (pl. hátracsúszott nyelv).',ok:true,fb:'Helyes! A horkolás a lágyrészek akadályozó hatásának jele.'},{tx:'Folyadék (hányadék) van a légútban.',ok:false,fb:'Hibás. Arra a szörcsölő hang utalna.'},{tx:'Keringésmegállásra (agonális légzés).',ok:false,fb:'Hibás. A horkolás megőrzött, de szűkített légáramlást jelez.'}]},
+      {sit:'A manuális áll-előemelés (head tilt-chin lift) hatására a légzés javul. A beteg mélyen eszméletlen. Milyen egyszerű légútbiztosító eszközöket fogsz alkalmazni?',opts:[{tx:'1 db NPA-t a jobb orrfélbe.',ok:false,fb:'Hibás. Az eljárásrend többet ír elő mélyen eszméletlen betegnél.'},{tx:'Mélyen eszméletlen betegnél 2 db NPA-t (mindkét orrjáratba) és 1 db OPA-t készítek elő.',ok:true,fb:'Helyes! Az eljárásrend kötelezővé teszi a 2 NPA + 1 OPA alkalmazását.'},{tx:'Semmilyet, maradok a manuális tartásnál.',ok:false,fb:'Hibás. Az eszközös kiegészítés felszabadítja az ellátó kezeit és javítja a biztonságot.'}]},
+      {sit:'Kezdjük az NPA-val (Nasopharyngealis tubus). Hogyan választod ki a megfelelő méretet?',opts:[{tx:'Lemérem a távolságot a metszőfogak és az állkapocsszöglet között.',ok:false,fb:'Hibás. Ez semmilyen eszközhöz nem jó.'},{tx:'Lemérem a távolságot a beteg ajka és fülcimpája között.',ok:false,fb:'Hibás. Ez majdnem az OPA mérése.'},{tx:'Lemérem a távolságot a beteg orrnyílása és a tragus (fülcimpa belső porca) között.',ok:true,fb:'Helyes! Ez az NPA helyes mérési módszere.'}]},
+      {sit:'Kiválasztottad a megfelelő NPA-t, síkosítottad. Melyik a behelyezés helyes technikája?',opts:[{tx:'Erővel letolom egyenesen, amíg akadályba nem ütközöm.',ok:false,fb:'Hibás. Szigorúan tilos eröltetni.'},{tx:'A levágott él (bevel) a septum (orrsövény) felé néz, az eszköz ívét követve, "malacorr" képzéssel, pödrö-csavaró mozdulattal csúsztatom be.',ok:true,fb:'Helyes! Ez a kíméletes és előírt bevezetési technika.'},{tx:'Oldalra fordítva vezetem be, majd bent 180 fokot fordítok rajta.',ok:false,fb:'Hibás. Ezt a módszert az OPA-nál alkalmazzuk felnőtteknél.'}]},
+      {sit:'A két NPA bent van. Most az OPA (oropharyngealis / Guedel tubus) következik. Hogyan méred ki?',opts:[{tx:'Ajak és angulus mandibulae (állkapocsszöglet) közötti távolság.',ok:true,fb:'Helyes! Ez az OPA pontos mérete.'},{tx:'Orrhegy és fülcimpa közötti távolság.',ok:false,fb:'Hibás. Ez az NPA.'},{tx:'Metszőfogaktól a gégefőig.',ok:false,fb:'Hibás.'}]},
+      {sit:'Hogyan helyezed be az OPA-t a felnőtt betegnek?',opts:[{tx:'Domború oldalával lefelé, végleges pozícióban nyomom be.',ok:false,fb:'Hibás. Ez a gyermekeknél használt módszer.'},{tx:'Fordított helyzetben (konkáv rész a szájpad felé) vezetem be a lágy/kemény szájpad határáig, majd 180 fokkal elforgatom és a peremig tolom.',ok:true,fb:'Helyes! Felnőtteknél ez az előírt, nyelvhátraesést megakadályozó bevezetési mód.'},{tx:'Laringoszkóp segítségével vezetem be.',ok:false,fb:'Hibás. OPA behelyezéséhez nem kell laringoszkóp.'}]},
+      {sit:'Az eszközök (2 NPA + 1 OPA) bent vannak, a légút védve van a lágyrészek elzáródásától. A beteg légzése rendezett, oxigenizációt kap. Mi a teendőd az ALS egység megérkezéséig?',opts:[{tx:'Folyamatosan monitorozom, oxigént adok nem-visszalégző maszkon, és fenntartom az átjárhatóságot.',ok:true,fb:'Helyes! A fenyegetett légút folyamatos eszközös/manuális fenntartása és az O2 adagolás az előírás.'},{tx:'Kihúzom az eszközöket, ha jobban van.',ok:false,fb:'Hibás. Eszméletlen betegnél az eszközök védik a légutat.'},{tx:'Azonnal megkezdem az újraélesztést.',ok:false,fb:'Hibás. Van spontán, jó légzés, pulzus van.'}]}
+    ],
+    summary:'Részletes összefoglaló: A helyszínbiztonság ellenőrzése után a földön fekvő betegről kiderült, hogy eszméletlen. Mivel B kompetenciájú egységként dolgoztunk, első lépésként rögtön magasabb szintű segítséget (mentőtiszt/orvos) kértünk. A "A" (Légút) vizsgálatánál a hármas érzékelés során horkoló hangot hallottunk, amely lágyrészek okozta felső légúti elzáródást (pl. hátracsúszott nyelv) jelez. Nem lévén trauma, head tilt-chin lift manőverrel nyitottuk meg a légutat. Mivel a beteg mélyen eszméletlen volt, az eljárásrend alapján azonnal 2 db NPA és 1 db OPA behelyezéséről döntöttünk. Az NPA méretét (orrnyílás-fülcimpa) lemérve síkosítás és "malacorr" manőver mellett pödrö-csavaró mozdulattal helyeztük be. Az OPA méretét (ajak-állkapocsszöglet) lemérve 180 fokos elforgatásos technikával vezettük be. A légút szabaddá tétele után oxigént adagoltunk rezervoáros maszkon keresztül, és az eszközöket a helyükön tartva, a beteget folyamatosan monitorozva vártuk a segítséget.'
+  },
+  {
+    id:2,
+    title:'2. Szimuláció: Traumás beteg, folyadék a légútban (B+ kompetencia)',
+    diff:'B+ kompetencia',
+    desc:'B+ kompetenciaszint (gyógyszerezni jogosult ápoló). Autóbaleset, a gépkocsi vezetője eszméletlen az ülésben, fejét a kormányba verte, arca vérzik.',
+    steps:[
+      {sit:'A helyszín biztonságos. A beteg a roncsban van. Baleseti mechanizmus: nagy sebességű ütközés. Milyen vizsgálati elv szerint kezdesz az ABCDE előtt?',opts:[{tx:'Csak az "A" vizsgálatot nézem meg.',ok:false,fb:'Hibás.'},{tx:'A ccABCDE elv alapján: nagy vérzés (c) keresése és a nyaki gerinc manuális rögzítése (c = MILS) az első.',ok:true,fb:'Helyes! Súlyos trauma esetén a nyakrögzítés és vérzéscsillapítás megelőzi a légútvizsgálatot.'},{tx:'Azonnal felrakom a merev nyakgallért.',ok:false,fb:'Hibás. Az eljárásrend szerint a gallér felhelyezésével nem szabad időt vesztegetni a légút megnyitása előtt.'}]},
+      {sit:'Társad megfogja a beteg fejét hátulról (MILS - Manual In-Line Stabilization). Te elvégzed az "A" vizsgálatot. A beteg légzése zajos. Hogyan nyitod meg a légutat manuálisan MILS mellett?',opts:[{tx:'Fej hátrahajtásával és Esmarch-Heiberg műfogással.',ok:false,fb:'Hibás. A fej hátrahajtása szigorúan tilos!'},{tx:'A nyaki gerinc sérülésének gyanúja miatt a fej hátrahajtása nélkül, csak az áll kiemelésével (Jaw thrust).',ok:true,fb:'Helyes! MILS mellett ez a biztonságos módszer.'},{tx:'Semmilyen manővert nem alkalmazok, egyből eszközt teszek be.',ok:false,fb:'Hibás. A manuális megnyitás az első.'}]},
+      {sit:'Az áll kiemelése után a légzés továbbra is erőlködő, és hangos SZÖRCSÖLŐ hangot hallasz. Mire utal ez?',opts:[{tx:'Lágyrészek okozta elzáródás.',ok:false,fb:'Hibás. Ez horkolás lenne.'},{tx:'Gégegörcs vagy asztma.',ok:false,fb:'Hibás.'},{tx:'Folyadék (vér, nyál) okozta részleges elzáródás a felső légutakban.',ok:true,fb:'Helyes! Az arcvérzés és a szörcsölés egyértelműen folyadékra utal.'}]},
+      {sit:'Mit teszel azonnal a folyadék okozta légúti akadály elhárítására?',opts:[{tx:'Mélyebbre dugom az ujjam és kipiszkálom.',ok:false,fb:'Hibás. Vakon nem nyúlunk a szájba, és folyadékot így nem is lehet eltávolítani.'},{tx:'Elkezdem a szívást a szájüregen keresztül, merev leszívó toldattal (Jankauer).',ok:true,fb:'Helyes! A folyadék leszívása azonnali teendő.'},{tx:'Befúvásokat alkalmazok ballonos maszkkal.',ok:false,fb:'Hibás. Először szabaddá kell tenni a légutat, a folyadék aspirációt okozhat.'}]},
+      {sit:'A leszívás után a szájüreg tiszta, de a légzés még mindig nem tökéletes, a beteg mélyen eszméletlen. Légútbiztosító eszközöket használsz. Mivel koponyaalapi törés (vérző arc, trauma) gyanúja merül fel, használhatsz-e NPA-t?',opts:[{tx:'Szigorúan tilos, csak OPA-t.',ok:false,fb:'Hibás.'},{tx:'Igen, helyes és kíméletes behelyezési technika mellett az NPA koponyasérülés gyanúja esetén sem ellenjavallt.',ok:true,fb:'Helyes! Az eljárásrend külön kiemeli, hogy kíméletesen szabad.'},{tx:'NPA-t ilyenkor csak a szájüregbe szabad tenni.',ok:false,fb:'Hibás. Az az orrjáratba való.'}]},
+      {sit:'Beteszed a 2 db NPA-t és az 1 db OPA-t. Az OPA kiválasztásához hol kell mérned?',opts:[{tx:'Ajak és angulus mandibulae (állkapocsszöglet).',ok:true,fb:'Helyes! Ez a helyes mérési táv.',},{tx:'Metszőfog - fülcimpa.',ok:false,fb:'Hibás.'},{tx:'Orrnyílás - fülcimpa.',ok:false,fb:'Hibás. Ez az NPA.'}]},
+      {sit:'A sérült légútja már szabad. De vérzés miatt a szájüregben folyamatosan, kis mennyiségben újratermelődik a folyadék. Hogyan tartod fenn a szabad légutat az eljárásrend alapján?',opts:[{tx:'Semmit nem csinálok, a tubusok (OPA/NPA) megvédik az aspirációtól.',ok:false,fb:'Hibás. Az egyszerű eszközök nem védenek aspiráció ellen!'},{tx:'Folyamatos szívást alkalmazok puha leszívó katéter segítségével az orrnyílásba helyezett NPA-n keresztül.',ok:true,fb:'Helyes! Ez az eljárásrendi javaslat kis mennyiségű, újratermelődő folyadéknál.'},{tx:'Kihúzom az OPA-t.',ok:false,fb:'Hibás.'}]},
+      {sit:'Az "A" (légút) tehát biztosított. Milyen kiegészítő eljárást alkalmazol a fenyegetett légutú, eszméletlen traumás beteg oxigenizációjának biztosítására (még mielőtt intubálnák)?',opts:[{tx:'Kizárólag orrszondán adok oxigént.',ok:false,fb:'Hibás. Az oxigénkoncentráció így túl alacsony.'},{tx:'Nem-visszalégző rezervoáros maszkon át adagolt magas áramlású oxigént (10-15 l/min) alkalmazok.',ok:true,fb:'Helyes! A fenyegetett légút oxigenizációjának ez az alapja.'},{tx:'Azonnal intubálom.',ok:false,fb:'Hibás. A B+ kompetencia nem engedi a relaxánsos intubációt, az orvosi feladat.'}]},
+      {sit:'A beteg hirtelen légzésleállást produkál. Keringésmegállás. Mit lépsz B+ kompetenciával?',opts:[{tx:'Azonnal laringoszkópot ragadok és intubálok.',ok:false,fb:'Hibás. Keringésmegállás esetén a hatásos lélegeztetés az elsődleges, de a CPR kompresszióval kezdődik, és csak megfelelő előkészület után jön a definitív légút.'},{tx:'A beteget kiemeljük az autóból, megkezdem a mellkasi kompressziókat, és a bent lévő eszközöket (OPA+NPA) használva ballonos-maszkos lélegeztetést alkalmazok.',ok:true,fb:'Helyes! Lépcsőzetes légútbiztosítás: CPR + egyszerű eszközös ballonos lélegeztetés.'},{tx:'Megállok és várom a mentőtiszti kocsit.',ok:false,fb:'Hibás. A BLS-t rögtön el kell kezdeni.'}]},
+      {sit:'A ballonos lélegeztetés nehézkes a sérült arc miatt. Milyen eszközt használhatsz biztonságosan és hatásosan a keringésmegállás alatt, ha a ballonos lélegeztetés nem kielégítő?',opts:[{tx:'Supraglotticus eszköz (pl. LMA, i-gel).',ok:true,fb:'Helyes! Az eljárásrend szerint a supraglotticus eszközök használata gyors, biztonságos és az esetek többségében elégséges.'},{tx:'Csak az OPA-t toljuk lejjebb.',ok:false,fb:'Hibás.'},{tx:'Tracheotomia (conicotomia).',ok:false,fb:'Hibás. Ez sebészi beavatkozás, ALS/orvosi kompetencia.'}]}
+    ],
+    summary:'Részletes összefoglaló: Gépkocsibalesetnél a ccABCDE elv alapján először a látható nagy vérzés és a nyaki gerinc rögzítése (MILS) élvezett elsőbbséget. Mivel a beteg eszméletlen és arcán sérülés volt, a légutat a nyaki gerinc védelme érdekében MILS mellett, a fej hátrahajtása nélkül, chỉ az áll kiemelésével nyitottuk meg. A légzésvizsgálat során szörcsölő hang jelezte a vér jelenlétét (folyadék elzáródás), amit azonnal merev toldatú szívóval eltávolítottunk. Az eljárásrend egyértelműen kimondja, hogy az NPA (orrtubus) helyes és kíméletes technikával még koponyaalapi törés gyanúja esetén sem ellenjavallt, így 2 db NPA-t ("malacorr" és pödrö-csavaró mozdulatokkal) és 1 db OPA-t helyeztünk be. A folyamatosan visszatermelődő vér miatt puha szívókatéterrel az NPA-n keresztül biztosítottuk az átjárhatóságot, és rezervoáros maszkon O2-t adtunk. Amikor beállt a keringésmegállás, az autóból való kimentés után a mellkasi kompressziókat ballonos-maszkos lélegeztetéssel, majd - mivel ez nehézkes volt - egy supraglotticus eszközzel (pl. i-gel) egészítettük ki, ami B+ szinten biztonságos alternatíva.'
+  },
+  {
+    id:3,
+    title:'3. Szimuláció: Idegentest félrenyelés, éttermi szituáció (B kompetencia)',
+    diff:'B kompetencia',
+    desc:'B kompetencia. Egy étteremben étkezés közben egy 40 éves férfi hevesen fuldoklani kezd.',
+    steps:[
+      {sit:'Odaérsz a asztalhoz. A beteg áll, a torkát fogja, arca vörös, és ERŐTELJESEN köhög. Mi a teendőd?',opts:[{tx:'Azonnal megkezdem a Heimlich-műfogást (hasi lökések).',ok:false,fb:'Hibás. Ha erőteljesen köhög, nem szabad fizikai manővert alkalmazni, mert ront a helyzeten.'},{tx:'Biztatom a köhögésre, és folyamatosan figyelem az állapotát.',ok:true,fb:'Helyes! Erőteljes köhögésnél az egyetlen teendő a köhögésre biztatás és a megfigyelés.'},{tx:'Ráütök a hátára.',ok:false,fb:'Hibás. Ez eltömítheti a légcsövet, amíg a köhögés hatásos.'}]},
+      {sit:'A beteg hirtelen nem tud tovább hangot kiadni, arca kékesen elszíneződik (cyanosis), és a köhögése ERŐTLENNÉ válik. Mit teszel elsőként?',opts:[{tx:'Nyitom a légutat, OPA-t teszek be.',ok:false,fb:'Hibás. Eszméleténél van, nem tűrné, és az idegentestet sem oldja meg.'},{tx:'5 háti ütést mérek a lapockái közé.',ok:true,fb:'Helyes! Eszméleténél lévő, erőtlenül köhögő betegnél 5 háti ütéssel kezdünk.'},{tx:'Elkezdem a mellkasi kompressziót.',ok:false,fb:'Hibás. Még eszméleténél van.'}]},
+      {sit:'Az 5 háti ütés nem járt sikerrel. Mi a következő lépés az eljárásrend alapján?',opts:[{tx:'Ismét 5 háti ütés.',ok:false,fb:'Hibás. Váltogatni kell a manővereket.'},{tx:'5 hasi lökés (Heimlich) alkalmazása.',ok:true,fb:'Helyes! Az 5 háti ütést 5 hasi lökésnek kell követnie.'},{tx:'Lefektetem a földre.',ok:false,fb:'Hibás.'}]},
+      {sit:'Ezt a 5 háti ütés - 5 hasi lökés ciklust váltogatod. Mikor kell MELLKASI lökést alkalmazni hasi lökés helyett a felnőtteknél?',opts:[{tx:'Ha a beteg férfi.',ok:false,fb:'Hibás.'},{tx:'Előrehaladott terhességben, vagy ha a beavatkozó nem képes körülölelni a beteg hasát (nagyon elhízott beteg).',ok:true,fb:'Helyes! Ezek az eljárásrendi kivételek a hasi lökés alól.'},{tx:'Soha, felnőttnél mindig hasi lökés kell.',ok:false,fb:'Hibás.'}]},
+      {sit:'A manőverek nem jártak sikerrel, a beteg elernyed, eszméletét veszti. Hogyan kell lefektetni?',opts:[{tx:'Hanyatt fekvő helyzetbe a földre.',ok:true,fb:'Helyes! Eszméletlen betegnél az újraélesztés miatt a hanyatt fekvés az alap.'},{tx:'Oldalfekvésbe.',ok:false,fb:'Hibás. Meg kell kezdeni az újraélesztést.'},{tx:'A székben hagyom.',ok:false,fb:'Hibás.'}]},
+      {sit:'Mivel eszméletlenné vált, mit ír elő az eljárásrend azonnali feladatként?',opts:[{tx:'Várok 10 másodpercet és hívom a mentőt.',ok:false,fb:'Hibás.'},{tx:'Azonnal megkezdem az újraélesztést (CPR 30:2 arányban).',ok:true,fb:'Helyes! Eszméletlen, idegentest elzáródásos felnőttnél rögtön 30:2 CPR-t kell kezdeni.'},{tx:'Folytatom a hasi lökéseket fekvő helyzetben.',ok:false,fb:'Hibás. Fekvő betegnél a mellkasi kompresszió a hatékony és előírt módszer.'}]},
+      {sit:'A mellkasi kompressziók (30) után a 2 befúvás következik. Befúvás előtt kinyitod a száját. Szabad-e vakon benyúlni ujjal?',opts:[{tx:'Igen, meg kell próbálni kitapintani a falatot.',ok:false,fb:'Hibás. A vakon történő benyúlás beljebb tolhatja az akadályt.'},{tx:'Nem! Manuális eltávolítás csak SZEMELLENŐRZÉS mellett engedélyezett, az ujjak védelméről gondoskodva.',ok:true,fb:'Helyes! Szigorúan csak akkor nyúlunk a szájba, ha látjuk az idegentestet.'},{tx:'Igen, de csak a kisujjammal.',ok:false,fb:'Hibás.'}]},
+      {sit:'Ha ALS (B+ szint vagy afeletti, Magill fogó és laringoszkóp megléte) egység lennél, hogyan távolítanád el az eszközzel az idegentestet?',opts:[{tx:'Leszívom motoros szívóval.',ok:false,fb:'Hibás. A szilárd idegentest nem szívható le.'},{tx:'Kompetencia és eszköz birtokában laringoszkópos feltárás mellett Magill-fogó segítségével.',ok:true,fb:'Helyes! Ez a szilárd idegentest eszközös eltávolításának módja.'},{tx:'Lefejtem a tubusról.',ok:false,fb:'Hibás.'}]},
+      {sit:'Mivel B kompetencia vagy, nincs laringoszkópod. Látod a falatot, ki tudod szedni az ujjaddal. Megtörtént. Az "A" vizsgálat során lágyrész elzáródást észlelsz a nyelv miatt (horkolás). Beteg még eszméletlen. Eszközválasztás?',opts:[{tx:'2 db NPA és 1 db OPA behelyezése mély eszméletlenség esetén.',ok:true,fb:'Helyes! A légútbiztosítás szabálya itt is érvényesül az idegentest után.'},{tx:'Csak egy OPA.',ok:false,fb:'Hibás. Kiegészítés (2 NPA) is szükséges.'},{tx:'Innentől kezdve stabil oldalfekvés eszköz nélkül.',ok:false,fb:'Hibás. Mélyen eszméletlen beteg légútját biztosítani kell.'}]},
+      {sit:'A beteg a felszabadított légút (NPA+OPA) ellenére nem lélegzik kielégítően (légzésleállás). Folytatod a lélegeztetést.',opts:[{tx:'A 30:2 arányú újraélesztés folytatása ballonos-maszkos lélegeztetéssel, amíg a beteg állapota nem rendeződik vagy az ALS meg nem érkezik.',ok:true,fb:'Helyes! Légzésleállás és eszméletlenség esetén a BLS (CPR) algoritmus folytatódik.'},{tx:'Várok, amíg felébred, hisz a falat már kint van.',ok:false,fb:'Hibás. A beteg a hypoxia miatt keringésmegállásban vagy súlyos légzészavarban van.'},{tx:'Otthagyom.',ok:false,fb:'Hibás.'}]}
+    ],
+    summary:'Részletes összefoglaló: Az étteremben a beteg eleinte eszméleténél volt és erőteljesen köhögött, ekkor a protokoll szerint csak köhögésre biztattuk és figyeltük (minden fizikai manőver tilos). Amint a köhögés erőtlen lett (cyanosis), 5 háti ütést és 5 hasi lökést váltogattunk. (Kivételként felnőttnél hasi lökés helyett mellkasi lökést alkalmazunk terhesség vagy kóros elhízás esetén.) Amikor a beteg elvesztette az eszméletét, azonnal hanyatt fektettük és megkezdtük az újraélesztést (30 mellkasi kompresszióval kezdve). Befúvás előtt megnyitottuk a száját, de tudtuk: vakon betörölni tilos! Csak szemellenőrzés mellett szabad ujjal eltávolítani az idegentestet (ALS szinten laringoszkóp és Magill-fogó a választandó). Miután a falatot sikerült eltávolítani (szemellenőrzéssel), a horkoló légzés (nyelv hátraesés) miatt azonnal 2 db NPA-t és 1 db OPA-t helyeztünk be. Mivel a beteg nem kezdett el kielégítően lélegezni, a 30:2 arányú CPR-t ballonos-maszkos lélegeztetéssel folytattuk a segélykocsi megérkezéséig.'
+  },
+  {
+    id:4,
+    title:'4. Szimuláció: Eszméletlen gyermek (1 éves) légútbiztosítása (B kompetencia)',
+    diff:'B kompetencia',
+    desc:'B kompetenciaszint. Egy 1 éves csecsemőhöz riasztanak, akit a kiságyban találtak eszméletlenül. Nincs gyanú idegentestre.',
+    steps:[
+      {sit:'A helyszín biztonságos. A gyermek (1 éves) eszméletlen, semmilyen ingerre nem reagál. Hogyan nyitod meg a légútját?',opts:[{tx:'A fejet a lehető legkíméletesebben hajtjuk maximálisan hátra, mint a felnőtteknél.',ok:false,fb:'Hibás. Csecsemőknél tilos a túlzott hátraszegés.'},{tx:'A fej túlzott hátrahajtását kerüljük, NEUTRÁLIS pozíció megtartása javasolt, az áll előemelésével.',ok:true,fb:'Helyes! Az anatómiai sajátosságok miatt csecsemőnél (kb. 1 éves korig) a neutrális (semleges) fejtartás a szabály.'},{tx:'Stabil oldalfekvésbe teszem.',ok:false,fb:'Hibás. Előbb vizsgálni kell a légzést hanyatt fekve.'}]},
+      {sit:'Milyen egyszerű trükköt javasol az eljárásrend gyermekeknél (különösen 2 éves kor alatt) a légutak megnyitásához?',opts:[{tx:'A térdek alá párnát teszünk.',ok:false,fb:'Hibás.'},{tx:'A vállak alá 2-3 cm vastagra hajtogatott lepedő elhelyezése, a váll kiemelése.',ok:true,fb:'Helyes! A nagy tarkó miatt a váll alá helyezett párnázás segít a neutrális pozíció tartásában.'},{tx:'A lábfej megemelése.',ok:false,fb:'Hibás.'}]},
+      {sit:'A gyermek légzése vizsgálatkor frusztrán (légzőmozgás van, levegőáramlás nincs). Ez teljes elzáródást jelent (lágyrész). Eszközös légútbiztosításhoz NPA (orrtubus) használható-e?',opts:[{tx:'Igen, kötelező 2 db.',ok:false,fb:'Hibás. 8 év alatt az eljárásrend mást mond.'},{tx:'Gyermekeknél (8 év alatt) az NPA használata kerülendő, de megfelelő pozicionálás mellett is fennálló elzáródás esetén 1 NPA behelyezése indokolt lehet.',ok:true,fb:'Helyes! Alapesetben kerülendő, de végszükség (légúti akadály) esetén 1 db indokolt.'},{tx:'Soha, gyermekeknél az orrba nem tehetünk semmit.',ok:false,fb:'Hibás. Végszükségben indokolt.'}]},
+      {sit:'Mivel a manuális manőver (vállpárna + állkiemelés) megoldotta a teljes akadályt (NPA mégsem kell), de a gyermek mélyen eszméletlen, OPA-t (Guedel tubust) helyezel be. Hogyan vezeted be az 1 éves gyermeknél?',opts:[{tx:'Fordított helyzetben bevezetem, majd 180 fokkal elfordítom.',ok:false,fb:'Hibás. Ez a felnőtt technika.'},{tx:'A végleges pozíciójának megfelelő helyzetben (domború oldalával a szájpad felé) vezetem be, elforgatás nélkül.',ok:true,fb:'Helyes! Gyermekeknél az elforgatás sérülést (pl. szájpad) okozhat, ezért direkt módon toljuk be.'},{tx:'Nem tehetek OPA-t gyermekbe.',ok:false,fb:'Hibás. Mély eszméletlenség esetén alkalmazandó.'}]},
+      {sit:'Az OPA bent van. A hármas érzékelés 10 másodperc alatt azt mutatja, hogy a gyermek légzése hiányzik. Mit teszel csecsemő/gyermek újraélesztés kezdetén?',opts:[{tx:'Azonnal megkezdem a mellkasi kompressziókat (30:2).',ok:false,fb:'Hibás. Gyermeknél más a protokoll kezdete.'},{tx:'Nyissuk meg a légutat! 5 kezdeti befúvás következik.',ok:true,fb:'Helyes! Gyermekeknél (szemben a felnőttekkel) 5 kezdeti mentőbefúvással kezdődik a reanimáció (mert náluk általában légzési ok áll a háttérben).'},{tx:'Sokkolok az AED-vel.',ok:false,fb:'Hibás.'}]},
+      {sit:'Az 5 befúvás során látod, hogy emelkedik a mellkas (az OPA jól funkcionál). Utána nincs életjelenség. Milyen arányban végzed a kompresszió/lélegeztetés ciklusokat a csecsemőnél/gyermeknél?',opts:[{tx:'30 kompresszió : 2 befúvás.',ok:false,fb:'Hibás. Az a felnőtt BLS standard.'},{tx:'15 kompresszió : 2 befúvás.',ok:true,fb:'Helyes! Csecsemő és gyermek (pubertás korig) ellátásánál szakemberek (mentők) esetén a 15:2 arány az előírás.'},{tx:'Folyamatos kompresszió.',ok:false,fb:'Hibás.'}]},
+      {sit:'Milyen kiegészítő eszközöket használsz a lélegeztetéshez?',opts:[{tx:'Megfelelő méretű csecsemő ballon és arcmaszk (oxigénnel csatlakoztatva).',ok:true,fb:'Helyes! A kornak megfelelő méretű ballonos-maszkos lélegeztetés (az OPA segítségével) a helyes eljárás.'},{tx:'Felnőtt ballon.',ok:false,fb:'Hibás. Túl nagy volument ad, sérülést okoz.'},{tx:'Csak szájból-szájba oxigén nélkül.',ok:false,fb:'Hibás. Mentőápolóként mindig oxigénnel dúsított műszeres lélegeztetés a cél.'}]},
+      {sit:'Ha a gyermeknél folyadék (tej/nyál) jön fel a kompressziók alatt, mit teszel?',opts:[{tx:'Folytatom a befúvásokat.',ok:false,fb:'Hibás. A folyadék bejutna a tüdőbe.'},{tx:'Megállok, a gyermeket (vagy a fejét) oldalra fordítom, és merev toldattal leszívom a váladékot a szájüregből, majd folytatom a CPR-t.',ok:true,fb:'Helyes! A folyadék okozta légúti akadály elhárítása (leszívás, oldalra fordítás) prioritás a befúvások előtt.'},{tx:'Kihúzom az OPA-t végleg.',ok:false,fb:'Hibás. Leszívás után vissza kell tenni.'}]},
+      {sit:'B kompetenciájú mentőápolóként mikor delegálod vagy hívod az ALS (orvosi/tiszti) segítséget?',opts:[{tx:'Már a megérkezéskor, az eszméletlenség észlelésekor azonnal.',ok:true,fb:'Helyes! Eszméletlen/keringésmegállásos beteg (főleg gyermek) esetén az elsődleges vizsgálat (reagál-e) után azonnal segítséget kérünk.'},{tx:'A CPR 5. ciklusa után.',ok:false,fb:'Hibás. Azonnal kérni kell.'},{tx:'Miután betettem az OPA-t.',ok:false,fb:'Hibás.'}]},
+      {sit:'A ballonos lélegeztetés során mire kell kiemelten figyelni az áll alatti lágyrészeknél (Esmarch-Heiberg vagy állkiemelés közben)?',opts:[{tx:'Arra, hogy jó erősen nyomjuk be az áll alatti lágyrészeket a jobb tartásért.',ok:false,fb:'Hibás. Ez súlyos hiba.'},{tx:'Mindig ügyeljünk arra, hogy az áll alatti tömegesebb lágyrészt NE nyomjuk össze, mivel ez önmagában is okozhatja/fokozhatja a légúti elzáródást (főleg csecsemőknél).',ok:true,fb:'Helyes! A nyelv gyökét felnyomva elzárhatjuk a légutat a kisgyermeknél.'},{tx:'Nem számít, hol fogjuk meg az állat.',ok:false,fb:'Hibás.'}]}
+    ],
+    summary:'Részletes összefoglaló: A csecsemő (1 éves) eszméletlenségének észlelésekor elsőként magasabb szintű segítséget (ALS) kértünk. A manuális légútnyitás során figyeltünk az anatómiai sajátosságokra: a fejet tilos volt maximálisan hátrahajtani, ehelyett neutrális (semleges) pozícióban tartottuk, és a nagy tarkó kompenzálására a vállak alá 2-3 cm-es lepedőt helyeztünk. Mivel a légzés frusztrán volt (csak lágyrész-akadály), az 1 éves kornak megfelelően kerülendő volt az NPA rutinszerű használata, ezért csak OPA-t (Guedel) alkalmaztunk. Az OPA-t a felnőttekkel ellentétben elforgatás nélkül, domború oldalával a szájpad felé csúsztatva vezettük be, hogy elkerüljük a lágyrészek sérülését. Légzés hiányában a gyermek CPR protokollnak megfelelően 5 kezdeti mentőbefúvással indítottunk (ballonos-maszkos eszközzel, az áll alatti lágyrészek összenyomását kerülve). Amikor életjelenségek nem tértek vissza, a kompresszió-lélegeztetés arányát 15:2-ben folytattuk az ALS egység érkezéséig. Folyadék (tej) megjelenésekor a kompressziókat megszakítva, a csecsemőt oldalra fordítva azonnali váladékleszívást alkalmaztunk.'
+  }
+];
+
+// SEGÉDFÜGGVÉNYEK
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Render blockok
+function rb(b){
+  var res = '';
+  if(b.tp==='sub') res = '<div class="sub">'+b.tx+'</div>';
+  if(b.tp==='bl') res = '<ul class="bl">'+b.items.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul>';
+  if(b.tp==='kr') res = '<div>'+b.items.map(function(i){return '<div class="kr">✓ &nbsp;'+i+'</div>';}).join('')+'</div>';
+  if(b.tp==='al') res = '<div class="al al-'+b.lv+'">'+b.tx+'</div>';
+  if(b.tp==='text') res = '<div style="font-size:13px;color:#d1d5db;margin-bottom:.75rem;line-height:1.6">'+b.tx+'</div>';
+  if(b.tp==='tbl'){
+    res = '<div class="tbl-wrap"><table class="tbl"><tbody>'+b.rows.map(function(r){
+      return '<tr><td style="font-weight:700;color:#c4b5fd;width:40%">'+r[0]+'</td><td>'+r[1]+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+  }
+  return res;
+}
+
+// Navigáció
+function go(s,id){SCR=s;CHID=id||null;rend();window.scrollTo(0,0);}
+function setCat(c){FC.cat=c;FC.idx=0;FC.flip=false;rend();}
+function flipCard(){FC.flip=!FC.flip;rend();}
+function navCard(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(function(c){return c.cat===FC.cat});FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;rend();}
+function pickQ(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});rend();}
+function nextQ(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;rend();}
+function resetQuiz(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};rend();}
+function startSim(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;rend();}
+function chooseSim(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});rend();}
+function nextSim(){var sim=SIMS.find(function(s){return s.id===SI.id;});if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;rend();}
+function resetSim(){SI={id:null,step:0,chosen:null,hist:[],fin:false};rend();}
+
+// Kalkulátor funkciók
+function setAge(v){CA.age=v?Number(v):0; rend();}
+function setWeight(v){CA.weight=v?Number(v):0; rend();}
+function setConscious(v){CA.conscious=(v==='true'); rend();}
+
+// Szótár modal
+function openDict(w){
+  var low = w.toLowerCase();
+  var desc = DICT[low] || 'Nincs magyarázat ehhez a szóhoz.';
+  document.getElementById('mod-t').innerText = w.toUpperCase();
+  document.getElementById('mod-d').innerText = desc;
+  document.getElementById('mod').classList.add('act');
+}
+function closeDict(){
+  document.getElementById('mod').classList.remove('act');
+}
+
+// UI Generálás
+function renderHome(){
+  return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">OMSZ Eljárásrend</div>'+
+  '<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Eszköz nélküli és egyszerű légútbiztosítás</h1>'+
+  '<div style="font-size:13px;color:#9ca3af">v2.0 · 2019.08.28.</div></div>'+
+  '<div class="g2" style="margin-bottom:.75rem">'+
+  [['chapters','📚','Eljárásrend','Teljes PDF tartalom'],['flash','🃏','Flashkártyák','Tanulókártyák'],['quiz','❓','Kvíz','Tudáspróba'],['sim','🚑','Szimuláció','Gyakorlati esetek B/B+'],['calc','🧮','Eszközválasztó','Légúti eszköz méretek']].map(function(arr){
+    return '<button onclick="go(\''+arr[0]+'\')" class="card-btn" style="text-align:center;padding:1rem .5rem"><div style="font-size:26px;margin-bottom:6px">'+arr[1]+'</div><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+arr[2]+'</div><div style="font-size:11px;color:#9ca3af;margin-top:4px">'+arr[3]+'</div></button>';
+  }).join('')+
+  '</div>'+
+  '<div class="al al-i" style="font-size:12px"><b>Útmutató:</b> A kék, szaggatott vonallal aláhúzott <span class="dict">idegen szavakra</span> kattintva megnyílik a fogalommagyarázó szótár!</div>';
+}
+
+function renderChapters(){
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend Fejezetei</h2>'+
+  CDATA.map(function(c){
+    return '<button class="card-btn" style="display:flex;align-items:center;gap:12px" onclick="go(\'chapter\',\''+c.id+'\')">'+
+    '<div style="width:40px;height:40px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">'+c.icon+'</div>'+
+    '<div style="flex:1"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+c.title+'</div><div style="font-size:12px;color:#9ca3af">'+c.secs.length+' alfejezet</div></div>'+
+    '<div style="color:#9ca3af;font-size:20px">›</div></button>';
+  }).join('');
+}
+
+function renderChapter(id){
+  var c = CDATA.find(function(x){return x.id===id;});
+  if(!c) return '';
+  return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:700">‹ Vissza</button>'+
+  '<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+  '<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+c.title+'</h2></div>'+
+  c.secs.map(function(s){
+    return '<div class="card"><h3 style="font-size:15px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+s.t+'</h3>'+s.bk.map(rb).join('')+'</div>';
+  }).join('');
+}
+
+function renderFlash(){
+  var cats = ['Összes'];
+  CARDS.forEach(function(c){if(cats.indexOf(c.cat)===-1) cats.push(c.cat);});
+  var filtered = FC.cat==='Összes'?CARDS:CARDS.filter(function(c){return c.cat===FC.cat;});
+  var card = filtered[Math.min(FC.idx, filtered.length-1)];
+  
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+  '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(function(c){
+    var act = (FC.cat===c);
+    return '<button onclick="setCat(\''+c+'\')" style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid '+(act?'#14b8a6':'#3f3f3f')+';background:'+(act?'#14b8a6':'#2a2a2a')+';color:'+(act?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+c+'</button>';
+  }).join('')+'</div>'+
+  '<div style="font-size:13px;color:#9ca3af;text-align:center;margin-bottom:.65rem;font-weight:600">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára</div>'+
+  '<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+  (FC.flip?
+  '<div style="font-size:11px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Válasz</div>'+
+  '<div style="font-size:14px;color:#d1d5db;line-height:1.6;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+  '<div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">'+card.cat+'</div>'+
+  '<div style="font-size:16px;font-weight:700;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+  '<div style="font-size:12px;color:#9ca3af;margin-top:16px">Fordításhoz kattints →</div>')+
+  '</div>'+
+  '<div class="btn-row"><button class="btn" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v" onclick="flipCard()">Fordít</button><button class="btn" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+  if(QZ.done){
+    var pct = Math.round(QZ.score/QUIZ.length*100);
+    var good = pct>=80;
+    return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz Eredmény</h2>'+
+    '<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:.75rem">'+
+    '<div style="font-size:48px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+' / '+QUIZ.length+'</div>'+
+    '<div style="font-size:16px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Sikeres!':'Ismétlés javasolt.')+'</div></div>'+
+    (QZ.ans.filter(function(a){return !a.ok}).length?'<h3 style="font-size:15px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok elemzése:</h3>'+
+    QZ.ans.filter(function(a){return !a.ok}).map(function(a){
+      var qq = QUIZ[a.qi];
+      return '<div class="card" style="margin-bottom:8px"><div style="font-size:13px;font-weight:700;color:#f3f4f6;margin-bottom:6px">'+h(qq.q)+'</div><div style="font-size:12px;color:#fca5a5;margin-bottom:3px">✗ Te válaszod: '+h(qq.opts[a.pi])+'</div><div style="font-size:12px;color:#4ade80;margin-bottom:6px">✓ Helyes: '+h(qq.opts[qq.ok])+'</div><div style="font-size:12px;color:#9ca3af;padding-top:4px;border-top:1px dashed #3f3f3f">'+h(qq.exp)+'</div></div>';
+    }).join(''):'<div class="al al-s">Gratulálok! Minden válaszod helyes!</div>')+
+    '<button class="btn btn-g btn-fw" style="margin-top:10px" onclick="resetQuiz()">Kvíz Újraindítása</button>';
+  }
+  var q = QUIZ[QZ.idx];
+  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Tudáspróba</h2><span style="font-size:13px;font-weight:700;color:#9ca3af">'+(QZ.idx+1)+' / '+QUIZ.length+'</span></div>'+
+  '<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+  '<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:700;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+  q.opts.map(function(opt,i){
+    var cls = 'opt';
+    if(QZ.sel!==null){
+      if(i===q.ok) cls += ' opt-ok';
+      else if(i===QZ.sel) cls += ' opt-no';
+    }
+    return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'>'+h(opt)+'</button>';
+  }).join('')+
+  (QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem"><b>Magyarázat:</b><br>'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények Megtekintése')+'</button>':'');
+}
+
+function renderSim(){
+  if(!SI.id){
+    return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Interaktív Szimulációk</h2>'+
+    SIMS.map(function(s){
+      var tagCls = s.diff.indexOf('B+')!==-1 ? 'tag-y' : 'tag-g';
+      return '<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:#f3f4f6;line-height:1.3;padding-right:10px">'+s.title+'</div>'+
+      '<span class="tag '+tagCls+'" style="flex-shrink:0">'+s.diff+'</span></div>'+
+      '<div style="font-size:12px;color:#9ca3af;margin-bottom:6px;line-height:1.4">'+s.desc+'</div>'+
+      '<div style="font-size:11px;font-weight:700;color:#14b8a6">'+s.steps.length+' kérdés / döntési pont</div></button>';
+    }).join('');
+  }
+  var sim = SIMS.find(function(s){return s.id===SI.id;});
+  if(SI.fin){
+    var correct = SI.hist.filter(function(h){return sim.steps[h.step].opts[h.oi].ok;}).length;
+    return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">Szimuláció Vége</h2>'+
+    '<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1.2rem;text-align:center;margin-bottom:.75rem">'+
+    '<div style="font-size:38px;font-weight:700;color:#4ade80">'+correct+' / '+sim.steps.length+'</div>'+
+    '<div style="font-size:14px;color:#4ade80;font-weight:700">Helyes döntés</div></div>'+
+    '<div class="al al-s"><strong>Eset Részletes Összefoglalója:</strong><br>'+h(sim.summary)+'</div>'+
+    '<h3 style="font-size:15px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">A Te Lépéseid:</h3>'+
+    SI.hist.map(function(hh, i){
+      var st = sim.steps[hh.step];
+      var opt = st.opts[hh.oi];
+      return '<div class="card" style="margin-bottom:8px"><div style="font-size:13px;font-weight:700;color:#f3f4f6;margin-bottom:4px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:12px;color:#9ca3af;border-top:1px dashed #3f3f3f;padding-top:4px">'+h(opt.fb)+'</div></div>';
+    }).join('')+
+    '<button class="btn btn-r btn-fw" style="margin-top:10px" onclick="resetSim()">Vissza az esetekhez</button>';
+  }
+  var step = sim.steps[SI.step];
+  return '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem"><div style="font-size:14px;font-weight:700;color:#f3f4f6;line-height:1.2;padding-right:10px">'+sim.title+'</div><span style="font-size:13px;font-weight:700;color:#9ca3af;flex-shrink:0">'+(SI.step+1)+' / '+sim.steps.length+'</span></div>'+
+  '<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+  (SI.step===0?'<div class="al al-w" style="font-size:12px"><b>Eset leírása:</b> '+h(sim.desc)+'</div>':'')+
+  '<div class="card" style="margin-bottom:.75rem;background:#262626;border-color:#6366f1"><p style="font-size:15px;font-weight:700;color:#e0e7ff;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+  step.opts.map(function(opt, i){
+    var cls = 'opt';
+    if(SI.chosen!==null){
+      if(opt.ok) cls += ' opt-ok';
+      else if(i===SI.chosen) cls += ' opt-no';
+    }
+    return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'>'+h(opt.tx)+'</button>';
+  }).join('')+
+  (SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'" style="margin-bottom:.75rem"><b>Rövid Visszajelzés:</b><br>'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-v btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Tovább a következő lépésre →':'Eset lezárása és Összefoglaló')+'</button>':'');
+}
+
+function renderCalc(){
+  var age = CA.age;
+  var isInfant = age < 1;
+  var isChild = age >= 1 && age < 8; // 8 év alatt
+  var isPrePub = age >= 8 && age < 14;
+  var isAdult = age >= 14;
+  
+  var cpr_ratio = (isAdult) ? "30:2" : "15:2 (egészségügyi személyzet esetén)";
+  var initial_breaths = (isAdult) ? "0 befúvás (mellkasi kompressziókkal kezdjük)" : "5 kezdeti mentőbefúvás";
+  
+  var npa_rec = "2 db NPA (mindkét orrjáratba)";
+  if (age < 8) npa_rec = "NPA használata kerülendő. Végszükségben 1 db használható, ha a manuális pozíció elégtelen.";
+  
+  var opa_tech = "Fordított helyzetben (konkáv a szájpad felé) bevezetni, majd 180°-kal elforgatni.";
+  if (!isAdult) opa_tech = "Elforgatás NÉLKÜL, a végleges pozíciójának megfelelően (domború oldallal a szájpad felé) csúsztatjuk be, a lágyrészek sérülésének elkerülése végett.";
+  
+  var head_pos = "Fej kíméletes hátrahajtása + áll előemelése.";
+  if (age < 2) head_pos = "Túlzott hátrahajtás kerülendő! NEUTRÁLIS pozíció megtartása. Váll alá 2-3 cm-es lepedő helyezése javasolt az áll előemelése mellett.";
+  
+  var heimlich = "Erőtlen köhögésnél: 5 háti ütés, majd 5 hasi lökés váltogatva.";
+  if (isInfant) heimlich = "Erőtlen köhögésnél: 5 háti ütés, majd 5 MELLKASI lökés (hasi lökés TILOS).";
+
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Légútbiztosítás Eszköz- és Algoritmus Választó</h2>'+
+  '<div class="card">'+
+    '<label style="font-size:13px;font-weight:700;color:#9ca3af;display:block;margin-bottom:6px">Beteg Életkora (évben, csecsemő=0):</label>'+
+    '<input type="number" id="calc_age" min="0" max="99" value="'+CA.age+'" oninput="setAge(this.value)" onchange="setAge(this.value)">'+
+    
+    '<label style="font-size:13px;font-weight:700;color:#9ca3af;display:block;margin-bottom:6px;margin-top:10px">Eszméleténél van a beteg?</label>'+
+    '<select id="calc_cons" onchange="setConscious(this.value)">'+
+      '<option value="true" '+(CA.conscious?'selected':'')+'>Igen, eszméleténél van</option>'+
+      '<option value="false" '+(!CA.conscious?'selected':'')+'>Nem, eszméletlen</option>'+
+    '</select>'+
+  '</div>'+
+
+  '<h3 style="font-size:15px;font-weight:700;color:#14b8a6;margin-bottom:10px;margin-top:15px">Ajánlások és Paraméterek (OMSZ)</h3>'+
+  '<div class="card" style="border-left:4px solid #3b82f6">'+
+    '<div style="font-size:12px;font-weight:700;color:#60a5fa;margin-bottom:2px">Manuális Légútmegnyitás (Nincs trauma):</div>'+
+    '<div style="font-size:14px;color:#d1d5db;margin-bottom:10px">'+head_pos+'</div>'+
+    
+    '<div style="font-size:12px;font-weight:700;color:#60a5fa;margin-bottom:2px">OPA (Guedel) Behelyezési Technika:</div>'+
+    '<div style="font-size:14px;color:#d1d5db;margin-bottom:10px">'+opa_tech+'<br><span style="font-size:12px;color:#9ca3af">(Méret: Ajak - Angulus mandibulae távolság)</span></div>'+
+    
+    '<div style="font-size:12px;font-weight:700;color:#60a5fa;margin-bottom:2px">NPA Alkalmazhatóság:</div>'+
+    '<div style="font-size:14px;color:#d1d5db;margin-bottom:10px">'+npa_rec+'<br><span style="font-size:12px;color:#9ca3af">(Méret: Orrnyílás - Tragus távolság)</span></div>'+
+    
+    '<div style="font-size:12px;font-weight:700;color:#60a5fa;margin-bottom:2px">Szilárd Idegentest Algoritmus:</div>'+
+    '<div style="font-size:14px;color:#d1d5db;margin-bottom:10px">'+(CA.conscious ? heimlich : 'Eszméletlen betegnél azonnal CPR megkezdése!')+'</div>'+
+    
+    '<div style="font-size:12px;font-weight:700;color:#60a5fa;margin-bottom:2px">Újraélesztés (CPR) Kezdete és Aránya:</div>'+
+    '<div style="font-size:14px;color:#d1d5db;margin-bottom:10px">Kezdés: '+initial_breaths+'<br>Arány: '+cpr_ratio+'</div>'+
+  '</div>';
+}
+
+function rend(){
+  var ae = document.activeElement;
+  var focusId = ae && ae.id ? ae.id : null;
+
+  var c = document.getElementById('ct');
+  if(SCR==='home') c.innerHTML = renderHome();
+  else if(SCR==='chapters') c.innerHTML = renderChapters();
+  else if(SCR==='chapter') c.innerHTML = renderChapter(CHID);
+  else if(SCR==='flash') c.innerHTML = renderFlash();
+  else if(SCR==='quiz') c.innerHTML = renderQuiz();
+  else if(SCR==='sim') c.innerHTML = renderSim();
+  else if(SCR==='calc') c.innerHTML = renderCalc();
+  
+  var tabs = ['home','chapters','flash','quiz','sim','calc'];
+  var act = SCR==='chapter'?'chapters':SCR;
+  var btns = document.querySelectorAll('.nb');
+  for(var i=0; i<btns.length; i++){
+    if(tabs[i]===act) btns[i].classList.add('act');
+    else btns[i].classList.remove('act');
+  }
+
+  // Restore focus if a valid element was focused prior to re-render
+  if(focusId){
+    var el = document.getElementById(focusId);
+    if(el){
+      el.focus();
+      // Moving cursor to the end of the input string for number/text fields
+      if(el.tagName === 'INPUT' && el.type !== 'range') {
+        var val = el.value;
+        el.value = '';
+        el.value = val;
+      }
+    }
+  }
+}
+
+rend();
+</script>
+</body>
+</html>

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Eszközelhelyezési Szabvány és Szimulátor</title>
+<style>
+/* ALAPBEÁLLÍTÁSOK */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;line-height:1.5;}
+.app{max-width:680px;margin:0 auto;background:#18181b;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.5);position:relative;display:flex;flex-direction:column;}
+
+/* NAVIGÁCIÓ */
+.nav{display:flex;background:#27272a;border-bottom:1px solid #3f3f46;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.nb{flex:1;padding:10px 4px 8px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s ease;}
+.nb.act{border-bottom-color:#14b8a6;background:#14b8a610;}
+.ni{font-size:18px;}
+.nl{font-size:10px;color:#a1a1aa;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;}
+.nb.act .nl{color:#14b8a6;font-weight:700;}
+
+/* TARTALOM */
+.ct{padding:1.25rem 1rem;flex:1;}
+
+/* KÁRTYÁK ÉS ÁLTALÁNOS ELEMEK */
+.card{background:#27272a;border:1px solid #3f3f46;border-radius:12px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 2px 4px rgba(0,0,0,.1);}
+.note{font-size:13px;color:#a1a1aa;padding:.75rem 1rem;background:#1f1f22;border-radius:8px;margin-bottom:.75rem;border-left:3px solid #3b82f6;}
+.page-title{font-size:20px;font-weight:800;color:#f4f4f5;margin-bottom:.25rem;}
+.page-desc{font-size:13px;color:#9ca3af;margin-bottom:1.25rem;}
+
+/* ESZKÖZÖK (PROTOCOL) DESIGN JAVÍTÁS */
+.cat-card{background:#27272a;border:1px solid #3f3f46;border-radius:12px;margin-bottom:1rem;overflow:hidden;}
+.cat-header{background:#1f1f22;padding:12px 16px;border-bottom:1px solid #3f3f46;font-weight:700;color:#14b8a6;font-size:15px;display:flex;align-items:center;gap:8px;}
+.tool-list{display:flex;flex-direction:column;}
+.tool-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #3f3f46;transition:background 0.2s;}
+.tool-item:last-child{border-bottom:none;}
+.tool-item:hover{background:#3f3f4640;}
+.tool-info{flex:1;padding-right:12px;}
+.tool-loc{font-size:11px;color:#9ca3af;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;}
+.tool-name{font-size:14px;font-weight:600;color:#e5e7eb;line-height:1.4;}
+.tool-qty{font-size:12px;font-weight:700;background:#0891b220;color:#22d3ee;border:1px solid #0891b240;padding:4px 10px;border-radius:20px;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2);}
+
+/* SZIMULÁCIÓ DESIGN JAVÍTÁS */
+.sim-card{background:#27272a;border:1px solid #3f3f46;border-radius:12px;padding:1rem;margin-bottom:1rem;cursor:pointer;transition:transform 0.1s, border-color 0.2s;display:block;width:100%;text-align:left;}
+.sim-card:hover{border-color:#14b8a6;transform:translateY(-2px);}
+.sim-title{font-size:15px;font-weight:700;color:#f4f4f5;margin-bottom:6px;}
+.sim-desc{font-size:12px;color:#a1a1aa;margin-bottom:10px;line-height:1.5;}
+.sim-badge{display:inline-block;background:#064e3b;color:#34d399;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+
+/* SZIMULÁCIÓ AKTÍV ÁLLAPOT */
+.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;}
+.q-title{font-size:14px;font-weight:700;color:#a1a1aa;text-transform:uppercase;letter-spacing:0.5px;}
+.q-counter{font-size:13px;font-weight:700;color:#14b8a6;background:#14b8a620;padding:3px 10px;border-radius:12px;}
+.prog{height:6px;background:#3f3f46;border-radius:3px;margin-bottom:1.25rem;overflow:hidden;}
+.progb{height:100%;background:#14b8a6;transition:width 0.4s cubic-bezier(0.4, 0, 0.2, 1);border-radius:3px;}
+
+.q-box{background:#1f1f22;border-left:4px solid #14b8a6;padding:1.25rem;border-radius:0 12px 12px 0;margin-bottom:1.25rem;}
+.q-text{font-size:16px;font-weight:600;color:#f4f4f5;line-height:1.5;}
+
+.opt-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;}
+.opt{width:100%;display:flex;align-items:flex-start;padding:14px 16px;border:2px solid #3f3f46;border-radius:12px;cursor:pointer;text-align:left;font-size:14px;color:#d1d5db;background:#27272a;transition:all 0.2s ease;line-height:1.4;}
+.opt:hover:not(.opt-disabled){background:#3f3f46;border-color:#52525b;}
+.opt-ok{background:#064e3b20!important;border-color:#10b981!important;color:#34d399!important;box-shadow:0 0 10px rgba(16, 185, 129, 0.1);}
+.opt-no{background:#7f1d1d20!important;border-color:#ef4444!important;color:#f87171!important;}
+.opt-disabled{opacity:0.4;cursor:default!important;}
+
+.fb-box{padding:14px 16px;border-radius:12px;font-size:14px;line-height:1.5;margin-bottom:1.5rem;animation:fadeIn 0.3s ease;}
+.fb-ok{background:#064e3b;color:#a7f3d0;border:1px solid #059669;}
+.fb-no{background:#7f1d1d;color:#fecaca;border:1px solid #b91c1c;}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* SZIMULÁCIÓ EREDMÉNY */
+.res-hero{background:linear-gradient(135deg, #0f766e 0%, #064e3b 100%);border-radius:16px;padding:2rem 1rem;text-align:center;margin-bottom:1.5rem;box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+.res-score{font-size:48px;font-weight:800;color:#fff;line-height:1;}
+.res-label{font-size:14px;color:#a7f3d0;font-weight:600;margin-top:8px;text-transform:uppercase;letter-spacing:1px;}
+.res-summary{background:#27272a;border:1px solid #3f3f46;padding:1rem;border-radius:12px;font-size:14px;line-height:1.6;color:#d1d5db;margin-bottom:1.5rem;}
+.hist-item{background:#1f1f22;border:1px solid #3f3f46;border-radius:10px;padding:12px;margin-bottom:10px;}
+.hist-q{font-size:13px;font-weight:600;color:#e5e7eb;margin-bottom:6px;}
+.hist-a{font-size:12px;padding:6px 10px;border-radius:6px;background:#27272a;margin-bottom:6px;}
+.hist-a.correct{border-left:3px solid #10b981;color:#a7f3d0;}
+.hist-a.wrong{border-left:3px solid #ef4444;color:#fecaca;}
+
+/* GOMBOK */
+.btn{padding:14px 20px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center;}
+.btn-primary{background:#14b8a6;color:#111827;width:100%;box-shadow:0 4px 10px rgba(20, 184, 166, 0.3);}
+.btn-primary:hover{background:#0d9488;transform:translateY(-1px);}
+
+/* KALKULÁTOROK */
+.calc-input-group{margin-bottom:15px;}
+.calc-label{display:block;margin-bottom:6px;font-size:12px;color:#a1a1aa;font-weight:600;text-transform:uppercase;}
+input[type=number], select{width:100%;padding:12px 14px;border-radius:8px;border:1px solid #3f3f46;background:#1f1f22;font-size:15px;color:#f4f4f5;font-family:inherit;transition:border-color 0.2s;}
+input[type=number]:focus, select:focus{outline:none;border-color:#14b8a6;}
+.res-box{border-radius:12px;padding:1.25rem;text-align:center;margin-top:1rem;}
+.res-num{font-size:28px;font-weight:800;letter-spacing:1px;}
+.res-lbl{font-size:12px;margin-bottom:.25rem;color:#a1a1aa;text-transform:uppercase;font-weight:600;}
+
+/* FŐOLDAL GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+.home-mod{background:#27272a;border:1px solid #3f3f46;border-radius:16px;padding:1.25rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .2s;}
+.home-mod:hover{background:#3f3f46;border-color:#52525b;transform:translateY(-2px);}
+.home-mod-icon{font-size:32px;margin-bottom:10px;}
+.home-mod-title{font-size:16px;font-weight:700;color:#f4f4f5;margin-bottom:4px;}
+.home-mod-desc{font-size:12px;color:#a1a1aa;line-height:1.4;}
+
+/* SZÓTÁR (GLOSSARY) */
+.gloss{color:#2dd4bf;text-decoration:underline;text-decoration-style:dashed;text-decoration-thickness:1px;text-underline-offset:3px;cursor:pointer;font-weight:600;transition:color 0.2s;}
+.gloss:hover{color:#5eead4;}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(3px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s ease;}
+.modal-overlay.active{opacity:1;pointer-events:auto;}
+.modal-box{background:#18181b;border:1px solid #3f3f46;border-radius:16px;padding:1.5rem;max-width:400px;width:100%;position:relative;box-shadow:0 10px 40px rgba(0,0,0,0.5);transform:scale(0.95) translateY(10px);transition:all 0.2s ease;}
+.modal-overlay.active .modal-box{transform:scale(1) translateY(0);}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#a1a1aa;font-size:28px;line-height:1;cursor:pointer;transition:color 0.2s;}
+.modal-close:hover{color:#f4f4f5;}
+.modal-title{font-size:18px;font-weight:800;color:#2dd4bf;margin-bottom:12px;padding-right:20px;}
+.modal-body{font-size:14px;color:#d1d5db;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav" id="nav">
+    <button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+    <button class="nb" onclick="go('protocol')"><span class="ni">🚑</span><span class="nl">Eszközök</span></button>
+    <button class="nb" onclick="go('sim')"><span class="ni">🏥</span><span class="nl">Szimuláció</span></button>
+    <button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+  </nav>
+  <div class="ct" id="ct"></div>
+</div>
+
+<div id="modal" class="modal-overlay" onclick="hideGl()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="hideGl()">×</button>
+    <div id="m-title" class="modal-title"></div>
+    <div id="m-body" class="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// --- SZÓTÁR (GLOSSARY) ---
+const GLOSSARY = {
+  "Laryngealis maszk": "Szupraglottikus légútbiztosító eszköz, maszk szerű véggel, ami a gégebemenetre fekszik fel.",
+  "Nasopharyngealis tubus": "Wendl-tubus: Orron át bevezethető, puha légútbiztosító eszköz.",
+  "Oropharyngealis tubus": "Guedel-tubus: Szájon át bevezethető, merev légútbiztosító eszköz, ami a nyelvet tartja távol a hátsó garatfaltól.",
+  "Endotrachealis tubus": "Légcsőbe vezethető műanyag cső, definitív légútbiztosításhoz.",
+  "Cuff": "Felfújható ballon az endotrachealis tubus végén, ami tömíti a légcsövet a folyadék bejutása ellen.",
+  "HME-filter": "Hő- és nedvességcserélő (Heat and Moisture Exchanger) és antibakteriális filter a lélegeztető körben.",
+  "Yankauer": "Durva, merev végű váladékszívó toldalék, nagy mennyiségű folyadék gyors leszívására.",
+  "Krisztalloid infúzió": "Vízből és elektrolitokból álló intravénás folyadékpótló oldat (pl. Ringer, NaCl 0.9%).",
+  "Kapnográf szenzor": "A kilélegzett levegő CO2-tartalmát folyamatosan mérő eszköz.",
+  "CV katéter": "Centrális vénás katéter, nagy vénákba vezetett eszköz intenzív terápiához.",
+  "PEEP-szelep": "Pozitív kilégzésvégi nyomást biztosító szelep a tüdő összeesésének gátlására.",
+  "CPAP": "Folyamatos pozitív légúti nyomás - non-invazív légzéstámogatás.",
+  "NIV": "Non-invazív lélegeztetés maszkon keresztül.",
+  "Head-block": "Fej- és nyakrögzítő blokk párna.",
+  "Lapáthordágy": "Két hosszanti félre szedhető hordágy, sérültek atraumatikus áthelyezéséhez.",
+  "Perfúzor": "Fecskendős infúziós pumpa milliliter/óra pontosságú adagoláshoz.",
+  "EZ-IO": "Intraosszeális (csontba fúrható) tű azonnali folyadékigény esetén.",
+  "MAD": "Nyálkahártyán keresztüli gyógyszer-porlasztó fecskendő toldalék.",
+  "Astrup": "Vérgáz-analizátor gép.",
+  "Mechanikus mellkaskomprimáló": "Automatikus mellkasi kompressziót végző eszköz (pl. LUCAS)."
+};
+
+// --- ESZKÖZ ADATOK ---
+const PROTO = [
+  {
+    icon: "🗄️", category: "Bal oldali felső fiókok (1-6. fiókok)",
+    items: [
+      { loc: "1. Bal felső I. modul", name: "Laryngealis maszk (3, 4, 5)", qty: "1-1-1 db" },
+      { loc: "1. Bal felső II. modul", name: "Nasopharyngealis tubus (4,6,7)", qty: "4-4 db" },
+      { loc: "1. Bal felső II. modul", name: "Oropharyngealis tubus (00-4)", qty: "2-2 db" },
+      { loc: "1. Bal felső III. modul", name: "Endotrachealis tubus", qty: "1-2 db" },
+      { loc: "1. Bal felső III. modul", name: "HME-filter (felnőtt, gyerek, csecsemő)", qty: "3, 2, 1 db" },
+      { loc: "1. Bal felső modulon kívül", name: "Yankauer toldalék", qty: "1 db" },
+      { loc: "2. Bal felső (lenyíló)", name: "Krisztalloid infúzió 500 ml", qty: "6 db" },
+      { loc: "3. Bal felső osztások", name: "Oxigén maszk rezervoárral", qty: "4 db" },
+      { loc: "4. Bal felső I. modul", name: "Kapnográf szenzor (ET)", qty: "2 db" },
+      { loc: "4. Bal felső modulon kívül", name: "Öntapadó defib. elektróda", qty: "1-1 db" },
+      { loc: "5-6. Bal felső osztások", name: "Kötszerek, Mull-lapok", qty: "Változó" }
+    ]
+  },
+  {
+    icon: "💉", category: "Fali dobozok és ápolói szék",
+    items: [
+      { loc: "Fali dobozok 1. sor", name: "Tű (22G, 21G, 18G)", qty: "30-30-30 db" },
+      { loc: "Fali dobozok 2. sor", name: "Intravénás kanül (24G-14G)", qty: "10-20 db" },
+      { loc: "Fali dobozok 2. sor", name: "Ragasztó, Strangulációs gumi", qty: "5, 2 db" },
+      { loc: "Fali dobozok 3. sor", name: "Fecskendő (2, 5, 10, 20 ml)", qty: "10-10 db" },
+      { loc: "Fali dobozok 3. sor", name: "Intraosszeális tű (EZ-IO)", qty: "1-1-1 db" },
+      { loc: "Szék melletti tároló", name: "Veszélyes hulladék zsák", qty: "min 5" }
+    ]
+  },
+  {
+    icon: "💊", category: "Gyógyszeres fiókok",
+    items: [
+      { loc: "Fiók I. (felső)", name: "Vércukormérő + stix", qty: "1 doboz" },
+      { loc: "Fiók I. (fémkazetta)", name: "Kábítószerek (Fentanil stb.)", qty: "Zárva" },
+      { loc: "Fiók II. (középső)", name: "Adrenalin ampulla", qty: "12 db" },
+      { loc: "Fiók II. (középső)", name: "Amiodaron, Atropin ampulla", qty: "4, 5 db" },
+      { loc: "Fiók III. (alsó)", name: "Esetlap, Menetlevél", qty: "10-10 db" }
+    ]
+  },
+  {
+    icon: "🎒", category: "Nagyobb eszközök (Táskák, Hordágy)",
+    items: [
+      { loc: "Ápolóülés felett", name: "Lélegeztető ballon, PEEP-szelep", qty: "1-1 db" },
+      { loc: "Bal oldalajtó mögött", name: "Lapáthordágy, Head-block", qty: "1 db" },
+      { loc: "Bal oldalajtó mögött", name: "Tömeges baleseti táska", qty: "1 db" },
+      { loc: "Hordágy mellett (alsó)", name: "Végtagvákuum sín", qty: "1 db" },
+      { loc: "Hűtő", name: "Rokuronium, Szukcinilkolin", qty: "2-2 db" },
+      { loc: "Jobb oldalajtó mögött", name: "Mechanikus mellkaskomprimáló", qty: "1 db" },
+      { loc: "Jobb oldalajtó mögött", name: "Tűgyűjtő edény", qty: "1 db" }
+    ]
+  }
+];
+
+// --- SZIMULÁCIÓ ADATOK ---
+const SIMS = [
+  {
+    id: 1, title: '1. Keringésmegállás (BLS)', diff: 'B kompetencia',
+    desc: 'Eszméletlen, nem lélegző beteget találtok. Te szakképzett mentőápolóként veszel részt az ellátásban.',
+    steps: [
+      { sit: 'Megérkeztek a helyszínre. Mi az első teendőd?', opts: [
+        { tx: 'Azonnal mellkasi kompresszió.', ok: false, fb: 'A helyszínbiztonság és az egyéni védőfelszerelés az első.' },
+        { tx: 'Gumikesztyű felvétele a vezetőfülkéből.', ok: true, fb: 'Így van! 3 méretben áll rendelkezésre a vezetőfülkében.' },
+        { tx: 'Elszaladok a Tömeges baleseti táskáért.', ok: false, fb: 'Nincs tömeges baleset.' }
+      ]},
+      { sit: 'A padlón végzett újraélesztéshez Lapáthordágyra van szükség. Hol van?', opts: [
+        { tx: 'A hordágy melletti alsó szekrényben.', ok: false, fb: 'Oda nem férne be.' },
+        { tx: 'A bal oldalajtó mögött.', ok: true, fb: 'Helyes! Rögzítőkkel felszerelve itt található.' },
+        { tx: 'A jobb oldalajtó mögött.', ok: false, fb: 'Ott a LUCAS van.' }
+      ]},
+      { sit: 'Légútbiztosításhoz Oropharyngealis tubus (Guedel) kell. Hol keresed?', opts: [
+        { tx: '1. Bal oldali felső fiók II. moduljában.', ok: true, fb: 'Helyes, itt vannak a tubusok.' },
+        { tx: 'Fali dobozok 3. sorában.', ok: false, fb: 'Ott fecskendők vannak.' },
+        { tx: 'Ápolóülés feletti fiókban.', ok: false, fb: 'Ott a ballonok vannak.' }
+      ]},
+      { sit: 'Lélegeztető ballon (felnőtt) szükséges. Hol található?', opts: [
+        { tx: 'Hűtőben.', ok: false, fb: 'A hűtőben gyógyszerek vannak.' },
+        { tx: 'Hátsó ajtó hálójában.', ok: false, fb: 'Ott hulladékzsákok vannak.' },
+        { tx: 'Az ápolóülés feletti fiókban.', ok: true, fb: 'A ballon és a PEEP szelep itt van.' }
+      ]},
+      { sit: 'Leszíváshoz durva Yankauer toldalékra van szükség.', opts: [
+        { tx: '1. Bal oldali felső fiók modulon kívül.', ok: true, fb: 'Igen, a modul mellett kapott helyet.' },
+        { tx: 'Fiók III. (alsó).', ok: false, fb: 'Ott esetlapok vannak.' },
+        { tx: '2. Bal oldali fiókban.', ok: false, fb: 'Az az infúziómelegítő.' }
+      ]},
+      { sit: 'Monitor elektródákat kell felhelyezni. Hol vannak a felnőtt elektródák?', opts: [
+        { tx: 'Fali doboz 1. sorában.', ok: false, fb: 'Ott tűk vannak.' },
+        { tx: '4. Bal oldali felső fiók modulon kívül.', ok: true, fb: 'Az elektródák itt találhatók.' },
+        { tx: 'Jobb oldalajtó mögött.', ok: false, fb: 'Ott a LUCAS van.' }
+      ]},
+      { sit: 'Mechanikus mellkaskomprimáló (LUCAS) felhelyezése. Honnan veszed elő?', opts: [
+        { tx: 'Az ápolóülés alól.', ok: false, fb: 'Nincs ilyen tároló.' },
+        { tx: 'A jobb oldalajtó mögül.', ok: true, fb: 'Helyes, a trauma táska mellett van.' },
+        { tx: 'A fali tárolókból.', ok: false, fb: 'Nem férne be.' }
+      ]},
+      { sit: 'Lélegeztetéshez oxigén kell, elfogyott a mobil palack. Hol van a 2L-es tartalék?', opts: [
+        { tx: 'Csak a vezetőfülkében.', ok: false, fb: 'Nem igaz.' },
+        { tx: 'Bal és jobb oldalajtó mögött is van rögzítve.', ok: true, fb: 'Pontosan, mindkét oldalon elérhető.' },
+        { tx: 'A hordágy alatti szekrényben.', ok: false, fb: 'Nem ott tartják.' }
+      ]},
+      { sit: 'Vércukormérés szükséges a protokoll alapján. Hol a gép?', opts: [
+        { tx: 'Fali doboz 3. sor.', ok: false, fb: 'Ott ampullák vannak.' },
+        { tx: 'Gyógyszeres Fiók I. (felső).', ok: true, fb: 'Itt van a gép és a stix is.' },
+        { tx: 'Hűtőben.', ok: false, fb: 'Nem igényel hűtést.' }
+      ]},
+      { sit: 'Sikeres újraélesztés után Esetlap kell a dokumentációhoz.', opts: [
+        { tx: 'Fiók III. (alsó) fiókban.', ok: true, fb: 'Itt található a papír alapú dokumentáció.' },
+        { tx: 'Fali tároló hálójában.', ok: false, fb: 'Nem ott van.' },
+        { tx: 'CD táskában.', ok: false, fb: 'Hibás.' }
+      ]}
+    ],
+    summary: 'Kiváló munka! Magabiztosan megtaláltad a BLS szintű beavatkozáshoz szükséges összes alapvető eszközt a szabványos mentőautó fiókjaiban.'
+  },
+  {
+    id: 2, title: '2. Súlyos Trauma ellátása', diff: 'B+ kompetencia',
+    desc: 'Motorbaleset sérültje. Erős vérzés, medencetörés gyanúja. B+ kompetenciával dolgozol (vénabiztosítás, gyógyszerelés orvosi kontrollal).',
+    steps: [
+      { sit: 'A kimentéshez rögzíteni kell a fejet. Hol a Head-block?', opts: [
+        { tx: 'Bal oldalajtó mögött.', ok: true, fb: 'Igen, a lapáthordággyal együtt van itt.' },
+        { tx: 'Hordágy lábrészében.', ok: false, fb: 'Hibás.' },
+        { tx: 'Ápolóülés felett.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: '18G/16G-s Intravénás kanül kell a vénabiztosításhoz.', opts: [
+        { tx: 'Fali dobozok 1. sorában.', ok: false, fb: 'Ott a normál tűk vannak.' },
+        { tx: 'Fali dobozok 2. sorában.', ok: true, fb: 'Az összes iv. kanül itt van.' },
+        { tx: 'Fali dobozok 3. sorában.', ok: false, fb: 'Fecskendők vannak ott.' }
+      ]},
+      { sit: 'Branül ragasztó és strangulációs gumi szükséges.', opts: [
+        { tx: 'Fali dobozok 1. sor.', ok: false, fb: 'Hibás.' },
+        { tx: 'Fali dobozok 2. sor, 5. modul.', ok: true, fb: 'Itt vannak a rögzítők.' },
+        { tx: 'Gyógyszeres fiókban.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: '500 ml Krisztalloid infúziót kell indítani. Hol van a palack?', opts: [
+        { tx: 'Hűtőben.', ok: false, fb: 'Csak 2 db tartalék van ott, a fő készlet máshol van.' },
+        { tx: '2. Bal oldali felső fiókban (lenyíló).', ok: true, fb: 'Helyes, itt 6 db található a szerelékekkel.' },
+        { tx: 'Gyógyszeres Fiók II-ben.', ok: false, fb: 'Ott ampullák vannak.' }
+      ]},
+      { sit: 'Artériás vérzéshez kötszer (mull-lap) kell.', opts: [
+        { tx: '5-6. Bal oldali felső tároló (alsó polc).', ok: true, fb: 'Az összes kötszer itt található.' },
+        { tx: 'Bal oldalajtó mögött.', ok: false, fb: 'Hibás.' },
+        { tx: 'Fali doboz 3. sor.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Végtagtörés rögzítéséhez Végtagvákuum sín kell.', opts: [
+        { tx: 'Hordágy melletti alsó szekrény (lábrész).', ok: true, fb: 'Itt kapott helyet a sín.' },
+        { tx: 'Jobb oldalajtó mögött.', ok: false, fb: 'Hibás.' },
+        { tx: 'Bal oldalajtó mögött.', ok: false, fb: 'Ott a lapáthordágy van.' }
+      ]},
+      { sit: 'Fentanil (kábítószer) beadását rendelik el. Honnan veszed elő?', opts: [
+        { tx: 'Fiók II. ampullatartó.', ok: false, fb: 'Nem biztonságos tárolás.' },
+        { tx: 'Fiók I. zárható fémkazetta.', ok: true, fb: 'A kábítószerek szigorúan itt vannak zárva.' },
+        { tx: 'Hűtő.', ok: false, fb: 'Nem igényel hűtést.' }
+      ]},
+      { sit: 'A véres, használt tűt azonnal ki kell dobni. Hol a Tűgyűjtő edény?', opts: [
+        { tx: 'Fali tároló háló.', ok: false, fb: 'Veszélyes.' },
+        { tx: 'Hátsó ajtónál lévő zsák.', ok: false, fb: 'Tilos zsákba tűt dobni!' },
+        { tx: 'Jobb oldalajtó mögött.', ok: true, fb: 'A merev falú tűgyűjtő itt van.' }
+      ]},
+      { sit: 'A sokkos beteget be kell takarni (hővédelem). Hol a Pléd?', opts: [
+        { tx: 'Hordágy melletti alsó szekrény (fejrész).', ok: true, fb: 'Itt vannak a lepedők és a pléd.' },
+        { tx: 'Ápolóülés alatt.', ok: false, fb: 'Nincs ilyen tároló.' },
+        { tx: 'Bal oldalajtó mögött.', ok: false, fb: 'Ott fólia van.' }
+      ]},
+      { sit: 'Kiderül, hogy több sérült van. Tömeges baleseti táska kell.', opts: [
+        { tx: 'Hordágy alatt.', ok: false, fb: 'Hibás.' },
+        { tx: 'Bal oldalajtó mögött.', ok: true, fb: 'Itt van az AB táskával együtt.' },
+        { tx: 'Vezetőfülkében.', ok: false, fb: 'Hibás.' }
+      ]}
+    ],
+    summary: 'A súlyos trauma forgatókönyvet végrehajtottad! Sikeresen azonosítottad a vénabiztosítás, rögzítés és a kábítószertárolás pontos helyszíneit.'
+  },
+  {
+    id: 3, title: '3. Súlyos Anaphylaxia', diff: 'B+ kompetencia',
+    desc: 'Darázscsípés után fiatal beteg fullad, arca bedagadt. ALS szintű ellátást asszisztálsz.',
+    steps: [
+      { sit: 'Légútbiztosításhoz Laryngealis maszk (LMA) kell. Melyik fiókban van?', opts: [
+        { tx: '1. Bal oldali felső fiók I. modul.', ok: true, fb: 'Igen, az LMA méretek itt vannak.' },
+        { tx: 'Fali doboz 3. sor.', ok: false, fb: 'Hibás.' },
+        { tx: 'Ápolóülés feletti fiók.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Oxigén orrszondára van szükség. Hol találod?', opts: [
+        { tx: '3-4. Bal oldali felső fiók alsó polcán.', ok: true, fb: 'Itt vannak a maszkok és szondák.' },
+        { tx: 'Bal oldalajtó mögött.', ok: false, fb: 'Hibás.' },
+        { tx: 'Jobb oldalajtó mögött.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Azonnal Adrenalin ampulla kell az anafilaxia miatt.', opts: [
+        { tx: 'Hűtőben.', ok: false, fb: 'Az adrenalin nem hűtős.' },
+        { tx: 'Fémkazettában elzárva.', ok: false, fb: 'Nem kábítószer.' },
+        { tx: 'Gyógyszeres Fiók II. (középső).', ok: true, fb: 'A 12 db Adrenalin itt van.' }
+      ]},
+      { sit: 'IM beadáshoz 2 ml-es fecskendőre van szükség.', opts: [
+        { tx: 'Fali doboz 1. sor.', ok: false, fb: 'Ott a tűk vannak.' },
+        { tx: 'Fali doboz 3. sor 1. modul.', ok: true, fb: 'Itt vannak a kisebb fecskendők.' },
+        { tx: 'Bal felső fiók II. modul.', ok: false, fb: 'Ott az 50 ml-esek vannak.' }
+      ]},
+      { sit: 'A beadáshoz 21G (zöld) tű kell. Melyik dobozban van?', opts: [
+        { tx: 'Fali dobozok 1. sor.', ok: true, fb: 'A normál tűk a legfelső sorban vannak.' },
+        { tx: 'Fali dobozok 2. sor.', ok: false, fb: 'Ott az iv. kanülök vannak.' },
+        { tx: 'Gyógyszeres fiókban.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Metilprednizolon (Szteroid) injekciót is kér az orvos.', opts: [
+        { tx: 'Fiók II. (középső) gyógyszeres fiók.', ok: true, fb: 'Ez is a nagy ampullás fiókban van.' },
+        { tx: 'Fali doboz 3. sor.', ok: false, fb: 'Ott a tablettás szteroid van.' },
+        { tx: 'Hűtőben.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Antihisztamin: Klórpiramin injekció szükséges.', opts: [
+        { tx: 'Fiók I. (felső).', ok: false, fb: 'Hibás.' },
+        { tx: 'Fiók II. (középső).', ok: true, fb: 'A többi akut ampullával együtt itt van.' },
+        { tx: 'Hűtőben.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Hörgőgörcs miatt inhalációs Szalbutamol szuszpenzió is kell.', opts: [
+        { tx: 'Bal felső fiók III. osztás.', ok: false, fb: 'Ott a maszk van, nem a gyógyszer.' },
+        { tx: 'Fiók II. (középső).', ok: true, fb: 'A szuszpenzió is itt kapott helyet.' },
+        { tx: 'Hűtőben.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Kommunális hulladékhoz polietilén zsák kell a szemétnek.', opts: [
+        { tx: 'Szék melletti fali tároló alsó része.', ok: true, fb: 'Itt tartják a tiszta zsákokat.' },
+        { tx: 'Hátsó ajtó háló.', ok: false, fb: 'Ott a veszélyes hulladékos van.' },
+        { tx: 'Vezetőfülke.', ok: false, fb: 'Hibás.' }
+      ]},
+      { sit: 'Ellátás után Felületfertőtlenítő kendővel le kell törölni a monitort.', opts: [
+        { tx: 'Bal oldalajtó mögött.', ok: false, fb: 'Hibás.' },
+        { tx: '1. Bal oldali felső tárolóban.', ok: true, fb: 'A fertőtlenítők könnyen elérhetőek itt.' },
+        { tx: 'Hűtőben.', ok: false, fb: 'Hibás.' }
+      ]}
+    ],
+    summary: 'Az anafilaxia forgatókönyv sikeres. Gyorsan és precízen navigáltál az akut gyógyszeres fiók (Fiók II.) és a fali fecskendő/tű adagolók között.'
+  }
+];
+
+// --- APP LOGIKA ---
+let SCR = 'home';
+let SI = { id: null, step: 0, chosen: null, hist: [], fin: false };
+
+function go(page) {
+  SCR = page;
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('act'));
+  
+  if (page === 'home') {
+    document.getElementById('nav').children[0].classList.add('act');
+    document.getElementById('ct').innerHTML = renderHome();
+  } else if (page === 'protocol') {
+    document.getElementById('nav').children[1].classList.add('act');
+    document.getElementById('ct').innerHTML = renderProtocol();
+  } else if (page === 'sim') {
+    document.getElementById('nav').children[2].classList.add('act');
+    document.getElementById('ct').innerHTML = renderSims();
+  } else if (page === 'calc') {
+    document.getElementById('nav').children[3].classList.add('act');
+    document.getElementById('ct').innerHTML = renderCalc();
+    calcDrops();
+    calcInv();
+  }
+  window.scrollTo(0,0);
+}
+
+// HTML escape és Szótár alkalmazása szövegen
+function h(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function applyGlossary(escapedText) {
+  let parts = escapedText.split(/(<[^>]*>)/);
+  for(let i = 0; i < parts.length; i++) {
+    if(parts[i].startsWith('<')) continue;
+    let str = parts[i];
+    const keys = Object.keys(GLOSSARY).sort((a,b)=>b.length - a.length);
+    for(let term of keys) {
+      let regex = new RegExp('(?<=^|[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ])(' + term + ')(?=[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]|$)', 'gi');
+      str = str.replace(regex, '<span class="gloss" onclick="event.stopPropagation(); showGl(\'' + term + '\')">$1</span>');
+    }
+    parts[i] = str;
+  }
+  return parts.join('');
+}
+
+function t(str) { return applyGlossary(h(str)); }
+
+function showGl(term) {
+  const desc = GLOSSARY[term];
+  if(!desc) return;
+  document.getElementById('m-title').textContent = term;
+  document.getElementById('m-body').textContent = desc;
+  document.getElementById('modal').classList.add('active');
+}
+
+function hideGl() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+// --- RENDER FÜGGVÉNYEK ---
+function renderHome() {
+  return `
+    <div style="margin-bottom:1.5rem">
+      <div style="font-size:12px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Országos Mentőszolgálat</div>
+      <h1 class="page-title">Eszközelhelyezési Szabvány (2025)</h1>
+      <div class="page-desc">A roham- és esetkocsik egészségügyi felszereléséről</div>
+    </div>
+    <div class="g2">
+      <button onclick="go('protocol')" class="home-mod"><div class="home-mod-icon">🚑</div><div class="home-mod-title">Felszerelések</div><div class="home-mod-desc">Hol mi található?</div></button>
+      <button onclick="go('sim')" class="home-mod"><div class="home-mod-icon">🏥</div><div class="home-mod-title">Szimuláció</div><div class="home-mod-desc">Interaktív esetek</div></button>
+      <button onclick="go('calc')" class="home-mod" style="grid-column:1/-1;"><div class="home-mod-icon">🧮</div><div class="home-mod-title">Kalkulátorok</div><div class="home-mod-desc">Készlet, Infúzió cseppszám számítás</div></button>
+    </div>
+    <div class="note" style="border-left-color:#14b8a6;background:#14b8a610;color:#a7f3d0;">
+      <b>Tipp:</b> Az aláhúzott <span class="gloss" onclick="showGl('Laryngealis maszk')">szaggatott szavakra</span> kattintva megjelenik azok szakmai definíciója!
+    </div>
+  `;
+}
+
+function renderProtocol() {
+  let htm = `
+    <h2 class="page-title">Eszközök Elhelyezése</h2>
+    <div class="page-desc">A mentőautó fiókjainak és dobozainak hivatalos tartalma.</div>
+  `;
+  
+  for(let cat of PROTO) {
+    htm += `<div class="cat-card">
+              <div class="cat-header"><span>${cat.icon}</span> ${t(cat.category)}</div>
+              <div class="tool-list">`;
+    for(let item of cat.items) {
+      htm += `<div class="tool-item">
+                <div class="tool-info">
+                  <div class="tool-loc">${t(item.loc)}</div>
+                  <div class="tool-name">${t(item.name)}</div>
+                </div>
+                <div class="tool-qty">${h(item.qty)}</div>
+              </div>`;
+    }
+    htm += `</div></div>`;
+  }
+  return htm;
+}
+
+function renderSims() {
+  if(SI.id !== null) return renderActiveSim();
+  
+  let htm = `
+    <h2 class="page-title">Klinikai Szimulációk</h2>
+    <div class="page-desc">Teszteld le, tudod-e hová kell nyúlni éles helyzetben!</div>
+  `;
+  
+  for(let s of SIMS) {
+    htm += `<button class="sim-card" onclick="startSim(${s.id})">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                <div class="sim-title">${h(s.title)}</div>
+                <div class="sim-badge">${h(s.diff)}</div>
+              </div>
+              <div class="sim-desc">${h(s.desc)}</div>
+              <div style="font-size:12px;color:#14b8a6;font-weight:600">Kezdés indítása →</div>
+            </button>`;
+  }
+  return htm;
+}
+
+window.startSim = function(id) {
+  SI = { id: id, step: 0, chosen: null, hist: [], fin: false };
+  go('sim');
+};
+
+function renderActiveSim() {
+  let sim = SIMS.find(s => s.id === SI.id);
+  
+  if(SI.fin) {
+    let correct = SI.hist.filter(h => sim.steps[h.step].opts[h.oi].ok).length;
+    let pct = Math.round((correct / sim.steps.length) * 100);
+    return `
+      <div class="res-hero">
+        <div class="res-score">${correct}/${sim.steps.length}</div>
+        <div class="res-label">Helyes eszközhasználat (${pct}%)</div>
+      </div>
+      <h3 style="font-size:16px;color:#f4f4f5;margin-bottom:10px">Eset Összefoglaló</h3>
+      <div class="res-summary">${t(sim.summary)}</div>
+      
+      <h3 style="font-size:16px;color:#f4f4f5;margin-bottom:10px;margin-top:20px">Lépések áttekintése</h3>
+      ${SI.hist.map((hh, i) => {
+        let st = sim.steps[hh.step];
+        let opt = st.opts[hh.oi];
+        return `<div class="hist-item">
+                  <div class="hist-q">${i+1}. ${t(st.sit)}</div>
+                  <div class="hist-a ${opt.ok ? 'correct' : 'wrong'}">${opt.ok ? '✓' : '✗'} ${t(opt.tx)}</div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:4px">${t(opt.fb)}</div>
+                </div>`;
+      }).join('')}
+      <button class="btn btn-primary" onclick="SI.id=null;go('sim')" style="margin-top:15px">Vissza az esetekhez</button>
+    `;
+  }
+  
+  let step = sim.steps[SI.step];
+  let progPct = ((SI.step) / sim.steps.length) * 100;
+  
+  let htm = `
+    <div class="q-header">
+      <div class="q-title">${h(sim.title)}</div>
+      <div class="q-counter">${SI.step+1} / ${sim.steps.length}</div>
+    </div>
+    <div class="prog"><div class="progb" style="width:${progPct}%"></div></div>
+    
+    <div class="q-box">
+      <div class="q-text">${t(step.sit)}</div>
+    </div>
+    
+    <div class="opt-list">
+  `;
+  
+  step.opts.forEach((opt, i) => {
+    let cls = 'opt';
+    let disabled = '';
+    if(SI.chosen !== null) {
+      if(opt.ok) cls += ' opt-ok';
+      else if(i === SI.chosen && !opt.ok) cls += ' opt-no';
+      else { cls += ' opt-disabled'; disabled = 'disabled'; }
+    }
+    htm += `<button class="${cls}" ${SI.chosen === null ? `onclick="chooseSim(${i})"` : disabled}>
+              <span style="flex:1">${t(opt.tx)}</span>
+            </button>`;
+  });
+  
+  htm += `</div>`;
+  
+  if(SI.chosen !== null) {
+    let selOpt = step.opts[SI.chosen];
+    htm += `
+      <div class="fb-box ${selOpt.ok ? 'fb-ok' : 'fb-no'}">
+        <strong>${selOpt.ok ? 'Helyes válasz!' : 'Helytelen!'}</strong><br>${t(selOpt.fb)}
+      </div>
+      <button class="btn btn-primary" onclick="nextSim()">
+        ${SI.step < sim.steps.length - 1 ? 'Következő kérdés →' : 'Eredmény megtekintése'}
+      </button>
+    `;
+  }
+  
+  return htm;
+}
+
+window.chooseSim = function(idx) {
+  if(SI.chosen !== null) return;
+  SI.chosen = idx;
+  SI.hist.push({ step: SI.step, oi: idx });
+  go('sim');
+};
+
+window.nextSim = function() {
+  SI.step++;
+  SI.chosen = null;
+  if(SI.step >= SIMS.find(s => s.id === SI.id).steps.length) {
+    SI.fin = true;
+  }
+  go('sim');
+};
+
+// --- KALKULÁTOROK ---
+function renderCalc() {
+  return `
+    <h2 class="page-title">Kalkulátorok</h2>
+    <div class="page-desc">Gyors számítások B és B+ szintű ellátáshoz.</div>
+    
+    <div class="card">
+      <h3 style="color:#14b8a6;margin-bottom:4px;font-size:16px;">Infúzió Cseppszám (B+)</h3>
+      <div style="font-size:12px;color:#a1a1aa;margin-bottom:15px">Kiszámolja a pontos adagolási sebességet.</div>
+      
+      <div class="calc-input-group">
+        <span class="calc-label">Beadandó Térfogat (ml)</span>
+        <input type="number" id="c-vol" value="500" min="0" oninput="calcDrops()">
+      </div>
+      <div class="calc-input-group">
+        <span class="calc-label">Kívánt beadási idő (perc)</span>
+        <input type="number" id="c-time" value="60" min="1" oninput="calcDrops()">
+      </div>
+      <div class="calc-input-group">
+        <span class="calc-label">Szerelék cseppfaktora</span>
+        <select id="c-drop" onchange="calcDrops()">
+          <option value="20">Makrocseppes (Felnőtt - 20 csepp/ml)</option>
+          <option value="60">Mikrocseppes (Gyermek - 60 csepp/ml)</option>
+        </select>
+      </div>
+      
+      <div class="res-box" style="background:#14b8a615;border:1px solid #14b8a640;">
+        <div class="res-lbl">Beállítási sebesség</div>
+        <div class="res-num" id="c-res" style="color:#2dd4bf">0 csepp/perc</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="color:#3b82f6;margin-bottom:4px;font-size:16px;">Készletpótlás Ellenőrző</h3>
+      <div style="font-size:12px;color:#a1a1aa;margin-bottom:15px">Szabvány alapján pótlandó mennyiség.</div>
+      
+      <div class="calc-input-group">
+        <span class="calc-label">Eszköz kiválasztása</span>
+        <select id="inv-sel" onchange="calcInv()">
+          <option value="30">Tű (Fali doboz) - Szabvány: 30 db</option>
+          <option value="20">Kanül 20G/18G - Szabvány: 20 db</option>
+          <option value="12">Adrenalin ampulla - Szabvány: 12 db</option>
+          <option value="6">Krisztalloid 500ml - Szabvány: 6 db</option>
+          <option value="4">Oxigén orrszonda - Szabvány: 4 db</option>
+        </select>
+      </div>
+      <div class="calc-input-group">
+        <span class="calc-label">Jelenlegi darabszám a mentőn (db)</span>
+        <input type="number" id="inv-curr" value="0" min="0" oninput="calcInv()">
+      </div>
+      
+      <div class="res-box" id="inv-res-box">
+        <div class="res-lbl">Pótlandó mennyiség</div>
+        <div class="res-num" id="inv-res">-</div>
+      </div>
+    </div>
+  `;
+}
+
+window.calcDrops = function() {
+  let v = parseFloat(document.getElementById('c-vol').value) || 0;
+  let t = parseFloat(document.getElementById('c-time').value) || 1;
+  let d = parseFloat(document.getElementById('c-drop').value) || 20;
+  let res = Math.round((v * d) / t);
+  document.getElementById('c-res').textContent = res + ' csepp/perc';
+};
+
+window.calcInv = function() {
+  let req = parseInt(document.getElementById('inv-sel').value) || 0;
+  let cur = parseInt(document.getElementById('inv-curr').value) || 0;
+  let diff = req - cur;
+  let box = document.getElementById('inv-res-box');
+  let txt = document.getElementById('inv-res');
+  
+  if(diff > 0) {
+    box.style.background = '#7f1d1d20'; box.style.borderColor = '#ef444450'; box.style.borderWidth = '1px'; box.style.borderStyle = 'solid';
+    txt.style.color = '#fca5a5'; txt.textContent = diff + ' db (Hiány)';
+  } else if(diff < 0) {
+    box.style.background = '#b4530920'; box.style.borderColor = '#f59e0b50'; box.style.borderWidth = '1px'; box.style.borderStyle = 'solid';
+    txt.style.color = '#fcd34d'; txt.textContent = 'Többlet: ' + Math.abs(diff) + ' db';
+  } else {
+    box.style.background = '#064e3b20'; box.style.borderColor = '#10b98150'; box.style.borderWidth = '1px'; box.style.borderStyle = 'solid';
+    txt.style.color = '#6ee7b7'; txt.textContent = 'Készlet rendben (0 db)';
+  }
+};
+
+// Alkalmazás indítása
+window.onload = function() { go('home'); };
+</script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Intranasalis Gyógyszerelés</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;line-height:1.5;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:6px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:6px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;border-radius:8px;border:1px solid #3f3f3f;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;background:#172554;border:1px solid #1e3a8a;}
+.res-num{font-size:38px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+/* INPUTS */
+input[type=number]{width:100%;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:8px 12px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;font-size:14px;margin-bottom:10px;}
+select{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:14px;color:#e5e7eb;font-family:inherit;margin-bottom:10px;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* GLOSSARY */
+.gloss{border-bottom:1px dashed #14b8a6;color:#5eead4;cursor:pointer;transition:color .2s;font-weight:600;}
+.gloss:hover{color:#14b8a6;}
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:999;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-box{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;padding:1.5rem;max-width:400px;width:100%;box-shadow:0 10px 25px rgba(0,0,0,0.5);position:relative;}
+.modal-close{position:absolute;top:10px;right:15px;background:none;border:none;color:#9ca3af;font-size:20px;cursor:pointer;}
+.modal-title{font-size:16px;font-weight:700;color:#14b8a6;margin-bottom:8px;border-bottom:1px solid #333;padding-bottom:5px;}
+.modal-desc{font-size:14px;color:#d1d5db;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="modal-overlay" id="g-mod" onclick="if(event.target===this) closeG()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeG()">×</button>
+    <div class="modal-title" id="g-title"></div>
+    <div class="modal-desc" id="g-desc"></div>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+
+// ── GLOSSARY ───────────────────────────────────────────────────────
+var GLOSSARY = {
+  'intranasalis': 'Orron keresztüli, orrüregbe történő gyógyszerbeviteli út.',
+  'intravénás': 'Visszérbe (vénába) történő gyógyszerbeadás. Rövidítve: iv.',
+  'intraossealis': 'Csontvelőüregbe történő folyadék/gyógyszer bejuttatás. Rövidítve: io.',
+  'indikáció': 'Javallat, az adott beavatkozás vagy gyógyszer alkalmazásának orvosszakmai indokoltsága.',
+  'kontraindikáció': 'Ellenjavallat, olyan tényező, amely kizárja a gyógyszer/beavatkozás alkalmazását (lehet abszolút vagy relatív).',
+  'vitális': 'Életfontosságú, az életet közvetlenül fenyegető vagy fenntartó (pl. vitális indikáció).',
+  'agitált': 'Nyugtalan, izgatott, zavart állapotú (pl. fájdalom vagy oxigénhiány miatt).',
+  'antidotum': 'Ellenszer, amely egy méreg vagy gyógyszer hatását semlegesíti (pl. opiátoknak a naloxon).',
+  'septum': 'Orrsövény. A gyógyszer befújásakor NEM ebbe az irányba, hanem az orrszárnyak felé kell célozni.',
+  'bolus': 'Egyszeri, gyorsan beadott (porlasztott) gyógyszeradag (max 0,5 ml).',
+  'titrálás': 'A gyógyszer adagjának lépésenkénti beállítása (pl. ismétlésekkel) a kívánt klinikai hatás eléréséig.',
+  'rhinitis': 'Orrnyálkahártya-gyulladás (nátha), ami a felszívódást rontja, relatív ellenjavallat.',
+  'polyp': 'Jóindulatú nyálkahártya-növedék az orrban, akadályozhatja a felszívódást.',
+  'szisztémás': 'Egész szervezetre kiterjedő hatás.',
+  'MAD': 'Mucosal Atomization Device, nyálkahártya porlasztó eszköz. Egy fecskendőre csatlakoztatható porlasztófej.',
+  'holttér': 'A porlasztó kónuszában visszamaradó gyógyszermennyiség (0,1 ml), amelyet az első felszíváskor hozzá kell számolni a térfogathoz.',
+  'crepitatio': 'Tapintáskor vagy mozgáskor észlelhető "roppanó" hang/érzés (pl. csonttörésnél).'
+};
+
+function showG(k){
+  document.getElementById('g-title').innerText = k.toUpperCase();
+  document.getElementById('g-desc').innerText = GLOSSARY[k];
+  document.getElementById('g-mod').style.display='flex';
+}
+function closeG(){
+  document.getElementById('g-mod').style.display='none';
+}
+
+function g(term, display) {
+  return '<span class="gloss" onclick="showG(\''+term+'\')">'+(display || term)+'</span>';
+}
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'I-II. Célok és Háttér',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Célok',bk:[{tp:'bl',items:['Az '+g('intranasalis')+' (in.) gyógyszerelés elvi hátterének bemutatása','Az '+g('indikáció', 'indikációk')+' és '+g('kontraindikáció', 'kontraindikációk')+' azonosítása','A gyógyszerelés előkészületének és kivitelezésének bemutatása','Az Országos Mentőszolgálatnál intranasalisan alkalmazható gyógyszerek dózisának ismertetése','Cél a magyar és nemzetközi irányelvek adaptációja, a szokásokon alapuló, bizonyíték nélküli vagy káros beavatkozások mellőzése']}]},
+{t:'II. Háttér',bk:[{tp:'bl',items:['Az orrüreget borító nyálkahártya hajszálerekben igen gazdag.','Lehetővé teszi, hogy sürgős szükség esetén, vénás kapcsolat hiányában az intranasalisan adagolt hatóanyag az '+g('intravénás')+' (iv.) / '+g('intraossealis')+' (io.) úthoz hasonlóan gyorsan szívódjon fel és fejtsen ki '+g('szisztémás')+' hatást.','Az intranasalis gyógyszerelés egyszerű, gyors, biztonságos és könnyen elsajátítható módszer.']}]}
+]},
+{id:'indikaciok',title:'III-IV. Indikációk és Ellenjavallatok',icon:'⚖️',acc:'#3b82f6',secs:[
+{t:'III. Indikáció',bk:[
+{tp:'note',tx:'Az OMSZ gyakorlatában intranasalisan csak fentanil, midazolám és naloxon adható. Mindhárom hatóanyag esetében a javallatok megegyeznek az intravénás alkalmazáséval.'},
+{tp:'al',lv:'w',tx:'Ez a beadási módszer akkor választandó, ha az adott gyógyszer adása indikált, ÉS:\n\n• egyéb út (iv. io.) nem áll rendelkezésre és megteremtése jelentős időveszteséggel, technikailag nehezen lenne kivitelezhető, VAGY\n• egyéb út biztosításának nincs más '+g('vitális')+' indikációja (pl. folyadékpótlás)'},
+{tp:'sub',tx:'Tipikus példák az alkalmazásra:'},
+{tp:'bl',items:['Sérült, akinek kábító fájdalomcsillapító kell, de véna egyéb vitális okból nem szükséges (pl. izolált végtagsérülések), vagy elsődleges fájdalomcsillapítás nélkül nem lehetséges (jellemzően gyerekek)','Görcsroham alatt a midazolám in. gyorsan beadható. Kisebb sérülésveszéllyel jár, mint az iv/im adás, vagy a rectalisan adott diazepámhoz képest.','Ópiát túladagolás/mérgezés gyanúja esetén az '+g('antidotum')+' mielőbbi beadására','Súlyos fájdalom miatt '+g('agitált')+' első vonalbeli fájdalomcsillapítása in. fentanillal']}
+]},
+{t:'IV. Kontraindikáció',bk:[
+{tp:'sub',tx:'a) Abszolút kontraindikáció:'},
+{tp:'bl',items:['Az alkalmazni kívánt hatóanyag abszolút ellenjavallatai.','Az in. gyógyszeradagolásnak önmagában abszolút kontraindikációja nincs.']},
+{tp:'sub',tx:'b) Relatív kontraindikációk:'},
+{tp:'bl',items:['10 kg-nál kisebb tömegű gyermek','Eldugult orrjárat, orr'+g('polyp')+', '+g('rhinitis')+'','Orrvérzés','Súlyos orrsérülés','Elülső koponyalap törése','Az alkalmazni kívánt hatóanyag relatív kontraindikációi']}
+]}
+]},
+{id:'kompetenciak',title:'V. Kompetenciák, Dózisok',icon:'💊',acc:'#8b5cf6',secs:[
+{t:'Midazolám (5 mg/ml)',bk:[
+{tp:'al',lv:'s',tx:'Dózis: 0,2 mg/ttkg görcsgátlásra (max. 10 mg egyszeri dózis)\n\nKompetencia: Orvos, Mentőtiszt, B+ mentőápoló (gyógyszerelési felhatalmazás birtokában)'},
+{tp:'al',lv:'w',tx:'A B+ mentőápoló kizárólag görcsroham esetén és csak intranasalisan alkalmazhatja a midazolámot, ugyanazon indikációkkal, mint a rectalis diazepám készítményt!'},
+{tp:'note',tx:'Ismétlődő/nem szűnő görcstevékenység esetén 1 alkalommal, felezett 0,1 mg/ttkg dózisban (max. 4 mg) ismételhető. Mentőápoló a midazolámot NEM ismételheti!'}
+]},
+{t:'Fentanil (50 µg/ml)',bk:[
+{tp:'al',lv:'d',tx:'Dózis: 1-2 µg/ttkg (max. 100 µg egyszeri dózis)\n\nKompetencia: CSAK Orvos, Mentőtiszt'}
+]},
+{t:'Naloxon (0,4 mg/ml)',bk:[
+{tp:'al',lv:'i',tx:'Dózis: 0,05 mg/ttkg (8 ttkg-onként 1 ml naloxon in.)\n\nKompetencia: CSAK Orvos, Mentőtiszt'}
+]}
+]},
+{id:'elokeszuletek',title:'VI-VII. Eszköz és Előkészületek',icon:'💉',acc:'#f59e0b',secs:[
+{t:'VI. Eszköz: MAD',bk:[
+{tp:'note',tx:'A '+g('MAD')+' porlasztófejből és menetes kónuszú fecskendőből áll. Egyszerhasználatos (ugyanazon betegnél többször használható). Intravénás gyógyszereléshez NEM használható!'}
+]},
+{t:'VII. Előkészületek',bk:[
+{tp:'steps',items:[
+{n:'1',t:'Testtömeg megállapítása',x:'Gyermekek esetén ismert formula: [életkor (év) + 4] × 2'},
+{n:'2',t:'Gyógyszer térfogat számítása',x:'Ki kell számolni a dózist és a ml-t.'},
+{n:'3',t:'Felszívás (+ holttér)',x:'Szívjuk fel a kiszámolt mennyiséget (ml). Vegyük figyelembe a hozzáadott 0,1 ml-t is, ami beadáskor a '+g('holttér', 'kónuszban marad')+' (ezt CSAK az első adag felszívásakor szükséges beleszámolni). Fecskendőbe csak a kiszámolt mennyiség kerüljön a túldozírozás elkerülése végett.'},
+{n:'4',t:'Összeszerelés',x:'Csatlakoztassuk a porlasztót szorosan.'},
+{n:'5',t:'Felesleg elrakása',x:'Az ampullában maradó gyógyszert esetleges további adagolás céljából feliratozott, másik fecskendőbe szívjuk.'},
+{n:'6',t:'Tájékoztatás',x:'Röviden magyarázzuk el a beavatkozást a betegnek / hozzátartozóknak.'}
+]}
+]}
+]},
+{id:'kivitelezes',title:'VIII. Kivitelezés',icon:'🌬️',acc:'#ec4899',secs:[
+{t:'Beadás lépései',bk:[
+{tp:'steps',items:[
+{n:'1',t:'Orrfújás/szívás',x:'Ha a beteg náthás/nem kap levegőt az orrán: fújja ki az orrát, vagy óvatosan szívjuk le.'},
+{n:'2',t:'Pozicionálás és porlasztás',x:'Fej enyhén hátra. Maximum 0,5 ml-es '+g('bolus', 'bolusokban')+' porlasszuk be, a dugattyú határozott összenyomásával. Lehetőleg az orrszárnyak (és NEM a '+g('septum')+') irányába célozzunk.'},
+{n:'3',t:'Ismétlés orrjáratonként',x:'Folytassuk 0,5 ml-enként váltogatva az orrjáratokat a teljes dózisig. (Ha a beteg tüsszent, a dózis módosítása NEM szükséges).'},
+{n:'4',t:'Kerülendő akciók',x:'Adagolás után az orrfújás, szipogás kerülendő!'},
+{n:'5',t:'Monitorozás',x:'Szorosan monitorozzuk a beteget (hatás olyan gyors, mint iv./io.).'}
+]},
+{tp:'al',lv:'w',tx:'Ismétlés / '+g('titrálás')+': Két porlasztás között minimum 10 perc teljen el.\n\nMidazolám esetén 2. dózisként már FELEZETT adagot használjunk. Fentanilt is javasolt felezett adaggal ismételni.'}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Alapok',f:'Mi a 3 alkalmazható hatóanyag intranasalisan az OMSZ-nél?',b:'1. Fentanil\n2. Midazolám\n3. Naloxon'},
+{cat:'Alapok',f:'Mi a fő indikációja az intranasalis (in.) gyógyszerelésnek?',b:'Ha az adott gyógyszer adása indikált, ÉS:\n1. iv./io. út nem áll rendelkezésre és nehezen/lassan biztosítható\n2. iv./io. biztosításának nincs más vitális indikációja (pl. folyadékpótlás)'},
+{cat:'Alapok',f:'Mikor abszolút kontraindikált az intranasalis út?',b:'Az IN gyógyszeradagolásnak önmagában ABSZOLÚT kontraindikációja NINCS.\nCsak az alkalmazni kívánt hatóanyag abszolút ellenjavallatai számítanak.'},
+{cat:'Dózisok',f:'Mekkora a Midazolám in. dózisa görcsgátlásra?',b:'0,2 mg/ttkg (maximum 10 mg egyszeri dózis).\n\nMentőápoló a midazolámot (ha adhatja) NEM ismételheti!'},
+{cat:'Dózisok',f:'Ki adhat Fentanilt intranasalisan és mekkora dózisban?',b:'Kizárólag Orvos vagy Mentőtiszt!\n\nDózis: 1-2 µg/ttkg (max. 100 µg egyszeri dózis).'},
+{cat:'Dózisok',f:'Hogyan kell adagolni az IN Naloxont?',b:'Dózis: 0,05 mg/ttkg.\n(Gyakorlatban: 8 ttkg-onként 1 ml naloxon in.)\nCsak Orvos vagy Mentőtiszt adhatja!'},
+{cat:'Előkészület',f:'Mennyi a "holttér" a MAD eszközben, és mikor kell beleszámolni?',b:'0,1 ml a holttér.\nCSAK az első adag felszívásakor szükséges a kiszámolt térfogathoz (ml) hozzáadni!'},
+{cat:'Előkészület',f:'Mi a gyermek testtömeg számítási formula?',b:'[életkor (év) + 4] × 2 = testtömeg (kg)'},
+{cat:'Kivitelezés',f:'Mennyi a maximális beporlasztható térfogat egyszerre egy orrjáratba?',b:'Orrjáratonként egyszerre MAXIMUM 0,5 ml térfogatú bolusokban.\nA két orrjáratot váltogatva kell beadni a teljes dózist.'},
+{cat:'Kivitelezés',f:'Milyen irányba kell célozni a porlasztóval?',b:'Lehetőleg az orrszárnyak irányába!\n(NEM az orrsövény / septum felé)'},
+{cat:'Kivitelezés',f:'Szükséges-e a dózist módosítani, ha a beteg tüsszent a porlasztás során?',b:'NEM. Az eljárásrend szerint a tüsszentés a dózis módosítását nem teszi szükségessé.'},
+{cat:'Kivitelezés',f:'Mennyi időnek kell eltelnie két porlasztás között ismétlés esetén?',b:'Minimum 10 perc teljen el.\n\nMidazolám esetén a második dózisként már FELEZETT adagot kell használni!'}
+];
+
+var QUIZ=[
+{q:'Melyik hatóanyag NEM adható intranasalisan az OMSZ eljárásrendje szerint?',opts:['Fentanil','Diazepám','Naloxon','Midazolám'],ok:1,exp:'Csak fentanil, midazolám és naloxon adható intranasalisan. A diazepámot rectalis formában szokták alkalmazni görcsgátlásra.'},
+{q:'Az alábbiak közül melyik számít az in. gyógyszerelés RELATÍV kontraindikációjának?',opts:['Ha a beteg eszméletlen','< 10 kg tömegű gyermek','Felső végtagi törés','Magas vérnyomás'],ok:1,exp:'A < 10 kg tömegű gyermek, az orrvérzés, orrpolyp, súlyos orrsérülés, rhinitis relatív kontraindikációk.'},
+{q:'B+ mentőápoló adhat-e intranasalis fentanilt egy súlyos égési sérültnek?',opts:['Igen, ha a beteg elmúlt 18 éves','Igen, maximum 50 µg-ot','Nem, fentanilt csak orvos vagy mentőtiszt adhat','Igen, de csak ha nincs iv. út'],ok:2,exp:'A fentanil (és a naloxon) kompetenciaszintje Orvos vagy Mentőtiszt. B+ mentőápoló NEM adhatja!'},
+{q:'Milyen indikációval adhat a B+ mentőápoló intranasalis midazolámot?',opts:['Súlyos fájdalomcsillapításra','Kizárólag görcsroham esetén','Agitált, agresszív beteg nyugtatására','Bármilyen pszichiátriai kórképben'],ok:1,exp:'A B+ mentőápoló KIZÁRÓLAG görcsroham esetén alkalmazhatja a midazolámot, azonos indikációval, mint a rectalis diazepámot.'},
+{q:'Hogyan kell felszívni a gyógyszert a MAD eszköz fecskendőjébe?',opts:['Az egész ampullát felszívom és lassan adagolom','A kiszámolt mennyiséget + 0,1 ml holtteret, az ampullában maradó részt másik fecskendőbe szívom','Szemmértékkel adagolom a porlasztóból','Hígítva, sóoldattal 10 ml-re kipótolva'],ok:1,exp:'Csak a pontosan kiszámolt mennyiség + 0,1 ml (első alkalommal) szívható fel a túladagolás elkerülésére. A midazolámot hígítatlanul adjuk!'},
+{q:'Mennyi a Midazolám intranasalis (in.) dózisa görcsroham esetén?',opts:['0,1 mg/ttkg','0,2 mg/ttkg (max 10 mg)','0,5 mg/ttkg','1 mg/ttkg'],ok:1,exp:'Midazolám dózis: 0,2 mg/ttkg (max 10 mg egyszeri dózis). Ismétlésnél (amit mentőápoló nem végezhet) 0,1 mg/ttkg a dózis.'},
+{q:'Mekkora a maximális egyszeri bolus térfogat egy orrjáratba?',opts:['0,2 ml','0,5 ml','1,0 ml','2,0 ml'],ok:1,exp:'Orrjáratonként egyszerre maximum 0,5 ml térfogat porlasztható be határozott nyomással.'},
+{q:'Mi a teendő, ha a porlasztás közben a beteg tüsszent?',opts:['Azonnal meg kell ismételni a teljes dózist','Át kell térni intravénás beadásra','A dózis módosítását nem teszi szükségessé','A maradék gyógyszert intramuscularisan kell beadni'],ok:2,exp:'Az eljárásrend szerint az esetleges tüsszentés a dózis módosítását nem teszi szükségessé.'},
+{q:'Hogyan kell pozicionálni a porlasztót a beadás során?',opts:['Középre, az orrsövény (septum) felé irányítva','Vízszintesen hátrafelé','Az orrszárnyak irányába (kifelé)','Felfelé, a homlok irányába'],ok:2,exp:'Lehetőleg az orrszárnyak (és NEM a septum/orrsövény) irányába célozzunk.'},
+{q:'Mennyi időnek kell eltelnie a gyógyszer ismétléséig?',opts:['Nincs várakozási idő, rögtön adható a második dózis','Minimum 2 perc','Minimum 5 perc','Minimum 10 perc'],ok:3,exp:'Két porlasztás között minimum 10 perc teljen el (és midazolám/fentanil ismétlésnél felezett adag javasolt).'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Görcsölő gyermek (B+ kompetencia)',diff:'B+ kompetencia',desc:'A helyszínen egy 6 éves kislány fekszik a padlón, aktív tónusos-klónusos görcstevékenysége van a szülők elmondása szerint már 5 perce. IV. vénabiztosítás a rángatózó végtagok miatt kivitelezhetetlen. Mentőgépkocsi (B+ mentőápoló) érkezik elsőként.',steps:[
+{sit:'1. A helyszín biztonságos. A beteg gyermek folyamatosan görcsöl. Milyen gyógyszerbeviteli utat választasz a görcsgátló mielőbbi bejuttatására (ha az iv. esélytelen)?',opts:[{tx:'Intramuscularis (im.) beadást választok.',ok:false,fb:'Hibás! Görcsölő betegnél az in. vagy rectalis út gyorsabb és biztonságosabb.'},{tx:'Intranasalis (in.) utat választok, mivel a véna nem biztosítható és a nyálkahártyán át gyors a felszívódás.',ok:true,fb:'Helyes! Az in. beadás kiváló alternatíva aktív görcs esetén.'},{tx:'Megvárom a görcs végét, és utána szúrok vénát.',ok:false,fb:'Hibás! A görcsöt mielőbb meg kell törni a hypoxia elkerülése végett.'}]},
+{sit:'2. Milyen gyógyszert alkalmazhat B+ mentőápoló intranasalisan görcsroham esetén?',opts:[{tx:'Diazepámot',ok:false,fb:'Hibás! Intranasalisan nem adunk diazepámot az OMSZ protokollban.'},{tx:'Midazolámot',ok:true,fb:'Helyes! A B+ ápoló kizárólag görcsroham esetén és csak intranasalisan alkalmazhatja a midazolámot (ugyanazon indikációval, mint a rectalis diazepámot).'},{tx:'Fentanilt',ok:false,fb:'Hibás! A fentanil fájdalomcsillapító, és B+ nem is adhatja.'}]},
+{sit:'3. A gyermek 6 éves. Mi a testtömeg-számítási formula, és mennyi a becsült súlya?',opts:[{tx:'[6 (év) + 4] × 2 = 20 kg',ok:true,fb:'Helyes! (6+4)*2 = 20 kg.'},{tx:'6 (év) × 3 = 18 kg',ok:false,fb:'Hibás! Nem ez a protokoll szerinti formula.'},{tx:'[6 (év) + 2] × 4 = 32 kg',ok:false,fb:'Hibás! Helytelen formula.'}]},
+{sit:'4. A beteg 20 kg. A midazolám dózisa görcs esetén 0,2 mg/ttkg. Mennyi hatóanyagra (mg) van szükség?',opts:[{tx:'2 mg',ok:false,fb:'Hibás! 20 * 0.2 = 4 mg.'},{tx:'4 mg',ok:true,fb:'Helyes! 20 kg * 0,2 mg/kg = 4 mg midazolám.'},{tx:'10 mg',ok:false,fb:'Hibás! A 10 mg a maximális dózis, ide csak 4 mg kell.'}]},
+{sit:'5. A midazolám koncentrációja az ampullában 5 mg/ml. Hány ml térfogat felel meg a 4 mg-nak?',opts:[{tx:'0,4 ml',ok:false,fb:'Hibás! 4 / 5 = 0,8 ml.'},{tx:'0,8 ml',ok:true,fb:'Helyes! 4 mg / 5 mg/ml = 0,8 ml térfogat.'},{tx:'1,0 ml',ok:false,fb:'Hibás! Számítási hiba.'}]},
+{sit:'6. Mivel ez az első adag, a fecskendőbe történő felszívásnál mit kell figyelembe venni az eljárásrend szerint?',opts:[{tx:'Hozzá kell adni +0,1 ml-t a MAD eszköz holttere miatt.',ok:true,fb:'Helyes! Az első felszívásnál a 0,8 ml + 0,1 ml holttér = 0,9 ml-t szívunk fel a fecskendőbe.'},{tx:'Beleszámolom, de felszívom a teljes ampullát a fecskendőbe.',ok:false,fb:'Hibás! Csak a pontos mennyiséget szabad felszívni a túldozírozás miatt.'},{tx:'Nincs holttér, pontosan 0,8 ml-t szívok fel.',ok:false,fb:'Hibás! A MAD eszköz kónuszában marad 0,1 ml.'}]},
+{sit:'7. A 0,9 ml felszívva. Hogyan csatlakoztatod a MAD porlasztót?',opts:[{tx:'A fecskendő végére laza mozdulattal ráhúzom.',ok:false,fb:'Hibás! Menetes kónuszú fecskendő kell.'},{tx:'A porlasztót szorosan a fecskendő menetes kónuszához csatlakoztatom.',ok:true,fb:'Helyes! A menetes (Luer-lock) fecskendő akadályozza meg a porlasztófej lerepülését a nyomás miatt.'},{tx:'Hagyományos tűvel porlasztok.',ok:false,fb:'Hibás! Tűvel tilos orrba fecskendezni.'}]},
+{sit:'8. A beadás technikája: A gyermek feje enyhén hátra van hajtva. Hogyan adagolod az 0,8 ml (bejuttatandó) térfogatot?',opts:[{tx:'Egyszerre befújom az egészet a jobb orrjáratba.',ok:false,fb:'Hibás! Orrjáratonként max 0,5 ml adható be egyszerre.'},{tx:'0,4 ml-t az egyik, majd 0,4 ml-t a másik orrjáratba porlasztok határozott nyomással az orrszárnyak felé.',ok:true,fb:'Helyes! Max 0,5 ml/orrjárat, tehát el kell osztani (0,4 + 0,4), és az orrszárnyak felé kell célozni.'},{tx:'Lassan csöpögtetem az orrsövény felé.',ok:false,fb:'Hibás! Határozott porlasztás kell az orrszárnyak felé.'}]},
+{sit:'9. A gyógyszer beadása után a kislány tüsszent egyet. Mit teszel?',opts:[{tx:'Gyorsan felszívok még 0,4 ml-t és beadom pótusként.',ok:false,fb:'Hibás! Tüsszentés miatt nem módosítunk dózist.'},{tx:'Dózismódosítás nem szükséges, szorosan monitorozom a beteget.',ok:true,fb:'Helyes! Az eljárásrend egyértelműen fogalmaz: a tüsszentés nem teszi szükségessé a módosítást.'},{tx:'Áttérek intravénás beadásra azonnal.',ok:false,fb:'Hibás! Nem indokolt.'}]},
+{sit:'10. Eltelt 10 perc, a gyermek még mindig görcsöl. B+ kompetenciaszintű ápolóként mi a teendőd az intranasalis midazolámmal kapcsolatban?',opts:[{tx:'Beadok egy felezett dózist (2 mg-ot).',ok:false,fb:'Hibás! B+ mentőápoló NEM ismételheti a midazolámot.'},{tx:'A midazolámot mentőápoló nem ismételheti. Azonnal magasabb szintű segítséget (Mentőtiszt/Orvos) kérek, ha eddig nem tettem meg, és folytatom a beteg monitorozását.',ok:true,fb:'Helyes! Az eljárásrend szerint mentőápoló a midazolámot nem ismételheti. ALS beavatkozás szükséges.'},{tx:'Beadom ugyanazt az adagot.',ok:false,fb:'Hibás! Még mentőtiszt is csak felezett adagot adhatna 2. dózisként.'}]}
+],summary:'Részletes Összefoglaló (Sim 1 - Gyermek görcs): A helyszínen a tartósan görcsölő gyermeknél a sikertelen/nehéz IV út miatt az intranasalis (in.) gyógyszerelés azonnali alternatívát nyújtott. A B+ kompetenciájú mentőápoló felismerte, hogy a görcs indikációja lehetővé teszi számára a midazolám IN beadását (hasonlóan a rectalis diazepámhoz). A súly becslése a [6+4]*2 = 20 kg képlettel történt. A dózis (0,2 mg/kg) alapján 4 mg hatóanyagra volt szükség, ami az 5 mg/ml-es ampullából 0,8 ml térfogatot jelentett. Az első felszívás miatt a fecskendőbe (0,8 + 0,1 ml holttér) = 0,9 ml-t szívott fel pontosan, a felesleget eltávolítva. A MAD porlasztót menetes csatlakozóval rögzítette. A porlasztás maximum 0,5 ml / orrjárat elvét követve a 0,8 ml bejuttatandó adagot két részletben (0,4 ml - 0,4 ml) porlasztotta be a gyermek orrszárnyai felé célozva. A tüsszentés a beadás után nem igényelt dózismódosítást. 10 perc után a görcs nem szűnt meg, de mivel a szabályzat szerint mentőápoló NEM ismételheti a midazolámot, magasabb szintű segítséget kért, mellőzve a kompetenciáján túli gyógyszerelést.'},
+
+{id:2,title:'2. Szimuláció: Súlyos égési sérült fájdalomcsillapítása (B kompetencia)',diff:'B kompetencia',desc:'Egy 35 éves (kb. 80 kg) férfi forró vízzel súlyos égési sérüléseket szenvedett a mellkasán és a karjain. A beteg a fájdalomtól extrém módon agitált (dobálja magát), a vénabiztosítás emiatt a helyszínen szinte lehetetlen. Egy "B" szintű mentőgépkocsi érkezik a helyszínre.',steps:[
+{sit:'1. A helyszínbiztonság és a sérült elsődleges vizsgálata után az "agitált, súlyos fájdalmú beteg" diagnózisa egyértelmű. Milyen intranasalis gyógyszer lenne a legjobb indikáció a fájdalom csillapítására az eljárásrend szerint?',opts:[{tx:'Naloxon',ok:false,fb:'Hibás! A naloxon opiát túladagolás ellenszere.'},{tx:'Fentanil',ok:true,fb:'Helyes! A súlyos fájdalom miatt agitált beteg első vonalbeli fájdalomcsillapítása in. fentanillal történhet.'},{tx:'Midazolám',ok:false,fb:'Hibás! A midazolám görcsgátló/nyugtató, de a fő probléma a fájdalom.'}]},
+{sit:'2. "B" kompetenciaszintű ápolóként (nincs gyógyszerelési felhatalmazásod) beadhatod-e a fentanilt intranasalisan?',opts:[{tx:'Igen, mert a MAD eszköz használata egyszerű.',ok:false,fb:'Hibás! A hatóanyaghoz kompetencia kell, nem az eszközhöz.'},{tx:'Nem, a fentanilt KIZÁRÓLAG Orvos vagy Mentőtiszt adhatja.',ok:true,fb:'Helyes! A kompetenciatáblázat szerint a fentanil adása mentőápolónak (még B+ nek is) tilos.'},{tx:'Igen, de csak fele dózisban.',ok:false,fb:'Hibás! Nem adhatja be.'}]},
+{sit:'3. Mivel a beteg ellátásához emelt szintű (ALS) kompetencia szükséges, azonnal Mentőtiszti kocsit (MOK/KIM) kérsz. Az ALS egység kiérkezik. A Mentőtiszt a Fentanil IN adása mellett dönt. Mi a 80 kg-os beteg számított dózistartománya (1-2 µg/ttkg)?',opts:[{tx:'80 - 160 µg',ok:false,fb:'Hibás! Bár a matek jó, van egy maximális dóziskorlát.'},{tx:'80 - 100 µg (Mivel a maximális egyszeri dózis 100 µg)',ok:true,fb:'Helyes! 80 kg * 2 µg = 160 µg lenne, de a szabályzat szerinti maximum 100 µg.'},{tx:'40 - 80 µg',ok:false,fb:'Hibás! Aluldozírozás.'}]},
+{sit:'4. A mentőtiszt a 100 µg-os dózist választja. A fentanil koncentrációja 50 µg/ml. Mennyi térfogatot (ml) jelent a 100 µg?',opts:[{tx:'1 ml',ok:false,fb:'Hibás! 100 µg / 50 µg/ml = 2 ml.'},{tx:'2 ml',ok:true,fb:'Helyes! A beadandó térfogat 2 ml.'},{tx:'4 ml',ok:false,fb:'Hibás! Számítási hiba.'}]},
+{sit:'5. A Mentőtiszt téged kér meg a felszívásra. Mennyi térfogatot kell felszívnod a fecskendőbe az első adaghoz?',opts:[{tx:'Pontosan 2,0 ml-t',ok:false,fb:'Hibás! A MAD eszköz holttere hiányzik.'},{tx:'2,1 ml-t (2,0 ml beadandó + 0,1 ml holttér)',ok:true,fb:'Helyes! Az első adagnál a 0,1 ml holtteret hozzá kell adni.'},{tx:'A teljes 10 ml-es ampullát',ok:false,fb:'Hibás! Fecskendőbe csak a kiszámolt adag kerülhet.'}]},
+{sit:'6. Mielőtt a tiszt beadná a gyógyszert, mit kell ellenőriznie a beteg orránál (előkészület)?',opts:[{tx:'Hogy náthás-e a beteg (rhinitis, eldugult orr). Ha igen, ki kell fújatni az orrát vagy váladékot kell szívni.',ok:true,fb:'Helyes! A váladék akadályozza a nyálkahártyán való felszívódást.'},{tx:'Meg kell néznie, hogy a beteg pupillái tágak-e.',ok:false,fb:'Hibás! A pupillának nincs köze az orr-nyálkahártya állapotához.'},{tx:'Be kell fújni érszűkítő orrspray-vel.',ok:false,fb:'Hibás! Az érszűkítő pont rontaná a szisztémás felszívódást!'}]},
+{sit:'7. Az orrjáratok tiszták. A MAD eszközzel a Mentőtiszt elkezdi a 2 ml beporlasztását. Mennyit adhat be maximálisan EGYSZERRE egy orrjáratba?',opts:[{tx:'Az egész 2 ml-t beadhatja az egyikbe.',ok:false,fb:'Hibás! Folyadékcsorgás lenne a vége.'},{tx:'Maximum 0,5 ml bolust.',ok:true,fb:'Helyes! Orrjáratonként max 0,5 ml porlasztható, így a 2 ml-t legalább 4 lépésben kell beadni.'},{tx:'Maximum 1 ml bolust.',ok:false,fb:'Hibás! A max térfogat 0,5 ml.'}]},
+{sit:'8. A porlasztás helyes iránya?',opts:[{tx:'Pontosan az orrsövény (septum) felé.',ok:false,fb:'Hibás! Az orrsövény porcos, ott kevesebb a hajszálér.'},{tx:'A dugattyú óvatos, lassú nyomásával a szájpadlás felé.',ok:false,fb:'Hibás! Határozott nyomás kell a porlasztáshoz.'},{tx:'A dugattyú határozott összenyomásával az orrszárnyak felé (NEM a septum irányába).',ok:true,fb:'Helyes! Az orrszárnyak nyálkahártyája gazdagabban erezett, és elkerüljük az orrvérzést.'}]},
+{sit:'9. A gyógyszer beadása után mire kérjük meg a beteget (ha kontaktusképes)?',opts:[{tx:'Hogy jó erősen szívja fel (szipogjon), hogy jobban bemenjen.',ok:false,fb:'Hibás! A szipogás a garatba/gyomorba juttatja a gyógyszert.'},{tx:'Az orrfújás és a szipogás kerülendő!',ok:true,fb:'Helyes! A hatóanyagnak a nyálkahártyán kell maradnia.'},{tx:'Hogy tartsa vissza a lélegzetét 1 percig.',ok:false,fb:'Hibás! Nem indokolt.'}]},
+{sit:'10. Eltelt 10 perc. A beteg fájdalma enyhült, de még mindig jelentős. A mentőtiszt a fentanil ismétlése mellett dönt. Milyen elvet kell követni a második dózisnál?',opts:[{tx:'A fentanilt a fájdalommentességig titráljuk, javasolt a második dózisként FELEZETT adag alkalmazása.',ok:true,fb:'Helyes! Az eljárásrend alapján ismétléskor (min 10 perc után) felezett dózis a javasolt.'},{tx:'Újabb teljes 100 µg dózist kell adni.',ok:false,fb:'Hibás! Túladagoláshoz vezethet.'},{tx:'Intranasalisan tilos ismételni a fentanilt.',ok:false,fb:'Hibás! Titrálható és ismételhető.'}]}
+],summary:'Részletes Összefoglaló (Sim 2 - Égési sérült, Fentanil): A 35 éves, 80 kg-os, erős fájdalomtól agitált betegnél az intranasalis gyógyszerbeadás kiváló választás, mivel a véna nem vagy csak nagy időveszteséggel volna biztosítható. Az elsőként kiérkező "B" szintű mentőápoló helyesen mérte fel, hogy a Fentanil IN adása a megfelelő indikáció, de az ő kompetenciája ezt NEM teszi lehetővé. Segítséget (ALS) kért. A kiérkező mentőtiszt kiszámolta a fentanil dózist: 80 kg * 1-2 µg = 80-160 µg lenne, de a szabályzat maximális egyszeri dózisa 100 µg. Az 50 µg/ml koncentráció miatt a beadandó térfogat 2,0 ml. Az előkészítés során a fecskendőbe a pontos 2,0 ml + 0,1 ml holttér (összesen 2,1 ml) került felszívásra. Az orrjáratok esetleges váladékának (nátha) ellenőrzése után a porlasztás megkezdődött. Mivel egyszerre max 0,5 ml adható be egy orrjáratba, a 2,0 ml-t váltogatva, 4 részletben porlasztotta be a tiszt, határozott mozdulattal, az orrszárnyak irányába. Beadás után a betegnek a szipogást/orrfújást kerülnie kellett. 10 perc megfigyelés után a fájdalom még fennállt, így a mentőtiszt a fentanil titrálása alapján – a szabályzatnak megfelelően – egy felezett dózis beporlasztása mellett döntött.'}
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Render blocks for Chapters
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+b.tx+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  if(b.tp==='kr') return '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+i+'</div>').join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+b.tx+'</div>';
+  if(b.tp==='note') return '<div class="note">'+b.tx+'</div>';
+  if(b.tp==='steps') return b.items.map(s=>'<div class="step-wrap" style="display:flex;gap:10px;margin-bottom:10px;"><div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#14b8a6;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">'+s.n+'</div><div style="flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;"><div style="font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;">'+s.t+'</div><div style="font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;">'+s.x+'</div></div></div>').join('');
+  return '';
+}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Intranasalis gyógyszerelés</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v2.0 · 2019.10.14.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','Indikációk, eszközök'],['flash','🃏','Flashkártyák','12 tanulókártya'],['quiz','❓','Kvíz','10 tesztkérdés'],['sim','🚑','Szimuláció','B / B+ Esetek'],['calc','🧮','Kalkulátor','Dózis számítások']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#bbf7d0"><b>Vonatkozik:</b> Az OMSZ valamennyi kivonuló dolgozójára, kompetenciaszintnek megfelelően.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+c.title+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+c.title+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+s.t+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+c+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+c+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+card.b+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+card.cat+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+card.f+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+QUIZ[a.qi].q+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+QUIZ[a.qi].opts[a.pi]+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+QUIZ[a.qi].opts[QUIZ[a.qi].ok]+'</div><div style="font-size:11px;color:#9ca3af">'+QUIZ[a.qi].exp+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+q.q+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+opt+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+q.exp+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+s.title+'</div>'+
+'<span class="tag '+(s.diff==='B+ kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+s.desc+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+sim.title+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+sim.summary+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+st.sit+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+opt.tx+'</div><div style="font-size:11px;color:#9ca3af">'+opt.fb+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+sim.title+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+sim.desc+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+step.sit+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+opt.tx+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+step.opts[SI.chosen].fb+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function updateCalc() {
+  var type = document.getElementById('c_type').value;
+  var ageWrap = document.getElementById('c_age_wrap');
+  var age = parseFloat(document.getElementById('c_age').value) || 0;
+  var w = parseFloat(document.getElementById('c_weight').value) || 0;
+  var med = document.getElementById('c_med').value;
+  
+  if(type === 'child') {
+     ageWrap.style.display = 'block';
+     if(w === 0 && age > 0) {
+        w = (age + 4) * 2;
+        document.getElementById('c_weight_calc').innerHTML = '<div style="font-size:12px;color:#a78bfa;margin-bottom:10px">Kalkulált testtömeg: <b>' + w + ' kg</b></div>';
+     } else {
+        document.getElementById('c_weight_calc').innerHTML = '';
+     }
+  } else {
+     ageWrap.style.display = 'none';
+     document.getElementById('c_weight_calc').innerHTML = '';
+  }
+  
+  var res = '';
+  if(w > 0) {
+     if(med === 'midazolam') {
+        var d = w * 0.2;
+        if(d > 10) d = 10;
+        var vol = d / 5;
+        res = '<div class="res-num" style="color:#4ade80">' + d.toFixed(1) + ' mg</div>' +
+              '<div style="font-size:13px;color:#d1d5db;margin-bottom:10px">Térfogat (5mg/ml): <b>' + vol.toFixed(2) + ' ml</b> <span style="color:#9ca3af">(+0,1 ml holttér)</span></div>' +
+              '<div class="al al-s" style="margin-bottom:0"><b>Kompetencia: B+ ápoló</b><br>Kizárólag görcsroham esetén!<br>2. dózis (felezve): ' + (d/2).toFixed(1) + ' mg (' + (vol/2).toFixed(2) + ' ml)<br>Mentőápoló NEM ismételheti!</div>';
+     } else if(med === 'fentanil') {
+        var d1 = w * 1;
+        var d2 = w * 2;
+        if(d1 > 100) d1 = 100;
+        if(d2 > 100) d2 = 100;
+        var txt = d1 === d2 ? d1 + ' µg' : d1 + ' - ' + d2 + ' µg';
+        var v1 = d1 / 50; var v2 = d2 / 50;
+        var vtxt = v1 === v2 ? v1.toFixed(2) + ' ml' : v1.toFixed(2) + ' - ' + v2.toFixed(2) + ' ml';
+        res = '<div class="res-num" style="color:#fde68a">' + txt + '</div>' +
+              '<div style="font-size:13px;color:#d1d5db;margin-bottom:10px">Térfogat (50µg/ml): <b>' + vtxt + '</b> <span style="color:#9ca3af">(+0,1 ml holttér)</span></div>' +
+              '<div class="al al-d" style="margin-bottom:0"><b>Csak Orvos / Mentőtiszt adhatja!</b><br>Max egyszeri dózis: 100 µg.</div>';
+     } else if(med === 'naloxon') {
+        var dn = w * 0.05;
+        var vn = dn / 0.4;
+        res = '<div class="res-num" style="color:#60a5fa">' + dn.toFixed(2) + ' mg</div>' +
+              '<div style="font-size:13px;color:#d1d5db;margin-bottom:10px">Térfogat (0,4mg/ml): <b>' + vn.toFixed(2) + ' ml</b></div>' +
+              '<div class="al al-d" style="margin-bottom:0"><b>Csak Orvos / Mentőtiszt adhatja!</b><br>Alternatív számítás: 8 ttkg-onként 1 ml.</div>';
+     }
+  } else {
+     res = '<div style="font-size:13px;color:#9ca3af">Kérjük, adjon meg érvényes testtömeget (vagy életkort gyermek esetén).</div>';
+  }
+  document.getElementById('c_res').innerHTML = res;
+}
+
+function renderCalc(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">IN Dózis Kalkulátor</h2>'+
+'<div class="card">'+
+'<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:4px">Gyógyszer</div>'+
+'<select id="c_med" onchange="updateCalc()">'+
+'<option value="midazolam">Midazolám (5 mg/ml)</option>'+
+'<option value="fentanil">Fentanil (50 µg/ml)</option>'+
+'<option value="naloxon">Naloxon (0,4 mg/ml)</option>'+
+'</select>'+
+'<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:4px">Beteg típusa</div>'+
+'<select id="c_type" onchange="updateCalc()">'+
+'<option value="child">Gyermek</option>'+
+'<option value="adult">Felnőtt</option>'+
+'</select>'+
+'<div id="c_age_wrap">'+
+'<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:4px">Életkor (év)</div>'+
+'<input type="number" id="c_age" min="1" max="14" placeholder="Kalkulációhoz..." oninput="updateCalc()">'+
+'</div>'+
+'<div id="c_weight_calc"></div>'+
+'<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:4px">Testtömeg (kg) - opcionális, ha a kor megadva</div>'+
+'<input type="number" id="c_weight" min="1" placeholder="Pontos kg..." oninput="updateCalc()">'+
+'<div class="res-box" id="c_res"><div style="font-size:13px;color:#9ca3af">Kérjük, adjon meg érvényes testtömeget (vagy életkort gyermek esetén).</div></div>'+
+'</div>';
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc') { c.innerHTML=renderCalc(); setTimeout(updateCalc, 50); }
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>

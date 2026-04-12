@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Hőártalmak Prehospitális Ellátása</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:760px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#eab308;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#eab308;font-weight:600;}
+
+/* CONTENT */
+.ct{padding:1rem;}
+
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:14px;font-weight:600;color:#eab308;margin:.75rem 0 .35rem;}
+
+/* LISTS */
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #10b981;}
+
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+table.tbl th{padding:6px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:6px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;line-height:1.4;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+
+/* BUTTONS */
+.btn{padding:.65rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;font-weight:600;}
+.btn:hover{background:#374151;}
+.btn-g{background:#eab308;color:#111827;border-color:#eab308;}
+.btn-g:hover{background:#ca8a04;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;margin-bottom:1rem;}
+.btn-row .btn{flex:1;text-align:center;}
+
+/* QUIZ/SIM OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* RESULT BOX */
+.res-box{border-radius:12px;padding:1.2rem;text-align:center;margin-top:.75rem;background:#262626;border:1px solid #3f3f3f;}
+.res-num{font-size:38px;font-weight:700;color:#eab308;margin-bottom:.5rem;}
+
+/* INPUTS */
+input[type=range], input[type=number]{width:100%;accent-color:#eab308;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:8px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;}
+input[type=range]{padding:0;border:none;height:24px;}
+
+/* TAGS & BADGES */
+.tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+.tag-r{background:#7f1d1d;color:#fecaca;}
+
+/* GLOSSARY TERM */
+.gl{color:#60a5fa;text-decoration:underline;text-decoration-style:dotted;cursor:pointer;font-weight:600;}
+
+/* HOME CARDS */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-2px);}
+.home-mod-icon{font-size:28px;margin-bottom:8px;}
+.home-mod-title{font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:3px;}
+.home-mod-desc{font-size:12px;color:#9ca3af;line-height:1.4;}
+
+/* CHAPTER ROW */
+.ch-row{display:flex;align-items:center;gap:12px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.show{display:flex;}
+.modal-content{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;width:100%;max-width:400px;padding:1.5rem;position:relative;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.modal-close{position:absolute;top:10px;right:10px;background:none;border:none;color:#9ca3af;font-size:24px;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:#f3f4f6;}
+.modal-title{font-size:18px;font-weight:700;color:#eab308;margin-bottom:.75rem;}
+.modal-text{font-size:14px;color:#d1d5db;line-height:1.6;}
+
+/* ALGORITHM DIAGRAM STYLES */
+.algo-box{border:1px solid #3f3f3f;border-radius:8px;padding:10px;margin-bottom:8px;text-align:center;font-size:12px;font-weight:600;}
+.ab-y{background:#78350f;color:#fde68a;border-color:#b45309;}
+.ab-b{background:#1e3a8a;color:#bfdbfe;border-color:#2563eb;}
+.ab-g{background:#064e3b;color:#bbf7d0;border-color:#10b981;}
+.ab-db{background:#111827;color:#f3f4f6;border-color:#4b5563;}
+
+@media(max-width:480px){.tbl-wrap table{min-width:340px;}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('algo')"><span class="ni">🔀</span><span class="nl">Algoritmus</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szituációk</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="modal-overlay" id="gModal" onclick="closeGlossary(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeGlossary(event)">&times;</button>
+    <div class="modal-title" id="gTitle">Szó</div>
+    <div class="modal-text" id="gText">Magyarázat</div>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={tab:'fluid', temp_curr:41.0, temp_target:39.0};
+
+// ── DICTIONARY (Idegen szavak) ───────────────────────────────────────
+var GLOSS = {
+  'hyperpyrexia': 'Extrém magas láz.',
+  'hyperthermia': 'Hőszabályozási zavar, a hypothalamus beállított hőmérsékleti értékének (<span class="gl" onclick="showGlossary(\'set-point\')">set-point</span>) változása nélkül. A lázcsillapítók hatástalanok!',
+  'set-point': 'A hypothalamus hőszabályozó központjának "beállított" célértéke (hasonlóan egy szobai termosztáthoz).',
+  'rectalis': 'Végbélben mért (maghőmérséklet). Hőártalom és megváltozott tudatállapot esetén a legmegbízhatóbb és kötelező módszer prehospitálisan.',
+  'tympanicus': 'Hallójáratban mért (hőmérséklet).',
+  'miliaria': 'Meleg- vagy hőkiütés. A verejtékmirigyek kivezető csöveinek elzáródása okozza.',
+  'rhabdomyolysis': 'A harántcsíkolt izomsejtek szétesése. Kialakulhat extrém fizikai terhelés után, ami akut veseelégtelenséghez vezethet.',
+  'hyponatraemia': 'Alacsony nátriumszint a vérben (<135 mmol/l). Terhelés esetén fokozott verejtékezés és nagy mennyiségű tiszta víz fogyasztása okozhatja.',
+  'hypoglykaemia': 'Alacsony vércukorszint a vérben (<3,3 - 4,0 mmol/l).',
+  'collapsus': 'Ájulás, hirtelen fellépő, rövid ideig tartó eszméletvesztés (syncope), amelyet a vérnyomás esése és az agyi véráramlás csökkenése okoz.',
+  'ehs': 'Fizikai terhelés okozta hőguta (Exertional Heat Stroke).',
+  'chs': 'Klasszikus hőguta (Classic Heat Stroke), nem fizikai terhelés, hanem passzív hőbehatás okozza (pl. időseknél, zárt térben).',
+  'dic': 'Disseminated Intravascular Coagulation - disszeminált intravascularis coagulatio. Súlyos, életveszélyes véralvadási zavar, a hőguta szövődménye lehet.',
+  'ards': 'Akut respirációs distressz szindróma (Acute Respiratory Distress Syndrome) - súlyos tüdőkárosodás.',
+  'hypotensio': 'Alacsony vérnyomás.',
+  'tachycardia': 'Szapora szívverés (magas pulzusszám).',
+  'tachypnoe': 'Szapora légzés (magas légzésszám).',
+  'krisztalloid': 'Olyan intravénás infúziós oldat (pl. Ringer-laktát, Salsol, Sterofundin), amely vizet és elektrolitokat tartalmaz.',
+  'rsi': 'Rapid Sequence Intubation - gyors sorrendű intubáció (légútbiztosítás gyógyszeres bénítással).'
+};
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Bevezetés és Alapfogalmak',icon:'🌡️',secs:[
+{t:'I. Célok',bk:[{tp:'bl',items:['Akut hőártalmak típusainak, okainak bemutatása','Prehospitális vizsgálat és ellátás fontosabb elemei','Intézeti ellátás szükségességének kritériumai','Magyar és nemzetközi irányelvek adaptációja, egységesítés']}]},
+{t:'II. Bevezetés',bk:[
+{tp:'bl',items:[
+  'Normál testhőmérséklet (orális): átlag 36,7 °C (35,3 - 37,7 °C)',
+  'A <span class="gl" onclick="showGlossary(\'rectalis\')">rectalis</span> hőmérséklet átlagosan 0,6 °C-kal magasabb (35,9 - 38,3 °C)',
+  'A <span class="gl" onclick="showGlossary(\'tympanicus\')">tympanicus</span> hőmérséklet megközelíti a rectalis értéket'
+]},
+{tp:'al',lv:'w',tx:'Hőártalmak esetén a perifériás eljárások (axillaris, oralis, non-contact) NEM megbízhatóak!'},
+{tp:'kr',items:[
+  'Láz: A <span class="gl" onclick="showGlossary(\'set-point\')">set-point</span> tolódik felfelé',
+  '<span class="gl" onclick="showGlossary(\'hyperpyrexia\')">Hyperpyrexia</span>: Extrém magas láz',
+  '<span class="gl" onclick="showGlossary(\'hyperthermia\')">Hyperthermia</span>: Hőszabályozási zavar set-point változás NÉLKÜL. Lázcsillapítók hatástalanok!'
+]},
+{tp:'note',tx:'Magas testhőmérséklettel járó egyéb kórképek (differenciáldiagnózis): Szepszis, KIR sérülések, status epilepticus, drog/gyógyszer túladagolás (kokain, amfetamin, ecstasy), szerotonin szindróma, diabeteses ketoacidosis stb.'}
+]}
+]},
+{id:'mentes',title:'Mentésirányítási Feladatok',icon:'🎧',secs:[
+{t:'A mentésirányítás feladatai hőártalom gyanújakor',bk:[
+{tp:'kr',items:[
+  'Minden esetben ABCD szerinti kikérdezés szükséges a veszélyeztető állapot kizárására.',
+  'Életveszély/súlyos állapot esetén magasabb szintű mentőegység azonnali riasztása.',
+  'Súlyos esetben a mentésirányító maradjon vonalban.'
+]},
+{tp:'sub',tx:'Tanácsok a mentőegység kiérkezéséig:'},
+{tp:'bl',items:[
+  'Hőgörcs: érintett testtáj nyugalomba helyezése, nyújtás, masszírozás, orális folyadékpótlás (sportitalok).',
+  'Hőségcollapsus / Hőkimerülés / Hőguta: fektetés, pozicionálás hűvös környezetben, orális folyadék (ha a tudat tiszta).',
+  '<span class="gl" onclick="showGlossary(\'hyperthermia\')">Hyperthermia</span> gyanújában: hideg folyóvíz / zuhany; nedves testre ventilátor + langyos víz porlasztása; jeges vízbe merítés; teljes törzsön hűtőborogatás (textíliák 1-2 percenkénti cseréjével); nagyerek fölé jég.'
+]}
+]}
+]},
+{id:'enyhe',title:'Enyhébb Kórképek',icon:'💧',secs:[
+{t:'Meleg-/hőkiütés (<span class="gl" onclick="showGlossary(\'miliaria\')">miliaria</span>)',bk:[
+{tp:'bl',items:[
+  'Újszülötteknél, csecsemőknél gyakori, de felnőtteknél is túlöltözés/hőség esetén.',
+  'Prehospitálisan teendőt nem igényel. Differenciáldiagnosztika fontos (fertőző kiütések kizárása).',
+  'Javaslat: laza ruházat, hűvös környezet/fürdő.'
+]}
+]},
+{t:'"Hővizenyő"',bk:[
+{tp:'bl',items:[
+  'Időseknél gyakori hőség hatására. Karokon, lábakon interstitialis folyadék felszaporodása (vasodilatatio miatt).',
+  'Testhőmérséklet normális.',
+  'Javaslat: végtagok megemelése, hűvösebb környezet. Diuretikumok KERÜLENDŐK!'
+]}
+]},
+{t:'"Hőgörcs" (terheléssel összefüggő izomgörcs)',bk:[
+{tp:'note',tx:'Az elnevezés téves, az izomgörcsöket jelentős, kimerülésig tartó fizikai terhelés váltja ki. Dehidráció és Na/K vesztés hozzájárulhat.'},
+{tp:'sub',tx:'Helyszíni teendők (MINDEN kompetenciaszint):'},
+{tp:'steps',items:[
+  {n:'1',t:'ABCDE betegvizsgálat',x:'Testhőmérséklet mérése is kötelező!'},
+  {n:'2',t:'Hűtés és pozícionálás',x:'Hűvös környezet, fektetés, árnyékolás. Szoros ruházat meglazítása.'},
+  {n:'3',t:'Folyadékpótlás',x:'Orális folyadékpótlás előnyben (magas elektrolit tartalmú italok/sportitalok). Vénás pótlás csak szájon át történő bevitel képtelensége esetén (kompetencia meglétekor).'},
+  {n:'4',t:'Izomkezelés',x:'Érintett testtáj nyugalomba helyezése, nyújtása (30-60 mp), masszírozása.'}
+]},
+{tp:'al',lv:'w',tx:'Benzodiazepinek és magnézium adása NEM javasolt, hatásuk nem bizonyított!'},
+{tp:'bl',items:[
+  'Általában jóindulatú, kórházba szállítást nem feltétlenül igényel (de mentőápoló önállóan nem hagyhat beteget a helyszínen).',
+  'Ha a görcsök tartósak vagy szisztémások: kórházi szállítás indokolt (szérum nátrium mérés, <span class="gl" onclick="showGlossary(\'rhabdomyolysis\')">rhabdomyolysis</span> kizárása miatt).'
+]}
+]}
+]},
+{id:'collapsus',title:'Hőségcollapsus / Terhelésre kialakuló ájulás',icon:'📉',secs:[
+{t:'Anamnézis, diagnózis',bk:[
+{tp:'bl',items:[
+  'A vénás visszaáramlás jelentős, hirtelen csökkenése okozza (magas hőmérséklet súlyosbítja).',
+  'Terhelésnél: általában versenyek/edzések BEFEJEZÉSE után jelentkezik.',
+  'Terhelés nélkül: hosszas egyhelyben állás, vagy hosszan tartó ülés utáni hirtelen felállás.',
+  'A testhőmérséklet leggyakrabban normális vagy enyhén emelkedett.',
+  'A tudatállapot rövid időn belül (15-20 perc) rendeződik (ez különbözteti meg a hőgutától).'
+]},
+{tp:'al',lv:'w',tx:'FONTOS: a hőségcollapsus MINDIG kizárásos diagnózis! Először az életveszélyes állapotokat kell kizárni (hirtelen szívhalál, hőguta, anafilaxia, trauma).'}
+]},
+{t:'Betegvizsgálat, azonnali teendők',bk:[
+{tp:'steps',items:[
+  {n:'1',t:'Keringés megítélése',x:'Eszméletvesztés esetén elsődleges a keringésmegállás kizárása (sz.e. BLS).'},
+  {n:'2',t:'ABCDE és Monitorozás',x:'O2, vércukor mérés, 12-elvezetéses EKG/TTEKG. Megváltozott tudatállapot esetén azonnali RECTALIS maghőmérséklet mérés kötelező!'},
+  {n:'3',t:'Pozícionálás',x:'Hűvös környezet, fektetés, lábak felemelése. Ruházat meglazítása.'},
+  {n:'4',t:'Hűtés (ha emelkedett a hő)',x:'Ha rectalis hő > normál, de < 40,5°C: hűtőborogatás (törzsön), ventilátor, zuhany.'},
+  {n:'5',t:'Folyadékpótlás',x:'Elsődlegesen ORÁLIS folyadékpótlás. Intravénás <span class="gl" onclick="showGlossary(\'krisztalloid\')">krisztalloid</span> ritkán indikált.'}
+]},
+{tp:'sub',tx:'Intravénás folyadékpótlás indikációi (kompetencia esetén):'},
+{tp:'bl',items:[
+  'Tartósan fennálló <span class="gl" onclick="showGlossary(\'hypotensio\')">hypotensio</span> / panaszok 20-30 perc fektetés és orális ivás ellenére.',
+  'Tartósan >40°C vagy <35°C hőmérséklet.',
+  '<span class="gl" onclick="showGlossary(\'hypoglykaemia\')">Hypoglykaemia</span> (<3,3 mmol/l) standard terápia ellenére.',
+  'Súlyos, nem múló izomgörcsök.',
+  'Tartós hányás/hasmenés, szájon át történő beviteli képtelenség.',
+  'Zavart tudatállapot.'
+]}
+]},
+{t:'Ellátás utáni teendők',bk:[
+{tp:'sub',tx:'Kórházba kell szállítani, ha:'},
+{tp:'bl',items:[
+  'Intravénás folyadékpótlásra szorult, vagy hűteni kellett.',
+  '30 percen belül nem szűnnek meg a panaszok.',
+  'Nem zárható ki egyéb ok a collapsus hátterében.'
+]},
+{tp:'sub',tx:'Helyszínen hagyás feltételei (mentőtiszt/orvos/szakmai iránymutatás):'},
+{tp:'kr',items:[
+  'Hemodinamikailag és klinikailag stabil (nincs visszatérő hypotensio)',
+  'Normothermiás',
+  'Szájon át tud folyadékot fogyasztani',
+  'Ülés teszt, Állás teszt, Járás teszt negatív (segítség és panasz nélkül képes járni)'
+]}
+]}
+]},
+{id:'kimerules',title:'Hőkimerülés & Heat Injury',icon:'🔋',secs:[
+{t:'Hőkimerülés (Heat exhaustion)',bk:[
+{tp:'bl',items:[
+  'Szervezet képtelen fenntartani a megfelelő perctérfogatot terhelés és hőség közepette.',
+  'Testhőmérséklet általában: 38,3 - 40,0 °C között.',
+  'NINCS jelentős KIR zavar (görcsroham, tartós tudatzavar). Ha van enyhe zavartság, az hűtésre/pihenésre gyorsan szűnik.',
+  'Tünetek: <span class="gl" onclick="showGlossary(\'tachycardia\')">tachycardia</span>, hypotensio, extrém gyengeség, profúz verejtékezés, hányinger, <span class="gl" onclick="showGlossary(\'ataxia\')">ataxia</span>.'
+]},
+{tp:'sub',tx:'Teendők:'},
+{tp:'steps',items:[
+  {n:'1',t:'Maghőmérséklet',x:'Megváltozott tudatállapot esetén haladéktalan rectalis maghőmérséklet mérés.'},
+  {n:'2',t:'Hűtés',x:'Célzott hűtés (zuhany, nedves lepedő, ventilátor, jég a nagyerek fölé). Egészen addig folytatni, míg a maghőmérséklet tartósan (15 perc) 38,3 °C alá csökken.'},
+  {n:'3',t:'Folyadékpótlás',x:'Orális folyadék. Szükség esetén (lásd collapsus) IV krisztalloid (felnőttnél 1-2 liter 500 ml/óra ütemben).'}
+]},
+{tp:'al',lv:'d',tx:'A hőkimerülésben szenvedő beteg kórházba szállítása NEM MELLŐZHETŐ!'}
+]},
+{t:'Heat injury',bk:[
+{tp:'bl',items:[
+  'Maghőmérséklet > 40,5 °C',
+  'Szervelégtelenség (vese/máj/rhabdomyolysis) észlelhető',
+  'NINCS neurológiai (KIR) tünet! (Ha lenne, az már hőguta).',
+  'Prehospitális ellátása nem különbözik a fizikai terhelés okozta hőguta ellátásától.'
+]}
+]}
+]},
+{id:'hoguta',title:'Hőguta (Heat Stroke)',icon:'🔥',secs:[
+{t:'I. Fizikai terhelés okozta Hőguta (EHS)',bk:[
+{tp:'al',lv:'d',tx:'ÉLETVESZÉLYES ÁLLAPOT! A kimenetel a hyperthermia fennállásának időtartamától függ. A külső hűtés AZONNALI megkezdése prioritást élvez!'},
+{tp:'sub',tx:'Jellemzői:'},
+{tp:'bl',items:[
+  'Emelkedett, rectalisan mért > 40,5 °C maghőmérséklet.',
+  'Központi idegrendszeri tünetek (eszméletvesztés, tudatzavar, görcsroham, irracionális viselkedés, agresszivitás).',
+  'Kialakulhat extrém fizikai aktivitás során.',
+  'Metabolikus eltérések (<span class="gl" onclick="showGlossary(\'hyponatraemia\')">hyponatraemia</span>, <span class="gl" onclick="showGlossary(\'hypoglykaemia\')">hypoglykaemia</span>) kísérhetik.'
+]},
+{tp:'sub',tx:'Azonnali teendők MINDEN mentőegység részére:'},
+{tp:'steps',items:[
+  {n:'1',t:'Rectalis hőmérséklet',x:'Megváltozott tudat esetén AZONNALI rectalis maghőmérséklet mérés (vetkőztetéssel egybekötve).'},
+  {n:'2',t:'Azonnali, radikális hűtés',x:'Cél: 30 percen belül 39,0 °C-ra csökkenteni a maghőt.\nIdeális: egész test jeges vízbe (5-15°C) merítése hálós hordággyal.\nAlternatíva: locsolás, jeges lepedők 1-2 percenkénti cseréje, jég a nagyerekhez.'},
+  {n:'3',t:'Vércukormérés',x:'MINDEN ESETBEN a hűtés megszakítása nélkül, az akut hypoglykaemia kizárására.\nHa seGlu < 4,0 mmol/l: 60-100 ml 20% glükóz IV.'},
+  {n:'4',t:'Transzport kritérium',x:'Megfelelő hűtési lehetőség esetén a szállítást CSAK AKKOR lehet megkezdeni, ha a maghőmérséklet stabilan (legalább 15 percen át) 39,0 °C alatt van!'}
+]},
+{tp:'al',lv:'w',tx:'Lázcsillapítót (pl. paracetamol, NSAID) NE alkalmazz! Hatástalanok és súlyosbíthatják a szövődményeket (akut vesekárosodás, <span class="gl" onclick="showGlossary(\'dic\')">DIC</span>).'},
+{tp:'note',tx:'Didergés/izomremegés (ami hőt termel) észlelésekor kisdózisú ketamin vagy midazolam megfontolható (emelt szintű kompetencia / <span class="gl" onclick="showGlossary(\'rsi\')">RSI</span>).'}
+]},
+{t:'II. NEM fizikai terhelés okozta Hőguta (Klasszikus - CHS)',bk:[
+{tp:'bl',items:[
+  'Magas mortalitás (21-63%). Passzív hőbehatás okozza (idősek, mozgáskorlátozottak zárt, meleg térben).',
+  'Testhőmérséklet > 40,5 °C és tudatzavar.',
+  'Gyógyszerhatások (béta-blokkoló, vízhajtó) hajlamosítanak rá.'
+]},
+{tp:'sub',tx:'Ellátási különbségek az EHS-hez képest:'},
+{tp:'bl',items:[
+  'A gyors hűtés itt is elengedhetetlen (38-39 °C-ig).',
+  'Azonban a teljes test jeges vízbe merítése ITT KEVÉSBÉ AJÁNLOTT az alapbetegségek, monitorozási nehézségek és az IV pótlás akadályozása miatt.',
+  'Inkább: párologtatásos hűtés, hideg zuhany, jeges borogatás a törzsön, jég a nagyerekhez.',
+  'Kórházba szállítás hűtést és stabilizálást követően (transzport alatt is hűteni kell, pl. benzinkúti jéggel).'
+]}
+]}
+]}
+];
+
+var QUIZ=[
+{q:'Melyik hőmérsékletmérési mód KÖTELEZŐ és legmegbízhatóbb hőártalom + megváltozott tudatállapot esetén prehospitálisan?',opts:['Hónaljban (axilláris)','Szájban (orális)','Végbélben (rectális)','Érintésmentes (non-contact) infra hőmérővel'],ok:2,exp:'Hőártalmak esetén a perifériás eljárások nem megbízhatóak. Megváltozott tudatállapotnál kötelező a rectalis mérés a pontos maghőmérséklet meghatározásához.'},
+{q:'Mi a különbség a hyperthermia és a láz között?',opts:['A hyperthermia esetén magasabb a hőmérséklet, mint láz esetén','Láz esetén a hypothalamus set-pointja tolódik el, hyperthermiánál nincs set-point változás','A hyperthermiát vírusok okozzák, a lázat baktériumok','Nincs különbség, a két szó szinonima'],ok:1,exp:'Láz esetén a hőszabályozó központ "célértéke" (set-point) megváltozik. Hyperthermiánál a szervezet túlmelegszik ezen beállítás változása nélkül. Ezért a lázcsillapítók hyperthermiában hatástalanok.'},
+{q:'Hőguta (EHS/CHS) gyanúja esetén szabad-e lázcsillapítót (pl. NSAID) adni?',opts:['Igen, azonnal intravénásan','Igen, de csak szájon át','Nem, mert hatástalanok és súlyosbíthatják a vese/májkárosodást (DIC-et)','Igen, a hűtéssel párhuzamosan'],ok:2,exp:'A lázcsillapítók hőguta esetén hatástalanok (nincs set-point eltolódás), és súlyos szövődményeket (akut vese/májkárosodás, DIC) provokálhatnak.'},
+{q:'Fizikai terhelés okozta hőgutánál (EHS) mi az elsődleges és legfontosabb beavatkozás?',opts:['Azonnali szállítás a legközelebbi kórházba (Load and Go)','Jeges vízbe merítés (teljes test hűtése) még a helyszínen, a hőmérséklet 39°C alá csökkentése','Széles spektrumú antibiotikum adása','Csak intravénás folyadékpótlás'],ok:1,exp:'EHS esetén az azonnali, agresszív helyszíni hűtés (lehetőleg jeges vízbe merítéssel) prioritást élvez. A szállítást csak stabil <39°C hőmérséklet elérésekor javasolt megkezdeni.'},
+{q:'Melyik KÉT életveszélyes állapotot kell mindenképpen kizárni vérvizsgálattal (kompetencia esetén) megváltozott tudatállapotú, összeesett sportolónál?',opts:['Hyperkalaemia és Hypocalcaemia','Hypoglykaemia és Hyponatraemia','Hyperglykaemia és Hypernatraemia','Anaemia és Leukopenia'],ok:1,exp:'A fizikai terhelés okozta hőgutát gyakran kísérheti vagy utánozhatja a terhelés indukálta hyponatraemia (alacsony nátrium) és hypoglykaemia (alacsony vércukor).'},
+{q:'Egy futóverseny CÉLBA ÉRKEZÉSE UTÁN 5 perccel a sportoló összeesik. Eszméleténél van, szédül, sápadt. A rectalis hőmérséklete 39,2 °C. Mi a legvalószínűbb diagnózis?',opts:['Fizikai terhelés okozta hőguta','Hőségcollapsus / Terhelésre kialakuló ájulás','Klasszikus hőguta','Rhabdomyolysis'],ok:1,exp:'A terhelés UTÁNI összeesés, megtartott tudat és <40,5°C hőmérséklet leginkább a hőségcollapsusra (poszturális hypotensio) utal. A hőguta általában terhelés közben történik és >40,5°C + tudatzavar kíséri.'},
+{q:'Hőgörcs esetén javasolt-e intravénás krisztalloid folyadék adása rutinszerűen?',opts:['Igen, minden esetben','Igen, de csak glükózzal együtt','Nem, az orális (szájon át történő) folyadékpótlás ugyanannyira hatásos, IV csak akkor kell, ha inni nem tud','Nem, folyadékpótlás egyáltalán nem szükséges'],ok:2,exp:'Az eljárásrend szerint részesítsük előnyben az orális folyadékpótlást, vénás adás csak itatás képtelensége esetén indikált.'},
+{q:'Meddig kell hűteni a fizikai terhelés okozta hőgutás (EHS) beteget a helyszínen?',opts:['Amíg a hőmérséklete 36,0 °C-ra nem csökken','Amíg tartósan (15 percig) 39,0 °C alá nem csökken','Maximum 10 percig','Csak addig, amíg a tudata feltisztul'],ok:1,exp:'A hűtést addig kell folytatni, míg a maghőmérséklete tartósan (legalább 15 percen át) 39,0 °C alá csökken, majd ott stabilizálódik. Ezután a hűtést fel lehet függeszteni a túlhűtés elkerülésére.'},
+{q:'Idős, zárt és forró lakásban talált beteg (Klasszikus Hőguta - CHS) esetében miért nem ajánlott a teljes test jeges vízbe merítése prehospitálisan?',opts:['Mert náluk gyorsabban kialakul a hypothermia','Az alapbetegségek, a monitorozás nehezítettsége és az IV folyadékpótlás akadályozása miatt','Mert a klasszikus hőguta nem igényel hűtést','Mert a hideg víz szívrohamot okoz minden idős embernél'],ok:1,exp:'Az eljárásrend leírja, hogy az EHS-sel ellentétben CHS-nél az idősek alapbetegségei és a monitorozási igény miatt a teljes kádfürdő kevésbé ajánlott, inkább párologtató hűtést és borogatást alkalmazzunk.'},
+{q:'Milyen ütemű intravénás krisztalloid pótlást javasol az eljárásrend hőkimerülés/collapsus esetén (felnőtteknél), ha az indikált?',opts:['1-2 liter 500 ml/óra ütemben','20 ml/ttkg bólusban 10 perc alatt','Maximum 250 ml/óra','Csak 5%-os dextrózt szabad adni'],ok:0,exp:'Általában 1-2 liter krisztalloid 500 ml/óra ütemben elegendő (felnőtteknél hőkimerülés/collapsus esetén, ha az iv. út indikált).'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Hőgörcs a pályán (B kompetencia)',diff:'B kompetencia',desc:'Egy 25 éves amatőr focista egy forró nyári napon meccs közben a földre rogyik, erősen fogja a vádliját, és erős izomfájdalomra panaszkodik. B kompetencia (szakképzett mentőápoló, nincs gyógyszer/IV).',steps:[
+{sit:'Megérkezel a sportpályára. Mi az első teendőd a betegellátás megkezdése előtt?',opts:[{tx:'Azonnal odarohanok és nyújtani kezdem a lábát.',ok:false,fb:'Hibás! A helyszínbiztonság mindig az első.'},{tx:'Meggyőződöm a helyszín biztonságáról, felveszem a védőfelszerelést.',ok:true,fb:'Helyes! Helyszínbiztonság és egyéni védelem.'},{tx:'Azonnal vizet itatok vele.',ok:false,fb:'Hibás! Még meg sem vizsgáltad a beteget.'}]},
+{sit:'A helyszín biztonságos. A beteg tiszta tudatú, kiabál a fájdalomtól a jobb vádlijában. Mi a vizsgálati sorrend?',opts:[{tx:'Csak a lábát vizsgálom meg, hiszen ott fáj.',ok:false,fb:'Hibás! Soha nem hagyjuk el a teljes vizsgálatot.'},{tx:'Szisztematikus ABCDE vizsgálat, melynek keretében KÖTELEZŐ a testhőmérséklet megmérése is.',ok:true,fb:'Helyes! Minden esetben teljes ABCDE kell, hőártalom gyanújakor hőmérséklet méréssel.'},{tx:'Azonnal megkérdezem az allergiáit.',ok:false,fb:'Hibás! Az anamnézis csak az ABCDE után jön.'}]},
+{sit:'Az ABCDE stabil, a hőmérséklete normális (37,2 °C). A beteg izzad. Hogyan pozícionálod a beteget az elsődleges teendők részeként?',opts:[{tx:'Otthagyom a napon, hogy melegen maradjon az izom.',ok:false,fb:'Hibás! A napon maradás ronthat a hőártalmon.'},{tx:'Minél hamarabb hűvös, árnyékos környezetbe viszem és lefektetem, a szoros ruházatot meglazítom.',ok:true,fb:'Helyes! A hűvös hely és a fektetés az alapvető teendő.'},{tx:'Megkérem, hogy fusson egy kört, hogy "kimenjen" a görcs.',ok:false,fb:'Hibás! A további terhelés szigorúan tilos.'}]},
+{sit:'A görcsös fájdalom (vádli) enyhítésére milyen fizikális beavatkozást alkalmazol?',opts:[{tx:'Nyugalomba helyezem a végtagot, 30-60 másodpercig nyújtom, majd masszírozom.',ok:true,fb:'Helyes! Ez a protokoll szerinti izomkezelés hőgörcs esetén.'},{tx:'Jeges vízzel leöntöm a lábát.',ok:false,fb:'Hibás! Ez sokkot okozhat az izomnak és nem kezeli a görcsöt megfelelően.'},{tx:'Erősen ütögetem a görcsös izmot.',ok:false,fb:'Hibás! Ez sérülést okozhat.'}]},
+{sit:'A beteg szomjas. Milyen formában biztosítod a folyadékpótlást B kompetenciával (és mi az eljárásrend preferenciája is)?',opts:[{tx:'Azonnal IV krisztalloidot kellene adnom, de mivel nem tudok, mentőtisztet hívok.',ok:false,fb:'Hibás! Az IV folyadék nem elsődleges hőgörcsnél.'},{tx:'Orálisan (szájon át) itatom sportitallal vagy magas elektrolittartalmú folyadékkal.',ok:true,fb:'Helyes! Az orális pótlás ugyanolyan hatásos, és B kompetenciával kivitelezhető.'},{tx:'Nem adok neki inni, nehogy hányjon.',ok:false,fb:'Hibás! A rehidratáció kulcsfontosságú.'}]},
+{sit:'A csapat edzője hoz egy kis doboz "izomlazító" tablettát és magnéziumot, hogy adja be neki. Mi a teendő?',opts:[{tx:'Beadom neki, biztosan segít.',ok:false,fb:'Hibás! B kompetenciával nem adhatsz be ismeretlen gyógyszert, ráadásul...'},{tx:'Nem adom be. Az eljárásrend szerint benzodiazepinek (izomlazítók) és magnézium adása hőgörcs esetén nem javasolt, hatásuk nem bizonyított.',ok:true,fb:'Helyes! Ezek a szerek nem hatékonyak a terheléses hőgörcsnél.'},{tx:'Csak a magnéziumot adom be.',ok:false,fb:'Hibás! A magnézium sem javasolt.'}]},
+{sit:'Tíz perc pihenés, nyújtás és ivás után a beteg vádligörcse teljesen megszűnik, vitális paraméterei normálisak. Milyen súlyos szövődmény lehetőségére kell gondolnod (differenciáldiagnózis), ha a görcs nem szűnt volna meg?',opts:[{tx:'Stroke.',ok:false,fb:'Hibás! A stroke ritkán okoz izolált lábikragörcsöt.'},{tx:'Terhelés indukálta rhabdomyolysis (izomszétesés) vagy sarlósejtes jelleg.',ok:true,fb:'Helyes! Súlyos, nem múló görcs esetén ez a fő veszély.'},{tx:'Tüdőembólia.',ok:false,fb:'Hibás! Nem okoz vádli görcsöt, bár DVT után lehet, de itt terheléses görcsről van szó.'}]},
+{sit:'Mivel a beteg teljesen panaszmentes lett, otthon maradhat-e az eljárásrend alapján?',opts:[{tx:'Igen, egy mentőápoló önálló döntés alapján helyszínen hagyhatja.',ok:false,fb:'Hibás! Mentőápoló önállóan nem hagyhat beteget a helyszínen.'},{tx:'A hőgörcs jóindulatú, kórházi szállítást orvosilag ritkán igényel, de a mentőápoló önállóan nem hagyhatja helyszínen, ezért orvosi/mentésirányítói konzultáció szükséges a helyszínen hagyáshoz.',ok:true,fb:'Helyes! A protokoll kitér erre a kompetenciahatárra.'},{tx:'Nem, minden hőgörcsöt azonnal reanimációs osztályra kell vinni.',ok:false,fb:'Hibás! A hőgörcs a legenyhébb forma.'}]},
+{sit:'Ha orvosi konzultáció után a helyszínen hagyás mellett döntötök, milyen teszteket KÖTELEZŐ elvégezni az eljárásrend szerint (a collapsusnál is leírtak alapján)?',opts:[{tx:'Látásteszt és hallásteszt.',ok:false,fb:'Hibás! Nem relevánsak.'},{tx:'Ülés teszt, Állás teszt és Járás teszt (önállóan, panaszok nélkül képes legyen rá).',ok:true,fb:'Helyes! Csak ezután hagyható a helyszínen.'},{tx:'Terheléses EKG.',ok:false,fb:'Hibás! Nem kivitelezhető és nem szükséges prehospitálisan.'}]},
+{sit:'A tesztek negatívak (jól van). Milyen tanáccsal látod el a beteget távozás előtt?',opts:[{tx:'Menjen vissza azonnal játszani a meccsre.',ok:false,fb:'Hibás! A további terhelés tilos.'},{tx:'Pihenjen hűvösön, folytassa a folyadékpótlást, és kerülje a hosszas hőségben tartózkodást, valamint a hirtelen felállást.',ok:true,fb:'Helyes! Ez a standard megelőző és utókezelési tanács.'},{tx:'Menjen el szaunázni, hogy az izom ellazuljon.',ok:false,fb:'Hibás! A hőhatás ront a helyzeten.'}]}
+],summary:'Összefoglaló (Hőgörcs - B kompetencia): A helyszínbiztonság után teljes ABCDE vizsgálatot végeztünk hőméréssel. A beteget azonnal árnyékba fektettük, az érintett izmot nyújtottuk és masszíroztuk. Folyadékpótlásra orálisan sportitalt használtunk (B kompetencia, de az eljárásrend is ezt preferálja). Gyógyszert (Mg, izomlazító) nem adtunk, mivel hatástalanok. A panaszok szűnése után kizártuk a rhabdomyolysist. Mivel ápoló nem hagyhat beteget helyszínen, orvosi/mentésirányítói konzultáció történt. A helyszínen hagyás előtt a beteget leültettük, felállítottuk és megjárattuk (panaszmentes). Végül hűvös pihenést és további folyadékfogyasztást javasoltunk, a terhelés azonnali folytatását megtiltottuk.'},
+
+{id:2,title:'2. Szimuláció: Hőségcollapsus futóversenyen (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy maratoni futó a célvonalon való áthaladás után 2 perccel összeesik. B+ kompetencia (szakképzett mentőápoló, IV / gyógyszer).',steps:[
+{sit:'A beteg a célban fekszik. Eszméletlen. Mi az elsődleges, azonnali feladat?',opts:[{tx:'Azonnal vérnyomást mérni.',ok:false,fb:'Hibás! Eszméletlen betegnél más az első lépés.'},{tx:'A keringésmegállás kizárása (CPR szükségességének felmérése).',ok:true,fb:'Helyes! Az algoritmus (Összeesett sportoló) első lépése a CPR megítélése.'},{tx:'Azonnal jégfürdőbe dobni.',ok:false,fb:'Hibás! Még nem vizsgáltad a keringését és hőmérsékletét.'}]},
+{sit:'Lélegzik, van pulzusa. Megváltozott tudatállapota van (zavart). Mi a következő KÖTELEZŐ diagnosztikus lépés az eljárásrend szerint?',opts:[{tx:'A rectalis maghőmérséklet azonnali mérése.',ok:true,fb:'Helyes! Megváltozott tudatú, összeesett sportolónál a rectalis hőmérés elengedhetetlen a hőguta kizárására.'},{tx:'Axilláris (hónalj) hőmérséklet mérése.',ok:false,fb:'Hibás! A perifériás mérés hőártalomnál megbízhatatlan.'},{tx:'Vércukormérés.',ok:false,fb:'Hibás! Bár kötelező lesz, de a hőmérséklet a triage kulcsa.'}]},
+{sit:'A rectalis hőmérséklete 39,2 °C. Tehát < 40,5 °C. Az anamnézis szerint a TERHELÉS UTÁN esett össze. Mire gondolsz elsősorban (diagnózis)?',opts:[{tx:'Terhelés indukálta hőguta (EHS).',ok:false,fb:'Hibás! Ahhoz >40,5 °C és általában terhelés alatti összeesés kell.'},{tx:'Hőségcollapsus / Terhelésre kialakuló posturalis hypotensio.',ok:true,fb:'Helyes! Terhelés utáni összeesés, normál/enyhén emelkedett hővel ( <40,5 °C) típusosan ez.'},{tx:'Anafilaxia.',ok:false,fb:'Hibás! Nincs allergiás jel.'}]},
+{sit:'Mi a helyes testhelyzet a beteg számára a hőségcollapsus kezelésére?',opts:[{tx:'Felültetem, hogy jobban kapjon levegőt.',ok:false,fb:'Hibás! A collapsus oka a vénás visszaáramlás csökkenése, az ülés rontja.'},{tx:'Hűvös, szellős helyen lefektetem, esetleg a lábait felemelem.',ok:true,fb:'Helyes! Ez segíti a vénás visszaáramlást és javítja az agyi vérellátást.'},{tx:'Hason fektetem.',ok:false,fb:'Hibás! Nem segíti a keringést és akadályozza a légzésvizsgálatot.'}]},
+{sit:'Milyen hűtési metódust alkalmazol ennél a 39,2 °C-os, collapsusos betegnél az eljárásrend alapján?',opts:[{tx:'Azonnali teljes test jeges vízbe merítése (ice bath).',ok:false,fb:'Hibás! Mivel < 40,5 °C a maghő, a drasztikus jégfürdő nem indikált.'},{tx:'Hűtőborogatás a törzsön jeges textíliákkal, ventilátor, permetezés.',ok:true,fb:'Helyes! Enyhébb hyperthermia esetén ez a preferált kíméletes hűtés.'},{tx:'Nem hűtöm, mert 40 fok alatt van.',ok:false,fb:'Hibás! A 39,2 is magas, hűteni kell.'}]},
+{sit:'A beteg még 15 perc múlva is zavart, vérnyomása 80/50 Hgmm (hypotensio fennáll). B+ kompetenciával milyen beavatkozást végzel a folyadékpótlásra?',opts:[{tx:'Tovább erőltetem az orális itatást.',ok:false,fb:'Hibás! Zavart beteg nem itatható, és a hypotensio tartós.'},{tx:'Intravénás (IV) utat biztosítok és krisztalloid infúziót indítok.',ok:true,fb:'Helyes! Tartós hypotensio és zavartság a vénás folyadékpótlás indikációja.'},{tx:'Csak várom a magasabb szintű segítséget.',ok:false,fb:'Hibás! B+ kompetenciával a vénabiztosítás a te feladatod.'}]},
+{sit:'Az IV bekötésekor vért is tudsz venni vércukor és nátrium méréshez. Miért fontos kizárni a hyponatraemiát egy maratoni futónál?',opts:[{tx:'Mert a sok tiszta víz ivása és az izzadás miatt lezuhanhatott a nátrium szintje (vízmérgezés), ami zavartságot okoz.',ok:true,fb:'Helyes! A terhelés indukálta hyponatraemia súlyos, tudatzavart okozó kórkép.'},{tx:'Mert a nátrium okozza a magas testhőmérsékletet.',ok:false,fb:'Hibás! Nem okoz lázat.'},{tx:'Nem fontos, a nátrium nem változik terhelés alatt.',ok:false,fb:'Hibás! Nagyon is változik.'}]},
+{sit:'A vércukor 5,2 mmol/l (normál), Na 138 mmol/l (normál). A beteg 30 perce kapja az infúziót, de még mindig szédül, vérnyomása 90/60 Hgmm. Mi a teendő az eljárásrend alapján?',opts:[{tx:'Kórházba kell szállítani, mert intravénás folyadékra szorult és 30 percen belül nem szűntek meg a panaszai.',ok:true,fb:'Helyes! Ezek egyértelmű kórházba szállítási kritériumok.'},{tx:'Helyszínen hagyható, mert a Na és a vércukor normális.',ok:false,fb:'Hibás! A panaszok nem múltak el és IV-t kapott.'},{tx:'Adok neki még 2 liter vizet szájon át és hazaküldöm.',ok:false,fb:'Hibás! Tilos.'}]},
+{sit:'Kórházba szállítás során hogyan monitorozod a beteget?',opts:[{tx:'Csak ránézéssel, hiszen már jobban van.',ok:false,fb:'Hibás! A beteg instabil maradt.'},{tx:'Folyamatos vitális paraméter monitorozás (EKG, vérnyomás, SpO2) és a maghőmérséklet követése.',ok:true,fb:'Helyes! A kritikus/bizonytalan beteget folyamatosan monitorozni kell.'},{tx:'Csak a vércukrot mérem percenként.',ok:false,fb:'Hibás! A vércukor egyszeri mérése jó volt, a teljes monitorozás kell.'}]},
+{sit:'A szállítás során a beteg hirtelen ismét eszméletlenné válik. Mit teszel?',opts:[{tx:'Azonnal CPR-t kezdek a monitor jelzése nélkül is.',ok:false,fb:'Hibás! Előbb meg kell vizsgálni.'},{tx:'Az ABCDE vizsgálatot az elejéről (A ponttól) újra megismétlem, ellenőrzöm az életjelenségeket.',ok:true,fb:'Helyes! Állapotváltozás esetén az ABCDE vizsgálat elölről ismétlendő.'},{tx:'Gyorsítom a mentőt és nem csinálok semmit a hátuljában.',ok:false,fb:'Hibás! A betegellátást folytatni kell.'}]}
+],summary:'Összefoglaló (Hőségcollapsus - B+ kompetencia): A terhelés után összeesett futónál elsőként a CPR szükségességét zártuk ki. Mivel a beteg eszméletlen/zavart volt, azonnal RECTALIS hőt mértünk. Az érték (39,2 °C, <40,5) a terhelés utáni anamnézissel hőségcollapsusra utalt. A beteget hűvösbe vittük, lefektettük (lábak fel), és kíméletes (borogatásos) hűtést alkalmaztunk. A tartós hypotensio és zavartság miatt B+ szinten IV utat biztosítottunk és krisztalloid infúziót adtunk. A vércukor és nátrium méréssel kizártuk a hyponatraemiát és hypoglykaemiát. Mivel a panaszok 30 percen túl is fennálltak és IV pótlást igényelt, a beteget (szállítási kritériumoknak megfelelően) kórházba szállítottuk folyamatos vitális és hőmérséklet monitorozás mellett. Az állapotváltozás (újra eszméletvesztés) az ABCDE azonnali újraértékelését vonta maga után.'},
+
+{id:3,title:'3. Szimuláció: Terheléses Hőguta (EHS) egy akadályversenyen (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 22 éves katona/sportoló a nyári kiképzés (akadálypálya) KÖZBEN hirtelen összeesik, görcsöl, majd eszméletlen marad. B+ kompetencia.',steps:[
+{sit:'Kiérkeztek. A beteg eszméletlen a tűző napon. A légzésvizsgálat során kiderül, hogy van megfelelő légzése és pulzusa. Mi az azonnali diagnostikai lépés a hőártalom protokollja szerint?',opts:[{tx:'Vérnyomásmérés.',ok:false,fb:'Hibás! Fontos, de van sürgősebb.'},{tx:'Megváltozott tudatállapot miatt haladéktalan RECTALIS maghőmérséklet mérés (vetkőztetéssel egybekötve).',ok:true,fb:'Helyes! Az EHS algoritmus kritikus első lépése a maghőmérséklet meghatározása.'},{tx:'Pupillák vizsgálata zseblámpával.',ok:false,fb:'Hibás! A D vizsgálat része, de a hősokk kizárása sürgősebb.'}]},
+{sit:'A rectalis hőmérséklet 41,2 °C. A beteg tudatzavaros, az összeesés terhelés KÖZBEN történt. Mi a diagnózis?',opts:[{tx:'Fizikai terhelés okozta hőguta (EHS).',ok:true,fb:'Helyes! A terhelés alatti összeesés, >40,5 °C és a tudatzavar klasszikus EHS triász.'},{tx:'Hőkimerülés.',ok:false,fb:'Hibás! Hőkimerülésnél a hőmérséklet < 40,0 °C és nincs tartós tudatzavar.'},{tx:'Melegkiütés.',ok:false,fb:'Hibás! Ez egy bőrjelenség.'}]},
+{sit:'Mi a legfontosabb, életmentő beavatkozás EHS (41,2 °C) esetén, amely megelőzi a szállítást is?',opts:[{tx:'Azonnali berakodás a mentőbe (Load and Go).',ok:false,fb:'Hibás! A hűtés megelőzi a szállítást.'},{tx:'A testhőmérséklet csökkentése (hűtés) elsődleges prioritás, lehetőleg azonnal az egész test hűtőfürdőbe (jeges vízbe) merítésével.',ok:true,fb:'Helyes! A túlélés kulcsa a 30 percen belüli gyors lehűtés (lehetőleg ice bath).'},{tx:'Lázcsillapító injekció beadása.',ok:false,fb:'Hibás! A lázcsillapítók hatástalanok és veszélyesek EHS-ben.'}]},
+{sit:'Szerencsére az elsősegély sátornál van jeges fürdő (5-15 °C). Hogyan helyezed bele a beteget és mire figyelsz?',opts:[{tx:'Hálós hordággyal vagy manuálisan beemelem, fejét és nyakát a víz felett tartva (pl. törölközővel), a vizet folyamatosan keverve.',ok:true,fb:'Helyes! Ez a protokoll szerinti helyes merítési és hűtési technika.'},{tx:'Arcával lefelé belefektetem.',ok:false,fb:'Hibás! Megfulladna.'},{tx:'Csak a lábait teszem bele.',ok:false,fb:'Hibás! A teljes test (törzs) hűtése kell.'}]},
+{sit:'A hűtés közben a beteg nagyon kezd didergősen remegni (shivering). Miért probléma ez, és milyen gyógyszeres beavatkozást említ az eljárásrend (ami emelt szintű, de megfontolandó)?',opts:[{tx:'A remegés hőt termel. Kisdózisú ketamin vagy rövid hatású benzodiazepin (midazolam) adása megfontolható.',ok:true,fb:'Helyes! A didergés rontja a hűtés hatékonyságát.'},{tx:'A remegés jó, mert hűti a testet. Nem csinálok semmit.',ok:false,fb:'Hibás! A remegés izommunka, hőt termel.'},{tx:'Azonnal kiveszem a vízből.',ok:false,fb:'Hibás! A hűtést folytatni kell a célhőmérsékletig.'}]},
+{sit:'A beteg a jégfürdőben van. B+ kompetenciával milyen paramétert KÖTELEZŐ megmérned a hűtés megszakítása nélkül a metabolikus eltérések kizárására?',opts:[{tx:'Vércukorszint (akut hypoglykaemia kizárása céljából).',ok:true,fb:'Helyes! EHS-nél gyakori a hypoglykaemia, amit azonnal kezelni kell.'},{tx:'Koleszterinszint.',ok:false,fb:'Hibás! Nem akut életmentő paraméter.'},{tx:'Vérkép (hemoglobin).',ok:false,fb:'Hibás! Prehospitálisan nehezen mérhető és nem az elsődleges eltérés EHS-ben.'}]},
+{sit:'A vércukor 2,8 mmol/l (súlyos hypoglykaemia). A beteg még eszméletlen. Mit teszel B+ kompetenciával?',opts:[{tx:'Adok neki a szájába egy kis cukrot.',ok:false,fb:'Hibás! Eszméletlen betegnél aspiráció (félrenyelés) veszélye áll fenn.'},{tx:'Intravénás úton 60-100 ml 20%-os glükózt adok (bólusban), mely 15 percenként ismételhető.',ok:true,fb:'Helyes! Eszméletlen betegnél a vénás glükóz a biztonságos és protokolláris.'},{tx:'Inzulint adok.',ok:false,fb:'Hibás! Az tovább csökkentené a cukrot.'}]},
+{sit:'Folyamatosan méred a rectalis hőt a fürdőben. Mikor (milyen hőmérsékletnél) KELL felfüggeszteni a hűtést az eljárásrend szerint?',opts:[{tx:'Amikor a hőmérséklet 36,0 °C-ra csökken.',ok:false,fb:'Hibás! Ez túlhűtéshez (iatrogén hypothermia) vezetne.'},{tx:'Amikor a hőmérséklet stabilan (15 percen át) 39,0 °C alá csökken.',ok:true,fb:'Helyes! A 39,0 °C a célhőmérséklet, ez alatt a hűtést meg kell állítani.'},{tx:'Maximum 5 perc után, függetlenül a hőtől.',ok:false,fb:'Hibás! A célhőmérséklet a mérvadó, nem az idő.'}]},
+{sit:'A maghőmérséklet elérte a 38,8 °C-ot, a hűtést felfüggeszted, a beteget kiveszed a fürdőből. A tudata kezd feltisztulni. Indulhat a transzport a kórházba?',opts:[{tx:'Igen, mivel a hűtés sikeres volt és a hőmérséklet stabilan 39,0 °C alatt van, a kórházba szállítás megkezdhető.',ok:true,fb:'Helyes! A transzport feltétele a megfelelő hűtés és a stabil (<39,0) maghőmérséklet.'},{tx:'Nem, otthon hagyom, mert jobban van.',ok:false,fb:'Hibás! Az EHS életveszélyes, szervkárosodással járhat, kötelező a kórház.'},{tx:'Nem, várni kell még 3 órát a helyszínen.',ok:false,fb:'Hibás! A stabilizálás után a kórházi definitív ellátás (vese/máj funkciók ellenőrzése) a cél.'}]},
+{sit:'A szállítás alatt mi a legfontosabb specifikus feladatod az általános monitorozáson túl?',opts:[{tx:'Csak a sebességre figyelek.',ok:false,fb:'Hibás! A betegellátás folyamatos.'},{tx:'A maghőmérséklet (rectalis) folyamatos monitorozása, mert ha ismét 39 °C fölé emelkedik, a hűtést újra kell kezdeni (pl. benzinkúti jéggel).',ok:true,fb:'Helyes! A visszamelegedés (rebound hyperthermia) valós veszély.'},{tx:'Lázcsillapító tabletták beadása.',ok:false,fb:'Hibás! Továbbra is hatástalanok és veszélyesek.'}]}
+],summary:'Összefoglaló (Terheléses Hőguta - B+ kompetencia): A terhelés közben összeesett, eszméletlen katonánál az első vizsgálatok után (ABCDE) azonnal RECTALIS hőt mértünk (vetkőztetéssel). Az érték (41,2 °C) EHS-t igazolt. Az eljárásrend alapján az AZONNALI jeges vízbe merítés volt a prioritás, még a szállítás előtt. A vízben folyamatosan mértük a rectalis hőt és biztosítottuk a fejet. B+ kompetenciával (IV) kizártuk a hypoglykaemiát, de 2,8 mmol/l értéket kaptunk, így IV 20%-os glükózt adtunk. A didergés csillapítására (emelt szinten) midazolam lett volna adható. A hűtést a célhőmérséklet (39,0 °C) elérésekor azonnal felfüggesztettük a túlhűtés elkerülése végett. A transzportot csak a stabil <39 °C elérése után kezdtük meg, a szállítás alatt pedig folyamatosan monitoroztuk a maghőmérsékletet a visszamelegedés (rebound) megelőzésére. Lázcsillapítót egyáltalán nem adtunk.'},
+
+{id:4,title:'4. Szimuláció: Klasszikus Hőguta zárt lakásban (B kompetencia)',diff:'B kompetencia',desc:'Egy 78 éves nénit a szomszédok találnak meg egy 40 fokosra felmelegedett, zárt panellakásban. A beteg zavart, forró a bőre, alig reagál. B kompetencia (szakképzett mentőápoló, nincs IV/gyógyszer).',steps:[
+{sit:'Belépsz a forró lakásba. Mi a legelső dolgod a betegellátás szempontjából, mielőtt a beteget vizsgálni kezded?',opts:[{tx:'Azonnal megvizsgálom a beteget.',ok:false,fb:'Hibás! A helyszín biztonsága és a hőség csökkentése fontos.'},{tx:'Győződöm a biztonságról, és megpróbálom hűteni/szellőztetni a környezetet (ablaknyitás, ventilátor), vagy a beteget hűvösebb helyre (pl. folyosó) viszem.',ok:true,fb:'Helyes! A hőterhelés megszakítása (hűvösbe vitel) az első lépés.'},{tx:'Keresem a néni gyógyszereit.',ok:false,fb:'Hibás! Az ellátás prioritása a hűtés.'}]},
+{sit:'A beteget kihoztad a hűvösebb folyosóra. Szisztematikus ABCDE során az A és B rendben. C: pulzus 130/perc, nagyon száraz, forró bőr. D: zavart, GCS=10. Milyen hőmérőt kell használnod?',opts:[{tx:'Csak hónalji hőmérőt.',ok:false,fb:'Hibás! Nem megbízható.'},{tx:'Mindenképpen rectalis (végbél) hőmérőt, mert a tudatállapot megváltozott és a bőr forró.',ok:true,fb:'Helyes! Klasszikus hőgutánál (CHS) is kötelező a pontos maghőmérés.'},{tx:'Infra hőmérőt a homlokon.',ok:false,fb:'Hibás! Téves értékeket adhat.'}]},
+{sit:'A rectalis hő 41,5 °C. Fizikai terhelés nem történt (napok óta a lakásban van). Mi ez a kórkép?',opts:[{tx:'Terheléses hőguta (EHS).',ok:false,fb:'Hibás! Nincs terhelés a háttérben.'},{tx:'Klasszikus hőguta (NEM fizikai terhelés okozta).',ok:true,fb:'Helyes! Passzív hőbehatás okozta magas maghő és tudatzavar.'},{tx:'Egyszerű láz (infekció).',ok:false,fb:'Hibás! A környezeti tényezők egyértelműen hőgutára utalnak.'}]},
+{sit:'Klasszikus hőgutánál (CHS) az eljárásrend szerint mi a legjavasoltabb hűtési módszer prehospitálisan?',opts:[{tx:'Azonnali teljes test jeges vízbe merítése (mint az EHS-nél).',ok:false,fb:'Hibás! Időseknél az alapbetegségek miatt ez kevésbé ajánlott.'},{tx:'Párologtató hűtés (nedves test + ventilátor), jég a nagyerek fölé, hideg zuhany/borogatás a törzsön.',ok:true,fb:'Helyes! Ez a kíméletesebb, de mégis hatékony hűtési forma javasolt CHS-ben.'},{tx:'Csak hűvös levegő, semmi víz.',ok:false,fb:'Hibás! Az önmagában nagyon lassú.'}]},
+{sit:'Mivel a beteg GCS=10 (zavart) és a vérnyomása alacsony (90/50), ráadásul te csak B kompetenciával (IV nélkül) rendelkezel, mi a teendő a helyszíni mentésirányítással?',opts:[{tx:'Egyedül megoldom a helyszínen.',ok:false,fb:'Hibás! A beteg kritikus állapotban van.'},{tx:'Azonnal magasabb kompetenciájú mentőegységet (ALS / mentőtiszt / orvos) kérek, mert a klasszikus hőguta életveszélyes és a beteg instabil.',ok:true,fb:'Helyes! A magas mortalitás és az IV/gyógyszer igény miatt ALS kell.'},{tx:'Azonnal elindulok a legközelebbi ügyeletre.',ok:false,fb:'Hibás! Kórházi (intenzív) szintű ellátás és útközbeni ALS kell.'}]},
+{sit:'A szomszéd odaadja a néni lázcsillapítóját (Paracetamol), hogy "biztos jó lesz a lázára". Mit csinálsz?',opts:[{tx:'Összetöröm és beadom neki vízzel.',ok:false,fb:'Hibás! Veszélyes és a beteg zavart is (aspiráció).'},{tx:'Szigorúan elutasítom. A lázcsillapítók hyperthermiában hatástalanok, sőt, ronthatják a vese- és májfunkciót (szövődmények).',ok:true,fb:'Helyes! Ez alapszabály a hőártalmaknál.'},{tx:'Csak fél adagot adok.',ok:false,fb:'Hibás! Egyáltalán nem szabad adni.'}]},
+{sit:'A néni hirtelen egész testre kiterjedő görcsrohamot kap. Mit teszel elsőként B kompetenciával?',opts:[{tx:'Leeresztem a karjait és erősen lefogom.',ok:false,fb:'Hibás! Lefogni tilos, sérülést okoz.'},{tx:'Óvom a sérülésektől (fej alá puha tárgy), biztosítom a légutakat (oldalfekvés a roham után), és sürgetem az ALS érkezését a rohamoldás miatt.',ok:true,fb:'Helyes! B szinten a fizikai védelem és a légútbiztosítás az elsődleges.'},{tx:'Intravénás Midazolamot adok.',ok:false,fb:'Hibás! B kompetenciával nem adhatsz IV gyógyszert.'}]},
+{sit:'A hűtés hatására a maghőmérséklet elkezd csökkenni. Mikor kell a hűtést abbahagyni?',opts:[{tx:'Ha eléri a 38-39 °C-os rectalis hőmérsékletet, a iatrogén hypothermia (túlhűtés) elkerülése végett.',ok:true,fb:'Helyes! Az EHS-hez hasonlóan a 38-39 °C közötti érték a cél.'},{tx:'Már 40 °C-nál abbahagyom.',ok:false,fb:'Hibás! Az még veszélyesen magas.'},{tx:'Csak ha teljesen normális (36,5 °C) lesz.',ok:false,fb:'Hibás! A szervezet utóhűlése miatt ebből 34 fokos hypothermia lenne.'}]},
+{sit:'A segélykocsi megérkezik, bekötik az IV folyadékot. A szállítás a kórházba elkezdődik. Mit ír az eljárásrend a CHS (klasszikus hőguta) betegek szállításáról?',opts:[{tx:'A szállítás alatt a hűtést be kell fejezni.',ok:false,fb:'Hibás! Ha kell, folytatni kell.'},{tx:'A szállítás alatt a szokásos paraméterek mellett a maghőmérsékletet is FOLYAMATOSAN monitorozni kell, és szükség esetén (ha visszamelegszik) a hűtést transzport közben is folytatni kell (pl. benzinkúti jéggel).',ok:true,fb:'Helyes! A folyamatos monitorozás és szükség esetén a transzport alatti hűtés kritikus.'},{tx:'Csak akkor lehet szállítani, ha felébredt.',ok:false,fb:'Hibás! A szállítás nem halogatható, a definitív kórházi ellátás elengedhetetlen.'}]},
+{sit:'A kórház felé tartva a néni légzése zajos lesz (horkolás). Mi a teendő a mentőautóban (B szinten a társad is segíthet)?',opts:[{tx:'Azonnal leállítjuk a mentőt és intubálunk.',ok:false,fb:'Hibás! B szinten nincs intubáció.'},{tx:'Mivel állapotváltozás történt, az ABCDE-t elölről kezdjük. "A" vizsgálat: a horkolás lágyrész elzáródásra (hátraeső nyelv) utal, az áll emelésével és egyszerű légúti eszközzel (Guedel/OPA) biztosítjuk a légutat.',ok:true,fb:'Helyes! Állapotváltozás = újraértékelés, és a horkolás = légút megnyitási teendő.'},{tx:'Megemeljük a fejrészét az ágynak.',ok:false,fb:'Hibás! Eszméletlen/zavart betegnél önmagában a fejemelés nem biztosítja a légutat.'}]}
+],summary:'Összefoglaló (Klasszikus Hőguta - B kompetencia): A 40 fokos zárt lakásból a beteget azonnal hűvösebb helyre (folyosó) vittük. Az ABCDE vizsgálat és a zavart tudat (GCS=10) alapján azonnal RECTALIS hőt mértünk, ami >41,5 °C volt. Passzív hőbehatás révén Klasszikus Hőgutát (CHS) diagnosztizáltunk. A magas mortalitás és az instabil állapot miatt B szintű egységként azonnal ALS segélykocsit kértünk. Az időskori alapbetegségek miatt az agresszív jégfürdő helyett kíméletesebb, de hatékony párologtató hűtést és jeges borogatást (a nagyerek fölé) alkalmaztunk. A lázcsillapítót megtagadtuk (hatástalan és veszélyes). A hirtelen fellépő görcsroham alatt a beteget védtük a sérülésektől. A hűtést a cél (38-39 °C) elérésekor felfüggesztettük. A szállítás alatt (ALS megérkezése után) a maghőmérséklet folyamatos monitorozása és szükség esetén transzport alatti hűtés volt a feladat. A szállítás közbeni légzészavar (horkolás) miatt az ABCDE-t újraértékeltük, és az A (légút) pontban beavatkoztunk (állkiemelés, OPA).'}
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── RENDERERS ────────────────────────────────────────────────────────
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+h(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>'; /* We allow HTML in items for GL tags */
+  if(b.tp==='kr') return '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+i+'</div>').join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+b.tx+'</div>';
+  if(b.tp==='note') return '<div class="note">'+b.tx+'</div>';
+  if(b.tp==='steps') return b.items.map(s=>'<div style="display:flex;gap:10px;margin-bottom:12px"><div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#eab308;color:#111827;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800">'+s.n+'</div><div style="flex:1;background:#262626;border-radius:8px;padding:.65rem .85rem"><div style="font-size:14px;font-weight:700;color:#f3f4f6;margin-bottom:.3rem">'+s.t+'</div><div style="font-size:13px;color:#9ca3af;line-height:1.6;white-space:pre-line">'+s.x+'</div></div></div>').join('');
+  return '';
+}
+
+function showGlossary(word) {
+  var term = word.toLowerCase();
+  var text = GLOSS[term];
+  if (!text) return;
+  document.getElementById('gTitle').innerHTML = word.charAt(0).toUpperCase() + word.slice(1);
+  document.getElementById('gText').innerHTML = text;
+  document.getElementById('gModal').classList.add('show');
+}
+function closeGlossary(e) {
+  document.getElementById('gModal').classList.remove('show');
+}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#eab308;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Szabványos Eljárásrend</div>'+
+'<h1 style="font-size:24px;font-weight:800;color:#f3f4f6;margin-bottom:6px;line-height:1.2">Hőártalmak Prehospitális Ellátása</h1>'+
+'<div style="font-size:13px;color:#9ca3af">OMSZ Orvosszakmai Osztály Szakmai Munkacsoportja (v1.0)</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','Teljes feldolgozott szöveg'],['algo','🔀','Algoritmus','Összeesett sportoló'],['quiz','❓','Kvíz','10 tesztkérdés'],['sim','🚑','Szituációk','4 klinikai eset'],['calc','🧮','Kalkulátor','Folyadék és Hűtés']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Használat:</b> A kék, pontozott vonallal aláhúzott szavakra kattintva felugró ablakban olvasható a szakkifejezések magyarázata.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:20px;font-weight:800;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend (Tananyag)</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:40px;height:40px;border-radius:10px;background:#eab30820;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+c.title+'</div><div style="font-size:12px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#eab308;font-size:20px;font-weight:700">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#eab308;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:700">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem"><div style="width:46px;height:46px;border-radius:12px;background:#eab30820;display:flex;align-items:center;justify-content:center;font-size:24px">'+c.icon+'</div>'+
+'<h2 style="font-size:20px;font-weight:800;color:#f3f4f6;margin:0">'+c.title+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:16px;font-weight:800;color:#eab308;margin-bottom:.85rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+s.t+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderAlgo(){
+return '<h2 style="font-size:20px;font-weight:800;margin-bottom:.75rem;color:#f3f4f6">Összeesett Sportoló Algoritmusa</h2>'+
+'<div class="card" style="background:#1e1e1e">'+
+  '<div class="algo-box ab-y">Összeesett sportoló</div>'+
+  '<div style="text-align:center;color:#9ca3af;font-size:18px;margin-bottom:4px">↓</div>'+
+  '<div class="algo-box ab-b">CPR szükséges?</div>'+
+  '<div class="g2" style="margin-bottom:8px">'+
+    '<div class="algo-box ab-db" style="border-right:3px solid #b91c1c">IGEN → CPR megkezdése, sz.e. transzport</div>'+
+    '<div class="algo-box ab-db" style="border-left:3px solid #10b981">NEM ↓</div>'+
+  '</div>'+
+  '<div class="algo-box ab-b">Azonnali vizsgálat: Megváltozott tudatállapot?</div>'+
+  '<div class="g2" style="margin-bottom:8px">'+
+    '<div>'+
+      '<div class="algo-box ab-db" style="border-bottom:3px solid #10b981">NEM ↓</div>'+
+      '<div class="algo-box ab-b">Ismételt vizsgálat (2-5 perc): Megváltozott tudatállapot?</div>'+
+      '<div class="g2">'+
+        '<div class="algo-box ab-db">IGEN → Áttérés a bal ágra</div>'+
+        '<div class="algo-box ab-db">NEM ↓<br>Hőségcollapsus / Kimerülés gyanúja<br>Jeges törülköző, rehidráció<br>További obszerváció, sz.e. transzport</div>'+
+      '</div>'+
+    '</div>'+
+    '<div>'+
+      '<div class="algo-box ab-db" style="border-bottom:3px solid #b91c1c">IGEN ↓</div>'+
+      '<div class="algo-box ab-y">Terhelés indukálta HŐGUTA (EHS) gyanúja</div>'+
+      '<div class="algo-box ab-b">Szállítás hűtésre alkalmas helyre. Rectalis hőmérséklet mérése!</div>'+
+      '<div class="g2">'+
+        '<div class="algo-box ab-db" style="color:#fca5a5">≥ 40,5 °C<br>Terhelés indukálta hőguta ↓</div>'+
+        '<div class="algo-box ab-db" style="color:#bbf7d0">< 40,5 °C<br>Jeges törölközők, obszerváció, re-mérés ↓</div>'+
+      '</div>'+
+      '<div class="algo-box ab-b" style="margin-top:4px">Beteg jeges vízbe helyezése (5-15°C), HŰTÉS azonnali megkezdése.</div>'+
+      '<div class="algo-box ab-b">Véranalízis (hyponatraemia / hypoglykaemia kizárása hűtés alatt). Folyamatos rectalis monitorozás.</div>'+
+      '<div class="algo-box ab-g">Hűtés 39°C eléréséig.</div>'+
+      '<div class="algo-box ab-b">Hűtést követően megfigyelés (hypothermia elkerülése).</div>'+
+      '<div class="algo-box ab-y">Javuló tudatállapot ÉS termoreguláció?</div>'+
+      '<div class="g2">'+
+        '<div class="algo-box ab-db" style="border-bottom:3px solid #10b981">IGEN → Transzport</div>'+
+        '<div class="algo-box ab-db" style="border-bottom:3px solid #b91c1c">NEM → (Rectalis hőmérséklet 36°C alá csökkent? Ha igen: melegítés. Ha nem: egyéb kórképek gyanúja)</div>'+
+      '</div>'+
+    '</div>'+
+  '</div>'+
+'</div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:20px;font-weight:800;margin-bottom:.75rem;color:#f3f4f6">Kvíz Eredmény</h2>'+
+'<div class="res-box" style="background:'+(good?'#064e3b':'#451a03')+';border-color:'+(good?'#065f46':'#78350f')+'">'+
+'<div style="font-size:46px;font-weight:800;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:16px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:16px;font-weight:800;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:10px"><div style="font-size:14px;font-weight:700;color:#f3f4f6;margin-bottom:6px">'+QUIZ[a.qi].q+'</div><div style="font-size:13px;color:#fca5a5;margin-bottom:3px">✗ Te válaszod: '+QUIZ[a.qi].opts[a.pi]+'</div><div style="font-size:13px;color:#4ade80;margin-bottom:6px">✓ Helyes: '+QUIZ[a.qi].opts[QUIZ[a.qi].ok]+'</div><div style="font-size:12px;color:#9ca3af;padding-top:4px;border-top:1px solid #3f3f3f">'+QUIZ[a.qi].exp+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Kvíz Újraindítása</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:20px;font-weight:800;margin:0;color:#f3f4f6">Tudáspróba</h2><span style="font-size:13px;font-weight:700;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#eab308"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:700;color:#f3f4f6;line-height:1.5;margin:0">'+q.q+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'>'+opt+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+q.exp+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:20px;font-weight:800;margin-bottom:.75rem;color:#f3f4f6">Klinikai Szituációk</h2>'+
+'<div class="al al-w">Válassz egy esetet! Minden szituáció 10 lépésből áll, és az eljárásrend teljes folyamatát lefedi.</div>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:15px;font-weight:800;color:#f3f4f6">'+s.title+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-r')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:13px;color:#9ca3af;margin-bottom:6px;line-height:1.5">'+s.desc+'</div>'+
+'<div style="font-size:12px;font-weight:600;color:#eab308">'+s.steps.length+' döntési pont</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:19px;font-weight:800;margin-bottom:.5rem;color:#f3f4f6">'+sim.title+' - Eredmény</h2>'+
+'<div class="res-box" style="background:#064e3b;border-color:#065f46;margin-bottom:.75rem">'+
+'<div class="res-num" style="color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:14px;color:#4ade80;font-weight:700">helyes döntés</div></div>'+
+'<div class="card" style="background:#172554;border-color:#1e3a8a"><h3 style="font-size:16px;font-weight:800;color:#60a5fa;margin-bottom:8px">Részletes Összefoglaló</h3><div style="font-size:13px;color:#bfdbfe;line-height:1.6">'+sim.summary+'</div></div>'+
+'<h3 style="font-size:15px;font-weight:700;color:#f3f4f6;margin:1rem 0 .5rem">Lépéseid:</h3>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:8px;background:#262626"><div style="font-size:13px;font-weight:700;color:#f3f4f6;margin-bottom:6px">'+(i+1)+'. '+st.sit+'</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+opt.tx+'</div><div style="font-size:12px;color:#9ca3af;padding-top:4px;border-top:1px solid #3f3f3f">'+opt.fb+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:12px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:14px;font-weight:800;color:#eab308">'+sim.title+'</div><span style="font-size:13px;font-weight:700;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#b91c1c"></div></div>'+
+(SI.step===0?'<div class="al al-w" style="font-size:12px">'+sim.desc+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626;border-left:4px solid #eab308"><p style="font-size:15px;font-weight:700;color:#f3f4f6;line-height:1.5;margin:0">'+step.sit+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'>'+opt.tx+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'" style="font-weight:600">'+step.opts[SI.chosen].fb+'</div><button class="btn btn-g btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Eredmény megtekintése')+'</button>':'');
+}
+
+function upTemp() {
+  let diff = Math.max(0, CA.temp_curr - CA.temp_target);
+  let min_time = Math.ceil(diff / 0.2); 
+  
+  var tc_v = document.getElementById('tc_v');
+  if(tc_v) tc_v.textContent = CA.temp_curr.toFixed(1) + ' °C';
+  
+  var tt_v = document.getElementById('tt_v');
+  if(tt_v) tt_v.textContent = CA.temp_target.toFixed(1) + ' °C';
+  
+  var temp_res = document.getElementById('temp_res');
+  if(temp_res) temp_res.innerHTML = (diff <= 0 ? '0' : min_time) + ' <span style="font-size:20px">perc</span>';
+}
+
+function renderCalc(){
+function tabBtn(id,lbl){return '<button onclick="setCalcTab(\''+id+'\')" style="flex:1;padding:.65rem;border:1px solid '+(CA.tab===id?'#eab308':'#3f3f3f')+';border-radius:8px;background:'+(CA.tab===id?'#eab308':'#2a2a2a')+';color:'+(CA.tab===id?'#111827':'#d1d5db')+';cursor:pointer;font-size:14px;font-weight:700;font-family:inherit">'+lbl+'</button>';}
+
+if (CA.tab==='fluid'){
+  return '<h2 style="font-size:20px;font-weight:800;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>'+
+  '<div style="display:flex;gap:8px;margin-bottom:1rem">'+tabBtn('fluid','IV Folyadék / Glükóz')+tabBtn('temp','Hűtési Idő (EHS)')+'</div>'+
+  '<div class="card">'+
+  '<h3 style="font-size:16px;font-weight:800;color:#60a5fa;margin-bottom:.5rem">Intravénás Krisztalloid (Felnőtt)</h3>'+
+  '<div class="note">Javallat: Hőkimerülés / Hőségcollapsus tartós (<30p) hypotensio, zavart tudat, súlyos izomgörcs vagy oralis beviteli képtelenség esetén.</div>'+
+  '<div class="res-box" style="background:#172554;border-color:#1e3a8a;margin-top:.5rem">'+
+  '<div style="font-size:14px;color:#bfdbfe;margin-bottom:4px;font-weight:600">Javasolt mennyiség és ütem:</div>'+
+  '<div style="font-size:24px;font-weight:800;color:#60a5fa">1 - 2 Liter</div>'+
+  '<div style="font-size:18px;font-weight:700;color:#93c5fd;margin-top:4px">500 ml / óra ütemben</div>'+
+  '</div></div>'+
+  '<div class="card">'+
+  '<h3 style="font-size:16px;font-weight:800;color:#fca5a5;margin-bottom:.5rem">Glükózpótlás Hypoglykaemia esetén</h3>'+
+  '<div class="note">Fizikai terhelés okozta hőguta (EHS) esetén gyakori a seGlu < 4,0 mmol/l. Hűtés megszakítása nélkül adandó!</div>'+
+  '<div class="res-box" style="background:#450a0a;border-color:#7f1d1d;margin-top:.5rem">'+
+  '<div style="font-size:14px;color:#fecaca;margin-bottom:4px;font-weight:600">Javasolt IV dózis (Eszméletlen/Zavart):</div>'+
+  '<div style="font-size:24px;font-weight:800;color:#fca5a5">60 - 100 ml 20%-os glükóz</div>'+
+  '<div style="font-size:14px;font-weight:600;color:#fecaca;margin-top:4px">Bólusban, szükség esetén 15 percenként ismételhető.</div>'+
+  '</div></div>';
+}
+
+if (CA.tab==='temp'){
+  let diff = Math.max(0, CA.temp_curr - CA.temp_target);
+  let min_time = Math.ceil(diff / 0.2); 
+  
+  return '<h2 style="font-size:20px;font-weight:800;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>'+
+  '<div style="display:flex;gap:8px;margin-bottom:1rem">'+tabBtn('fluid','IV Folyadék / Glükóz')+tabBtn('temp','Hűtési Idő (EHS)')+'</div>'+
+  '<div class="card">'+
+  '<h3 style="font-size:16px;font-weight:800;color:#eab308;margin-bottom:.5rem">Hűtési Idő Becslő (Jeges vízfürdő)</h3>'+
+  '<div class="note">Az eljárásrend alapján jeges vízben történő hűtés során átlagosan kb. 0,2 °C / perc hőmérsékletcsökkenés feltételezhető. A célhőmérséklet 39,0 °C, ezen a ponton a hűtést be kell fejezni.</div>'+
+  
+  '<div style="margin-bottom:1rem">'+
+  '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><div style="font-size:13px;font-weight:700;color:#9ca3af">Jelenlegi Maghőmérséklet (Rectalis)</div><span id="tc_v" style="font-size:15px;font-weight:800;color:#f3f4f6">'+CA.temp_curr.toFixed(1)+' °C</span></div>'+
+  '<input type="range" min="39.0" max="43.0" step="0.1" value="'+CA.temp_curr+'" oninput="setTempCurr(this.value)" onchange="setTempCurr(this.value)">'+
+  '</div>'+
+
+  '<div style="margin-bottom:1rem">'+
+  '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><div style="font-size:13px;font-weight:700;color:#9ca3af">Cél Hőmérséklet (Hűtés leállítása)</div><span id="tt_v" style="font-size:15px;font-weight:800;color:#10b981">'+CA.temp_target.toFixed(1)+' °C</span></div>'+
+  '<input type="range" min="36.0" max="40.0" step="0.1" value="'+CA.temp_target+'" oninput="setTempTarget(this.value)" onchange="setTempTarget(this.value)">'+
+  '</div>'+
+
+  '<div class="res-box" style="background:#451a03;border-color:#78350f;margin-top:.5rem">'+
+  '<div style="font-size:14px;color:#fde68a;margin-bottom:6px;font-weight:600">Becsült szükséges hűtési idő (jeges kádban):</div>'+
+  '<div id="temp_res" style="font-size:38px;font-weight:800;color:#eab308">'+(diff<=0 ? '0' : min_time)+' <span style="font-size:20px">perc</span></div>'+
+  '<div style="font-size:12px;color:#fde68a;margin-top:6px">A megadott érték csak iránymutató! A maghőmérsékletet a hűtés alatt <b>folyamatosan, objektíven (rectalisan)</b> mérni kell!</div>'+
+  '</div></div>';
+}
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='algo')c.innerHTML=renderAlgo();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc')c.innerHTML=renderCalc();
+
+// The new order: Főoldal, Eljárásrend, Algoritmus, Kvíz, Szituációk, Kalkulátor
+var tabs=['home','chapters','algo','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){if(b)b.classList.toggle('act',tabs[i]===active);});
+
+if(!CA.noScroll) window.scrollTo(0,0);
+CA.noScroll=false;
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});CA.noScroll=true;render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;CA.noScroll=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};CA.noScroll=true;render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;CA.noScroll=true;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});CA.noScroll=true;render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;CA.noScroll=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};CA.noScroll=true;render();};
+window.setCalcTab=function(t){CA.tab=t;CA.noScroll=true;render();};
+
+window.setTempCurr=function(v){
+  CA.temp_curr=parseFloat(v);
+  upTemp();
+};
+window.setTempTarget=function(v){
+  CA.temp_target=parseFloat(v);
+  upTemp();
+};
+
+render();
+</script>
+</body>
+</html>

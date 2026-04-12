@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Rögzítések a prehospitális ellátásban</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);overflow-x:auto;}
+.nb{flex:1;min-width:65px;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:14px;font-weight:700;color:#14b8a6;margin:.85rem 0 .45rem;border-bottom:1px solid #333;padding-bottom:3px;}
+ul.bl{margin:0 0 .75rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.3rem;}
+.kr{display:flex;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+.step-wrap{display:flex;gap:10px;margin-bottom:10px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#14b8a6;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-body{flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;}
+.step-t{font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;}
+.step-x{font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:6px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:6px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;line-height:1.4;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.6rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;font-weight:600;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.75rem 1rem;margin-bottom:8px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+/* INPUTS & CHECKBOXES */
+input[type=number]{width:100%;accent-color:#14b8a6;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:10px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;}
+.chk-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#262626;border-radius:8px;margin-bottom:6px;border:1px solid #3f3f3f;cursor:pointer;}
+.chk-row:hover{background:#333;}
+.chk-row input{width:18px;height:18px;accent-color:#14b8a6;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:3px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* FOREIGN WORD (GLOSSARY) */
+.fw{color:#38bdf8;border-bottom:1px dotted #38bdf8;cursor:pointer;font-weight:600;}
+.fw:hover{color:#7dd3fc;}
+/* MODAL */
+#modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;display:none;align-items:center;justify-content:center;padding:1rem;}
+#modal-content{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;width:100%;max-width:400px;padding:1.5rem;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+#modal-title{font-size:16px;font-weight:700;color:#14b8a6;margin-bottom:10px;}
+#modal-text{font-size:13px;color:#d1d5db;line-height:1.6;margin-bottom:1.5rem;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimulációk</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátorok</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-content" onclick="event.stopPropagation()">
+    <div id="modal-title">Kifejezés</div>
+    <div id="modal-text">Magyarázat</div>
+    <button class="btn btn-fw" onclick="closeModal(true)">Bezárás</button>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={tab:'smr', smr_crit:[], wt:80};
+
+// GLOSSARY DICTIONARY
+var GLOSSARY = {
+  'prehospitális': 'Kórházba érkezés előtti (helyszíni és szállítás alatti) sürgősségi ellátás.',
+  'SMR': 'Spinal Motion Restriction. A gerinc kóros mozgásainak korlátozása, a gerincvelő védelme érdekében alkalmazott rögzítési stratégia.',
+  'MILS': 'Manual In-line Stabilization. A fej és a nyaki gerinc manuális (kézi), neutrális (tengelyirányú) pozícióban történő stabilizálása a végleges rögzítésig.',
+  'intoxikáció': 'Mérgezés. Gyógyszer, alkohol, kábítószer vagy egyéb toxikus anyag által okozott tudatmódosult állapot.',
+  'lacerált': 'Tépett, zúzott sebzés, amely jelentős roncsolódással jár.',
+  'amnesia': 'Emlékezetkiesés. Retrográd amnesia esetén a beteg a balesetet/eseményt megelőző időszakra nem emlékszik.',
+  'penetráló': 'Áthatoló. Olyan sérülés, amely megnyitja a testüreget (pl. lőtt, szúrt seb).',
+  'lapáthordágy': 'Más néven scoop stretcher. Kétfelé nyitható (kanálszerű) rögzítő eszköz, amellyel a beteget minimális mozgatással (aláillesztéssel) lehet megemelni és rögzíteni.',
+  'vákuummatrac': 'Olyan rögzítő eszköz, amely a benne lévő levegő kiszívásával a beteg testalkatához formálódva merevvé válik. Jelenleg a lapáthordágy az elsődleges az OMSZ-nél.',
+  'board': 'Spinal board. Kemény, lapos műanyag gerincágy. Kimentésre (roncsból, vízből) kiváló, de hosszas szállításra a lapáthordágy javasolt.',
+  'log roll': 'Farönk-forgatás. A beteg hossztengelye mentén történő, a gerinc csavarodását elkerülő oldalra fordítás (pl. boardra vagy lapáthordágyra helyezéshez).',
+  'ala ossis ilii': 'Csípőlapát. A medencecsont felső, széles része.',
+  'trochanter major': 'Nagytompor. A combcsont (femur) felső részén tapintható csontos kiemelkedés. A medencerögzítőt ennek a magasságában kell felhelyezni!',
+  'KÉM': 'Keringés, Érzés, Mozgás. Végtagsérüléseknél a rögzítés előtt és után kötelezően elvégzendő perifériás neurológiai és vaszkuláris vizsgálat.',
+  'femur': 'Combcsont. Törése esetén jelentős (akár 1500 ml) vérvesztés is felléphet, rögzítésére prehospitálisan húzósín a legalkalmasabb.',
+  'humerus': 'Felkarcsont. Bizonyos esetekben a húzósín humeruson is alkalmazható vérzéscsillapításra és rögzítésre.',
+  'hypovolaemiás': 'Keringő vérmennyiség csökkenése (pl. vérzés miatt) okozta sokkos állapot.',
+  'diaphysealis': 'A csöves csontok középső, csöves része (test). Húzósínt a humerus ezen részének törésére lehet felhelyezni.',
+  'n. radialis': 'Nervus radialis (orsócsonti ideg). A felkarcsont törése vagy húzása során könnyen megsérülhet.',
+  'distalis': 'A test középvonalától, vagy a végtag eredésétől távolabb eső rész.',
+  'proximalis': 'A test középvonalához, vagy a végtag eredéséhez közelebb eső rész.',
+  'patella': 'Térdkalács. Ficama esetén a térdízület általában hajlított helyzetben rögzül.',
+  'sulcus': 'Árok, barázda. Itt: a térdízületben az a barázda, amelyben a térdkalács (patella) normálisan mozog.',
+  'repozíció': 'A kificamodott ízület vagy a tört csontvégek eredeti anatómiai helyzetbe történő visszahelyezése. Általában orvosi/mentőtiszti feladat megfelelő analgézia mellett.',
+  'analgosedatio': 'Fájdalomcsillapítás és nyugtatás (altatás) együttes alkalmazása, amely szükséges pl. egy repozícióhoz.',
+  'CT': 'Komputertomográfia. Kórházi képalkotó eljárás. Célunk, hogy a lapáthordágyon rögzített beteget a kórházban közvetlenül a CT asztalra lehessen áthelyezni.',
+  'transzport': 'Szállítás. Szekunder transzport: két egészségügyi intézmény közötti betegszállítás.',
+  'ABCDE': 'A prehospitális állapotfelmérés algoritmusa (Airway, Breathing, Circulation, Disability, Exposure).',
+  'AVPU': 'Tudatállapot vizsgáló skála (Alert, Verbal, Pain, Unresponsive).',
+  'GCS': 'Glasgow Coma Scale. A tudatzavar mélységének számszerűsítésére használt pontrendszer.',
+  'hypoxia': 'Oxigénhiányos állapot a szövetekben.',
+  'immobilizáció': 'Rögzítés, a mozgás megakadályozása.',
+  'ischaemia': 'Helyi vérszegénység, a vérellátás akadályozottsága.',
+  'oedema': 'Vizenyő, folyadékfelszaporodás a szövetekben.',
+  'anaphylaxia': 'Súlyos, életveszélyes allergiás reakció.',
+  'krupp': 'A felső légutak vírusos gyulladása, mely ugató köhögéssel és stridorral jár.',
+  'stridor': 'Húzó, sípoló légzési hang, mely a felső légutak szűkületére utal.',
+  'hypoxaemia': 'Kórosan alacsony oxigénszint a vérben.',
+  'cyanosis': 'Szederjesség. A bőr és a nyálkahártyák kékes elszíneződése az oxigénhiány miatt.',
+  'crepitatio': 'Hóropogásszerű hang tapintáskor vagy hallgatózáskor (pl. csonttörésnél vagy tüdőben).',
+  'PTX': 'Pneumothorax (légmell). Levegő gyülemlik fel a mellhártya lemezei között.',
+  'thoracostomia': 'Sebészi beavatkozás, melynek során nyílást készítenek a mellkasfalon.',
+  'anisocoria': 'A két pupilla átmérőjének egyenlőtlensége (több mint 1 mm különbség).',
+  'supraorbitalis': 'Szemgödör feletti (pl. a supraorbitalis ideg nyomása fájdalomingert vált ki).',
+  'bulbus': 'Szemgolyó.',
+  'anasarca': 'Kiterjedt, egész testre kiterjedő vizenyő (ödéma).',
+  'abrasio': 'Horzsolás, a bőr felső rétegének sérülése.',
+  'suffusio': 'Véraláfutás, vér beszivárgása a szövetekbe.',
+  'relaxált': 'Izomzatilag ellazult állapot (pl. gyógyszer vagy eszméletlenség miatt).',
+  'szekunder transzport': 'Két egészségügyi intézmény közötti betegszállítás.',
+  'primer': 'Elsődleges. Primer prehospitális ellátás = a helyszínen történő első ellátás.'
+};
+
+function showDef(word) {
+  var desc = GLOSSARY[word] || 'Nincs elérhető magyarázat.';
+  document.getElementById('modal-title').innerText = word.toUpperCase();
+  document.getElementById('modal-text').innerText = desc;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+function closeModal(force) {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+function wfw(text) {
+  var words = Object.keys(GLOSSARY);
+  // Hossz szerint csökkenő sorrend a rövidebb szavak fals kicserélésének elkerülésére
+  words.sort(function(a, b) { return b.length - a.length; });
+  var out = text;
+  words.forEach(function(w) {
+    var escapedW = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Csak szavakat (és kötőjeles / ponttal kezdődőket) keresünk meg, megvédve a már HTML tageken belüli részeket
+    var reg = new RegExp('(^|[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ])(' + escapedW + ')(?=[^a-zA-ZáéíóöőúüűÁÉÍÓÖŐÚÜŰ]|$)', 'gi');
+    out = out.replace(reg, function(match, p1, p2, offset, string) {
+      var openBrackets = string.lastIndexOf('<', offset);
+      var closeBrackets = string.lastIndexOf('>', offset);
+      if (openBrackets > closeBrackets) return match; // ha tagen belül vagyunk, nem nyúlunk hozzá
+      return p1 + '<span class="fw" onclick="event.stopPropagation();showDef(\'' + w + '\')">' + p2 + '</span>';
+    });
+  });
+  return out;
+}
+
+// FORMATTING HELPER
+function h(s){return wfw(String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));}
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'I-II. Célok és Bevezetés',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'Célok',bk:[{tp:'bl',items:['A beteg, ill. sérült testrész manuális/eszközös rögzítésének jelentősége','A fej és a nyaki gerinc rögzítése','A nem kívánt gerincmozgást korlátozó egész test rögzítés','Különböző testrészek rögzítésének módjai és eszközei','Sérültek mozgatásának, szállításának módja','Bizonyíték nélküli, haszontalan vagy káros beavatkozások mellőzése']}]},
+{t:'A rögzítés célja',bk:[{tp:'bl',items:['Az izommunka átvétele, tehermentesítés','Másodlagos elmozdulás csökkentése (izomösszehúzódás/gravitáció miatt)','Fájdalom csillapítása/csökkentése','Biztonságos szállítás és a szállítási trauma csökkentése']}]},
+{t:'Alapelvek',bk:[
+{tp:'kr',items:['Kezdetben manuális rögzítés, majd eszközös (az ABCDE vizsgálat után).','Előzetes fájdalomcsillapítás szükséges (kivéve ABCD instabilitás esetén a sürgető kimentéskor).','Keringés/érzészavar, erősödő fájdalom jelentkezésekor a rögzítés korrekciója kell.','Nyugtalan beteg rögzítése fájdalomcsillapítás/szedáció nélkül KÁROS lehet. Keressük az okot (pl. hypoxia, fájdalom).','Éber sérült is rögzítést igényel a szállítási erők miatt.','Eszméletlen sérült felesleges mozgatása hiba. 360 fokos körüljárhatóság!','Csak rendszeresített eszközök (pl. pneumatikus sín TILOS).']}
+]}
+]},
+{id:'smr',title:'III. SMR (Fej és gerinc)',icon:'🧠',acc:'#8b5cf6',secs:[
+{t:'Spinal Motion Restriction (SMR)',bk:[
+{tp:'note',tx:'A gerinc teljes immobilizációját ritkán érjük el, cél a kóros mozgások csökkentése.'},
+{tp:'sub',tx:'1. A sérülési mechanizmus értékelése (Magas rizikó):'},
+{tp:'bl',items:['Magasból esés (>2 méter, gyermeknél: testmagasság x 2-3)','Tengelyirányú fej/nyaksérülés (pl. sekély vízbe ugrás, fejre esett tárgy)','Nagysebességű autóbaleset (>100 km/h)','Járműbe beszorult, kirepült, vagy utastársa meghalt','Gázolásban sérült','Nagysebességű kerékpáros/motorbaleset']},
+{tp:'al',lv:'d',tx:'Ezekben az esetekben a vizsgálat pillanatától: FOLYAMATOS MILS, majd merev nyakgallér, lapáthordágy, headblock!'},
+{tp:'sub',tx:'2. A beteg AVPU-ABCDE vizsgálata MILS mellett (Klinikai kritériumok):'},
+{tp:'al',lv:'i',tx:'Tompa trauma esetén elhagyható a rögzítés, HA az alábbiak MINDEGYIKE teljesül:'},
+{tp:'bl',items:['65 év alatti életkor','Nincs nyaki/háti fájdalom és/vagy középvonali nyomásérzékenység','Nem merül fel intoxikáció','Megtartott tudat (GCS 15)','Nincs friss neurológiai eltérés','Nincs nagy fájdalommal járó egyéb "figyelemelterelő" sérülés (pl. femur törés)','Nincs látható/tapintható deformitás a gerincen','Nincs kommunikációs korlát vagy retrográd amnesia','Nincs áthatoló sérülés']},
+{tp:'note',tx:'Ha mind teljesül: kérjük meg a 45 fokos elforgatásra és bólogatásra. Ha fájdalmatlan -> eltekinthetünk a rögzítéstől.'}
+]},
+{t:'Teljes test eszközös rögzítése',bk:[
+{tp:'sub',tx:'Lapáthordágy (scoop stretcher) - Első választandó eszköz!'},
+{tp:'bl',items:['Előnyei: könnyű, kíméletes, atraumatikus kórházi átadás, jól kombinálható (húzósín, medenceöv), anatómiai kialakítás (nincs felfekvés)','Hátrányai: merev, fém esetén hővédelem kell','Terhelhetőség: Műanyag 227 kg, Fém 159 kg. Csak fogópánttal mozgassuk!']},
+{tp:'sub',tx:'Vákuummatrac'},
+{tp:'bl',items:['Csak lapáthordágy hiányában (OMSZ nem szerez be többet)','Előnye: rendkívüli testhelyzetek rögzítése','Hátránya: húzósínnel nem kompatibilis, kórházi átadásnál jelentős mozgatás, szivárgás']},
+{tp:'sub',tx:'Board (spinal board)'},
+{tp:'bl',items:['Ideális kimentő eszköz (vízből, roncsból felfelé). Utána "le kell lapátolni" és lapátágyra tenni.','Hátrány: log roll (90 fok) szükséges (terheli a medencét!), nem anatómiai, hamar (30 perc) felfekvést okoz relaxált betegnél, kényelmetlen.']}
+]}
+]},
+{id:'medence',title:'IV. Medence rögzítése',icon:'🩻',acc:'#f59e0b',secs:[
+{t:'A medence vizsgálata és rögzítése',bk:[
+{tp:'al',lv:'d',tx:'A "rányomásos technika" (rugóztatás) SZIGORÚAN TILOS! További súlyos vérzést okozhat!'},
+{tp:'sub',tx:'Vizsgálat elemei (a C vizsgálat során):'},
+{tp:'bl',items:['Baleseti mechanizmus értékelése','Megtekintés','Óvatos szimmetria vizsgálat (egyujjas technika)']},
+{tp:'sub',tx:'Kötelező a medenceöv használata:'},
+{tp:'bl',items:['Ha a mechanizmus indokolja (gyalogos gázolás, magasból esés) - külsérelmi nyom nélkül is!','Ha aszimmetriát, deformitást észlelünk','Ha az alsó végtagok hosszában különbséget látunk']},
+{tp:'al',lv:'w',tx:'A medenceövet a NAGYTOMPOROK (trochanter major) vonalában kell felhelyezni, NEM a csípőlapátokon!'},
+{tp:'note',tx:'6 év alatti gyermekek esetén ne medencerögzítőt, hanem egész test rögzítést (lapáthordágy/board) alkalmazzunk.'}
+]}
+]},
+{id:'vegtag',title:'V. Végtagok rögzítése',icon:'🦴',acc:'#ef4444',secs:[
+{t:'Végtagsérülések (Általános szabályok)',bk:[
+{tp:'kr',items:['Ruházat, gyűrű, óra stb. eltávolítása','KÉM-vizsgálat (Keringés, Érzés, Mozgás) rögzítés ELŐTT és UTÁN is!','Ha KÉM-zavar van: enyhe tengelyirányú húzást követően kell rögzíteni.','KÉM-zavar nélkül: a talált helyzetben rögzítjük (kivéve femur/humerus).','Megfelelő fájdalomcsillapítás elengedhetetlen (B/B+ kompetenciánál szükség esetén segélykocsi).']},
+{t:'Combcsont (femur) törése',bk:[
+{tp:'al',lv:'d',tx:'A femur törés akár 1500 ml vérvesztéssel is járhat. Mielőbbi manuális tengelyirányú húzás, majd húzósín felhelyezése szükséges!'},
+{tp:'note',tx:'Ha medenceöv is kell: A medenceöv felhelyezése MINDIG megelőzi a húzósínt!'},
+{tp:'sub',tx:'Húzósín KONTRAINDIKÁCIÓI:'},
+{tp:'bl',items:['Végtag subtotalis amputációja','Térd komplex szalagsérülése','Posterior csípőficam gyanúja (flexióban rögzült csípő)','Lebegő térd ("floating knee" - térd alatt és felett is törés)']},
+{tp:'sub',tx:'Az 5P-szabály (Húzósín):'},
+{tp:'bl',items:['P-Pulse: pulzus vizsgálata az a. dorsalis pedis-en (felhelyezés előtt és után)','P-Pockets: zsebek kiürítése','P-Pain: fájdalomcsillapítás','P-Penis: nemi szervek becsípődésének elkerülése']}
+]},
+{t:'Egyéb végtagok',bk:[
+{tp:'sub',tx:'Humerus (Felkar):'},
+{tp:'bl',items:['Max 800 ml vérvesztés. Manuális húzás, majd húzósín (bizonyos típusú) megfontolandó a test törésére.','Ne használjuk húzósínt: kulcscsont/könyök/alkar töréssel kombinálva, vagy ha a n. radialis sérülése fenyeget.']},
+{tp:'sub',tx:'Distalis csontok (Lábszár, Alkar):'},
+{tp:'bl',items:['Szomszédos ízületeken túlérjen az eszköz!','Prioritás: Vákuumsín > Flexibilis végtagrögzítő (SAM Splint) > Oxystabil / Cramer-sín.','A flexibilis sínt a végtag formájára kell alakítani (C-alak).']}
+]}
+]}
+]},
+{id:'tovabbi',title:'VI-IX. Ficamok, Koponya, Szállítás',icon:'🚑',acc:'#3b82f6',secs:[
+{t:'Ficamok és egyéb sérülések',bk:[
+{tp:'bl',items:['Ficamok repozíciója NEM helyszíni feladat (kivéve KÉM-zavar esetén orvos/mentőtiszt által). A talált helyzetben rögzítjük.','Bordatörés: kíméletes szállítás félig ülő helyzetben (ha gerinc nem sérült).','Súlyos koponyasérült: lapáthordágyon, fejvéget 10-20 fokban megemelve!','Relaxált beteg: fokozott figyelem a ficamok elkerülésére, lapáthordágy + headblock fej oldalról támasztására.']},
+{tp:'sub',tx:'Szállítási szabályok:'},
+{tp:'kr',items:['Biztonságos hevederezés elengedhetetlen!','Lapátágyon lévő beteget a lapátágy hevedereivel, MAJD a hordágy hevedereivel IS rögzíteni kell!','Egyes hordágyak hevedereit ütközésig kell húzni, manuálisan feszesre állítani.','Ülő betegnek és a személyzetnek a BIZTONSÁGI ÖV kötelező!']}
+]}
+]},
+{id:'gyermek',title:'X-XI. Gyermekek és Újszülöttek',icon:'👶',acc:'#ec4899',secs:[
+{t:'Gyermekek rögzítése',bk:[
+{tp:'al',lv:'d',tx:'A gyermeket anya ölében szállítani TILOS! A gyermek sírása nem indok a rögzítés mellőzésére.'},
+{tp:'bl',items:['Legjobb módszer: a gyermek saját gyerekülése (menetiránynak háttal a hordágyon rögzítve).','Kizárólag hiányában: 1 év alatt leszívott csecsemő vákuummatracban.','Gyerekülésből kivétel (trauma esetén): Együtt vegyük ki az autóbol, majd onnan lapáthordágyra/gyermekboardra.','Gyermekeknél (főleg 2 év alatt) a hátat 2-3 cm-rel alá kell polcolni a fej neutrális helyzete miatt!']},
+{tp:'sub',tx:'Áthelyezés (villafogás / tálcafogás):'},
+{tp:'bl',items:['12 kg testtömegig: Villafogással','25 kg-ig: Tálcafogással','Nagyobb gyermek: Log roll']}
+]},
+{t:'Újszülöttek',bk:[
+{tp:'note',tx:'Helyszíni szülés esetén transzport inkubátor és neonatológiai mentőegység hívása indokolt! 6 kg / 60 cm alatti méret esetén.'}
+]}
+]},
+{id:'atadas',title:'XII-XIII. Átadás és Csomagolás',icon:'📦',acc:'#8b5cf6',secs:[
+{t:'Átadás és Kiegészítések',bk:[
+{tp:'bl',items:['Mentőegységek közötti átadáskor (pl. lapáthordágy, medenceöv, húzósín) eszközcsere céljából a betegről LEVENNI TILOS.','Kórházi átadásnál is csereeszközzel tartsuk fenn a rögzítést.','Ha nem kompatibilis a lapátágy csatja: ollószerűen nyissuk szét lábtól felfelé.','Buborékfólia (csomagolás): lapáthordágyra helyezéskor a beteg alá, lábnál túllógjon, légzáróan ragtapasszal 3-4 helyen rögzítve.','Monitorkábelek a jobb váll felé kivezetve.']}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Alapok',f:'Mi a prehospitális rögzítés alapelve a fájdalomcsillapítás terén?',b:'A manuális/eszközös rögzítés előtt általában megfelelő FÁJDALOMCSILLAPÍTÁS szükséges.\nKivéve: ABCD-instabilitás (pl. légúti veszély, instabil vérkeringés) esetén a sürgető kimentéskor elhagyható.'},
+{cat:'Alapok',f:'Mikor tilos feleslegesen mozgatni a sérültet?',b:'Eszméletlen, földön fekvő sérült felesleges mozgatása hiba!\nKivéve, ha helyszíni veszély vagy életmentő beavatkozás mást követel meg. (Cél: 360 fokos körüljárhatóság)'},
+{cat:'SMR',f:'Mikor kötelező a folyamatos MILS (magas rizikójú mechanizmus)?',b:'- Magasból esés (>2m, gyermek: magasság 2-3x)\n- Tengelyirányú fej/nyak sérülés (pl. fejesugrás)\n- >100 km/h autóbaleset\n- Beszorult, kirepült, vagy meghalt utastárs\n- Gázolás\n- Nagysebességű motor/bringa baleset'},
+{cat:'SMR',f:'Tompa trauma esetén mikor lehet eltekinteni a gerincrögzítéstől?',b:'Ha MINDEGYIK teljesül:\n- <65 év\n- Nincs nyaki/háti fájdalom\n- Nincs intoxikáció gyanú\n- GCS = 15\n- Nincs neurológiai eltérés\n- Nincs "elterelő" fájdalmas sérülés (pl. femur)\n- 45 fokos nyakmozgás fájdalmatlan.'},
+{cat:'SMR',f:'Miért preferált a Lapáthordágy (scoop) a Board-dal szemben?',b:'A lapáthordágyhoz nem kell a beteget oldalra forgatni (log roll), ami terhelné a medencét és gerincet. Anatómiai kialakítású, nem okoz felfekvést.'},
+{cat:'SMR',f:'Meddig kell fenntartani a MILS-t (kézi stabilizálást)?',b:'A végleges rögzítés (lapáthordágy + headblock hevederezése) befejezéséig folyamatosan fenn kell tartani!'},
+{cat:'SMR',f:'Nyaki gallér 6 év alatti gyermeknél?',b:'A fej-test rögzítés (lapáthordágy+headblock+párnázás) élvez elsőbbséget! A gallért csak akkor tegyük fel, ha semmiféle ellenkezésbe nem ütközik.'},
+{cat:'Medence',f:'Milyen mozdulattal szigorúan TILOS a medencét vizsgálni?',b:'A "rányomásos technika" (rugóztatás) SZIGORÚAN TILOS!\nTovábbi súlyos, akár életveszélyes vérzést okozhat a törött medencében.'},
+{cat:'Medence',f:'Hova (milyen anatómai pontra) kell a medencerögzítő övet felhelyezni?',b:'A nagytomporok (Trochanter major) vonalába!\nTILOS a csípőlapátokon (ala ossis ilii) rögzíteni, mert hatástalan és ront a helyzeten.'},
+{cat:'Végtag',f:'Mi a KÉM vizsgálat és mikor végezzük?',b:'Keringés, Érzés, Mozgás vizsgálata a sérült végtagon.\nA rögzítés ELŐTT és UTÁN is kötelezően el kell végezni!'},
+{cat:'Végtag',f:'Mikor kell repozíciót (húzást) alkalmazni végtagrögzítés előtt?',b:'- Ha KÉM-zavart észlelünk (enyhe tengelyirányú húzás rögzítés előtt).\n- Femur (combcsont) törése esetén mindig (kivéve kontraindikációk).'},
+{cat:'Végtag',f:'Mik a Húzósín kontraindikációi?',b:'- Subtotalis amputáció a feszített részen\n- Térd komplex szalagsérülése\n- Posterior csípőficam gyanúja (flexióban rögzült csípő)\n- Lebegő térd (floating knee - térd felett és alatt is törés)'},
+{cat:'Végtag',f:'Mit jelent az 5P szabály húzósín felhelyezésekor?',b:'1. Pulse (pulzus ellenőrzés a. dorsalis pedisen)\n2. Pockets (zsebek kiürítése)\n3. Pain (fájdalomcsillapítás)\n4. Penis (nemi szervek becsípődésének kerülése)\n5. Pulse (pulzus ismételt vizsgálata)'},
+{cat:'Végtag',f:'Hogyan rögzítünk medenceövet és húzósínt együttesen?',b:'A medenceöv felhelyezése MINDIG MEGELŐZI a húzósín alkalmazását!\n(Fordított sorrendben az öv kompressziós sérülést okoz a sín miatt).'},
+{cat:'Koponya',f:'Hogyan kell rögzíteni és szállítani a súlyos koponyasérültet?',b:'Lapáthordágyon (teljes SMR), a hordágy fejvégét 10-20 fokban MEGEmelve!'},
+{cat:'Gyermek',f:'Szállítható-e a gyermek az anya ölében?',b:'A gyermeket anya ölében szállítani TILOS! A sírás nem lehet indok a rögzítés mellőzésére.'},
+{cat:'Gyermek',f:'Mi a teendő a kisgyermek hátával a board/lapátágy rögzítés során?',b:'Különösen 2 éves kor alatt a fej neutrális helyzetéhez a HÁTAT 2-3 cm-rel meg kell emelni (alápárnázni), pl. buborékfóliával vagy lepedővel, a viszonylagos nagy fejméret miatt.'},
+{cat:'Gyermek',f:'Hogyan emelünk meg gyermekeket súlyuk szerint?',b:'- 12 kg-ig: Villafogás\n- 25 kg-ig: Tálcafogás\n- Nagyobb gyermek: Log roll'},
+{cat:'Csomagolás',f:'Mikor kell a buborékfóliát a beteg alá tenni?',b:'A lapáthordágyra mobilizáláskor (log roll) kell alátenni.\nA lábnál túllógó részt visszahajtva, ragtapasszal kell légzáróan rögzíteni a végén.'}
+];
+
+var QUIZ=[
+{q:'Melyik eszköz használata TILOS az OMSZ eljárásrendje szerint?',opts:['Húzósín','Pneumatikus sín','Cramer-sín','Flexibilis végtagrögzítő'],ok:1,exp:'Idejétmúlt rögzítési technika (pl. pneumatikus sín) alkalmazása tilos!'},
+{q:'Mikor kell elhagyni az előzetes fájdalomcsillapítást rögzítés előtt?',opts:['Ha a beteg eszméleténél van','Nyílt végtagtörés esetén','ABCD-instabilitás esetén (sürgető kimentés)','Csípőficam esetén'],ok:2,exp:'ABCD-instabilitás (légúti veszély, instabil hemodinamika) esetén a vérzéscsillapítás/kimentés előnyt élvez.'},
+{q:'Gerincsérülés gyanújakor melyik az ELSŐ VÁLASZTANDÓ teljes teströgzítő eszköz az OMSZ-nél?',opts:['Vákuummatrac','Lapáthordágy (scoop stretcher)','Board (spinal board)','Puha hordágy'],ok:1,exp:'A lapáthordágy prioritást élvez. A board kimentésre való, a vákuummatrac csak lapátágy hiányában használható.'},
+{q:'Medence rögzítéséhez hol kell elhelyezni az övet?',opts:['A csípőlapátok (ala ossis ilii) felett','A derékvonalon','A nagytomporok (trochanter major) vonalában','A combcsontok alsó harmadánál'],ok:2,exp:'A medenceövet a nagytomporok vonalában kell felhelyezni, a csípőlapátokon való rögzítés hatástalan és veszélyes.'},
+{q:'Medence sérülés vizsgálatakor melyik technika SZIGORÚAN TILOS?',opts:['Baleseti mechanizmus értékelése','Óvatos egyujjas szimmetria vizsgálat','Látható deformitás keresése','A medence "rányomásos" rugóztatása'],ok:3,exp:'A rányomásos technika tilos, mert a törött medencében további súlyos vérzéssel járó elmozdulást okozhat.'},
+{q:'Ha medencerögzítő övet és húzósínt is kell alkalmazni, mi a sorrend?',opts:['Egyszerre kell felhelyezni','Mindegy a sorrend','Mindig a húzósín az első','Mindig a medenceöv felhelyezése megelőzi a húzósínt'],ok:3,exp:'Fordított sorrendben az öv a húzósín rúdját odanyomva kompressziós sérülést okoz, és a medence rögzítése is hatástalan lesz.'},
+{q:'A KÉM vizsgálat melyik fázisban kötelező?',opts:['Csak a rögzítés előtt','Csak a kórházi átadáskor','A rögzítés megkezdése előtt és a rögzítés után is','Csak gyógyszeradás után'],ok:2,exp:'A KÉM (Keringés, Érzés, Mozgás) vizsgálatot a rögzítés előtt és után is el kell végezni, és dokumentálni kell.'},
+{q:'Mi NEM kontraindikációja a húzósín használatának?',opts:['A femur (combcsont) középső harmadának nyílt törése','Lebegő térd (floating knee)','Térd komplex szalagsérülése','A végtag subtotalis amputációja'],ok:0,exp:'A nyílt vagy zárt femurtörés kifejezetten indikáció. A lebegő térd, amputáció, és szalagsérülés kontraindikációk.'},
+{q:'Mit jelent az 5P szabályból a P-Pockets?',opts:['A beteg pulzusának mérése','A nadrág zsebeinek kiürítése a nyomási sérülés elkerülésére','A medence vizsgálata','A fájdalomcsillapítás'],ok:1,exp:'Pockets = a zsebek (pl. kulcs, telefon) kiürítése a húzósín hevedereinek meghúzása előtt.'},
+{q:'Hogyan kell a súlyos koponyasérülteket szállítani?',opts:['Lapos fektetéssel a boardon','Oldalfekvésben vákuummatracon','Lapáthordágyon, a fejvéget 10-20 fokban megemelve','Félig ülő helyzetben'],ok:2,exp:'Súlyos koponyasérültet ideálisan lapáthordágyon, 10-20 fokos fejvég emeléssel kell rögzíteni és szállítani.'},
+{q:'Szabad-e a gyermeket az anya ölében szállítani a mentőben?',opts:['Igen, ha a gyermek nagyon sír','Igen, de csak rövid távon','Nem, a gyermeket anya ölében szállítani TILOS','Igen, ha be vannak kötve együtt'],ok:2,exp:'A gyermeket anya ölében szállítani biztonsági okokból TILOS. A sírás nem lehet indok a rögzítés mellőzésére.'},
+{q:'Mit kell tenni a 2 év alatti gyermek rögzítésekor a neutrális fejhelyzet eléréséhez?',opts:['Extra vastag nyakgallért kell használni','A hátat 2-3 cm-rel meg kell emelni, alá kell polcolni','A fejet előre kell hajtani','Erősen meghúzni a hevedereket'],ok:1,exp:'A gyermekek relatíve nagy feje miatt a hátat (pl. buborékfóliával vagy lepedővel) 2-3 cm-rel alá kell támasztani.'},
+{q:'Melyik életkor alatt preferáljuk a fej-test rögzítést (gallér nélkül), ha a gallér ellenkezést váltana ki?',opts:['12 év alatt','10 év alatt','6 év alatt','14 év alatt'],ok:2,exp:'6 év alatti gyermekek esetén a teljes fej-test rögzítés élvez elsőbbséget a merev gallérral szemben.'},
+{q:'Mennyi ideig bírja egy relaxált beteg a boardon felfekvés (nyomási sérülés) nélkül?',opts:['Több órán át','Már akár 30 perc után kialakulhat a nyomási sérülés','Egyáltalán nem okoz felfekvést','Max 10 percig'],ok:1,exp:'A board nem anatómiai kialakítású, így eszméletlen vagy relaxált betegnél akár 30 perc után kialakulhat felfekvés.'},
+{q:'Gépkocsiban gyerekülésben talált súlyos sérült gyermek esetén mi a teendő a kimentéskor?',opts:['Kicsatoljuk a hevedereket és ölben kivesszük','A gyereküléssel együtt vesszük ki a gépjárműből lapátágyra/boardra','Bent a kocsiban tesszük lapátágyra','Csak a fejét fogjuk és kihúzzuk'],ok:1,exp:'A gyermeket a gyereküléssel együtt kell kivenni az autóból (MILS mellett), majd utána kihúzni alóla az ülést.'},
+{q:'Ficam repozícióját (helyrerakását) mikor szabad PREHOSPITÁLISAN elvégezni?',opts:['Minden ficam esetén kötelező','Soha nem szabad a helyszínen','Kizárólag, ha KÉM-zavar (keringési/mozgászavar) áll fenn, és az ellátó gyakorlott (orvos/tiszt)','Ha a beteg nagyon kéri'],ok:2,exp:'A ficamok repozíciója nem helyszíni feladat. Csak KÉM-zavar (pl. elzáródott ér) esetén jöhet szóba orvosi/mentőtiszti szinten, megfelelő analgosedatio mellett.'},
+{q:'Bordatörés gyanúja esetén mi az ideális szállítási helyzet (ha SMR nem kell)?',opts:['Trendelenburg helyzet','Oldalfekvés a sérült oldalon','Félig ülő vagy ülő helyzet, megfelelő fájdalomcsillapítás mellett','Teljesen lapos fekvés'],ok:2,exp:'Bordatörés esetén (SMR hiányában) félig ülő vagy ülő helyzet biztosítása javasolt kíméletes mozgatással.'},
+{q:'Hány kilogrammig használható a MŰANYAG lapáthordágy?',opts:['100 kg','159 kg','227 kg','300 kg'],ok:2,exp:'A műanyag lapátágy 227 kg-ig, míg a fém kivitel 159 kg-ig terhelhető.'},
+{q:'Húzósín felhelyezésénél hogyan feszítjük meg a végtagot?',opts:['Addig húzzuk, amíg az ízület ki nem pattan','Cél az ép végtaggal egy hosszúságra húzás, kerülve a túlfeszítést','Minél jobban, annál jobb','Addig, amíg a beteg fel nem sír'],ok:1,exp:'Cél az ép végtaggal egy hosszúságra húzni; a túlfeszítés ér- és idegkárosodást okozhat!'},
+{q:'Mentőegységek közötti átadáskor a lapáthordágyat/medenceövet/húzósínt...',opts:['Azonnal le kell venni a betegről','Csak a kórházban szabad levenni','Eszközcsere céljából a mentőautók között levenni TILOS! (Márkaazonos csere szükséges)','Rögtön le kell venni, hogy a sajátunk maradjon'],ok:2,exp:'A rögzítést fenntartva az eszközöket levenni tilos az átadáskor, ideálisan cserélni kell őket.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Nagysebességű baleset (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy autó frontálisan, >100 km/h sebességgel fának ütközött. A 40 éves sofőr eszméletlen, de stabil légzése van. B+ kompetencia (ápoló, vénabiztosítás, gyógyszerelés orvosi protokoll szerint).',steps:[
+{sit:'A helyszín biztosított, áramtalanítottak a tűzoltók. A mechanizmus alapján (>100 km/h ütközés) mi a legelső teendő a beteg megközelítésekor?',opts:[{tx:'Azonnal megmérem a vérnyomását.',ok:false,fb:'Hibás! A gerincvédelem és életmentés fontosabb.'},{tx:'Szemből megközelítve azonnali MILS (Manual In-line Stabilization) alkalmazása és a tudat ellenőrzése.',ok:true,fb:'Helyes! SMR indikáció: >100 km/h. Azonnal rögzíteni kell a nyakat kézzel.'},{tx:'Azonnal felhelyezek egy nyakgallért.',ok:false,fb:'Hibás! Előbb az ABCDE-t kell vizsgálni MILS mellett.'}]},
+{sit:'Társad átveszi a MILS-t. A beteg eszméletlen, de légzése stabil (ABCD stabil). Milyen kimentési eszközt választotok az autóból (ülő helyzetből) való mielőbbi kimentéshez, amit később le is fogtok cserélni?',opts:[{tx:'Vákuummatrac.',ok:false,fb:'Hibás! Autóból való kimentésre nem alkalmas.'},{tx:'Lapáthordágy.',ok:false,fb:'Hibás! Ülő beteg roncsból kimentésére a board a jobb.'},{tx:'Board (spinal board).',ok:true,fb:'Helyes! A board ideális kimentő eszköz roncsból, tengelyirányú mentésnél.'}]},
+{sit:'A beteget a boardon kivettétek. Mi a teendő a kimentés után az eljárásrend alapján?',opts:[{tx:'A boardon rögzítem hevederekkel és indulunk.',ok:false,fb:'Hibás! A board nem alkalmas hosszas szállításra.'},{tx:'A boardról a ruha eltávolítása után "le kell lapátolni" a sérültet, és lapáthordágyon kell rögzíteni.',ok:true,fb:'Helyes! A board csak kimentésre való, utána lapáthordágy kell (kivéve, ha az hiányzik).'},{tx:'Átemelem egy puha hordágyra.',ok:false,fb:'Hibás! Gerincsérültnél a gerincmozgást korlátozó eszköz kell.'}]},
+{sit:'A lapátágyazáshoz elő kell készíteni a beteget (D és E vizsgálat, csomagolás). A MILS folyamatos. Mikor kerül fel a merev nyaki gallér?',opts:[{tx:'A lapátágyra helyezés után, az SMR befejezésekor (vagy forgatás előtt).',ok:true,fb:'Helyes! A végleges rögzítéskor (ha intubáció nem akadályozza).'},{tx:'Soha nem teszünk gallért, elég a headblock.',ok:false,fb:'Hibás! Magas rizikónál a gallér + headblock + lapátágy a standard.'},{tx:'Már a kocsiban fel kellett volna tenni.',ok:false,fb:'Hibás! Az ellátás késői szakaszában (a légút/ABCDE után) tesszük fel.'}]},
+{sit:'A C vizsgálatnál megvizsgálod a medencét. Mire kell nagyon figyelni az eljárásrend szerint?',opts:[{tx:'Erősen megnyomom két oldalról, hogy stabil-e.',ok:false,fb:'Hibás! A rányomásos technika szigorúan TILOS!'},{tx:'A baleseti mechanizmus (>100 km/h) indokolja a medence rögzítését, ránézés és egyujjas vizsgálat elég, rugóztatni TILOS!',ok:true,fb:'Helyes! Mechanizmus alapján medenceöv kötelező, nyomkodni tilos.'},{tx:'Ha nem látok torzulást, nem rakok övet.',ok:false,fb:'Hibás! Mechanizmus önmagában indikálja az övet.'}]},
+{sit:'Előkészítitek a lapáthordágyat és a medenceövet. Milyen magasságban fogod a medenceövet a beteg alá húzni a log roll / csomagolás során?',opts:[{tx:'A derék (köldök) vonalában.',ok:false,fb:'Hibás! Ott hatástalan.'},{tx:'A csípőlapátok (ala ossis ilii) felett.',ok:false,fb:'Hibás! A csípőlapáti rögzítés nem fogja össze a medencegyűrűt.'},{tx:'A nagytomporok (trochanter major) vonalában.',ok:true,fb:'Helyes! Csak így tudja összefogni a törött medencegyűrűt vérzéscsillapító módon.'}]},
+{sit:'A beteg a lapáthordágyon fekszik, MILS folyamatos. B+ szintű beavatkozást végzel. Mit teszel a sokk megelőzése / kezelése érdekében a helyszínen?',opts:[{tx:'Vénát biztosítok és B+ protokoll szerint folyadékot / fájdalomcsillapítót (orvosi/mentőtiszti megbízással) készítek elő/adok, folyamatos monitorozás (EKG, NIBP) mellett.',ok:true,fb:'Helyes! A vénabiztosítás és monitorozás a C vizsgálat fontos eleme B+ szinten.'},{tx:'Csak oxigént adok.',ok:false,fb:'Hibás! A vénabiztosítás B+ kompetencia és szükséges itt.'},{tx:'Azonnal intubálok.',ok:false,fb:'Hibás! Nem B+ kompetencia.'}]},
+{sit:'A csomagolás során a kihűlés ellen is védekezni kell. Hogyan alkalmazzuk az izolációs buborékfóliát a lapáthordágyon?',opts:[{tx:'Csak ráterítjük a betegre.',ok:false,fb:'Hibás! Ez nem légzáró és a hátat nem védi.'},{tx:'A log roll során a lapáthordágy pengéjével együtt toljuk a beteg alá, majd felül a lábnál túllógó részt visszahajtva, ragtapasszal légzáróan leragasztjuk.',ok:true,fb:'Helyes! A buborékfóliának alul-felül védenie kell, légzáróan.'},{tx:'A lapátágy alá tesszük.',ok:false,fb:'Hibás! A beteg és a fém/műanyag közé kell tenni.'}]},
+{sit:'A beteg stabilizálva, a nyakgallér és a headblock felkerült. A hordágyon beemelitek a mentőbe. Mi az SMR szállítási szabály a hevederekre?',opts:[{tx:'Elég a hordágy hevederét a betegre tenni.',ok:false,fb:'Hibás! A lapátágynak is vannak hevederei.'},{tx:'A beteget a lapátágy hevedereivel IS, és a hordágy hevedereivel IS (a fogantyúkon áthúzva) rögzíteni kell, feszesre húzva.',ok:true,fb:'Helyes! Dupla rögzítés szükséges a maximális biztonságért.'},{tx:'A lapátágyat rögzítem a hordágyhoz, a beteget nem.',ok:false,fb:'Hibás! A beteget a lapátágyhoz is rögzíteni kell.'}]},
+{sit:'Érkezés a kórház SBO-ra. Ott csak normál (nem csereszabatos) lapáthordágyuk van. Hogyan adod át a beteget a CT asztalra, ha nem tudjátok a medence miatt oldalra forgatni (log roll)?',opts:[{tx:'Azonnal kicsatoljuk és a lepedővel rángatjuk át.',ok:false,fb:'Hibás! Káros és fájdalmas.'},{tx:'Ha nem cserekompatibilis: szétcsatoljuk a mi lapátágyunkat, lábtól felfelé ollószerűen nyitjuk szét a pengéket a fej stabilizációja mellett, így kihúzható a beteg alól.',ok:true,fb:'Helyes! Ez a kíméletes, gerincet/medencét óvó szétcsatolási/kivételi technika.'},{tx:'Nem adjuk át, hazavisszük a hordágyat a beteggel.',ok:false,fb:'Hibás! Az ellátás érdeke az első.'}]},
+{sit:'A transzport során a beteg állapota stabilizálódik. Milyen dokumentációs és kommunikációs teendőd van a kórházba érkezés előtt?',opts:[{tx:'Rádión/telefonon bejelentem a beteget a fogadó SBO-nak (MIST séma szerint).',ok:true,fb:'Helyes! A kritikus/súlyos sérültet mindig előre jelezni kell a fogadó intézménynek.'},{tx:'Nem kell szólni, meglepetés lesz.',ok:false,fb:'Hibás! A fogadó intézménynek fel kell készülnie.'},{tx:'Csak a mentésirányítást értesítem, ők majd szólnak.',ok:false,fb:'Hibás! Az SBO-val való közvetlen kommunikáció (vagy célzott bejelentés) gyorsítja az átvételt.'}]}
+],summary:'Részletes Összefoglaló (Sim 1 - B+ kompetencia): A >100 km/h-s baleset egyértelmű indikáció az SMR-re (Spinal Motion Restriction). A megközelítés szemből történt, azonnali MILS (Manual In-line Stabilization) alkalmazásával. Az autó roncsából a beteget boarddal mentettük ki, ami a legjobb kimentő eszköz. Mivel a board nem anatómiai kialakítású és felfekvést okoz, kint "lelapátoltuk" a beteget és lapáthordágyra helyeztük. A mechanizmus miatt a medence rögzítése is kötelező volt. A rányomásos rugóztatás szigorúan tilos! A medenceövet a nagytomporok (trochanter major) magasságában húztuk be a log roll/csomagolás alatt. B+ ápolóként a shock terápiához (monitorozás, vénabiztosítás) az eszközöket párhuzamosan előkészítettük. A csomagolás során buborékfóliát használtunk a beteg alatt és felett, ragtapasszal légzáróan leragasztva. A nyakgallér és a headblock felhelyezésével az SMR teljessé vált. A mentőben dupla hevederezést alkalmaztunk (lapátágy + hordágy övei). Kórházba érkezés előtt az SBO-t értesítettük, majd mivel nem volt csereszabatos a lapátágy, a pengéket óvatosan, ollószerűen lábtól nyitva húztuk ki a beteg alól a CT asztalon.'},
+
+{id:2,title:'2. Szimuláció: Combcsont (Femur) törés (B kompetencia)',diff:'B kompetencia',desc:'Egy fiatal focista kapott egy erős rúgást a combjára. Földön fekszik, üvölt a fájdalomtól. B kompetencia (gyógyszerelés nélkül, de a helyes eszközhasználat elvárt).',steps:[
+{sit:'A helyszín biztonságos. A beteg tiszta tudatú (GCS 15), a jobb combja durván deformált. Mivel B kompetenciás vagy és nem adhatsz IV fájdalomcsillapítót, mi az első intézkedésed az ABCDE felmérés után?',opts:[{tx:'Azonnal megkezdem a láb hajlítását.',ok:false,fb:'Hibás! A mozgatás elmozdulást okoz és tilos.'},{tx:'Azonnal segélykocsit (orvosi/mentőtiszti szintet) hívok a megfelelő fájdalomcsillapítás (analgosedatio) miatt, majd megkérem a segítőt a manuális tengelyirányú húzásra.',ok:true,fb:'Helyes! A femurtörés hatalmas fájdalom, B szinten ALS segítség kell, de a húzást (fájdalomcsökkenés/vérzés miatt) azonnal el kell kezdeni.'},{tx:'Várok a mentőorvosra, addig nem csinálok semmit.',ok:false,fb:'Hibás! A húzást meg kell kezdeni.'}]},
+{sit:'A társad (vagy a betanított laikus) elkezdi a jobb láb manuális, tengelyirányú húzását. A húzósín felhelyezése előtt melyik vizsgálatot KELL elvégezned a végtagon?',opts:[{tx:'KÉM-vizsgálatot (Keringés, Érzés, Mozgás).',ok:true,fb:'Helyes! Rögzítés előtt és után kötelező a KÉM.'},{tx:'GCS vizsgálatot a lábán.',ok:false,fb:'Hibás! GCS a tudatállapotra vonatkozik.'},{tx:'Röntgen vizsgálatot.',ok:false,fb:'Hibás! Nincs a helyszínen.'}]},
+{sit:'A KÉM során a pulzus (a. dorsalis pedis) jól tapintható. Döntesz a húzósín felhelyezéséről. Mikor kontraindikált a húzósín?',opts:[{tx:'Csak ha a beteg sír.',ok:false,fb:'Hibás! A fájdalom indikálja.'},{tx:'Nyílt femurtörésnél.',ok:false,fb:'Hibás! Nyílt törésnél is felhelyezhető (vérzéscsillapítás).'},{tx:'Ha lebegő térd (floating knee), amputáció, vagy csípőficam gyanúja is fennáll.',ok:true,fb:'Helyes! Ezekben az esetekben a húzósín tilos.'}]},
+{sit:'Izolált femurtörése van (mechanizmus = rúgás). Kell-e medenceövet is felhelyezni?',opts:[{tx:'Igen, mindig kötelező combnál.',ok:false,fb:'Hibás! Sőt, ha nem kell, felesleges kockázat.'},{tx:'Nem. Izolált, közvetlen erőhatás (rúgás) okozta femurtörés esetén nem kell medenceöv. Generalizált erőhatás (pl. magasból esés) esetén kellene.',ok:true,fb:'Helyes! Mechanizmus szerint itt izolált a sérülés.'},{tx:'Igen, ha a beteg kéri.',ok:false,fb:'Hibás! Szakmai indikáció kell.'}]},
+{sit:'Elkezded a húzósín előkészítését. Az 5P szabályt alkalmazod. Mit jelent az első három P (Pulse, Pockets, Pain) a gyakorlatban?',opts:[{tx:'Megnézem a pulzust, kiürítem a nadrágzsebeket (Pockets) a nyomási sérülés elkerülésére, és gondoskodom a fájdalomcsillapításról (ALS hívása megtörtént).',ok:true,fb:'Helyes! Ez az 5P első három eleme felhelyezés előtt.'},{tx:'Pulzus, Papucs levétele, Párnázás.',ok:false,fb:'Hibás! Az 5P nem ezt jelenti az angol mnemotechnika alapján.'},{tx:'Csak a pulzust nézem 3-szor.',ok:false,fb:'Hibás! Több lépés van.'}]},
+{sit:'Az 5P negyedik "P"-je a Penis (nemi szervek). Mit kell ezzel tenni a húzósín felhelyezésekor?',opts:[{tx:'Lefedjük steril gézzel.',ok:false,fb:'Hibás! Nem fertőzésveszélyről van szó.'},{tx:'Óvatosan kell felhelyezni a felső hevedert (csípőheveder), figyelve, hogy elkerüljük a nemi szervek (pénisz, herezacskó, nőknél nagyajak) becsípődését.',ok:true,fb:'Helyes! Ez komoly és elkerülhető szövődmény.'},{tx:'Ezt a nők esetében nem kell figyelembe venni.',ok:false,fb:'Hibás! Nőknél is felléphet lágyrész becsípődés.'}]},
+{sit:'A csigás húzósín rögzítése során hol rögzíted a sínt ELSŐKÉNT a beteghez a csípőheveder és bokaheveder beállítása után?',opts:[{tx:'A bokánál fentről.',ok:false,fb:'Hibás! A bokapánt megvan, de a sínt magát fentről a másodiknál rögzítjük először.'},{tx:'Térdmagasságban, fentről a második tépőzárral rögzítjük a sínt a sérülthöz, majd utána feszítjük meg.',ok:true,fb:'Helyes! A protokoll képei/leírása szerint előbb rögzítjük térdnél, hogy ne mozduljon el a húzáskor.'},{tx:'Fent a legfelső hevederrel.',ok:false,fb:'Hibás! Az ábra alapján a térdnél kezdünk.'}]},
+{sit:'Megkezded a húzást a sín kötelével/csigájával. Mennyire kell meghúzni (megfeszíteni) a sérült végtagot?',opts:[{tx:'Addig feszítem, amíg csak bírom erővel.',ok:false,fb:'Hibás! A túlfeszítés ér- és idegkárosodást okozhat.'},{tx:'A cél az ép végtaggal egy hosszúságra történő húzás. Kerülendő a végtag túlfeszítése!',ok:true,fb:'Helyes! A szimmetria (ép lábhoz viszonyítva) a cél.'},{tx:'Csak lazán tartom, hogy ne fájjon.',ok:false,fb:'Hibás! A vérzéscsillapítás és az izom-spazmus feloldása miatt húzni kell.'}]},
+{sit:'A húzósínt felhelyezted, a KÉM vizsgálatot és az utolsó "Pulse" (5P) ellenőrzést újra elvégezted. A láb pulzusa tapintható. Megérkezik a segélykocsi, a beteg kap IV fájdalomcsillapítót, beteszitek a mentőbe. Mi a teendő a mentőben?',opts:[{tx:'Lógatni kell a lábát.',ok:false,fb:'Hibás! Végtagsérültnél mindig felpolcolás javasolt.'},{tx:'A sérült alsó végtagot a szállítás során lehetőség szerint fel kell polcolni.',ok:true,fb:'Helyes! A vénás visszaáramlás és a duzzanat csökkentése miatt.'},{tx:'Rá kell tenni egy boardra.',ok:false,fb:'Hibás! A húzósín nem kompatibilis a vákuummatraccal, de a lapátággyal igen. Nem szükséges extra board önmagában.'}]},
+{sit:'A kórház SBO-ra érkezel a beteggel (húzósínnel a lábán). Az SBO személyzet kéri, hogy a hordágyról átvétel előtt "vedd le gyorsan a sínt". Mit válaszolsz az eljárásrend alapján?',opts:[{tx:'"Természetesen, azonnal leveszem, hogy tiszta legyen a láb."',ok:false,fb:'Hibás! A húzás felengedése tilos folyamatos pótlás nélkül.'},{tx:'"A húzósínt a kórházi átadás során csak akkor távolítjuk el, ha a kórházi személyzet valamilyen módon folytatja a húzást. A hirtelen felengedés súlyos vérzést/keringés megingást okozhat!"',ok:true,fb:'Helyes! A hirtelen elengedés shockot okozhat. Csereeszköz (másik húzósín vagy átvételi húzás) szükséges.'},{tx:'"Levágom ollóval."',ok:false,fb:'Hibás! Az eszközt tönkretenni és a húzást elengedni egyaránt hiba.'}]},
+{sit:'A kórházi vizsgálóasztalra történő áthelyezéskor mire kell fokozottan figyelni?',opts:[{tx:'A lapáthordágyat és a húzósínt egyszerre, hirtelen mozdulattal kell kivenni.',ok:false,fb:'Hibás! Ez elmozdulást okoz.'},{tx:'A sérült végtag manuális tengelyirányú húzását és a gerinc védelmét mindaddig fenn kell tartani, amíg a végleges kórházi ágyon nem nyugszik, az eszközök eltávolítását is óvatosan, koordinálva kell végezni.',ok:true,fb:'Helyes! A prehospitális rögzítés egészen a kórházi ellátás tényleges megkezdéséig tart.'},{tx:'Rábízom a kórházi beteghordókra.',ok:false,fb:'Hibás! A betegátadás a mentőegység felelőssége is.'}]}
+],summary:'Részletes Összefoglaló (Sim 2 - B kompetencia): A fiatal focista izolált femurtörést szenvedett rúgás következtében (így medenceöv nem indokolt). A hatalmas fájdalom miatt B kompetenciájú ápolóként azonnal segélykocsit hívtunk az analgéziához, de a helyszíni életmentő teendőt (húzás vérzés/spazmus ellen) el kellett kezdeni. Elsőként KÉM (Keringés, Érzés, Mozgás) vizsgálatot végeztünk, majd manuális tengelyirányú húzást alkalmaztunk. A húzósín felhelyezése előtt alkalmaztuk az 5P szabályt: ellenőriztük a pulzust (a. dorsalis pedis), kiürítettük a zsebeket, vártuk a fájdalomcsillapítást, és vigyáztunk a nemi szervek épségére. A sín felhelyezésekor a végtagot nem feszítettük túl, a cél az ép végtaggal egyező hosszúság elérése volt. Felhelyezés után ismét KÉM vizsgálatot és pulzus ellenőrzést végeztünk (5. P). A szállítás során a sérült lábat felpolcoltuk. A kórházi átadásnál a húzósínt csak akkor lehet eltávolítani, ha az SBO személyzet azonnal folytatja a húzást, mivel a hirtelen elengedés súlyos vérzést, shockot okozhat. Az átadás alatt az eszközöket csak megfelelő koordinált módon, az SBO-val együttműködve szabad eltávolítani.'},
+
+{id:3,title:'3. Szimuláció: Gyermeküléses trauma (B kompetencia)',diff:'B kompetencia',desc:'Két autó ütközött, az egyik kocsiban egy 3 éves gyermek ül a gyerekülésében, sír. B kompetencia.',steps:[
+{sit:'Helyszín biztonságos. A gyermekülés sértetlennek tűnik, a gyermek erősen sír. Mivel trauma történt, de a gyermek nem látszik életveszélyben lévőnek, mi a teendő a mentőbe szállításnál?',opts:[{tx:'A gyermeket az anya ölében szállítom át a mentőbe.',ok:false,fb:'Hibás! A gyermeket anya ölében szállítani balesetveszélyes és az OMSZ szerint TILOS!'},{tx:'Baleset során biztonsági gyermekülésben talált gyermeket azzal együtt kell kivenni a gépjárműből.',ok:true,fb:'Helyes! Mindig a gyereküléssel együtt mozgatjuk ki az autóból.'},{tx:'Kiveszem az ülésből, és kézben viszem a mentőig.',ok:false,fb:'Hibás! A gerincét nem véded így.'}]},
+{sit:'A gyermeket az üléssel együtt a mentőbe (vagy egy tiszta helyre) tettétek. Az ABCDE vizsgálat során megállapítod, hogy a baleseti mechanizmus indokolja az egész test rögzítését. Hogyan veszed ki a gyermekülésből?',opts:[{tx:'Lekötözöm a gyerekülésben és úgy hagyom végig.',ok:false,fb:'Hibás! Ha sérülés gyanúja/mechanizmus indokolja, ki kell venni a szakszerű ellátáshoz/hanyattfektetéshez.'},{tx:'Folyamatos manuális fejrögzítés (MILS) mellett. Egyik ellátó a váll/medence alatt fogja, fej felé mozdítjuk, 2-3 cm-t emeljük, és az ülést kihúzzuk alóla egy előkészített lapátágyra/boardra.',ok:true,fb:'Helyes! Ez a gyerekülésből mentés hivatalos, kíméletes, tengelyirányú mozdulata.'},{tx:'A lábánál fogva kihúzom.',ok:false,fb:'Hibás! Ez gerincsérülést okozhat.'}]},
+{sit:'A gyermek a hátán fekszik az eszközön. A 3 éves (kb. 15 kg) gyermeknél milyen speciális párnázást kell alkalmazni a fej neutrális helyzetének biztosításához?',opts:[{tx:'A feje alá kell tenni egy vastag párnát.',ok:false,fb:'Hibás! A gyermekek feje amúgy is nagy arányaiban, ha még megemeled, a légút elzáródik.'},{tx:'A hátát (törzsét) kell 2-3 cm-rel megemelni, alápolcolni (pl. buborékfóliával, lepedővel), hogy a nagy fej miatt a nyak ne kerüljön kóros flexióba.',ok:true,fb:'Helyes! Gyermekeknél (főleg 2 év alatt, de itt is javasolt) a hát alátámasztása biztosítja a neutrális nyakat.'},{tx:'Nem kell párnázni, a lapátágy egyenes.',ok:false,fb:'Hibás! Az anatómiájuk miatt kell.'}]},
+{sit:'A MILS-t továbbra is tartod. A gyermek 3 éves. Szükséges-e a merev nyakrögzítő gallér felhelyezése mindenáron?',opts:[{tx:'Igen, protokoll szerint kötelező.',ok:false,fb:'Hibás! Gyermekeknél van kivétel.'},{tx:'6 év alatti gyermek sérültek esetén a fej-test rögzítés (headblock) élvez elsőbbséget. Csak akkor használunk gallért, ha a felhelyezés semmiféle ellenkezésbe nem ütközik.',ok:true,fb:'Helyes! Ha a gallér miatt a gyerek küzd és mozgatja a nyakát, többet ártunk vele.'},{tx:'Soha nem használunk gallért 10 év alatt.',ok:false,fb:'Hibás! Használható, ha együttműködő a gyermek.'}]},
+{sit:'Úgy döntötök, hogy a gyermek boardot / lapátágyat (SMR-t) és headblock-ot (fejrögzítőt) használtok. Milyen sorrendben rögzítitek a gyermeket a hevederekkel?',opts:[{tx:'Először a fejét rögzítjük (headblock), aztán a testét.',ok:false,fb:'Hibás! Ha a testet utólag mozdítják, a már fixált nyak fog elcsavarodni.'},{tx:'Először a törzset (mellkas, medence, comb) rögzítjük hevederekkel, a MILS folyamatos fenntartása mellett, és CSAK EZUTÁN rögzítjük a fejet.',ok:true,fb:'Helyes! A rögzítési sorrend mindig: test, utána a fej.'},{tx:'Mindegy a sorrend, csak gyors legyen.',ok:false,fb:'Hibás! A sorrend kritikus a gerincvédelemben.'}]},
+{sit:'A fejrögzítésnél (headblock) ragtapaszt is használtok a homlokon/állon. Mire kell figyelni gyermekeknél a ragtapasz használatakor?',opts:[{tx:'Arra, hogy a homlokhoz vagy a hajához ne ragadjon hozzá közvetlenül a ragtapasz (használjunk mull-lapot vagy ellentapaszt).',ok:true,fb:'Helyes! A gyermek bőre érzékeny, a szőrzet/haj letépése erős fájdalmat/pánikot okozhat.'},{tx:'Erősen körbe kell tekerni a nyakán.',ok:false,fb:'Hibás! Fojtást okozhat.'},{tx:'Ne használjunk ragtapaszt, csak fogjuk a fejét.',ok:false,fb:'Hibás! Az eszközös rögzítéshez kell.'}]},
+{sit:'A gyermek zokog, az anyuka nagyon kéri, hogy hadd vegye a karjába, "hiszen úgy megnyugszik". Mit válaszolsz?',opts:[{tx:'"Természetesen, az anya öle a legjobb rögzítő." ',ok:false,fb:'Hibás! Súlyos szakmai hiba.'},{tx:'"Sajnálom, de baleset történt és a gerincsérülés kizárásáig (vagy amíg be nem érünk) szigorúan tilos az anya ölében szállítani a gyermeket a saját biztonsága érdekében."',ok:true,fb:'Helyes! Az eljárásrend egyértelműen tiltja ezt a gyakorlatot.'},{tx:'"Igen, de csak ha az anyuka is beköti magát."',ok:false,fb:'Hibás! A gyermeket is dedikált eszközön kell rögzíteni.'}]},
+{sit:'Ha a gyermek állapota romlani kezd, és a lapáthordágyon fekve KÉM-zavart (keringési zavart a lábán) észlelsz, mi a teendő B kompetenciaszinten?',opts:[{tx:'Azonnal megpróbálom helyrerakni a törést.',ok:false,fb:'Hibás! B szinten a csontrakás nem megengedett.'},{tx:'KÉM-zavar esetén enyhe tengelyirányú húzást követően kell rögzíteni (akár húzósínnel is, mert az csecsemőkortól használható). Ezzel javítva a végtag keringését.',ok:true,fb:'Helyes! Az enyhe tengelyirányú húzás megengedett KÉM zavar elhárítására, és a húzósín alkalmazható gyermekeken is.'},{tx:'Gyorsabban hajtok a kórházba.',ok:false,fb:'Hibás! A végtagot a helyszínen meg kell menteni a tartós ischaemiától.'}]},
+{sit:'Áthelyezéskor a 15 kg-os gyermeket hogyan fogjátok meg ketten?',opts:[{tx:'Egyikünk a kezénél, másik a lábánál.',ok:false,fb:'Hibás! Fájdalmas és gerincet terhelő.'},{tx:'Tálcafogással (25 kg-ig) is át lehet helyezni, vagy log rollal.',ok:true,fb:'Helyes! A tálcafogás a 12-25 kg közötti gyermekek biztonságos áthelyezési technikája.'},{tx:'Csak log roll (forgatás) lehetséges.',ok:false,fb:'Hibás! A tálcafogás megengedett ebben a súlykategóriában.'}]},
+{sit:'Megérkeztek a traumatológiára. A gyermeket a gyermekboard-on / lapáthordágyon adjátok át. Mi az eszközkezelés szabálya?',opts:[{tx:'Levesszük róla, mert a miénk.',ok:false,fb:'Hibás! Nem teszünk kárt a betegben a felszerelés miatt.'},{tx:'A kórházi átadás során is törekedni kell a hatásos rögzítés folyamatos fenntartására, ideálisan csereeszköz (másik board/lapátágy) segítségével.',ok:true,fb:'Helyes! A rögzítést a kórházi vizsgálóasztalig fenn kell tartani, cserével.'},{tx:'Azonnal megfordítjuk, hogy levegyük.',ok:false,fb:'Hibás! Káros és veszélyes.'}]},
+{sit:'A gyermek átadásakor az SBO személyzete rákérdez a baleseti mechanizmusra. Milyen releváns adatot mondasz el a rögzítés szempontjából?',opts:[{tx:'Csak annyit, hogy karamboloztak.',ok:false,fb:'Hibás! Ez nem elég részletes.'},{tx:'Átadom, hogy a gyermek biztonsági gyermekülésben volt, amivel EGYÜTT emeltük ki az autóból a protokoll szerint, így a gerincvégig biztosított volt.',ok:true,fb:'Helyes! Ez az információ kritikus az SBO traumatológusának a gerincsérülés kockázatának megítéléséhez.'},{tx:'Elmondom, hogy sokat sírt.',ok:false,fb:'Hibás! Bár igaz, a mechanizmus a legfontosabb a sérülés szempontjából.'}]}
+],summary:'Részletes Összefoglaló (Sim 3 - B kompetencia): A gyermekülésben lévő traumás gyermeket az üléssel együtt vettük ki az autóból. Mivel a mechanizmus egész test rögzítését indokolta, folyamatos MILS mellett, a gyermeket fej felé, 2-3 cm-t emelve kihúztuk az ülést alóla. A gyermekboardon/lapátágyon a 3 éves gyermek hátát 2-3 cm-es buborékfóliával/lepedővel alápolcoltuk, hogy a feje neutrális (sík) helyzetben maradjon. Mivel a 6 év alatti gyermek a nyakgallérra rosszul reagált, eltekintettünk tőle, és a fej-test rögzítést részesítettük előnyben (headblock). A hevederezés sorrendje mindig a test (törzs) rögzítésével kezdődött, és csak a végén zártuk a fejet. A homloknál alkalmazott ragtapasz alá mull-lapot tettünk, hogy ne húzza a bőrt/hajat. Az anyuka kérését az "ölben szállításra" az eljárásrend alapján (TILOS!) határozottan elutasítottuk. Áthelyezésnél (a kb. 15 kg súly miatt) a tálcafogást alkalmaztuk. Kórházba érkezéskor a rögzítést fenntartva, csereeszközzel adtuk át a kisbeteget, részletezve a kimentési mechanizmust a traumatológusnak.'},
+
+{id:4,title:'4. Szimuláció: Distalis törések és Szállítás (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy kerékpárost elsodort egy autó (lassú tempó, <40 km/h). A beteg éber, a jobb alkarja és a bal lábszára (bokája) láthatóan deformált. B+ kompetencia.',steps:[
+{sit:'A helyszín biztosítása után megvizsgálod a beteget. Tompa trauma érte. A gerincrögzítés (SMR) megítéléséhez az AVPU-ABCDE mellett mikor lehet eltekinteni a rögzítéstől?',opts:[{tx:'Csak ha ő maga be tud szállni a mentőbe.',ok:false,fb:'Hibás! Ez nem orvosi kritérium.'},{tx:'Ha MINDEN feltétel teljesül: <65 év, éber, nincs intoxikáció, nincs nyaki fájdalom, ÉS nincs figyelemelterelő, nagy fájdalommal járó egyéb sérülés.',ok:true,fb:'Helyes! Az SMR klinikai kritériumai szigorúak. Itt a lábszár- és alkartörés durva figyelemelterelő fájdalom, így elvileg SMR (legalább óvatos rögzítés) szükséges lehet, vagy a mozgások tesztelése előtt fájdalomcsillapítás kell.'},{tx:'Bármikor, ha a nyaka nem fáj.',ok:false,fb:'Hibás! A figyelemelterelő fájdalom (törés) elrejtheti a nyaki fájdalmat.'}]},
+{sit:'Döntötök a rögzítés és a kórházba szállítás mellett. B+ kompetenciával hogyan látsz neki a végtagok rögzítésének előkészítéséhez?',opts:[{tx:'Kiosztom a sineket és azonnal ráhajtogatom a végtagokra.',ok:false,fb:'Hibás! A fájdalomcsillapítás hiányzik.'},{tx:'IV vénát biztosítok, és orvosi protokoll szerint fájdalomcsillapítót adok, miközben a kolléga eltávolítja a szoros ruházatot (órát, cipőt stb.) a sérült végtagokról.',ok:true,fb:'Helyes! A rögzítés fájdalmas, B+ kompetenciánál az analgézia elvárható, a szoros tárgyak eltávolítása kötelező.'},{tx:'Egyedül rögzítem a két végtagot egyszerre.',ok:false,fb:'Hibás! Fizikailag lehetetlen, csapatmunka kell.'}]},
+{sit:'Mielőtt a bal lábszárát és a jobb alkarját sínbe tennéd, milyen fizikális vizsgálatot kell a végtagokon elvégezni?',opts:[{tx:'KÉM-vizsgálatot (Keringés, Érzés, Mozgás).',ok:true,fb:'Helyes! A perifériás pulzus, az érzés és a mozgathatóság ellenőrzése kritikus.'},{tx:'Megkopogtatom a csontot.',ok:false,fb:'Hibás! Ez felesleges fájdalom és nem hasznos.'},{tx:'Hőmérőzést a hónaljban.',ok:false,fb:'Hibás! Nem ad információt a végtag állapotáról.'}]},
+{sit:'A bal lábszár KÉM-vizsgálata rendben van. Milyen eszköz(öke)t javasol a protokoll a distalis (törzstől távolabbi, mint alkar, lábszár) csontok rögzítésére prioritási sorrendben?',opts:[{tx:'Csak a Cramer-sínt.',ok:false,fb:'Hibás! A Cramer-sín csak a többi hiányában javasolt.'},{tx:'Végtagi vákuumsín, majd a flexibilis végtagrögzítő (SAM Splint), ezt követi az Oxystabil és legvégül a Cramer-sín.',ok:true,fb:'Helyes! Ez az OMSZ pontos prioritási listája a distalis törésekre.'},{tx:'Kartonpapír.',ok:false,fb:'Hibás! Nem rendszeresített eszköz.'}]},
+{sit:'A jobb alkarra flexibilis végtagrögzítő (SAM Splint) választasz. Mire kell figyelni a sín méretezésénél és formázásánál?',opts:[{tx:'A sérült rész szomszédos ízületein túl kell érnie, a méretezést az ELLENOLDALI (ép) végtagon javasolt elvégezni, majd C-alakúra formázni.',ok:true,fb:'Helyes! Így biztosítható a stabilizáció (szomszédos ízületek befogása) és kímélhető a beteg (méretezés a jó kézen).'},{tx:'Minél kisebbre hajtom, annál jobb.',ok:false,fb:'Hibás! Túl kell érnie az ízületeken.'},{tx:'A sérült karon méregetem.',ok:false,fb:'Hibás! Fájdalmat okoz, a jó karon kell.'}]},
+{sit:'A sínt (alkaron) rögzíted körkörös pólyamenetekkel. Mi a kiegészítő teendő felső végtag (alkar) esetén a szállítás során?',opts:[{tx:'A beteg lógassa maga mellett.',ok:false,fb:'Hibás! Ez duzzanatot és fájdalmat okoz.'},{tx:'Kössük fel a rögzített végtagot a sérült nyakába (pl. háromszögletű kendővel).',ok:true,fb:'Helyes! A felkötés nyugalomba helyezi a végtagot.'},{tx:'Tegyük a feje fölé.',ok:false,fb:'Hibás! Kényelmetlen és nem életszerű.'}]},
+{sit:'A lábszár rögzítéséhez végtagi vákuumsínt használsz. Milyen kiegészítő teendő van az alsó végtag szállításakor a mentőben?',opts:[{tx:'Lelógatva kell hagyni a hordágyról.',ok:false,fb:'Hibás! Növeli a nyomást és a fájdalmat.'},{tx:'A sérült alsó végtagot a szállítás során lehetőség szerint fel kell polcolni.',ok:true,fb:'Helyes! Az eleváció csökkenti az oedemát és a fájdalmat.'},{tx:'Húzósínt is kell rá tenni.',ok:false,fb:'Hibás! Vákuumsín és húzósín nem megy együtt így.'}]},
+{sit:'A beteget a hordágyon (esetleg lapátágyon is) toljátok be a mentőbe. Mi a biztonságos szállítás alapszabálya?',opts:[{tx:'Ha csak lassan megyünk, nem kellenek hevederek.',ok:false,fb:'Hibás! Bármilyen sebességnél kellenek.'},{tx:'A beteget a szállítási eszköz (hordágy) hevedereivel biztonságosan rögzíteni kell, feszesre húzva. A mentőszemélyzetnek pedig a biztonsági öv használata kötelező!',ok:true,fb:'Helyes! A beteg rögzítése és a személyzet övhasználata alapvető biztonsági előírás.'},{tx:'Csak a beteget kell bekötni, az ápolónak nem.',ok:false,fb:'Hibás! A személyzetnek is kötelező az öv.'}]},
+{sit:'Szállítás közben észleled, hogy a beteg rögzített (vákuumsínes) lábfeje elfehéredik (KÉM-zavar alakul ki utólag). Mi az eljárásrendi utasítás?',opts:[{tx:'Megvárom, amíg beérünk a kórházba, nem baj.',ok:false,fb:'Hibás! A tartós keringészavar szövetelhaláshoz vezet.'},{tx:'Ha a rögzítés után keringés/érzészavar jelentkezik, a rögzítés korrekciója (lazítása, majd újbóli stabilizálása enyhe tengelyirányú húzás mellett) szükséges.',ok:true,fb:'Helyes! A rögzítés sosem végleges, ha a KÉM romlik, be kell avatkozni.'},{tx:'Gyógyszert adok be, hogy értágulat legyen.',ok:false,fb:'Hibás! Fizikai kompressziót fizikai beavatkozással kell oldani.'}]},
+{sit:'A Sürgősségi Osztályra érve az eszközök levétele következik. Mit ír a szabvány a végtagrögzítő (Cramer, vákuumsín, flexibilis sín) átadásáról?',opts:[{tx:'A váróban azonnal tekerjük le a kötszereket és vigyük el a sínjeinket.',ok:false,fb:'Hibás! A rögzítést nem szüntetjük meg indokolatlanul.'},{tx:'A kórházi átadás során is törekedni kell a hatásos rögzítés folyamatos fenntartására, ideálisan márkaazonos csereeszköz (vákuumsín stb.) biztosításával.',ok:true,fb:'Helyes! Eszközcsere a standard, a rögzítést fenntartjuk a megfelelő orvosi átvételig/ellátásig.'},{tx:'A mentőautó sínjeit soha nem hagyhatjuk a kórházban.',ok:false,fb:'Hibás! Eszközcserével ez megoldott, és a beteg az első.'}]},
+{sit:'Az átadás befejeztével a mentőautó fertőtlenítése következik. Mit kell tenni a használt, de nem cserélt (pl. vérrel szennyezett) végtagrögzítőkkel?',opts:[{tx:'Visszatesszük a táskába, majd később lemossuk.',ok:false,fb:'Hibás! Fertőzésveszély.'},{tx:'Az eljárásrendnek megfelelően tisztítani és fertőtleníteni kell őket a következő használat előtt (vagy ha egyszer használatos, a veszélyes hulladékba tenni).',ok:true,fb:'Helyes! A fertőzéskontroll az ellátás szerves része.'},{tx:'Kidobjuk a normál kukába.',ok:false,fb:'Hibás! A véres eszköz veszélyes hulladék vagy fertőtlenítendő.'}]}
+],summary:'Részletes Összefoglaló (Sim 4 - B+ kompetencia): A gázolás (bár alacsony tempójú) tompa trauma volt, de a durva lábszár- és alkartörés "figyelemelterelő, nagy fájdalommal járó sérülés", ami miatt az SMR-től való eltekintés feltételei nem teljesültek azonnal (óvatosság javasolt). B+ kompetenciával először IV vénát biztosítottunk és megfelelő fájdalomcsillapítást adtunk, majd eltávolítottuk a szoros ruházatot (óra, cipő). A végtagokon rögzítés előtt KÉM (Keringés, Érzés, Mozgás) vizsgálatot végeztünk. Az alkarra egy flexibilis rögzítőt (SAM Splint) formáztunk, melynek méretét az ép (ellenoldali) végtagon vettük le (túlérve a szomszédos ízületeken), majd C-alakúra formázva körkörös pólyával rögzítettük, a kart pedig a nyakba kötöttük. A lábszárra vákuumsínt tettünk (a prioritási lista szerinti legjobb elérhető eszköz). A szállítás során a sérült lábat felpolcoltuk. Menet közben a lábon KÉM-zavar (fehéredés) lépett fel, ezért a vákuumsínt meglazítottuk, és korrigáltuk a rögzítést. A mentőben a biztonsági hevederek és az ápolói biztonsági öv használata kötelező volt. A kórházban a végtagrögzítőket csereszabatos eszközökkel adtuk át, majd a használt felszereléseket a fertőzéskontroll szabályai szerint fertőtlenítettük.'}
+];
+
+function setCalcTab(tab) {
+  CA.tab = tab;
+  render();
+}
+
+function updateSMR() {
+  var inputs = document.querySelectorAll('.smr-chk');
+  var anyTrue = false;
+  inputs.forEach(function(i) { if(i.checked) anyTrue = true; });
+  
+  var res = document.getElementById('smr-res');
+  if(anyTrue) {
+    res.innerHTML = '<div style="background:#450a0a;color:#fca5a5;padding:10px;border-radius:8px;border:1px solid #7f1d1d;font-weight:bold;">MAGAS RIZIKÓ!<br>Azonnali MILS, majd teljes SMR (lapátágy + nyakgallér + headblock) kötelező!</div>';
+  } else {
+    res.innerHTML = '<div style="background:#064e3b;color:#6ee7b7;padding:10px;border-radius:8px;border:1px solid #065f46;font-weight:bold;">Jelenleg nincs SMR-t indokló mechanizmus bejelölve.<br>Klinikai mérlegelés (AVPU-ABCDE) javasolt.</div>';
+  }
+}
+
+function updateStretcher() {
+  var wt = document.getElementById('st-wt').value;
+  var mw = 159; // Metal
+  var pw = 227; // Plastic
+  var res = document.getElementById('st-res');
+  var hStr = '<div style="margin-top:10px;">';
+  
+  if (wt <= mw) {
+    hStr += '<div style="color:#4ade80;font-weight:bold;">✓ Fém lapáthordágy használható (Max: 159 kg)</div>';
+  } else {
+    hStr += '<div style="color:#fca5a5;font-weight:bold;">✗ Fém lapáthordágy NEM használható! (Max: 159 kg)</div>';
+  }
+  
+  if (wt <= pw) {
+    hStr += '<div style="color:#4ade80;font-weight:bold;">✓ Műanyag lapáthordágy használható (Max: 227 kg)</div>';
+  } else {
+    hStr += '<div style="color:#fca5a5;font-weight:bold;">✗ Műanyag lapáthordágy NEM használható! (Max: 227 kg)</div>';
+  }
+  
+  hStr += '</div>';
+  res.innerHTML = hStr;
+}
+
+function renderCalc() {
+  var t1 = CA.tab === 'smr' ? 'btn-g' : '';
+  var t2 = CA.tab === 'stretcher' ? 'btn-g' : '';
+  
+  var html = '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Rögzítési Kalkulátorok</h2>';
+  html += '<div class="btn-row" style="margin-bottom:1rem;">';
+  html += '<button class="btn ' + t1 + '" onclick="setCalcTab(\'smr\')">SMR Döntéstámogató</button>';
+  html += '<button class="btn ' + t2 + '" onclick="setCalcTab(\'stretcher\')">Lapáthordágy Terhelhetőség</button>';
+  html += '</div>';
+
+  if (CA.tab === 'smr') {
+    html += '<div class="card">';
+    html += '<h3 style="font-size:14px;color:#14b8a6;margin-bottom:10px;">Sérülési Mechanizmus (Jelöld be, ha igaz!)</h3>';
+    
+    var crits = [
+      'Magasból esés (>2 méter, gyermeknél testhossz 2-3x)',
+      'Tengelyirányú fej/nyaksérülés (pl. fejesugrás)',
+      'Nagysebességű autóbaleset (>100 km/h)',
+      'Járműbe beszorult',
+      'Járműből kirepült',
+      'Utastársa meghalt (a balesetben)',
+      'Gázolásban sérült',
+      'Nagysebességű kerékpáros/motorbaleset'
+    ];
+    
+    crits.forEach(function(c, idx) {
+      html += '<label class="chk-row"><input type="checkbox" class="smr-chk" onchange="updateSMR()"> <span>' + h(c) + '</span></label>';
+    });
+    
+    html += '<div id="smr-res" style="margin-top:15px;"><div style="background:#064e3b;color:#6ee7b7;padding:10px;border-radius:8px;border:1px solid #065f46;font-weight:bold;">Jelenleg nincs SMR-t indokló mechanizmus bejelölve.<br>Klinikai mérlegelés (AVPU-ABCDE) javasolt.</div></div>';
+    html += '</div>';
+  } 
+  else {
+    html += '<div class="card">';
+    html += '<h3 style="font-size:14px;color:#14b8a6;margin-bottom:10px;">Beteg Becsült Testsúlya (kg)</h3>';
+    html += '<input type="number" id="st-wt" value="80" oninput="updateStretcher()">';
+    html += '<div id="st-res" style="margin-top:15px;">';
+    html += '<div style="color:#4ade80;font-weight:bold;">✓ Fém lapáthordágy használható (Max: 159 kg)</div>';
+    html += '<div style="color:#4ade80;font-weight:bold;">✓ Műanyag lapáthordágy használható (Max: 227 kg)</div>';
+    html += '</div>';
+    html += '<div class="note" style="margin-top:15px;">Minden esetben a fogópántok segítségével mozgassuk, a két végénél emelve a terhelhetőség jelentősen csökken!</div>';
+    html += '</div>';
+  }
+
+  return html;
+}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Rögzítések a prehospitális ellátásban</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v2.0 · 2020.02.20.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','Teljes szöveg'],['flash','🃏','Flashkártyák','19 forgatható kártya'],['quiz','❓','Kvíz','20 kérdés visszajelzéssel'],['sim','🚑','Szimuláció','4 interaktív eset (B/B+)'],['calc','🧮','Kalkulátorok','SMR & Terhelhetőség']].map(function(item){ return '<button onclick="go(\''+item[0]+'\')" class="home-mod"><div class="home-mod-icon">'+item[1]+'</div><div class="home-mod-title">'+item[2]+'</div><div class="home-mod-desc">'+item[3]+'</div></button>'}).join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Kattints a kék, szaggatott vonallal aláhúzott <span class="fw" onclick="event.stopPropagation();showDef(\'SMR\')">szavakra</span> a kifejezések magyarázatáért!</b></div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend Fejezetei</h2>'+
+CDATA.map(function(c){ return '<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>'}).join('');
+}
+
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+h(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(function(i){return '<li>'+h(i)+'</li>'}).join('')+'</ul>';
+  // FIXED: Flexbox bug wrapping checkmark properly so inline texts don't split!
+  if(b.tp==='kr') return '<div style="margin-bottom:12px;">'+b.items.map(function(i){return '<div class="kr"><span style="flex-shrink:0;margin-right:8px;color:#14b8a6;font-weight:bold;">✓</span><span style="flex:1">'+h(i)+'</span></div>'}).join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+h(b.tx)+'</div>';
+  if(b.tp==='note') return '<div class="note">'+h(b.tx)+'</div>';
+  return '';
+}
+
+function renderChapter(id){
+var c = null;
+for(var i=0; i<CDATA.length; i++) { if(CDATA[i].id === id) c = CDATA[i]; }
+if(!c) return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(function(s){ return '<div class="card"><h3 style="font-size:15px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(function(b){return rb(b);}).join('')+'</div>'}).join('');
+}
+
+function renderFlash(){
+var cats = ['Összes'];
+for(var i=0; i<CARDS.length; i++) { if(cats.indexOf(CARDS[i].cat) === -1) cats.push(CARDS[i].cat); }
+var filtered = FC.cat === 'Összes' ? CARDS : CARDS.filter(function(c){return c.cat === FC.cat});
+var card = filtered[Math.min(FC.idx, filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(function(c){ return '<button onclick="setCat(\''+c+'\')" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+c+'</button>'}).join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:11px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:14px;color:#d1d5db;line-height:1.6;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:16px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(function(a){return !a.ok}).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(function(a){return !a.ok}).map(function(a){ return '<div class="card" style="margin-bottom:8px"><div style="font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+h(QUIZ[a.qi].q)+'</div><div style="font-size:12px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+h(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:12px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:12px;color:#9ca3af">'+h(QUIZ[a.qi].exp)+'</div></div>'}).join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+q.opts.map(function(opt,i){var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'>'+h(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs Esetek</h2>'+
+SIMS.map(function(s){ return '<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:13px;color:#9ca3af;margin-bottom:6px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;font-weight:600;">'+s.steps.length+' döntési pont</div></button>'}).join('');
+}
+var sim = null;
+for(var i=0; i<SIMS.length; i++) { if(SIMS[i].id === SI.id) sim = SIMS[i]; }
+
+if(SI.fin){
+var correct=SI.hist.filter(function(h){return sim.steps[h.step].opts[h.oi].ok}).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Részletes Összefoglaló:</strong><br><br>'+h(sim.summary)+'</div>'+
+SI.hist.map(function(hh,i){var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:8px"><div style="font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:12px;margin-bottom:4px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:12px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:16px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map(function(opt,i){var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'>'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function render(){
+var c=document.getElementById('ct');
+c.innerHTML='';
+if(SCR==='home') c.innerHTML=renderHome();
+else if(SCR==='chapters') c.innerHTML=renderChapters();
+else if(SCR==='chapter') c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash') c.innerHTML=renderFlash();
+else if(SCR==='quiz') c.innerHTML=renderQuiz();
+else if(SCR==='sim') c.innerHTML=renderSim();
+else if(SCR==='calc') c.innerHTML=renderCalc();
+
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+var btns = document.querySelectorAll('.nb');
+for(var i=0; i<btns.length; i++) {
+  if (tabs[i] === active) {
+    btns[i].classList.add('act');
+  } else {
+    btns[i].classList.remove('act');
+  }
+}
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){
+  var f=FC.cat==='Összes'?CARDS:CARDS.filter(function(c){return c.cat===FC.cat});
+  FC.flip=false;
+  FC.idx=(FC.idx+d+f.length)%f.length;
+  render();
+};
+window.pickQ=function(i){
+  if(QZ.sel!==null) return;
+  QZ.sel=i;
+  var ok=i===QUIZ[QZ.idx].ok;
+  if(ok) QZ.score++;
+  QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});
+  render();
+};
+window.nextQ=function(){
+  if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else{QZ.done=true;}
+  render();
+};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){
+  if(SI.chosen!==null)return;
+  SI.chosen=i;
+  SI.hist.push({step:SI.step,oi:i});
+  render();
+};
+window.nextSim=function(){
+  var sim = null;
+  for(var i=0; i<SIMS.length; i++) { if(SIMS[i].id === SI.id) sim = SIMS[i]; }
+  if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else{SI.fin=true;}
+  render();
+};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>

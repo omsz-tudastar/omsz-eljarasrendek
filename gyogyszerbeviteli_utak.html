@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Gyógyszerbeviteli utak</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);overflow-x:auto;}
+.nb{flex:1;min-width:65px;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#3b82f6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#3b82f6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #3b82f6;}
+.step-wrap{display:flex;gap:10px;margin-bottom:10px;}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#3b82f6;color:#111827;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.step-body{flex:1;background:#262626;border-radius:8px;padding:.5rem .75rem;}
+.step-t{font-size:13px;font-weight:600;color:#f3f4f6;margin-bottom:.2rem;}
+.step-x{font-size:12px;color:#9ca3af;line-height:1.6;white-space:pre-line;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#2563eb;color:#fff;border-color:#2563eb;}
+.btn-g:hover{background:#1d4ed8;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#60a5fa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* RESULT */
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+/* INPUTS */
+input[type=range], input[type=number]{width:100%;accent-color:#3b82f6;background:transparent;border:1px solid #4b5563;border-radius:8px;padding:8px;color:#e5e7eb;font-family:inherit;background:#2a2a2a;}
+input[type=range]{padding:0;border:none;height:20px;}
+select{width:100%;padding:7px 10px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:13px;color:#e5e7eb;font-family:inherit;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* SECTION HEADER */
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:.85rem;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* DICTIONARY */
+.fw{color:#2dd4bf;border-bottom:1px dashed #2dd4bf;cursor:pointer;font-weight:600;display:inline-block;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;justify-content:center;align-items:center;padding:1rem;}
+.modal-c{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1.5rem;width:100%;max-width:400px;position:relative;}
+.modal-x{position:absolute;top:10px;right:15px;cursor:pointer;font-size:24px;color:#9ca3af;line-height:1;}
+.modal-x:hover{color:#f3f4f6;}
+/* SCROLLABLE */
+@media(max-width:480px){.tbl-wrap table{min-width:340px;}}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátorok</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="modal" id="dict-modal" onclick="if(event.target===this)closeDict()">
+  <div class="modal-c">
+    <div class="modal-x" onclick="closeDict()">×</div>
+    <h3 id="dict-w" style="color:#2dd4bf;margin-bottom:10px;font-size:18px;font-weight:700;">Szó</h3>
+    <p id="dict-d" style="font-size:14px;color:#e5e7eb;line-height:1.5;">Jelentés</p>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={tab:'iv', gauge:20, weight:75, age:30, ioloc:'tibia'};
+
+const DICT = {
+    'aszepszis': 'A kórokozók távoltartása a betegtől, a sebkörnyezettől és a felhasznált eszközöktől (pl. steril kesztyű, fertőtlenítés, tiszta tű).',
+    'antiszepszis': 'A már jelenlévő kórokozók elpusztítására, inaktiválására irányuló eljárás.',
+    'extravasatio': 'Amikor a beadott folyadék vagy gyógyszer a véna falát áttörve (vagy kicsúszott kanül miatt) a környező szövetekbe kerül. Jelei: duzzanat, fájdalom, csípő érzés.',
+    'anaphylaxia': 'Súlyos, életveszélyes, az egész szervezetet érintő allergiás reakció, mely azonnali beavatkozást igényel.',
+    'hypoglykaemia': 'Kórosan alacsony vércukorszint.',
+    'phlebitis': 'Vénagyulladás, amely a véna kanülálásának egyik kontraindikációja az adott végtagon.',
+    'lymphoedema': 'Nyiroködéma, a nyirokfolyadék felhalmozódása miatt kialakuló szöveti duzzanat.',
+    'cellulitis': 'A bőr és a közvetlenül alatta lévő szövetek bakteriális gyulladása.',
+    'tuberositas tibiae': 'A sípcsont elülső felszínén, a térdízület alatt található csontos kidudorodás. Az intraossealis szúrás (proximalis tibia) tájékozódási pontja.',
+    'malleolus medialis': 'A belső boka (a sípcsont distalis végének belső nyúlványa).',
+    'epiphysis': 'A hosszú csöves csontok ízületképző, megvastagodott végrésze.',
+    'medulláris': 'A csontvelővel vagy a csont velőüregével kapcsolatos.',
+    'cimino-fistula': 'Vesepótló kezelés (dialízis) céljából mesterségesen kialakított arterio-venosus összeköttetés a karon. Pungálása szigorúan tilos!',
+    'osteomyelitis': 'Csontvelő- és csontgyulladás, ami 24 órán túl bent hagyott intraossealis tű esetén alakulhat ki.',
+    'compartment-szindróma': 'Rekesz-szindróma; egy zárt izomrekeszben megnövekedett nyomás, amely károsítja a szövetek vérellátását.',
+    'ventroglutealis': 'A csípő/far oldalsó, elülső része. Biztonságos IM szúrási hely felnőtteknek és >2 éves gyerekeknek.',
+    'dorsoglutealis': 'A farok/fenék hátsó része. IM szúrásra prehospitálisan már nem javasolt!',
+    'acromion': 'A lapocka vállcsúcsi nyúlványa.',
+    'sublingualis': 'Nyelv alatti gyógyszerbeviteli út.',
+    'intramuscularis': 'Izomba történő beadás (röviden: im.).',
+    'intraossealis': 'Csontvelőüregbe történő beadás (röviden: io.).',
+    'intravénás': 'Vénába történő beadás (röviden: iv.).',
+    'oralis': 'Szájon át történő gyógyszerbeadás (röviden: p.o.).',
+    'rectalis': 'Végbélen keresztül történő gyógyszerbeadás (röviden: p.r.).'
+};
+
+function showDict(w){
+    var cleanWord = w.toLowerCase().trim();
+    document.getElementById('dict-w').innerText = w;
+    document.getElementById('dict-d').innerText = DICT[cleanWord] || 'Nincs adat a szótárban ehhez a kifejezéshez.';
+    document.getElementById('dict-modal').style.display = 'flex';
+}
+function closeDict(){ document.getElementById('dict-modal').style.display = 'none'; }
+
+// ── DATA ───────────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Bevezetés és Alapelvek',icon:'🎯',acc:'#3b82f6',secs:[
+{t:'1. Célok és Bevezetés',bk:[
+{tp:'bl',items:['A gyógyszerelés alapszabályainak, beviteli utak típusainak bemutatása.','Sajátosságok (oralis, sublingualis, inhalációs, rectalis, intramuscularis, intravénás, intraossealis) ismertetése.','Magyar és nemzetközi irányelvek adaptációja, az OMSZ munkájának egységesítése.','Bizonyíték nélküli, haszontalan vagy káros beavatkozások mellőzése.']},
+{tp:'sub',tx:'A gyógyszerelés 9 alapszabálya:'},
+{tp:'steps',items:[
+{n:'1',t:'Megfelelő betegnek',x:'A beteg azonosítása.'},
+{n:'2',t:'Megfelelő gyógyszert',x:'A gyógyszer azonosítása, gyógyszerérzékenység ellenőrzése.'},
+{n:'3',t:'Megfelelő módon',x:'A beadási út egyértelmű meghatározása.'},
+{n:'4',t:'Megfelelő időben',x:'A beadás időpontjának meghatározása.'},
+{n:'5',t:'Megfelelő dózisban',x:'Dózis ellenőrzése, egyértelmű utasítás (mértékegységek egyeztetése, visszacsatolás).'},
+{n:'6',t:'Megfelelően dokumentálva',x:'Gyógyszer neve, beviteli út, idő, dózis rögzítése.'},
+{n:'7',t:'Megfelelő tájékozottság mellett',x:'A gyógyszer, az indikáció ismerete, beteg tájékoztatása.'},
+{n:'8',t:'Megfelelő formában',x:'Különböző gyógyszerformák ismerete, azok össze nem tévesztése.'},
+{n:'9',t:'Megfelelő további észlelés mellett',x:'A beteg/a gyógyszerre adott válaszreakció megfigyelése.'}
+]},
+{tp:'al',lv:'d',tx:'"Egy gyógyszer adásának (egyik) legfontosabb kontraindikációja az indikáció hiánya."'},
+{tp:'sub',tx:'Általános óvintézkedések:'},
+{tp:'bl',items:['Beteg (vagy szülő) tájékoztatása és beleegyezése.','Védőkesztyű viselése minden esetben.','Az <span class="fw" onclick="showDict(\'aszepszis\')">aszepszis</span>-<span class="fw" onclick="showDict(\'antiszepszis\')">antiszepszis</span> szabályainak szigorú betartása invazív beavatkozásnál.','Tűszúrásos balesetek megelőzése (kupak visszahelyezése balesetveszélyes!).','Veszélyes hulladék megfelelő kezelése (tűledobó használata).']}
+]}
+]},
+{id:'oral',title:'Oralis és Sublingualis út',icon:'💊',acc:'#14b8a6',secs:[
+{t:'Oralis (p.o.) és Sublingualis (sl.) gyógyszerelés',bk:[
+{tp:'al',lv:'w',tx:'Gyógyszert oralisan/sublingualisan CSAK ülő/félülő helyzetben, eszméletén lévő, megfelelően kooperáló betegnek adhatunk!'},
+{tp:'bl',items:['A gyomor-bélrendszerből a felszívódás változó, sürgősségi helyzetben csak meghatározott esetekben javasolt.','A <span class="fw" onclick="showDict(\'sublingualis\')">sublingualis</span> út (szájnyálkahártya) megbízhatóbb és gyorsabb.','Egyszerre egy tabletta bevétele javasolt, elegendő folyadékkal.','Meg kell győződni a tabletta lenyeléséről.']},
+{tp:'sub',tx:'Specifikus készítmények sajátosságai:'},
+{tp:'steps',items:[
+{n:'1',t:'Acetilszalicilsav (Aspirin)',x:'Fájdalomcsillapítás: folyadékkal lenyelni.\nAkut coronaria szindróma (ACS): a tablettát szét kell rágatni a gyors felszívódásért.'},
+{n:'2',t:'Dexametazon',x:'Tablettát kevés folyadékkal lenyelni.\nGyermekeknek: összetörve, édes folyadékban (tea, szörp) a szülő adja be az együttműködés javítása érdekében.'},
+{n:'3',t:'Kaptopril',x:'A tablettát a szájüregben kell tartani annak elolvadásáig, vagy kevés folyadékkal lenyelni.'},
+{n:'4',t:'Klopidogrel',x:'A tablettát kevés folyadékkal le kell nyelni.'},
+{n:'5',t:'Nitroglicerin spray',x:'Kibocsátás előtt ütközésig nyomni (levegőbe permetezés), míg folyadék nem jön (kamra feltöltése).\nBeteg mondjon "L-betűt" (nyelv a szájpadláson).\nFújjunk a nyelv alá függőlegesen tartott tartállyal.\nA lélegzetet bent kell tartani, nem szabad belélegezni!'}
+]}
+]}
+]},
+{id:'inhal',title:'Inhalációs gyógyszerelés',icon:'💨',acc:'#8b5cf6',secs:[
+{t:'Inhalációs beviteli út',bk:[
+{tp:'note',tx:'Cél a lokális hatás kiváltása a légutakban, így szisztémás mellékhatással kevésbé kell számolni.'},
+{tp:'sub',tx:'A) Túlnyomásos adagoló (MDI - pl. Szalbutamol):'},
+{tp:'bl',items:['Első használat előtt felrázni, 2 adagot levegőbe fújni a működés ellenőrzése céljából.','Függőleges helyzet, fúvóka lefelé.','Beteg kifújja a levegőt, ajkait a fúvóka köré zárja anélkül, hogy ráharapna.','Beszívás közben tartály tetejének megnyomása, mély belégzés, majd lélegzet visszatartása.','Ha új adag kell, 30 másodpercet várni.','Hatásfok növelhető belégzési segédeszközzel (pl. AeroChamber): 1 puff -> 4-5 nyugodt légvétel az eszközbe.']},
+{tp:'sub',tx:'B) Gyógyszerporlasztó (Nebulizátor):'},
+{tp:'bl',items:['Ülő/félülő helyzet (csak függőleges pozícióban képes optimálisan porlasztani).','Max térfogat 5 ml (sz.e. 0,9% NaCl oldószerrel kiegészítve).','Oxigénáramlás: általában 6-9 l/perc, látható páraképződésig.','Lehetőleg rövid ideig tartó alkalmazás (5-15 perc).','T-darab nebulizátor: CPAP/NIV vagy intubált beteg esetén használatos. Mindig az eszköz és a maszk/tubus KÖZÉ kell illeszteni, külön O2 forrással.']},
+{tp:'sub',tx:'C) Fájdalomcsillapító adagoló szelep (Demand-szelep / N2O):'},
+{tp:'al',lv:'w',tx:'CSAK eszméletén lévő, JÓL kooperáló betegnél alkalmazható! Önadagoló eszköz, a beteg légvételei indítják a gázáramlást.'},
+{tp:'bl',items:['Használat előtt tesztelni a "Test" gombbal.','Minden beteghez új, egyszer használatos kilégzési szelep kell.','A maszkot SOHA NE rögzítsük pántokkal a beteg arcához (a betegnek magának kell szorítania).','Használat után palack elzárása, rendszer nyomásmentesítése ("Test" gomb megnyomásával).']}
+]}
+]},
+{id:'rect',title:'Rectalis gyógyszerelés',icon:'🍑',acc:'#f59e0b',secs:[
+{t:'Rectalis (p.r.) beviteli út',bk:[
+{tp:'note',tx:'Sürgősségi helyzetben adása nem ideális, a felszívódott hatóanyag mennyisége bizonytalan. Legtöbbször gyermekek esetén választott út.'},
+{tp:'bl',items:['Beteg szeméremérzetének tiszteletben tartása.','Oldalt fekvő helyzet, felhúzott lábakkal.','Beteg vegyen lassú, mély lélegzetet a sphincterizmok ellazítására.']},
+{tp:'sub',tx:'Kúpok (ibuprofén, prednizon, prednizolon):'},
+{tp:'bl',items:['Belső sphincteren keresztüli felhelyezés (használható kézkrém/vazelin).','Rövid ideig szorítsuk össze a farpofákat a kicsúszás megelőzésére.','Gyermek esetén a szülő is beadhatja.']},
+{tp:'sub',tx:'Rectalis oldat (diazepám):'},
+{tp:'bl',items:['Tubus végének teljes bevezetése (15 kg alatti gyermeknél CSAK FÉLIG!).','A cső végét lefelé tartva teljesen kiüríteni.','A szívóhatás elkerülése érdekében ÖSSZENYOMVA tartani a tubust a kihúzásig!','Farpofák összeszorítása röviden.']}
+]}
+]},
+{id:'im',title:'Intramuscularis út',icon:'💉',acc:'#ef4444',secs:[
+{t:'Intramuscularis (im.) gyógyszerelés',bk:[
+{tp:'al',lv:'w',tx:'Prehospitálisan ritkán indokolt, különösen, ha egyéb beviteli út elérhető. Fő indikációk: görcsgátlás, <span class="fw" onclick="showDict(\'anaphylaxia\')">anaphylaxia</span>, szedáció, fájdalomcsillapítás, <span class="fw" onclick="showDict(\'hypoglykaemia\')">hypoglykaemia</span>.'},
+{tp:'sub',tx:'Alapszabályok:'},
+{tp:'bl',items:['Felnőttek: 21-22G tű. Gyermekek: 22-25G tű.','Obesitas esetén hosszabb tű kellhet.','Max beadható mennyiség felnőttnél 5 ml, gyermeknél (életkortól függően) 0,5-2 ml. Nagyobb dózis esetén elosztva másik helyre kell adni.','Fecskendőbe 0,3-0,5 ml levegő felszívása javasolt (légzár, ami megakadályozza a subcutan visszajutást).','Beadás szöge: 72-90°.','<span class="fw" onclick="showDict(\'aszepszis\')">Aszepszis</span>: felszívó tűt tisztára cserélni szúrás előtt.']},
+{tp:'al',lv:'d',tx:'Kontraindikált: vérzékenység, valamint (akár tervezett) antikoaguláns kezelés esetén! A <span class="fw" onclick="showDict(\'dorsoglutealis\')">dorsoglutealis</span> régió (fenék hátsó része) im. injekciózásra prehospitálisan nem javasolt!'},
+{tp:'sub',tx:'Javasolt anatómiai helyek:'},
+{tp:'ftable',rows:[
+{s:'Ventroglutealis régió',m:'Felnőtteknél és >2 éves gyermekeknél (2 év alatt nem).',lv:'w'},
+{s:'M. vastus lateralis',m:'Comb külső-középső harmada. Sürgető helyzetben (anaphylaxia, görcs) ELSŐKÉNT választandó MINDEN életkorban.',lv:'d'},
+{s:'M. deltoideus',m:'Váll (<span class="fw" onclick="showDict(\'acromion\')">acromion</span> alatt). Minden életkorban, de csak kisebb mennyiségek a kisebb izomtömeg miatt.',lv:'w'}
+]},
+{tp:'sub',tx:'Beadás menete:'},
+{tp:'steps',items:[
+{n:'1',t:'Előkészület',x:'Beteg felvilágosítása, vizsgálókesztyű, bőrfertőtlenítés (behatási idő megvárása), izom ellazítása.'},
+{n:'2',t:'Szúrás',x:'"Darts-szerűen" fogva a fecskendőt 72-90° szögben beszúrni. Z-vonal technika javasolt (bőr 2-3 cm-es elhúzása és megtartása a tű kihúzásáig).'},
+{n:'3',t:'Aspiráció',x:'Visszaszívás az érpályába hatolás kizárására. Ha vér jelenik meg: tűt kihúzni, és új tűvel/fecskendővel elölről kezdeni!'},
+{n:'4',t:'Beadás és befejezés',x:'Óvatos beadás, 10 másodperc várakozás a tű kihúzása előtt. Seb fedése, a masszírozás KERÜLÉSE!'}
+]}
+]}
+]},
+{id:'pvb',title:'Perifériás vénás út',icon:'🩸',acc:'#22c55e',secs:[
+{t:'Perifériás vénás kapcsolat (PVB)',bk:[
+{tp:'sub',tx:'Indikációk az OMSZ-nál:'},
+{tp:'bl',items:['Azonnali folyadékpótlás.','Intravénás gyógyszer alkalmazása.','Nyitott véna biztosítása (később szükségessé váló intravénás gyógyszerhez).','Időkritikus esetben a PVB nem hátráltathatja a kimentést. 2 sikertelen kísérlet vagy 2 perc után IO út választandó!']},
+{tp:'al',lv:'d',tx:'Kontraindikációk az adott végtagon: <span class="fw" onclick="showDict(\'phlebitis\')">phlebitis</span>, <span class="fw" onclick="showDict(\'lymphoedema\')">lymphoedema</span>, <span class="fw" onclick="showDict(\'cellulitis\')">cellulitis</span>, azonos oldali axillaris műtét/mastectomia. <span class="fw" onclick="showDict(\'cimino-fistula\')">Cimino-fistula</span> pungálása SZIGORÚAN TILOS!'},
+{tp:'sub',tx:'Kanül méretek és áramlási sebességek (maximális):'},
+{tp:'tbl',rows:[
+['Sárga (24G) csecsemő', '20 ml/min'],
+['Kék (22G) kisgyermek', '30 ml/min'],
+['Rózsaszín (20G) felnőtt min.', '55 ml/min'],
+['Zöld (18G)', '100 ml/min'],
+['Szürke (16G)', '180 ml/min'],
+['Narancs (14G)', '270 ml/min']
+]},
+{tp:'sub',tx:'Beavatkozás kulcslépései:'},
+{tp:'bl',items:['Lehetőleg distalis vénával kezdeni (kézfej, alkar).','Fertőtlenítés után a bőrfelszínt MÁR NE TAPINTSUK meg!','Szúrás 10-30° szögben. Vér megjelenésekor a szög csökkentése, pár mm előretolás.','A tű lassú visszahúzásával egyidejűleg a kanül felvezetése (tű visszatolása TILOS, kanül leszakadhat!).','Légtelenített rendszer csatlakoztatása, sóoldattal átmosás. <span class="fw" onclick="showDict(\'extravasatio\')">Extravasatio</span> figyelése!','Fiziológiás sóval történő átmosás után le kell zárni. A "vénafenntartó infúzió" indokolatlan és veszélyes az ellenőrizetlen folyadékbevitel miatt.','Csecsemőknél: 2 ml 30% per os cukoroldat 2 perccel előtte csökkenti a fájdalmat.','Vérnyomásmérés lehetőleg a másik végtagon történjen.']}
+]}
+]},
+{id:'io',title:'Intraossealis út (EZ-IO)',icon:'🦴',acc:'#ec4899',secs:[
+{t:'Intraossealis kapcsolat biztosítása',bk:[
+{tp:'al',lv:'d',tx:'Gyermek újraélesztésnél ELSŐKÉNT választandó! Felnőttnél, ha nem sikerül ésszerű időn belül (2 perc / 2 kísérlet) PVB-t biztosítani.'},
+{tp:'sub',tx:'Kontraindikációk az adott végtagon:'},
+{tp:'bl',items:['Törés az érintett végtagon.','Korábbi IO próbálkozás vagy 48 órán belüli IO.','Nem intakt bőr / helyi gyulladás (az ÉGÉS NEM kontraindikáció!).','Ortopédiai műtét / fém implantátum.']},
+{tp:'sub',tx:'Tűméretek (nem életkor, hanem lágyrész-vastagság függő!):'},
+{tp:'tbl',rows:[
+['15 mm (Rózsaszín)', '3-39 kg (újszülött, kis csecsemő prox/dist tibia)'],
+['25 mm (Kék)', '>3 kg (gyermekek, valamint felnőtt tibia)'],
+['45 mm (Sárga)', '>40 kg, tömeges lágyrész (felnőtt humerus)']
+]},
+{tp:'al',lv:'w',tx:'A bőr és lágyrész átszúrása, valamint a csont érintése után (befúrás előtt) legalább az utolsó 5 mm-es beosztásnak LÁTSZÓDNIA KELL!'},
+{tp:'sub',tx:'Szúrási pontok:'},
+{tp:'steps',items:[
+{n:'1',t:'Proximalis humerus (Felnőtt - Elsődleges újraélesztésnél!)',x:'Könyök 90°-os hajlítása, kar a hasra (vagy feszesen test mellé befelé rotálva).\nSzúrás a fej felől a vízszintes síkhoz képest 45°-os szögben, posteromedialisan (a lapocka alsó-külső széle felé).'},
+{n:'2',t:'Proximalis tibia',x:'<span class="fw" onclick="showDict(\'tuberositas tibiae\')">Tuberositas tibiae</span>-től 2 cm-re (csecsemőnél 1 cm-re) mediálisan. 90°-os szögben.'},
+{n:'3',t:'Distalis tibia',x:'<span class="fw" onclick="showDict(\'malleolus medialis\')">Malleolus medialis</span> (belboka) legkiemelkedőbb pontjától 3 cm-re (csecsemőnél 1-2 cm) proximálisan. 90°-os szögben.'},
+{n:'4',t:'Distalis femur (Csecsemő, kisgyermek)',x:'Patella felső pólusától prox. 1-2 cm, középvonaltól mediálisan 1-2 cm. Kinyújtott láb!'}
+]},
+{tp:'sub',tx:'Beavatkozás menete:'},
+{tp:'bl',items:['Légtelenített összekötő szerelék (1 ml) és háromágú csap előkészítése.','Fúrás finom nyomással, az ellenállás csökkenésekor (1-2 cm a <span class="fw" onclick="showDict(\'medulláris\')">medulláris</span> térben) MEGÁLLNI. Tilos a fúrót járva visszahúzni!','Aspiráció egy fecskendővel: az aspirált csontvelőt NE nyomjuk vissza! (Sikertelen aspiráció nem feltétlenül jelent rossz pozíciót).','Bemosás: felnőtt 5-10 ml, csecsemő 2-5 ml 0,9% NaCl oldattal.','Szükség lehet túlnyomásos infúziós zsákra a kívánt sebesség eléréséhez.']},
+{tp:'sub',tx:'Fájdalomcsillapítás (Megtartott tudatnál! B+ vagy orvosi/tiszti kompetencia!):'},
+{tp:'note',tx:'Lidokain (1%-os, tartósítószer- és adrenalinmentes) a velőüregi fájdalomra. LASSAN kell adni, hogy ne jusson a szisztémás keringésbe azonnal.'},
+{tp:'tbl',rows:[
+['Felnőtt', '40 mg (4 ml) 2 perc alatt -> 1 perc szünet -> Bemosás 5-10 ml -> További 20 mg (2 ml) 1 perc alatt'],
+['Gyermek', '0,5 mg/kg (Max: 40 mg!) lassan']
+]},
+{tp:'sub',tx:'Eltávolítás:'},
+{tp:'bl',items:['Luer fecskendő csatlakoztatása, tengelyben tartva ÓRAMUTATÓ JÁRÁSÁVAL MEGEGYEZŐEN csavarva kihúzni.','Max 24 óráig tartható bent a szövődmények (pl. <span class="fw" onclick="showDict(\'osteomyelitis\')">osteomyelitis</span>) elkerülése végett.']}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Alapok',f:'A gyógyszerelés 9 alapszabálya?',b:'1. Beteg\n2. Gyógyszer\n3. Mód (út)\n4. Idő\n5. Dózis\n6. Dokumentáció\n7. Tájékozottság\n8. Forma\n9. Észlelés (visszacsatolás)'},
+{cat:'Oralis/SL',f:'Hogyan kell beadni az ACS-ben szenvedő betegnek az Aspirint és a Nitroglicerint?',b:'Aspirin: Szét kell rágatni a megfelelő felszívódás érdekében.\nNitroglicerin: Permetezés a levegőbe (feltöltés), L-betű mondása (nyelv a szájpadláson), függőleges tartállyal a nyelv alá fújás. Lélegzetet bent kell tartani.'},
+{cat:'Inhalációs',f:'Mennyi az optimális oxigénáramlás a nebulizátoros (gyógyszerporlasztó) O2-maszkhoz?',b:'Általában 6-9 liter/perc.\nLátható páraképződéssel kell járnia, és törekedni kell a minél rövidebb alkalmazásra (5-15 perc).'},
+{cat:'Inhalációs',f:'Mi a Demand-szelep (N2O) alkalmazásának legfőbb feltétele?',b:'CSAK eszméletén lévő, jól kooperáló betegnél alkalmazható!\nÖnadagoló eszköz (a beteg légvételei indítják). A maszkot soha ne rögzítsük pántokkal.'},
+{cat:'Rectalis',f:'Hogyan adjuk be a diazepám rectalis oldatot 15 kg alatti gyermeknek?',b:'A tubus végét CSAK FÉLIG vezetjük be a rectumba.\nA kiürítés után a szívóhatás elkerülése érdekében ÖSSZENYOMVA tartjuk a tubust a kihúzásig.'},
+{cat:'IM',f:'Melyik a leginkább javasolt izom IM injekcióra sürgető esetben (pl. anaphylaxia)?',b:'M. vastus lateralis (comb külső-középső harmada).\nKönnyen hozzáférhető és minden életkorban elsőként választandó.'},
+{cat:'IM',f:'Mi az IM gyógyszerelés "légzár" technikája?',b:'A fecskendőbe a gyógyszeren kívül 0,3-0,5 ml levegőt is felszívunk, ami a beadás végén a szúrcsatornát lezárja, megakadályozva a gyógyszer subcutan visszaszivárgását.'},
+{cat:'IM',f:'Milyen szögben és mennyi a maximális térfogat felnőtt IM injekciónál?',b:'Szög: 72-90° (Z-vonal technika javasolt).\nMax mennyiség: 5 ml. (Ha több kell, másik helyre kell szúrni elosztva).'},
+{cat:'PVB',f:'Mikor kontraindikált a PVB az adott végtagon?',b:'Phlebitis, lymphoedema, cellulitis, azonos oldali axillaris sebészeti beavatkozás/mastectomia.\nCimino-fistula (dialízis shunt) pungálása SZIGORÚAN TILOS!'},
+{cat:'PVB',f:'Mi a teendő a PVB sikeres beadása után, ha csak gyógyszerelés miatt kötöttük be?',b:'Sóoldatos átmosás után LE KELL ZÁRNI.\nA "vénafenntartó infúzió" indokolatlan és az ellenőrizetlen folyadékbevitel miatt veszélyes.'},
+{cat:'IO',f:'Mikor elsőként választandó az IO biztosítás?',b:'Gyermek újraélesztés során.\nFelnőttnél akkor, ha ésszerű időn (2 kísérlet vagy 2 perc) belül nem sikerül perifériás vénát biztosítani.'},
+{cat:'IO',f:'Mik az EZ-IO tűméretek és kinek valók?',b:'15 mm (rózsaszín): 3-39 kg\n25 mm (kék): 3 kg felett (felnőtt tibiához is jó)\n45 mm (sárga): 40 kg felett, vagy tömeges lágyrész esetén (pl. felnőtt humerus).'},
+{cat:'IO',f:'Mi a legfontosabb vizuális ellenőrzés a csont fúrásának megkezdése előtt?',b:'A bőr és a lágyrészek átszúrása után (a csont érintésekor) legalább az utolsó 5 mm-es beosztásnak KI KELL LÁTSZÓDNIA a tűn! Ha nem, hosszabb tű kell.'},
+{cat:'IO',f:'Felnőtt újraélesztésnél melyik az elsődlegesen választandó IO szúrási pont?',b:'Proximalis humerus (váll).\nA fúrás 45°-os szögben a vízszintes síkhoz képest, a test mellé szorított és befelé rotált karon.'},
+{cat:'IO',f:'Hogyan kell fájdalmat csillapítani az IO térben megtartott tudatnál?',b:'Lidokain (1%-os, adrenalinmentes) LASSÚ, 1-2 perc alatti beadásával.\nFelnőtt: 40mg -> 1 perc szünet -> 5-10ml NaCl bemosás -> 20mg.'}
+];
+
+var QUIZ=[
+{q:'Melyik helyzet KIZÁRÓLAGOSAN megfelelő az oralis/sublingualis gyógyszereléshez?',opts:['Csak hanyatt fekvő, eszméletlen beteg','Csak ülő/félülő helyzetben, eszméletén lévő, kooperáló beteg','Stabil oldalfekvő helyzetben lévő beteg','Bármilyen testhelyzet, ha van nyelési reflex'],ok:1,exp:'Oralisan/sublingualisan csak ülő/félülő helyzetben lévő, kooperáló és eszméletén lévő betegnek adható gyógyszer.'},
+{q:'Hogyan kell beadni az acetilszalicilsavat Akut Coronaria Szindrómában (ACS)?',opts:['Egészben lenyelve sok folyadékkal','Kevés folyadékkal feloldva','A tablettát szét kell rágatni','A nyelv alatt kell tartani amíg elolvad'],ok:2,exp:'ACS esetén a gyorsabb felszívódás érdekében az Aspirint szét kell rágatni.'},
+{q:'Mi a teendő a nitroglicerin spray első fújása előtt?',opts:['Fel kell rázni, majd a levegőbe fújni addig, amíg folyadék nem jön ki','Azonnal a beteg nyelve alá kell fújni','Hanyatt kell fektetni a beteget','Kérjük meg a beteget, hogy vegyen mély levegőt a fújás alatt'],ok:0,exp:'A dóziskamra teljes feltöltéséhez a levegőbe kell fújni (permetezni), amíg folyadék nem jön ki.'},
+{q:'Mennyi az optimális oxigénáramlás a nebulizátor (gyógyszerporlasztó) működtetéséhez?',opts:['1-3 l/perc','6-9 l/perc','12-15 l/perc','Csak sűrített levegővel használható'],ok:1,exp:'A megfelelő porlasztáshoz 6-9 l/perc oxigénáramlás szükséges látható páraképződéssel.'},
+{q:'Mit kell tenni a diazepám rectalis oldat beadásakor a tubussal a rectumból való eltávolításkor?',opts:['Teljesen el kell engedni, hogy levegőt szívjon be','Összenyomva kell tartani a kihúzásig a szívóhatás elkerülésére','Forgatva kell kihúzni','A kihúzás előtt be kell juttatni egy kis levegőt'],ok:1,exp:'A szívóhatás (a gyógyszer visszaszívása) elkerülése érdekében a tubust összenyomva kell tartani a rectumból történő eltávolításig.'},
+{q:'Melyik izom NEM javasolt intramuscularis injekciózáshoz az eljárásrend alapján prehospitálisan?',opts:['M. vastus lateralis','M. deltoideus','Ventroglutealis régió','Dorsoglutealis régió'],ok:3,exp:'A dorsoglutealis régió im. injekciózásra prehospitálisan nem javasolt.'},
+{q:'Mennyi a maximálisan beadható mennyiség felnőttnek egy intramuscularis szúrási helyre?',opts:['2 ml','5 ml','10 ml','15 ml'],ok:1,exp:'Im. gyógyszerelés esetén a beadott mennyiség nem lehet több 5 ml-nél felnőtteknél. Ha több kell, elosztva kell beadni.'},
+{q:'Sürgető helyzetben (pl. anaphylaxia) minden életkorban melyik az ELSŐKÉNT választandó IM szúrási hely?',opts:['M. deltoideus','M. vastus lateralis','Ventroglutealis régió','M. gluteus maximus'],ok:1,exp:'A M. vastus lateralis könnyen hozzáférhető, és sürgető beavatkozási igény esetén elsőként választandó minden életkorban.'},
+{q:'Melyik színű és méretű perifériás kanül képes a LEGNAGYOBB maximális áramlási sebességre (270 ml/min)?',opts:['Zöld (18G)','Szürke (16G)','Narancs (14G)','Rózsaszín (20G)'],ok:2,exp:'A narancs színű (14G) kanül képes akár 270 ml/min áramlási sebességre.'},
+{q:'Mikor választjuk az intraossealis utat perifériás véna helyett felnőtt újraélesztése esetén?',opts:['Csak ha a beteg túlsúlyos','Mindig, ez az elsőként választandó módszer','Ha nem sikerül ésszerű időn belül (2 kísérlet vagy 2 perc) perifériás vénát biztosítani','Soha, felnőttnél tilos'],ok:2,exp:'Felnőtt újraélesztésnél, ha nem sikerül ésszerű időn belül perifériás vénát biztosítani (2 perc / 2 szúrás), IO utat kell választani. Gyermek újraélesztésnél viszont elsőként választandó.'},
+{q:'Melyik a HELYES állítás az intraossealis tű kiválasztásával kapcsolatban?',opts:['Mindig életkor alapján választunk (gyermek és felnőtt tű)','A tű mérete a beteg testtömegétől, anatómiájától és a lágyrészek vastagságától függ','Csak a csont sűrűsége számít','Felnőttnek mindig a sárga (45 mm) kell'],ok:1,exp:'A tű kiválasztása nem kor, hanem lágyrészvastagság, testtömeg és szúrási hely függvénye.'},
+{q:'Felnőtt újraélesztés esetén melyik a leginkább javasolt intraossealis szúrási pont az eljárásrend alapján?',opts:['Proximalis tibia','Distalis tibia','Proximalis humerus','Sternum'],ok:2,exp:'A proximalis humerus elsődlegesen választandó felnőtt újraélesztés alatt, mivel a gyógyszerek gyorsabban jutnak a centrális keringésbe.'},
+{q:'Milyen szögben kell a proximalis humerusba fúrni az EZ-IO-val?',opts:['A vízszintes síkhoz képest 90 fokban','A vízszintes síkhoz képest 45 fokban, posteromedialisan','Párhuzamosan a csonttal','Felfelé, 30 fokos szögben'],ok:1,exp:'Humerus esetén a fúrás a frontalis (vízszintes) síkhoz képest 45°-os szögben, posteromedialisan (a fej felől lefelé) történik.'},
+{q:'Mi a teendő, ha az IO fúrás megkezdése előtt (a csont érintésekor) NEM látszik ki az utolsó 5 mm-es beosztás a tűn?',opts:['Erősebben kell fúrni','Meg kell próbálni beütni a tűt','Hosszabb tűt kell választani, mert a jelenlegi nem ér a velőüregbe','Sikeres lesz a fúrás, nem probléma'],ok:2,exp:'Minden tű esetén ki kell látszódni legalább az utolsó 5 mm-es beosztásnak a csont érintésekor, különben túl rövid a tű.'},
+{q:'Az IO fúrás befejezése után fecskendővel aspirálunk. Mit kell tenni a leszívott csontvelővel?',opts:['Gyorsan vissza kell nyomni','Szigorúan TILOS visszanyomni az aspirált csontvelőt!','El kell küldeni laborba','Lidokainnal kell keverni és úgy visszanyomni'],ok:1,exp:'Egy fecskendő segítségével megpróbálunk csontvelőt aspirálni – az aspirált csontvelőt NE nyomjuk vissza!'},
+{q:'Hogyan távolítjuk el az EZ-IO kanült?',opts:['Gyorsan, egyenesen kihúzzuk','Luer-menetes fecskendőt csatlakoztatunk, és az óramutató járásával megegyezően csavarva kihúzzuk','Luer-menetes fecskendővel az óramutató járásával ellentétesen csavarjuk','A fúrót visszacsatlakoztatjuk és visszafelé pörgetjük'],ok:1,exp:'A fecskendőt tengelyben tartva, az óramutató járásával MEGEGYEZŐEN kezdjük kicsavarni, miközben egyenesen kihúzzuk.'},
+{q:'Megtartott tudatú, shockos felnőtt beteg fájdalomcsillapítása IO bemosás előtt:',opts:['Lidokain 40 mg LASSAN 2 perc alatt, majd 1 perc várakozás','Lidokain 40 mg bólusban gyorsan','Fentanil 100 mcg lokálisan az IO térbe','Nem csillapítunk fájdalmat'],ok:0,exp:'Lidokaint (40mg/4ml) adunk nagyon lassan (2 perc alatt), hogy lokálisan kifejtse hatását és ne jusson be hirtelen a szisztémás keringésbe.'},
+{q:'Mi az IM injekciózás javasolt fecskendő előkészítési technikája?',opts:['Teljesen légteleníteni kell az utolsó cseppig','0,3-0,5 ml levegőt kell felszívni a gyógyszer mellé légzárként','Félig levegővel kell tölteni a jobb nyomásért','Desztillált vizet kell a fecskendőbe szívni'],ok:1,exp:'A kismennyiségű levegő légzárként megakadályozza a gyógyszer subcutan szövetekbe való visszajutását a tűszúrás csatornáján keresztül.'},
+{q:'Melyik állítás IGAZ a perifériás vénabiztosítás utáni teendőkkel kapcsolatban (ha csak gyógyszer beadás a cél)?',opts:['Vénafenntartó infúziót kell bekötni','A gyógyszer beadása után sóoldattal át kell mosni, majd le kell zárni a kanült','Nem kell átmosni, csak lezárni','Folyamatosan vért kell szívni belőle'],ok:1,exp:'A kanült "fiziológiás" sóoldattal történt átmosást követően le kell zárni. A vénafenntartó infúzió indokolatlan és veszélyes.'},
+{q:'Gyermekek (15 kg alatt) rectalis diazepam adagolásánál a legfőbb szabály:',opts:['A tubust teljesen be kell vezetni','A tubus végét csak félig szabad bevezetni','Dupla adagot kell beadni a rossz felszívódás miatt','Csak hanyatt fekve adható'],ok:1,exp:'15 kg alatti gyermekeknél a tubus végét csak félig szabad bevezetni a rectumba.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: ACS - Oral/SL/PVB (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 60 éves férfi mellkasi nyomásra panaszkodik. Akut Coronaria Szindróma gyanúja. B+ kompetencia (Mentőápoló gyógyszerezési joggal).',steps:[
+{sit:'A beteg eszméleténél van, jól kooperál. Az eljárásrend gyógyszerelési alapszabályai szerint mi az első lépések egyike, mielőtt bármilyen gyógyszert előkészítesz?',opts:[{tx:'Csak vénát szúrok, nem kérdezek semmit.',ok:false,fb:'Hibás! A gyógyszerelési alapszabályok (pl. érzékenység) kötelezőek.'},{tx:'Azonosítom a beteget és rákérdezek a gyógyszerérzékenységeire (allergia).',ok:true,fb:'Helyes! A 9 alapszabály 1. és 2. pontja a megfelelő beteg és a megfelelő gyógyszer (allergia kizárása).'}]},
+{sit:'A beteg nem allergiás semmire. A protokoll szerint Nitroglicerin spray adása indokolt (sublingualis út). A spray régóta nem volt használva. Mi a teendő a legelső fújás előtt?',opts:[{tx:'Azonnal a beteg nyelve alá fújom.',ok:false,fb:'Hibás! A kamra üres lehet.'},{tx:'Ütközésig lenyomom a szórófejet, majd a levegőbe ismétlem a fújást, amíg folyadék nem jön ki.',ok:true,fb:'Helyes! Így telítődik fel a dózis-adagoló kamra.'}]},
+{sit:'A spray készen áll. Milyen instrukciót adsz a betegnek a sublingualis fújás előtt?',opts:[{tx:'"Vegyen egy nagy levegőt és szívja be a permetet!"',ok:false,fb:'Hibás! A permetet nem szabad belélegezni.'},{tx:'"Helyezze a nyelvcsúcsát a szájpadlásához (mondjon L-betűt)!"',ok:true,fb:'Helyes! Ez felemeli a nyelvet, a permetet az L-betű tartása mellett fújjuk a nyelv alá. A lélegzetet bent kell tartani.'}]},
+{sit:'Következő gyógyszer az Acetilszalicilsav (Aspirin) oralis úton. Milyen módon kell a betegnek bevennie ACS esetén?',opts:[{tx:'Folyadékkal, egészben kell lenyelnie.',ok:false,fb:'Hibás! ACS indikációban más a szabály.'},{tx:'A tablettát a megfelelő és gyors felszívódás érdekében szét kell rágatnia.',ok:true,fb:'Helyes! ACS indikációban az Aspirint szét kell rágatni.'}]},
+{sit:'A beteg a Clopidogrelt is megkapja. Ennek mi a módja az eljárásrend alapján?',opts:[{tx:'A tablettát kevés folyadékkal le kell nyelni.',ok:true,fb:'Helyes! A Clopidogrelt csak egyszerűen le kell nyelni.'},{tx:'Ezt is szét kell rágni.',ok:false,fb:'Hibás! A Clopidogrelt nem rágatjuk szét.'}]},
+{sit:'Most intravénás gyógyszerek beadásához PVB (Perifériás Vénás Biztosítás) szükséges. Hol javasolt elkezdeni a véna keresését az eljárásrend szerint?',opts:[{tx:'Kizárólag a könyökhajlat vénáit használom.',ok:false,fb:'Hibás! A könyökhajlati véna nem élvez prioritást, sőt.'},{tx:'Distalis elhelyezkedésű vénával javasolt kezdeni a punkciót (kézfej, alkar).',ok:true,fb:'Helyes! A distalis (távolabbi) vénákon érdemes kezdeni a szúrást.'}]},
+{sit:'Kiválasztottad a bal alkar egy egyenes vénáját. Megtörtént a leszorítás és a bőr fertőtlenítése. Mi a szigorú aszepszis szabály a szúrás előtt?',opts:[{tx:'Kézzel még egyszer áttapintom a vénát a fertőtlenített felületen.',ok:false,fb:'Hibás! Ez megsérti a sterilitást.'},{tx:'A fertőtlenítés után a szúrandó felszínt MÁR NEM tapintom meg.',ok:true,fb:'Helyes! Tilos a fertőtlenített terület érintése.'}]},
+{sit:'A szúrás (10-30 fokos szögben) megtörténik, a cseppkamrában vér jelenik meg. Hogyan folytatod a kanül felvezetését?',opts:[{tx:'A szúrás szögét csökkentve pár mm-t előretolom a kanült, majd a tű LASSÚ visszahúzásával egyidejűleg vezetem fel a kanült a vénába.',ok:true,fb:'Helyes! A tű visszatolása tilos, a lassú kihúzással egyszerre toljuk be a kanült.'},{tx:'A tűvel együtt tolom be tövig, majd hirtelen kihúzom a tűt.',ok:false,fb:'Hibás! Ez átszúrhatja a vénát.'}]},
+{sit:'A kanül a helyén, a leszorítást felengedted. Rácsatlakoztatod a légtelenített szereléket. Milyen szövődményt figyelsz a bemosás alatt?',opts:[{tx:'Azonnali tüdőödémát.',ok:false,fb:'Hibás! Egy 5 ml-es bemosás nem okoz tüdőödémát.'},{tx:'Az extravasatio jeleit: kanül fölötti duzzanat, fájdalom, csípő érzés.',ok:true,fb:'Helyes! Ha a kanül kicsúszott vagy átütötte a vénát, a folyadék a szövetek közé megy.'}]},
+{sit:'A gyógyszerek iv. beadása után az orvos azt kéri, ne köss be további infúziót, csak a véna maradjon meg. Mi a teendőd az eljárásrend szerint?',opts:[{tx:'Egy nagyon lassú "vénafenntartó infúziót" (KVO) azért bekötök.',ok:false,fb:'Hibás! Az eljárásrend ezt indokolatlannak és veszélyesnek nevezi.'},{tx:'A gyógyszer beadása után a kanült "fiziológiás" sóoldattal átmosom, majd biztonságosan lezárom a kupakkal/csappal.',ok:true,fb:'Helyes! Az ellenőrizetlen folyadékbevitel elkerülése végett vénafenntartó infúzió nem javasolt, csak a lezárás.'}]}
+],summary:'Részletes Összefoglaló (Sim 1 - B+ kompetencia): Az ACS protokoll alapján a betegazonosítás és allergiaellenőrzés (9 alapszabály) után a sublingualis Nitroglicerin spray-t a levegőbe fújva légtelenítettük, majd a beteggel „L” betűt formáltatva a nyelv alá permeteztük (belégzés nélkül). Az Aspirint az ACS indikáció miatt szétrágattuk, a Clopidogrelt lenyelettük. A PVB-t distalis vénán (alkar) kezdtük, fertőtlenítés után a bőrt már nem tapintottuk. A vér megjelenése után a szöget csökkentve, a tű óvatos visszahúzásával toltuk be a kanült. Bemosásnál figyeltük az extravasatio jeleit (duzzanat, csípő érzés). Gyógyszerelés után sóoldatos átmosással zártuk le a kanült, mellőzve a veszélyes „vénafenntartó” infúziót.'},
+
+{id:2,title:'2. Szimuláció: Gyermekkori asztma & Görcs - Inhalációs/PR/IM (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 6 éves asztmás kisfiú fullad. A mentőben egyszer csak görcsölni kezd. B+ kompetencia.',steps:[
+{sit:'A gyermek asztmás rohamára a protokoll alapján gyógyszerporlasztást (nebulizátor) készítesz elő O2-maszkkal. Milyen testhelyzetben kell a beteget elhelyezni?',opts:[{tx:'Hanyatt fekve a mentőágyon.',ok:false,fb:'Hibás! A porlasztó így nem működik megfelelően.'},{tx:'Ülő/félülő helyzetben, mert a nebulizátor csak függőleges pozícióban képes porlasztani.',ok:true,fb:'Helyes! A tartálynak függőlegesnek kell lennie.'}]},
+{sit:'Hogyan állítod be az oxigénáramlást a nebulizátor működtetéséhez?',opts:[{tx:'6-9 l/perc áramlásra, amíg látható páraképződéssel nem jár a gyógyszer porlasztása.',ok:true,fb:'Helyes! Ez biztosítja a megfelelő méretű részecskéket és a bevitelt.'},{tx:'Maximum 2 l/perc, nehogy túltöltődjön.',ok:false,fb:'Hibás! Két liter nem fogja kiporlasztani a gyógyszert.'}]},
+{sit:'A porlasztás alatt a gyermek hirtelen elveszti az eszméletét és epilepsziás görcsrohama indul (tónusos-klónusos rángások). Vénája nincs. B+ protokoll szerint rectalis Diazepam oldatot kell adnod. Milyen testhelyzetbe hozod?',opts:[{tx:'Oldalt fekvő helyzetbe (felhúzott lábakkal).',ok:true,fb:'Helyes! Ez biztosítja a legkönnyebb hozzáférést és kíméletes.'},{tx:'Hanyatt fekvés, lábakat a nyakába hajtva.',ok:false,fb:'Hibás! Veszélyes és szükségtelen pozíció egy görcsölő gyermeknél.'}]},
+{sit:'A gyermek 6 éves (kb. 20 kg). Hogyan vezeted be a Diazepam rectalis oldat tubusát?',opts:[{tx:'Csak félig vezetem be a rectumba.',ok:false,fb:'Hibás! 15 kg alattiaknál kell csak félig, ő 20 kg.'},{tx:'A készítmény sapkájának lecsavarása után a tubus végét TELJESEN bevezetem a rectumba.',ok:true,fb:'Helyes! Mivel 15 kg felett van, teljesen be kell vezetni.'}]},
+{sit:'Kiüríted a tubust. Hogyan távolítod el a tubust a rectumból?',opts:[{tx:'A szívóhatás elkerülése érdekében a tubust összenyomva tartom a rectumból történő eltávolításig.',ok:true,fb:'Helyes! Ha elengeded, a tubus visszaszívja a hatóanyagot.'},{tx:'Teljesen elengedve a tubust lassan kihúzom.',ok:false,fb:'Hibás! Így visszaszívod a gyógyszert.'}]},
+{sit:'A görcs továbbra sem oldódik, a rectalis gyógyszer nem volt elég. Az orvosi/tiszti (vagy B+) utasítás alapján IM injekció szükséges (Midazolam). Gyermeknél sürgető helyzetben (görcs) hol van az ELSŐKÉNT választandó IM beviteli hely?',opts:[{tx:'A M. deltoideus (váll).',ok:false,fb:'Hibás! Kicsi izomtömeg, görcsnél nehéz hozzáférni.'},{tx:'A M. vastus lateralis (a comb középső harmadának elülső-oldalsó része).',ok:true,fb:'Helyes! Könnyen hozzáférhető, sürgető beavatkozásnál elsőként választandó gyermeknél.'}]},
+{sit:'Előkészíted az IM fecskendőt. Milyen speciális (levegős) technikát javasol az eljárásrend?',opts:[{tx:'0,3-0,5 ml levegőt szívok fel a gyógyszer után légzárként, amely megakadályozza a subcutan visszajutást.',ok:true,fb:'Helyes! Ez a légzárásos módszer.'},{tx:'Szigorúan tilos levegőt szívni a fecskendőbe.',ok:false,fb:'Hibás! IM injekciónál javasolt a kismennyiségű légzár.'}]},
+{sit:'Hogyan kell tartani és milyen szögben kell az IM injekciót beszúrni a combba?',opts:[{tx:'Fecskendőt "darts-szerűen" fogva, 72-90°-os szögben, lehetőleg Z-vonal technikával (a bőr 2-3 cm-es elhúzásával).',ok:true,fb:'Helyes! Ez az eljárásrend szerinti biztonságos technika.'},{tx:'Párhuzamosan a bőrrel (15°-ban).',ok:false,fb:'Hibás! Az intradermális/subcutan szög lenne.'}]},
+{sit:'A tű a comb izomzatában van. Melyik lépés a legfontosabb magának a gyógyszernek a bejuttatása ELŐTT?',opts:[{tx:'Gyorsan és erős nyomással befecskendezni az egészet.',ok:false,fb:'Hibás! Ez szövetkárosító és fájdalmas.'},{tx:'Megszívni a fecskendőt (aspiráció), hogy megbizonyosodjunk róla, nem hatoltunk érpályába.',ok:true,fb:'Helyes! IM szúrásnál a véletlen intravascularis beadás elkerülése kötelező.'}]},
+{sit:'Sikeres aspiráció (nincs vér), lassan beadod a 1 ml Midazolamot. Mi a teendő a tű kihúzakor és azután?',opts:[{tx:'A tű kihúzása előtt várok 10 másodpercet, kihúzom, fedem a sebet, de KERÜLÖM a punkciós hely masszírozását.',ok:true,fb:'Helyes! A várakozás csökkenti a szivárgást, a masszírozás elkerülése pedig szöveti védelmet ad.'},{tx:'Azonnal kihúzom és erősen átmasszírozom a combját.',ok:false,fb:'Hibás! A masszírozás nem javasolt.'}]}
+],summary:'Részletes Összefoglaló (Sim 2 - B+ kompetencia): A 6 éves asztmás gyermeket a gyógyszerporlasztó (nebulizátor) megfelelő működéséhez ülő helyzetbe hoztuk. A porlasztót 6-9 l/perc oxigénáramlással indítottuk, hogy látható pára képződjön. A kialakuló epilepsziás görcsroham miatt azonnal oldalt fekvő helyzetben rectalis Diazepamot adtunk: mivel a gyermek >15 kg, a tubust teljesen bevezettük, majd kiürítés után ÖSSZENYOMVA tartva húztuk ki, hogy ne szívja vissza a gyógyszert. A görcs perzisztálása miatt IM Midazolam adására került sor. Elsőként választandó helyként a combizmot (M. vastus lateralis) választottuk. A fecskendőbe kismennyiségű (0,3-0,5 ml) levegőt (légzár) szívtunk. Darts-szerű fogással, Z-vonal technikával, 90 fokos szögben szúrtunk. A beadás ELŐTT aspiráltunk a véletlen érpályába hatolás kizárására. A gyógyszer lassú beadása után 10 mp-et vártunk a kihúzással, és a szúrás helyének masszírozását kerültük.'},
+
+{id:3,title:'3. Szimuláció: IO Felnőtt Újraélesztés és Shock (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 50 kg-os felnőtt többszörösen sérült, a helyszínen keringésmegállás következik be. B+ kompetencia (vagy tiszti/orvosi asszisztencia az IO-hoz).',steps:[
+{sit:'A felnőtt betegnél újraélesztést kezdetek. Az IV próbálkozás esélytelen a perifériás erek összeesése miatt. Mi az IO indikációja felnőtt CPR alatt?',opts:[{tx:'Csak ha már legalább 4 perifériás szúrás sikertelen volt 10 percen belül.',ok:false,fb:'Hibás! Az eljárásrend nem vár ennyit.'},{tx:'Felnőtt újraélesztésnél, ha nem sikerül ésszerű időn belül perifériás vénát biztosítani (2 próbálkozás vagy 2 perc).',ok:true,fb:'Helyes! Az időveszteség elkerülése végett hamar IO utat választunk.'}]},
+{sit:'Kiválasztod az IO szúrási pontot. Felnőtt újraélesztésnél az eljárásrend szerint melyik az ELSŐDLEGESEN választandó helyszín?',opts:[{tx:'A sternum (szegycsont).',ok:false,fb:'Hibás! Az EZ-IO rendszernél az OMSZ-nél a sternum nem játszik.'},{tx:'A proximalis humerus (váll).',ok:true,fb:'Helyes! Nagyobb a flow, gyorsabban jut a centrális keringésbe a gyógyszer, és kikerüli a hasi/medencei ereket.'}]},
+{sit:'A beteg 50 kg-os felnőtt, lágyrészei a vállán átlagosak. Melyik EZ-IO tűt választod a proximalis humerus punkciójához az eljárásrend alapján?',opts:[{tx:'A 25 mm-es (kék) tűt, mert csak 50 kg.',ok:false,fb:'Hibás! A humerus anatómiája miatt felnőtteknél más a szabály.'},{tx:'A 45 mm-es (sárga) tűt. Felnőtteknél a proximalis humerushoz ez javasolt.',ok:true,fb:'Helyes! A felnőtt humerushoz a hosszú, 45 mm-es tű kell.'}]},
+{sit:'Hogyan kell a karját pozicionálni a humerus fúrásához?',opts:[{tx:'Oldalra ki kell nyújtani (abductio) 90 fokban.',ok:false,fb:'Hibás! Így az anatómiai pontok eltolódnak, és a csont is.'},{tx:'A kart szorosan a test mellé kell helyezni, befelé rotálva (tenyér kifelé, hüvelykujj lefelé) VAGY a kart szorosan a hasára hajtva.',ok:true,fb:'Helyes! Ez hozza előre a humerus sebészi nyakát és a tuberculum majust.'}]},
+{sit:'A szúrási pont (humerus) fertőtlenítve. Milyen szögben kell elvégezni a fúrást?',opts:[{tx:'A frontalis (vízszintes) síkhoz képest 45°-os szögben, posteromedialisan (a fej felől lefelé a lapocka alsó széle felé).',ok:true,fb:'Helyes! A humerus szúrásának ez a specifikus szöge.'},{tx:'Szigorúan 90 fokban (merőlegesen) a csont felszínére.',ok:false,fb:'Hibás! A tibia esetén 90 fok, a humerusnál 45 fok.'}]},
+{sit:'A tű átszúrja a bőrt és a csont felszínéhez ér (még nem fúrtál). Mi a KÖTELEZŐ vizuális ellenőrzés fúrás előtt?',opts:[{tx:'Hogy a tű legalább a feléig bent van.',ok:false,fb:'Hibás! Ez nem egzakt.'},{tx:'Minden tű esetén ki kell látszódni legalább az utolsó 5 mm-es beosztásnak. Ha nem, hosszabb tű (vagy másik hely) kell.',ok:true,fb:'Helyes! Ez garantálja, hogy a tű biztonságosan a velőüregig érjen anélkül, hogy a kónusz a bőrt roncsolná.'}]},
+{sit:'Fúrás közben az ellenállás hirtelen lecsökken (a medulláris térbe érsz). Mit teszel a fúróval (triggerrel)?',opts:[{tx:'Azonnal elengedem a ravaszt és leállítom a fúrást. Nem húzom vissza a fúrót a ravasz elengedésekor!',ok:true,fb:'Helyes! Az ellenállás csökkenése jelzi, hogy bent vagy. Tovább fúrni tilos, mert átszakíthatod a csontot.'},{tx:'Fúrok még 2 cm-t a biztonság kedvéért.',ok:false,fb:'Hibás! Ezzel átfúrod a csont túloldalát is.'}]},
+{sit:'A fúró lecsatlakoztatva, a belső nyárs eltávolítva. Fecskendővel csontvelőt aspirálsz. Mi a KÖTELEZŐ eljárásrendi szabály az aspirált csontvelővel?',opts:[{tx:'Az aspirált csontvelőt NE nyomjuk vissza a csontba.',ok:true,fb:'Helyes! A csontvelőt nem szabad visszanyomni.'},{tx:'Gyorsan vissza kell fecskendezni a gyógyszerek előtt.',ok:false,fb:'Hibás! Szigorúan tilos.'}]},
+{sit:'Sikeres ROSC (visszatér a keringés), de a beteg shockos. Megtartott a fájdalomérzete, és IO folyadékpótlást terveztek. Mivel lehet enyhíteni a velőüregi feszülés miatti hatalmas fájdalmat?',opts:[{tx:'Kizárólag iv. morfinnal.',ok:false,fb:'Hibás! Az eljárásrend specifikus IO fájdalomcsillapítást ír le.'},{tx:'Lidokain (1%-os) lokális adásával az IO katéterbe, nagyon LASSAN (2 perc alatt), a NaCl bemosás ELŐTT.',ok:true,fb:'Helyes! A Lidokain lokális fájdalomcsillapító a velőüregben, ha lassan adják, nem jut be egyből a véráramba.'}]},
+{sit:'A Lidokain fájdalomcsillapítás lement. Mennyi 0,9%-os sóoldattal (NaCl) végzed az EZ-IO átöblítését (bemosását) felnőtt betegnél?',opts:[{tx:'2-5 ml-rel.',ok:false,fb:'Hibás! Ez a csecsemők/gyermekek bemosási volumene.'},{tx:'5-10 ml-rel.',ok:true,fb:'Helyes! Felnőttek esetén az IO kanült 5-10 ml fiziológiás sóoldattal kell nagy nyomással átöblíteni a mikrotrombusok és csonttörmelék eltávolítására.'}]}
+],summary:'Részletes Összefoglaló (Sim 3 - B+ kompetencia): A felnőtt újraélesztése során az IV próbálkozások lehetetlensége miatt (ésszerű idő, kb. 2 perc alatt) azonnal az intraossealis (IO) utat választottuk. A legoptimálisabb pont az eljárásrend szerint a proximalis humerus. A felnőtt beteghez a lágyrészek miatt a leghosszabb, 45 mm-es (sárga) EZ-IO tűt vettük elő. A beteg karját a test mellé szorítva és befelé rotálva (vagy hasra hajtva) pozicionáltuk. A fúrást 45°-os szögben, posteromedialisan végeztük. A fúrás indítása előtt ellenőriztük, hogy a bőr átszúrása után az utolsó 5 mm-es beosztás látszódik-e. A fúrás az ellenállás hirtelen csökkenéséig tartott, majd azonnal megálltunk (nem húztuk járva vissza a fúrót). A belső nyárs kivétele után aspiráltunk, figyelve rá, hogy az aspirált csontvelőt szigorúan TILOS visszanyomni. Mivel a beteg keringése visszatért és fájdalmat érzett, a folyadékbemosás előtt 40 mg (4 ml) Lidokaint adtunk be az IO térbe rendkívül lassan (2 perc alatt) lokális fájdalomcsillapításként. Végül a kanült felnőtt dózissal, 5-10 ml 0,9% sóoldattal mostuk be.'},
+
+{id:4,title:'4. Szimuláció: Eszközök előkészítése / Asszisztencia (B kompetencia)',diff:'B kompetencia',desc:'B kompetenciájú mentőápolóként dolgozol orvossal. Folyadékpótlás és gyógyszerelés miatt vénás és IO előkészítés a feladatod.',steps:[
+{sit:'Az orvos kéri, hogy készíts elő egy olyan perifériás kanült, ami maximális (kb. 100 ml/min) áramlást biztosít, de nem a legvastagabb. Melyik színt veszed elő a táskából?',opts:[{tx:'A Zöld (18G) kanült.',ok:true,fb:'Helyes! A zöld 18G kanül max áramlása kb. 100 ml/min.'},{tx:'A Rózsaszín (20G) kanült.',ok:false,fb:'Hibás! A rózsaszín 55 ml/min.'},{tx:'A Szürke (16G) kanült.',ok:false,fb:'Hibás! Az már 180 ml/min és vastagabb.'}]},
+{sit:'Előkészíted a beteg jobb karját. Melyik a perifériás vénabiztosítás egyértelmű KONTRAINDIKÁCIÓJA az alábbiak közül?',opts:[{tx:'Egy kis tetoválás a felkaron.',ok:false,fb:'Hibás! A tetoválás nem kontraindikáció.'},{tx:'Vesepótló kezelés céljából kialakított arterio-venosus shunt (Cimino-fistula) a jobb alkaron.',ok:true,fb:'Helyes! Cimino-fistula pungálása szigorúan tilos!'}]},
+{sit:'Másik kart választotok. Fertőtleníted a bőrt. Mit kell elkerülnöd a fertőtlenítés után a szúrásig?',opts:[{tx:'Nem szabad megvárni a behatási időt.',ok:false,fb:'Hibás! A behatási időt meg kell várni.'},{tx:'A lefertőtlenített, szúrandó bőrfelszínt már NEM szabad megtapintani.',ok:true,fb:'Helyes! Az aszepszis szabályai miatt a fertőtlenített terület érintése tilos.'}]},
+{sit:'Az orvos sikeresen beszúrja a kanült és visszahúzza a tűt. A te feladatod a kanül bemosása 0,9%-os NaCl-lal. Mit kell szorosan figyelned a bemosás alatt?',opts:[{tx:'Az extravasatio jeleit (kanül fölötti duzzanat, fájdalom, csípő érzés).',ok:true,fb:'Helyes! A B-szintű ápolónak tudnia kell észlelni az átszúrt véna jeleit.'},{tx:'Hogy a beteg szeme milyen gyorsan pislog.',ok:false,fb:'Hibás! Nem ez a lokális szövődmény indikátora.'}]},
+{sit:'Sikeres PVB után az orvos infúziót indít, de a véna pár perc múlva megreped, használhatatlan. A beteg állapota közben drasztikusan romlik, keringése összeomlik. Az orvos kéri az EZ-IO rendszert egy proximalis tibia szúráshoz. Mit készítesz elő a fúrón kívül egy felnőtt tibia esetén?',opts:[{tx:'A 15 mm-es (rózsaszín) tűt.',ok:false,fb:'Hibás! A 15 mm-es tű újszülöttek és csecsemők számára van.'},{tx:'A 25 mm-es (kék) tűt, összekötő szereléket, fecskendőket (egyik 0,9% NaCl-dal).',ok:true,fb:'Helyes! Felnőtt tibiához a 25 mm-es kék tű a megfelelő választás (hacsak nem extrém kövér a beteg lába).'}]},
+{sit:'Hová lokalizálod a proximalis tibia szúrási pontját egy felnőttnél, hogy az orvos fúrhasson?',opts:[{tx:'A térdkalács felett 2 cm-re.',ok:false,fb:'Hibás! A tibia a térd alatt van.'},{tx:'A tuberositas tibiae-től 2 cm-re mediálisan (a sípcsont belső, lapos felületén).',ok:true,fb:'Helyes! A tuberositas tibiae-től 2 cm-re (csecsemőknél 1 cm-re) befelé található a sima felület.'}]},
+{sit:'Az orvos elkezdi a fúrást. B kompetenciájúként emlékszel a helyes szögre a tibia (sípcsont) fúrásánál. Mennyi az?',opts:[{tx:'90 fok (merőleges a csont felületére).',ok:true,fb:'Helyes! A humerussal ellentétben a tibiát, a distalis tibiát és femurt 90 fokos szögben fúrjuk.'},{tx:'45 fok.',ok:false,fb:'Hibás! Az a proximalis humerus fúrási szöge.'}]},
+{sit:'A tű a helyén van. Az orvos csatlakoztatja az összekötő szereléket. Mennyi az összekötő szerelék saját térfogata (amit a gyógyszeradagolásnál figyelembe kell venni bemosáskor)?',opts:[{tx:'Kb. 1 ml.',ok:true,fb:'Helyes! Ezt a térfogatot minden gyógyszer beadásakor figyelembe kell venni.'},{tx:'5 ml.',ok:false,fb:'Hibás! Az túl sok.'}]},
+{sit:'Mivel a csontvelőüregbe adott gyógyszerek a szisztémás keringésbe jutnak, hogyan viszonyul a beadandó gyógyszer dózisa az intravénás dózishoz?',opts:[{tx:'A felét szabad csak beadni.',ok:false,fb:'Hibás! Az IO dózis nem kisebb.'},{tx:'Megegyezik az intravénásan adandó mennyiséggel.',ok:true,fb:'Helyes! Az IO dózis egyenértékű az IV dózissal.'}]},
+{sit:'A beteg állapotának stabilizálása után a kórházba szállítás következik. Mennyi ideig maradhat bent biztonságosan az IO kanül?',opts:[{tx:'Maximum 24 órán belül érdemes eltávolítani a szövődmények elkerülése érdekében.',ok:true,fb:'Helyes! Osteomyelitis és más fertőzések kockázata nő 24 óra után.'},{tx:'Egy hétig.',ok:false,fb:'Hibás! Csak sürgősségi időszakra szolgál.'}]}
+],summary:'Részletes Összefoglaló (Sim 4 - B kompetencia): A feladat során B szintű asszisztenciát nyújtottunk az orvosnak/mentőtisztnek. Elsőként kiválasztottuk a 100 ml/min áramlási sebességet biztosító Zöld (18G) perifériás kanült. A szúrási pont megválasztásánál kizártuk a Cimino-fistulát (dialízis shunt), amelynek pungálása szigorúan tilos. A fertőtlenítést követően ügyeltünk a sterilitásra, a bőrt már nem tapintottuk meg. A kanül bemosásakor a B ápoló feladata az extravasatio (duzzanat, fájdalom) jeleinek megfigyelése. Keringésromlás és véna elvesztése után az EZ-IO előkészítése következett felnőtt proximalis tibia szúráshoz. Ehhez a 25 mm-es (kék) tűt, az összekötő szereléket és a fiziológiás sóoldattal szívott fecskendőket vettük elő. A fúrási hely a tuberositas tibiae-től 2 cm-re mediálisan helyezkedett el, és a tibia fúrása 90 fokos szögben (merőlegesen) történt. Számításba vettük, hogy a toldalékcső térfogata kb. 1 ml. Az intraossealisan adandó gyógyszerek mennyisége teljes mértékben megegyezik az intravénás dózissal. Végül tudatosítottuk, hogy a szövődmények (pl. osteomyelitis) elkerülése érdekében az IO kanült maximum 24 órán belül el kell távolítani.'}
+];
+
+// Render blocks for Chapters
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+h(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  if(b.tp==='kr') return '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+i+'</div>').join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+b.tx+'</div>';
+  if(b.tp==='note') return '<div class="note">'+b.tx+'</div>';
+  if(b.tp==='steps') return b.items.map(s=>'<div class="step-wrap"><div class="step-num">'+s.n+'</div><div class="step-body"><div class="step-t">'+s.t+'</div><div class="step-x">'+s.x+'</div></div></div>').join('');
+  if(b.tp==='tbl'){
+    return '<div class="tbl-wrap"><table class="tbl"><tbody>'+b.rows.map(r=>'<tr><td style="font-weight:600;color:#f3f4f6">'+h(r[0])+'</td><td style="color:#e5e7eb">'+h(r[1])+'</td></tr>').join('')+'</tbody></table></div>';
+  }
+  if(b.tp==='ftable'){
+    var lc={d:'#fca5a5',w:'#fde68a'};
+    return '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Paraméter / Hely</th><th>Jelentés / Megjegyzés</th></tr></thead><tbody>'+b.rows.map(r=>'<tr><td style="font-weight:600;color:'+lc[r.lv]+'">'+h(r.s)+'</td><td style="color:#e5e7eb">'+r.m+'</td></tr>').join('')+'</tbody></table></div>';
+  }
+  return '';
+}
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Gyógyszerbeviteli utak a prehospitális ellátásban</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v2.0 · 2020.05.15.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','Beadás módjai, szabályok'],['flash','🃏','Flashkártyák','Kikérdező kártyák'],['quiz','❓','Kvíz','Tudásfelmérő teszt'],['sim','🚑','Szimuláció','4 interaktív B/B+ eset'],['calc','🧮','Kalkulátorok','Dózis és paraméterek']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az OMSZ valamennyi kivonuló dolgozójára, kompetenciaszintnek megfelelően.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend</h2>'+
+'<div class="note" style="margin-bottom:.75rem;">💡 Az aláhúzott türkiz szavakra (pl. <span class="fw" onclick="showDict(\'aszepszis\')">aszepszis</span>) kattintva megnyílik a fogalommagyarázat.</div>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#3b82f6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#3b82f6':'#3f3f3f')+';background:'+(FC.cat===c?'#3b82f6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#450a0a')+';border:1px solid '+(good?'#065f46':'#7f1d1d')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fca5a5')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fca5a5')+'">'+pct+'% – '+(good?'Kiváló!':'Gyakorolj még!')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+h(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+h(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+h(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#3b82f6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+h(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-y':'tag-g')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont (kérdés)</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function calcIVFlow(g){
+  let flows = { 24: 20, 22: 30, 20: 55, 18: 100, 16: 180, 14: 270 };
+  let colors = { 24: "Sárga", 22: "Kék", 20: "Rózsaszín", 18: "Zöld", 16: "Szürke", 14: "Narancs" };
+  let cc = { 24: "#eab308", 22: "#3b82f6", 20: "#f472b6", 18: "#22c55e", 16: "#9ca3af", 14: "#f97316" };
+  return { flow: flows[g], color: colors[g], c: cc[g] };
+}
+
+function calcIOSize(w, l){
+  if(l==='humerus') return { size: "45 mm", color: "Sárga" };
+  if(w < 3) return { size: "15 mm", color: "Rózsaszín" };
+  if(w >= 3 && w <= 39) return { size: "15 mm", color: "Rózsaszín" };
+  if(w >= 40) return { size: "25 mm", color: "Kék" };
+  return { size: "25 mm", color: "Kék" };
+}
+
+function calcLido(age, weight){
+  if(age >= 18) {
+    return "Felnőtt: 40 mg (4 ml) 2 perc alatt, 1 perc várakozás, majd öblítés után további 20 mg (2 ml).";
+  } else {
+    let mg = (0.5 * weight).toFixed(1);
+    if(mg > 40) mg = 40.0;
+    return "Gyermek: 0,5 mg/kg -> "+mg+" mg lassan (Max: 40 mg!).";
+  }
+}
+
+// ── KALKULÁTOR FÜGGVÉNYEK ──────────────────────────────────────────
+window.updIV = function(v){
+    CA.gauge = parseInt(v);
+    var ivData = calcIVFlow(CA.gauge);
+    var box = document.getElementById('iv_res');
+    if(box) {
+        box.style.borderColor = ivData.c;
+        box.innerHTML = '<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Szín:</div><div style="font-size:24px;font-weight:700;color:'+ivData.c+';margin-bottom:1rem">'+ivData.color+'</div><div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Max Áramlási sebesség:</div><div style="font-size:32px;font-weight:700;color:#60a5fa">'+ivData.flow+' ml/min</div>';
+    }
+};
+
+window.updIOW = function(w){
+    CA.weight = parseFloat(w) || 0;
+    var ioData = calcIOSize(CA.weight, CA.ioloc);
+    var box = document.getElementById('io_res');
+    if(box) {
+        box.innerHTML = '<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Javasolt Tűméret:</div><div style="font-size:32px;font-weight:700;color:#60a5fa;margin-bottom:1rem">'+ioData.size+' ('+ioData.color+')</div><div style="font-size:11px;color:#9ca3af">A végső döntés mindig a lágyrész-vastagságtól függ! (Befúrás előtt legalább az utolsó 5 mm-es beosztásnak látszódnia kell!)</div>';
+    }
+};
+
+window.updIOL = function(loc){
+    CA.ioloc = loc;
+    var ioData = calcIOSize(CA.weight, CA.ioloc);
+    var box = document.getElementById('io_res');
+    if(box) {
+        box.innerHTML = '<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Javasolt Tűméret:</div><div style="font-size:32px;font-weight:700;color:#60a5fa;margin-bottom:1rem">'+ioData.size+' ('+ioData.color+')</div><div style="font-size:11px;color:#9ca3af">A végső döntés mindig a lágyrész-vastagságtól függ! (Befúrás előtt legalább az utolsó 5 mm-es beosztásnak látszódnia kell!)</div>';
+    }
+};
+
+window.updLidoA = function(a){
+    CA.age = parseInt(a) || 0;
+    var ld = calcLido(CA.age, CA.weight);
+    var box = document.getElementById('lido_res');
+    if(box) {
+        box.innerHTML = '<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Lidokain (1%) Dózis IO:</div><div style="font-size:16px;font-weight:700;color:#a78bfa;line-height:1.5">'+ld+'</div><div style="font-size:11px;color:#9ca3af;margin-top:10px">Csak megtartott tudatnál, hemodinamikai shock esetén az IO feszülés ellen. Lassú adás (1-2 perc alatt)!</div>';
+    }
+};
+
+window.updLidoW = function(w){
+    CA.weight = parseFloat(w) || 0;
+    var ld = calcLido(CA.age, CA.weight);
+    var box = document.getElementById('lido_res');
+    if(box) {
+        box.innerHTML = '<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Lidokain (1%) Dózis IO:</div><div style="font-size:16px;font-weight:700;color:#a78bfa;line-height:1.5">'+ld+'</div><div style="font-size:11px;color:#9ca3af;margin-top:10px">Csak megtartott tudatnál, hemodinamikai shock esetén az IO feszülés ellen. Lassú adás (1-2 perc alatt)!</div>';
+    }
+};
+
+function renderCalc(){
+function tabBtn(id,lbl){return '<button onclick="setCalcTab(\''+id+'\')" style="flex:1;padding:.5rem;border:1px solid '+(CA.tab===id?'#3b82f6':'#3f3f3f')+';border-radius:8px;background:'+(CA.tab===id?'#3b82f6':'#2a2a2a')+';color:'+(CA.tab===id?'#111827':'#d1d5db')+';cursor:pointer;font-size:13px;font-weight:600;font-family:inherit">'+lbl+'</button>';}
+
+if(CA.tab==='iv'){
+  var ivData = calcIVFlow(CA.gauge);
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>'+
+'<div style="display:flex;gap:7px;margin-bottom:.75rem">'+tabBtn('iv','PVB Flow')+tabBtn('io','IO Tű')+tabBtn('lido','IO Fájdalom')+'</div>'+
+'<div class="card">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px">Kanül mérete (Gauge)</div>'+
+'<select onchange="updIV(this.value)">'+
+[24,22,20,18,16,14].map(g=>'<option value="'+g+'" '+(CA.gauge==g?'selected':'')+'>'+g+'G</option>').join('')+
+'</select>'+
+'<div id="iv_res" class="res-box" style="background:#1e1e1e;border:1px solid '+ivData.c+'">'+
+'<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Szín:</div><div style="font-size:24px;font-weight:700;color:'+ivData.c+';margin-bottom:1rem">'+ivData.color+'</div>'+
+'<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Max Áramlási sebesség:</div><div style="font-size:32px;font-weight:700;color:#60a5fa">'+ivData.flow+' ml/min</div>'+
+'</div></div>';
+}
+
+if(CA.tab==='io'){
+  var ioData = calcIOSize(CA.weight, CA.ioloc);
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>'+
+'<div style="display:flex;gap:7px;margin-bottom:.75rem">'+tabBtn('iv','PVB Flow')+tabBtn('io','IO Tű')+tabBtn('lido','IO Fájdalom')+'</div>'+
+'<div class="card">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px">Beteg testsúlya (kg)</div>'+
+'<input type="number" min="1" max="200" value="'+CA.weight+'" oninput="updIOW(this.value)">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-top:10px;margin-bottom:6px">Szúrási pont</div>'+
+'<select onchange="updIOL(this.value)">'+
+'<option value="tibia" '+(CA.ioloc=='tibia'?'selected':'')+'>Tibia (vagy Femur)</option>'+
+'<option value="humerus" '+(CA.ioloc=='humerus'?'selected':'')+'>Proximalis Humerus (Felnőtt)</option>'+
+'</select>'+
+'<div id="io_res" class="res-box" style="background:#1e1e1e;border:1px solid #3b82f6;margin-top:1rem">'+
+'<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Javasolt Tűméret:</div><div style="font-size:32px;font-weight:700;color:#60a5fa;margin-bottom:1rem">'+ioData.size+' ('+ioData.color+')</div>'+
+'<div style="font-size:11px;color:#9ca3af">A végső döntés mindig a lágyrész-vastagságtól függ! (Befúrás előtt legalább az utolsó 5 mm-es beosztásnak látszódnia kell!)</div>'+
+'</div></div>';
+}
+
+if(CA.tab==='lido'){
+  var ld = calcLido(CA.age, CA.weight);
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>'+
+'<div style="display:flex;gap:7px;margin-bottom:.75rem">'+tabBtn('iv','PVB Flow')+tabBtn('io','IO Tű')+tabBtn('lido','IO Fájdalom')+'</div>'+
+'<div class="card">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px">Életkor (év)</div>'+
+'<input type="number" min="0" max="120" value="'+CA.age+'" oninput="updLidoA(this.value)">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-top:10px;margin-bottom:6px">Testsúly (kg)</div>'+
+'<input type="number" min="1" max="200" value="'+CA.weight+'" oninput="updLidoW(this.value)">'+
+'<div id="lido_res" class="res-box" style="background:#1e1e1e;border:1px solid #7c3aed;margin-top:1rem">'+
+'<div style="font-size:14px;color:#e5e7eb;margin-bottom:4px">Lidokain (1%) Dózis IO:</div><div style="font-size:16px;font-weight:700;color:#a78bfa;line-height:1.5">'+ld+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:10px">Csak megtartott tudatnál, hemodinamikai shock esetén az IO feszülés ellen. Lassú adás (1-2 perc alatt)!</div>'+
+'</div></div>';
+}
+
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc')c.innerHTML=renderCalc();
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+window.setCalcTab=function(t){CA.tab=t;render();};
+
+render();
+</script>
+</body>
+</html>

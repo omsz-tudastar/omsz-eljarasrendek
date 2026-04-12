@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Húgyúti Fertőzések Prehospitális Ellátása</title>
+<style>
+/* CSS RESET ÉS ALAPOK */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #121212; color: #e5e7eb; min-height: 100vh; padding-bottom: 72px; }
+.app { max-width: 680px; margin: 0 auto; background: #1e1e1e; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,.4); position: relative; }
+
+/* NAVIGÁCIÓ */
+.nav { display: flex; background: #242424; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.nb { flex: 1; padding: 9px 2px 6px; background: none; border: none; border-top: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: border-color .2s; }
+.nb.act { border-top-color: #14b8a6; }
+.ni { font-size: 16px; }
+.nl { font-size: 9px; color: #9ca3af; font-weight: 400; }
+.nb.act .nl { color: #14b8a6; font-weight: 600; }
+
+/* TARTALOM */
+.ct { padding: 1rem; }
+
+/* KÁRTYÁK ÉS GOMBOK */
+.card { background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: 1rem; margin-bottom: .75rem; }
+.card-btn { background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: .85rem 1rem; margin-bottom: 7px; cursor: pointer; text-align: left; width: 100%; font-family: inherit; transition: background .15s; color: #e5e7eb; }
+.card-btn:hover { background: #333; }
+.btn { padding: .55rem 1rem; border: 1px solid #4b5563; border-radius: 8px; background: #2a2a2a; cursor: pointer; font-size: 13px; color: #e5e7eb; font-family: inherit; transition: all .15s; }
+.btn:hover { background: #374151; }
+.btn-g { background: #0d9488; color: #fff; border-color: #0d9488; }
+.btn-r { background: #b91c1c; color: #fff; border-color: #b91c1c; }
+.btn-fw { width: 100%; display: block; text-align: center; padding: .75rem; }
+
+/* RIASZTÁSOK ÉS KIEMELÉSEK */
+.al { border-radius: 8px; padding: .75rem 1rem; margin-bottom: .75rem; font-size: 13px; line-height: 1.6; white-space: pre-line; }
+.al-d { background: #450a0a; color: #fecaca; border: 1px solid #7f1d1d; }
+.al-w { background: #451a03; color: #fde68a; border: 1px solid #78350f; }
+.al-i { background: #172554; color: #bfdbfe; border: 1px solid #1e3a8a; }
+.al-s { background: #064e3b; color: #bbf7d0; border: 1px solid #065f46; }
+.note { font-size: 12px; color: #9ca3af; padding: .5rem .75rem; background: #262626; border-radius: 8px; margin-bottom: .5rem; line-height: 1.5; border: 1px solid #333; }
+.sub { font-size: 13px; font-weight: 600; color: #d1d5db; margin: .75rem 0 .35rem; }
+ul.bl { margin: 0 0 .5rem; padding-left: 1.3rem; }
+ul.bl li { font-size: 13px; color: #d1d5db; line-height: 1.65; margin-bottom: .2rem; }
+
+/* SZÓTÁR / MODAL */
+.dw { color: #14b8a6; text-decoration: underline; text-decoration-style: dotted; cursor: pointer; font-weight: 600; }
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 999; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-overlay.act { opacity: 1; pointer-events: auto; }
+.modal-box { background: #262626; border: 1px solid #4b5563; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; transform: scale(0.95); transition: transform 0.2s; }
+.modal-overlay.act .modal-box { transform: scale(1); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #1e1e1e; border-bottom: 1px solid #3f3f3f; }
+.modal-title { font-size: 16px; font-weight: 700; color: #f3f4f6; }
+.modal-close { background: none; border: none; color: #9ca3af; font-size: 24px; line-height: 1; cursor: pointer; }
+.modal-body { padding: 1rem; font-size: 14px; color: #d1d5db; line-height: 1.6; }
+
+/* KVÍZ / SZIMULÁCIÓ VÁLASZOK */
+.prog { height: 4px; background: #333; border-radius: 2px; margin-bottom: 1rem; }
+.progb { height: 4px; border-radius: 2px; transition: width .3s; }
+.opt { width: 100%; display: block; padding: .7rem 1rem; margin-bottom: 7px; border: 1px solid #3f3f3f; border-radius: 8px; cursor: pointer; text-align: left; font-size: 13px; color: #d1d5db; background: #2a2a2a; font-family: inherit; line-height: 1.45; transition: background .1s; }
+.opt:hover { background: #374151; }
+.opt-ok { background: #064e3b !important; border-color: #059669 !important; color: #ecfdf5 !important; cursor: default !important; }
+.opt-no { background: #7f1d1d !important; border-color: #b91c1c !important; color: #fef2f2 !important; cursor: default !important; }
+
+/* TÁBLÁZATOK */
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: .75rem; }
+table.tbl th { padding: 6px; text-align: left; font-weight: 600; color: #9ca3af; border-bottom: 1px solid #3f3f3f; background: #262626; }
+table.tbl td { padding: 6px; border-bottom: 1px solid #333; color: #d1d5db; vertical-align: top; }
+.tbl-wrap { overflow-x: auto; }
+
+/* HOME GRID */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.home-mod { background: #2a2a2a; border: 1px solid #3f3f3f; border-radius: 12px; padding: 1rem; cursor: pointer; text-align: left; font-family: inherit; color: #e5e7eb; transition: transform 0.1s, background 0.15s; }
+.home-mod:hover { background: #333; border-color: #4b5563; transform: translateY(-1px); }
+.home-mod-icon { font-size: 26px; margin-bottom: 6px; }
+.home-mod-title { font-size: 14px; font-weight: 600; color: #f3f4f6; margin-bottom: 2px; }
+.home-mod-desc { font-size: 11px; color: #9ca3af; }
+
+/* KALKULÁTOR */
+.chbox-lbl { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 13px; cursor: pointer; color: #d1d5db; padding: 6px; border-radius: 6px; transition: background 0.15s; }
+.chbox-lbl:hover { background: #374151; }
+.chbox-lbl input { margin-top: 3px; accent-color: #14b8a6; transform: scale(1.2); cursor: pointer; }
+.chbox-lbl span { flex: 1; user-select: none; }
+select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #4b5563; background: #2a2a2a; color: #e5e7eb; font-family: inherit; margin-bottom: 10px; font-size: 13px; outline: none; }
+.res-box { border-radius: 12px; padding: 1rem; text-align: center; margin-top: .75rem; background: #172554; border: 1px solid #1e3a8a; transition: background 0.3s, border-color 0.3s; }
+.res-lbl { font-size: 16px; font-weight: 700; margin-bottom: 5px; color: #bfdbfe; }
+.res-txt { font-size: 13px; color: #93c5fd; line-height: 1.5; }
+
+/* TAGS */
+.tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; background: #064e3b; color: #ecfdf5; }
+.tag-g { background: #064e3b; color: #ecfdf5; }
+.tag-y { background: #78350f; color: #fef3c7; }
+</style>
+</head>
+<body>
+<div class="app">
+    <nav class="nav" id="nav">
+        <button class="nb act" onclick="window.go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+        <button class="nb" onclick="window.go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+        <button class="nb" onclick="window.go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+        <button class="nb" onclick="window.go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+        <button class="nb" onclick="window.go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+    </nav>
+    
+    <div class="ct" id="ct"></div>
+
+    <div id="modal" class="modal-overlay" onclick="window.closeModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-head">
+                <h3 id="modal-title" class="modal-title"></h3>
+                <button class="modal-close" onclick="window.closeModal()">×</button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- DICTIONARY SYSTEM ---
+const DICT = {
+    'ascendáló': 'Felszálló, alulról felfelé terjedő (pl. a húgycsőből a hólyag, majd a vese felé).',
+    'genitáliák': 'Nemi szervek és azok környéke.',
+    'cystitis': 'Húgyhólyaggyulladás (alsó húgyúti infekció).',
+    'pyelonephritis': 'Vesemedence- és vesegyulladás (felső húgyúti infekció).',
+    'sporadikus': 'Szórványos, elszigetelten, ritkán előforduló.',
+    'rekurrens': 'Visszatérő, ismétlődő.',
+    'aszimptomatikus bacteruria': 'Tünetmentes baktériumvizelés (ABU). Baktériumok vannak a vizeletben, de nem okoznak panaszt.',
+    'urethritis': 'Húgycsőgyulladás.',
+    'costovertebralis': 'A bordák és a gerinc közötti (vesetáji) anatómiai terület.',
+    'prostatitis': 'Prosztatagyulladás.',
+    'immundeprimált': 'Csökkent, gyengített immunműködésű állapot.',
+    'neutropenia': 'A neutrofil fehérvérsejtek kóros megkevesbedése a vérben (magas fertőzésveszély).',
+    'diabetes mellitus': 'Cukorbetegség.',
+    'pyuria': 'Genny (fehérvérsejtek) kóros jelenléte a vizeletben.',
+    'nitrit': 'Bizonyos baktériumok által a vizeletben lévő nitrátból képzett anyag, jelenléte fertőzésre utal.',
+    'kontamináció': 'Szennyeződés (pl. a vizeletmintába a bőrről bekerülő baktériumok).',
+    'vaginitis': 'Hüvelygyulladás.',
+    'pelvic inflammatory disease': 'Kismedencei gyulladás (PID).',
+    'empirikus': 'Tapasztalati úton történő. (Empirikus terápia: a legvalószínűbb kórokozó ellen célzott, de tenyésztés nélküli kezelés).',
+    'multirezisztencia': 'Több antibiotikummal szembeni ellenállóképesség a baktérium részéről.',
+    'hospitalizáció': 'Kórházi elhelyezés, kórházi felvétel.',
+    'probiotikum': 'A szervezet egészséges (bél-, hüvely-) flóráját támogató hasznos mikroorganizmus.',
+    'szepszis': 'Az egész szervezetet érintő, életveszélyes gyulladásos válaszreakció egy fertőzésre (véráramfertőzés).'
+};
+
+window.showModal = function(word) {
+    document.getElementById('modal-title').innerText = word;
+    document.getElementById('modal-body').innerText = DICT[word.toLowerCase()] || 'Nincs elérhető definíció.';
+    document.getElementById('modal').classList.add('act');
+};
+window.closeModal = function() {
+    document.getElementById('modal').classList.remove('act');
+};
+window.w = function(text, key) {
+    return '<span class="dw" onclick="window.showModal(\'' + (key || text) + '\')">' + text + '</span>';
+};
+
+// HTML Escaping
+function h(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// --- APP STATE ---
+var SCR = 'home';
+var CHID = null;
+var QZ = { idx: 0, sel: null, score: 0, done: false, ans: [] };
+var SI = { id: null, step: 0, chosen: null, hist: [], fin: false };
+
+// --- DATA ---
+var CDATA = [
+{id:'cel_bev', title:'I. Célok és II. Bevezetés', icon:'🎯', acc:'#14b8a6', secs:[
+    {t:'I. Célok', bk:[
+        {tp:'bl', items:[
+            'A húgyúti fertőzések tüneteinek, klinikai formáinak bemutatása.',
+            'Sürgősségi ellátás lépéseinek és a kórházi elhelyezés speciális szempontjainak ismertetése.',
+            'Magyar és nemzetközi irányelvek adaptációja, az OMSZ dolgozóinak egységesítése.',
+            'Bizonyíték nélküli, haszontalan vagy káros beavatkozások mellőzése.'
+        ]}
+    ]},
+    {t:'II. Bevezetés', bk:[
+        {tp:'tx', tx:'A fertőzés elsősorban nőket érint, jellemzően ' + window.w('ascendáló') + ', forrását zömmel a ' + window.w('genitáliák') + ' környéki baktériumok adják. Szexuális úton is terjedhet.'},
+        {tp:'al', lv:'i', tx:'Általában nem terjed a hólyagon túl (alsó húgyúti infekció), nem okoz súlyos bajt, kórház nem kell. Ritkábban (hajlamosító tényezők esetén) érinti a hólyag feletti régiót (felső húgyúti infekció). Ez utóbbi súlyosabb, kórházi kivizsgálás indokolt lehet.'},
+        {tp:'sub', tx:'Megjelenési formák:'},
+        {tp:'bl', items:[
+            'Egyszerű húgyúti infekció: menopausa előtti, nem várandós nők akut (' + window.w('sporadikus') + ', ' + window.w('rekurrens') + ') ' + window.w('cystitis') + 'e és/vagy ' + window.w('pyelonephritis') + 'e, anatómiai/funkcionális/társbetegség NÉLKÜL.',
+            'Komplikált húgyúti infekció: Minden egyéb eset (az eljárásrend a panaszok alapján jellemezi).',
+            'Az ' + window.w('aszimptomatikus bacteruria') + ' (ABU) általában véd a szimptomatikus fertőzésektől, csak kockázat-haszon mérlegeléssel kezelendő (pl. várandósok, urológiai műtét előtt).'
+        ]}
+    ]}
+]},
+{id:'tünet', title:'III. Anamnézis, diagnózis, tünettan', icon:'📋', acc:'#3b82f6', secs:[
+    {t:'Klinikai megjelenési formák, tünetei', bk:[
+        {tp:'sub', tx:'Egyszerű húgyúti infekció (' + window.w('cystitis') + ', ' + window.w('urethritis') + ')'},
+        {tp:'bl', items:[
+            'Gyakori, fájdalmas, sürgető vizeletürítés',
+            'Alhasi fájdalom (hólyagtáji)',
+            'Zavaros, esetleg véres vizelet',
+            'Nők esetén hüvelyi viszketés/folyás HIÁNYA',
+            '(Nincsenek komplikált tünetek)'
+        ]},
+        {tp:'sub', tx:'Komplikált húgyúti infekció (' + window.w('pyelonephritis') + ', ' + window.w('prostatitis') + ')'},
+        {tp:'bl', items:[
+            'Láz (> 37,7 °C), hidegrázás, borzongás',
+            'Deréktáji, ' + window.w('costovertebralis') + ', alhasi, lágyéki fájdalom, érzékenység',
+            'Hányinger, hányás',
+            'Fáradtság, rossz közérzet',
+            'Férfiak esetén kismedence, végbél környéki fájdalom (prosztata érintettség)',
+            'Bármilyen szisztémás betegségre (' + window.w('szepszis') + ', gyengeség) utaló jel',
+            '(Az egyszerű infekció tünetei hiányozhatnak)'
+        ]}
+    ]},
+    {t:'Kockázati csoportok és Diagnózis', bk:[
+        {tp:'sub', tx:'Veszélyeztetett betegek:'},
+        {tp:'bl', items:[
+            'Kiválasztó rendszer strukturális/funkcionális betegségei (kő, műtét, szűkület, daganat, katéter - rejtett dupla J katéter is!)',
+            window.w('Immundeprimált') + ' állapot (pl. ' + window.w('neutropenia') + ', HIV)',
+            'Rosszul kontrollált ' + window.w('diabetes mellitus'),
+            'Idős, legyengült állapot'
+        ]},
+        {tp:'sub', tx:'Speciális ellátást igénylő betegek:'},
+        {tp:'bl', items:['Várandósok', 'Vese transzplantáltak']},
+        {tp:'al', lv:'s', tx:'Diagnózis: vizeletvizsgálattal (stix a helyszínen). ' + window.w('Pyuria') + ' / ' + window.w('nitrit') + ' kimutatása megerősíti. Középsugaras vizeletből, lemosás után. Nem szobatiszta gyermeknél hólyagtájék hideg vizes dörzsölése utáni felfogás, vagy zacskós (de itt erős a ' + window.w('kontamináció') + ').'}
+    ]}
+]},
+{id:'diff', title:'IV. Differenciáldiagnózis', icon:'🔍', acc:'#8b5cf6', secs:[
+    {t:'Elkülönítendő kórképek', bk:[
+        {tp:'tx', tx:'Felső húgyúti fertőzések elkülönítendők nőgyógyászati és mozgásszervi megbetegedésektől:'},
+        {tp:'bl', items:[
+            window.w('Vaginitis') + ': fájdalmas vizeletürítéshez (bűzös) hüvelyi folyás, viszketés társul, sűrű vizelési inger hiánya jellemzi.',
+            window.w('Urethritis') + ': gennyes vizelet, bacteruria nélkül.',
+            window.w('Pelvic inflammatory disease') + ' (Kismedencei gyulladás): láz, alhasi fájdalom jellemzi.',
+            window.w('Prostatitis') + ': férfiaknál komplikált fertőzésre jellemző tünetek.'
+        ]}
+    ]}
+]},
+{id:'mentes', title:'V-VI. Irányítás és Betegvizsgálat', icon:'🚑', acc:'#f59e0b', secs:[
+    {t:'V. A mentésirányítás feladatai', bk:[
+        {tp:'bl', items:[
+            'ABC szerinti kikérdezés, veszélyeztető állapot kizárása.',
+            'Célzott kérdések a komplikációkra (láz, derékfájdalom, hányás) és a szepszisre.',
+            'Súlyos esetben magasabb szintű mentőegység (esetleg helikopter) azonnali riasztása, vonalban maradás.',
+            'Típusos egyszerű, stabil eset átadható orvosi ügyeletnek.'
+        ]}
+    ]},
+    {t:'VI. Azonnali teendők (MINDEN mentőegység)', bk:[
+        {tp:'bl', items:[
+            '1. Helyszín biztonsága.',
+            '2. ABCDE betegvizsgálat: szepszis felismerése kiemelt! Szövődmények keresése (láz, vesetáji érzékenység - demens/idős betegeken is). Veszélyeztetettség felmérése.',
+            '3. ABC instabilitás esetén segélykocsi kérése (kompetencia hiányában).',
+            '4. Szepszis protokoll indítása szeptikus betegnél.',
+            '5. A legtöbb eset helyszíni akut ellátást nem igényel.',
+            '6. Tüneti terápiaként adható (kompetencia szerint): görcsoldó, láz- és fájdalomcsillapító.'
+        ]}
+    ]}
+]},
+{id:'tovabbi', title:'VII. További ellátás (Tiszt/Orvos)', icon:'💊', acc:'#ef4444', secs:[
+    {t:'Gyógyszerelés (Orvosi/Tiszti kompetencia)', bk:[
+        {tp:'sub', tx:'7. Egyszerű húgyúti infekció empirikus antibiotikum:'},
+        {tp:'bl', items:[
+            'Foszfomicin-trometamol: 3 g egyszeri dózis',
+            'Nitrofurantoin: 2-4 x 100 mg, min. 5 napig',
+            'NEM AJÁNLOTT hazánkban: trimetoprim-szulfametoxazol (rezisztencia miatt)',
+            'NEM INDOKOLT hazánkban: amoxicillin/klavulánsav',
+            'Alternatíva (ellenjavallat esetén): cefalosporinok (pl. cefalexin, cefuroxim).',
+            'Fluorokinolon: csak végső esetben, prehospitálisan kerülendő.'
+        ]},
+        {tp:'sub', tx:'8. Komplikált húgyúti infekció:'},
+        {tp:'bl', items:[
+            'Kezelését kórházi beutalás és vizsgálat indítja el!',
+            'Nitrofurantoin és foszfomicin komplikált esetben NEM alkalmazható.'
+        ]},
+        {tp:'sub', tx:'9. Kezelés előtt javasolt vizelettenyésztés:'},
+        {tp:'bl', items:[
+            window.w('Multirezisztencia') + ' gyanúja (elmúlt 3 hónapban AB szedése, kórházban szerzett, katéter).',
+            'Várandósság esetén.',
+            'Ha az elsőként választott szer nem hat 48-72 órán belül.'
+        ]}
+    ]}
+]},
+{id:'betegut', title:'VIII. Ellátás utáni teendők, betegút', icon:'🏥', acc:'#10b981', secs:[
+    {t:'Kórházba utalás és elhelyezés szempontjai', bk:[
+        {tp:'al', lv:'d', tx:'Szeptikus állapot észlelése esetén AZONNALI kórházi elhelyezés!'},
+        {tp:'sub', tx:'Kórházba utalás szükséges:'},
+        {tp:'bl', items:[
+            'Komplikált húgyúti fertőzés tünetei BÁRMELY betegnél.',
+            'Egyszerű fertőzés tünetei mellett is, HA: veszélyeztetett beteg, elzáródás gyanúja, per os folyadék/gyógyszer bevételére képtelen, gyermek, várandós, vese transzplantált, önellátásra képtelen beteg.'
+        ]},
+        {tp:'al', lv:'s', tx:'Hospitalizáció NEM szükséges egyszerű infekció esetén, ha a beteg nem terhes, nem transzplantált, nem veszélyeztetett, otthonában ellátható. Panasz esetén 48-72 óra múlva háziorvos.'},
+        {tp:'bl', items:[
+            'Mentőápoló önálló döntés alapján nem hagyhat helyszínen beteget!',
+            'Gyermekek stix igazolt fertőzés esetén kórházba irányítandók.',
+            'ABCD-stabil húgyúti fertőzés miatt mentővel szállítás általában nem indokolt.'
+        ]},
+        {tp:'sub', tx:'Visszatérő fertőzések (≥3/év vagy ≥2/6 hónap):'},
+        {tp:'bl', items:[
+            'Szakirányú kivizsgálás, tenyésztés, ' + window.w('probiotikum') + 'ok, bő folyadék (+1,5L), higiénia (elölről hátra), tőzegáfonya.'
+        ]}
+    ]}
+]}
+];
+
+var QUIZ = [
+{q:'Melyik életkorban és nemben a leggyakoribb a húgyúti fertőzés?', opts:['Idős férfiaknál', 'Gyermekeknél', 'Nőknél', 'Csak terheseknél'], ok:2, exp:'A fertőzés elsősorban a nőket érinti az anatómiai viszonyok miatt.'},
+{q:'Mi a leggyakoribb terjedési útja a húgyúti fertőzéseknek?', opts:['Cseppfertőzés', 'Ascendáló (felszálló)', 'Véráram útján mindig', 'Érintkezéssel'], ok:1, exp:'Jellemzően ascendáló, forrását a genitáliák környékén előforduló baktériumok adják.'},
+{q:'Melyik NEM jellemző az egyszerű húgyúti infekcióra (cystitis)?', opts:['Gyakori vizeletürítés', 'Alhasi fájdalom', 'Láz (> 37,7 °C) és hidegrázás', 'Zavaros vizelet'], ok:2, exp:'A láz és hidegrázás a komplikált húgyúti infekció (pl. vesemedence-gyulladás) jellemzője.'},
+{q:'Komplikált húgyúti infekcióra utal férfiak esetén:', opts:['Kismedencei, végbél környéki fájdalom', 'Csak gyakori vizelési inger', 'Normál testhőmérséklet', 'Hüvelyi folyás'], ok:0, exp:'Férfiak esetén a prosztata érintettségére utalhat a gáttáji/végbél környéki fájdalom.'},
+{q:'Kik tartoznak a veszélyeztetett betegek közé?', opts:['Csak a 18 év alattiak', 'Rosszul kontrollált diabeteses, immundeprimált, vagy katéteres betegek', 'Minden menopausa előtti nő', 'Csak a várandósok'], ok:1, exp:'A cukorbetegek, immundeprimáltak, anatómiai eltéréssel vagy katéterrel rendelkezők veszélyeztetettek.'},
+{q:'Hogyan kell vizeletmintát venni nem szobatiszta gyermeknél, ha nincs zacskó?', opts:['Katéterezéssel kötelezően', 'Hólyagtájék hideg vizes dörzsölése után felfogva', 'Csak vért lehet vizsgálni', 'Pelenkából kinyomva'], ok:1, exp:'Az eljárásrend szerint hólyagtájék hideg vizes dörzsölése után nyert vizelet felfogása javasolt.'},
+{q:'Differenciáldiagnózis: Mi szól a Vaginitis (hüvelygyulladás) mellett?', opts:['Sűrű vizelési inger és láz', 'Fájdalmas vizeletürítéshez társuló (bűzös) hüvelyi folyás, viszketés', 'Gennyes vizelet bacteruria nélkül', 'Végbéltáji fájdalom'], ok:1, exp:'Vaginitisnél a vizelési panaszok mellett hüvelyi folyás/viszketés van, a sűrű vizelési inger gyakran hiányzik.'},
+{q:'Mi az azonnali teendő szeptikus állapot (szepszis) gyanújakor?', opts:['Otthon hagyni a beteget gyógyszerrel', 'ABC instabilitás észlelésekor segélykocsi kérése, szepszis protokoll', 'Csak vizeletet tenyészteni a helyszínen', 'Fájdalomcsillapító adása és távozás'], ok:1, exp:'Szeptikus beteg azonnali ABCDE vizsgálatot, segélykocsi kérést és szepszis protokoll szerinti ellátást igényel.'},
+{q:'Melyik antibiotikumot JAVASOLJA az eljárásrend egyszerű húgyúti fertőzés empirikus terápiájára (orvosi/tiszti kompetencia esetén)?', opts:['Amoxicillin/klavulánsav', 'Trimetoprim-szulfametoxazol', 'Foszfomicin-trometamol 3g egyszeri dózis', 'Fluorokinolonok első választásként'], ok:2, exp:'Foszfomicin 3g (vagy Nitrofurantoin) ajánlott. A többi a magas rezisztencia miatt nem.'},
+{q:'Alkalmazható-e a Nitrofurantoin KOMPLIKÁLT húgyúti infekcióban?', opts:['Igen, dupla dózisban', 'Nem, komplikált esetekben nem alkalmazható', 'Csak férfiaknál', 'Csak ha a beteg kéri'], ok:1, exp:'A Nitrofurantoin és foszfomicin komplikált esetekben nem alkalmazható, a kezelést kórházi vizsgálat indítja el.'},
+{q:'Mikor javasolt vizelettenyésztést végezni kezelés előtt?', opts:['Minden egyszerű cystitis esetén', 'Várandósság, vagy multirezisztencia gyanúja (pl. elmúlt 3 hónapban AB szedés) esetén', 'Csak férfiaknál', 'Soha prehospitálisan'], ok:1, exp:'Várandósoknál, multirezisztencia gyanújakor, vagy ha a korábbi szer 48-72 órán belül nem hatott.'},
+{q:'Melyik állítás IGAZ az aszimptomatikus bacteruriára (ABU)?', opts:['Azonnal agresszív antibiotikummal kell kezelni mindenkinél', 'Csak kockázat-haszon mérlegeléssel kezelendő (pl. terheseknél), amúgy véd a fertőzésektől', 'A szepszis előszobája', 'Kizárólag műtét után alakul ki'], ok:1, exp:'Az ABU (tünetmentes) általában véd a szimptomatikus fertőzésektől, így csak pl. várandósoknál vagy urológiai műtét előtt kezelendő.'},
+{q:'Kórházba utalás SZÜKSÉGES az alábbi esetben:', opts:['Egyszerű cystitis egy 25 éves, egészséges nőnél', 'Komplikált húgyúti fertőzés tünetei bármely betegnél', 'Ha a panaszok 1 órája kezdődtek', 'Aszimptomatikus bacteruria esetén'], ok:1, exp:'Komplikált infekció, illetve egyszerű infekció veszélyeztetett/speciális betegeknél mindenképp kórházi elhelyezést indokol.'},
+{q:'Kórházba utalandó-e egy vizeletvizsgálattal (stix) igazolt húgyúti fertőzésben szenvedő gyermek?', opts:['Nem, otthon kezelhető', 'Igen, további vizsgálat céljából', 'Csak ha lázas', 'Csak ha a szülő kéri'], ok:1, exp:'Az eljárásrend szerint: "Gyermekek: vizeletvizsgálattal igazolt húgyúti fertőzés esetén kórházba irányítandók további vizsgálat céljából."'},
+{q:'Hagyhat-e a mentőápoló önálló döntés alapján beteget a helyszínen egyszerű húgyúti infekció esetén?', opts:['Igen, ha a beteg ABCD-stabil', 'Nem, mentőápoló önálló döntés alapján nem hagyhat helyszínen beteget', 'Igen, de csak nappal', 'Igen, ha ad fájdalomcsillapítót'], ok:1, exp:'Kifejezetten rögzíti az eljárásrend: mentőápoló önálló döntés alapján nem hagyhat helyszínen beteget.'},
+{q:'Mi a teendő visszatérő húgyúti fertőzések esetén hosszú távon?', opts:['Állandó antibiotikum szedés', 'Szakirányú kivizsgálás, bő folyadék (+1,5L), higiénia, tőzegáfonya', 'Kevesebb folyadék fogyasztása', 'Csak sebészeti beavatkozás'], ok:1, exp:'Folyadék emelése, megfelelő higiénia, laza fehérnemű, tőzegáfonya, probiotikumok javasoltak.'},
+{q:'Melyik vizelési inger típus NEM jellemző az egyszerű UTI-ra?', opts:['Sürgető', 'Gyakori', 'Fájdalmas', 'Ritka és bőséges'], ok:3, exp:'Az egyszerű húgyúti fertőzés gyakori, sürgető, fájdalmas (és sokszor kis mennyiségű) vizeletürítéssel jár.'},
+{q:'Mik a szepszisre utaló jelek a húgyúti fertőzés során?', opts:['Tiszta vizelet, jókedv', 'Bármilyen szisztémás betegségre utaló jel (gyengeség, hányinger, instabil vitális paraméterek)', 'Hüvelyi viszketés', 'Normál vérnyomás és pulzus'], ok:1, exp:'Szepszis esetén a fertőzés szisztémássá válik, gyengeséget, tudatzavart, vérnyomásesést, hányingert okozhat.'},
+{q:'Mi az első lépés a betegvizsgálat során minden mentőegység részére?', opts:['Vénabiztosítás', 'Azonnali antibiotikum adás', 'A helyszín biztonságának ellenőrzése, majd ABCDE szerinti vizsgálat', 'Vizelet stix vizsgálat'], ok:2, exp:'Minden ellátás a helyszínbiztonsággal és a szisztematikus ABCDE vizsgálattal kezdődik.'},
+{q:'Igényel-e a legtöbb egyszerű húgyúti infekció helyszíni akut ellátást?', opts:['Igen, azonnali katéterezést', 'Nem, a legtöbb esetben helyszíni akut ellátást nem igényel', 'Igen, intravénás antibiotikumot', 'Igen, infúziós terápiát'], ok:1, exp:'A legtöbb egyszerű infekció helyszíni akut beavatkozást nem igényel, tüneti terápia (fájdalom/lázcsillapító) adható.'}
+];
+
+var SIMS = [
+{id:1, title:'1. Szimuláció: Egyszerű cystitis', diff:'B kompetencia', desc:'Egy 28 éves, egészséges nőhöz kérnek mentőt. Panasza: tegnap óta nagyon gyakran, fájdalmasan pisil, alhasi fájdalma van. B kompetenciaszint (gyógyszerelés nélkül).', steps:[
+    {sit:'Megérkezel a beteghez. Mi az első teendőd az eljárásrend szerint?', opts:[{tx:'Azonnal vizeletet kérek tőle.',ok:false,fb:'Hibás! Mindig az alapokkal kezdünk.'},{tx:'A helyszín biztonságának ellenőrzése, majd ABCDE szerinti betegvizsgálat.',ok:true,fb:'Helyes! Minden betegellátás alapja a biztonság és az ABCDE.'},{tx:'Azonnal kórházba indulok vele.',ok:false,fb:'Hibás! Előbb vizsgálni kell.'}]},
+    {sit:'A beteg ABCDE-stabil, vitális paraméterei normálisak. Milyen specifikus kérdéseket teszel fel a panaszaira (anamnézis)?', opts:[{tx:'Csak azt kérdezem, mit evett.',ok:false,fb:'Hibás! Célzott anamnézis kell.'},{tx:'Kikérdezem a vizelés gyakoriságáról, fájdalmáról, és hogy van-e láza, derékfájdalma, vagy szisztémás tünete.',ok:true,fb:'Helyes! Tisztázni kell az egyszerű vs komplikált infekció jeleit.'},{tx:'Megkérdezem, mikor volt utoljára külföldön.',ok:false,fb:'Hibás! Nem ez a legfontosabb.'}]},
+    {sit:'A betegnek nincs láza, nincs derékfájdalma, és nincs hányingere. Célzottan rákérdezel a veszélyeztető tényezőkre is. Mik ezek?', opts:[{tx:'Terhesség, diabetes, immundeprimált állapot, anatómiai eltérések.',ok:true,fb:'Helyes! Ezek azonnal komplikálttá/veszélyeztetetté tennék az esetet.'},{tx:'Hajszín, testsúly.',ok:false,fb:'Hibás! Ezek nem rizikófaktorok.'},{tx:'Csak a terhesség számít.',ok:false,fb:'Hibás! Sok más tényező is van.'}]},
+    {sit:'A beteg nem terhes, nincs alapbetegsége. A diagnózis megerősítéséhez mit használhatsz a helyszínen?', opts:[{tx:'Vérvételt laborba.',ok:false,fb:'Hibás! Prehospitálisan nincs labor.'},{tx:'Vizelet stix vizsgálatot (pyuria, nitrit keresésére) középsugaras vizeletből.',ok:true,fb:'Helyes! Ez a helyszíni gyorsteszt.'},{tx:'Ultrahangot.',ok:false,fb:'Hibás! Nem tartozik a B kompetenciához és a standard eljáráshoz.'}]},
+    {sit:'Differenciáldiagnózis: Melyik tünet hiánya erősíti meg, hogy ez egyszerű húgyúti infekció és NEM vaginitis?', opts:[{tx:'Sűrű vizelési inger hiánya.',ok:false,fb:'Hibás! Az a vaginitisre utalna.'},{tx:'Hüvelyi folyás és viszketés hiánya.',ok:true,fb:'Helyes! A vaginitist a bűzös folyás és viszketés jellemzi.'},{tx:'Derékfájdalom hiánya.',ok:false,fb:'Hibás! A derékfájdalom a pyelonephritis (felső húgyúti) jele.'}]},
+    {sit:'B kompetenciájú mentőápolóként adsz-e intravénás antibiotikumot vagy infúziót ennek a betegnek a helyszínen?', opts:[{tx:'Igen, azonnal.',ok:false,fb:'Hibás! B kompetencia nem ad iv. gyógyszert.'},{tx:'Nem, egyszerű húgyúti infekció helyszíni akut ellátást nem igényel, B szinten gyógyszert sem adok iv.',ok:true,fb:'Helyes! Az eljárásrend alapján nem is igényel akut beavatkozást.'},{tx:'Oxigént adok.',ok:false,fb:'Hibás! Nincs hypoxiája.'}]},
+    {sit:'Milyen tüneti terápiát JAVASOLHATSZ a betegnek (amit ő be is vehet), amíg orvoshoz jut?', opts:[{tx:'Görcsgátló, láz- és fájdalomcsillapító bevétele a saját gyógyszereiből.',ok:true,fb:'Helyes! Az eljárásrend ezt javasolja, ha otthon ellátható.'},{tx:'Azonnal vegyen be erős nyugtatót.',ok:false,fb:'Hibás! Nem indokolt.'},{tx:'Semmit nem szabad bevennie.',ok:false,fb:'Hibás! Fájdalomcsillapítót ehet.'}]},
+    {sit:'Szükséges-e a beteget sürgősségi kórházi osztályra (SBO) szállítani?', opts:[{tx:'Igen, minden UTI kórházi eset.',ok:false,fb:'Hibás! Az egyszerű, nem veszélyeztetett betegek otthon elláthatók.'},{tx:'Nem, hospitalizáció egyszerű UTI esetén, szövődmény/rizikó hiányában nem indokolt.',ok:true,fb:'Helyes! Nem igényel azonnali hospitalizációt.'},{tx:'Csak ha ő kéri.',ok:false,fb:'Hibás! Szakmai döntés szükséges.'}]},
+    {sit:'Mivel nem igényel kórházat, mentőápolóként ott hagyhatod a beteget csak úgy a helyszínen (saját döntés alapján)?', opts:[{tx:'Igen, mert csak cystitise van.',ok:false,fb:'Hibás! A protokoll ezt tiltja.'},{tx:'Nem, mentőápoló önálló döntés alapján nem hagyhat helyszínen beteget.',ok:true,fb:'Helyes! Ezt az orvosi ügyelet felé történő átadással vagy konzultációval kell megoldani.'},{tx:'Igen, ha aláírja a papírt.',ok:false,fb:'Hibás! Szakmai kompetencia kell a helyszínen hagyáshoz.'}]},
+    {sit:'A mentésirányításon/orvoson keresztül megtörténik az eset átadása a háziorvosnak/ügyeletnek. Mi az instrukció a betegnek?', opts:[{tx:'Hívjon újra mentőt 2 óra múlva.',ok:false,fb:'Hibás! Nincs ilyen.'},{tx:'Amennyiben panaszai 48-72 órán belül nem szűnnek (vagy romlanak), keresse fel a háziorvosát.',ok:true,fb:'Helyes! Ez a protokolláris tanács egyszerű UTI esetén.'},{tx:'Menjen be taxival a kórházba azonnal.',ok:false,fb:'Hibás! Nincs sürgősségi szükséglet.'}]}
+], summary:'Részletes Összefoglaló (Sim 1 - B kompetencia):\n\n1. Helyszínbiztonság és ABCDE vizsgálat megerősítette, hogy a beteg stabil.\n2. Célzott anamnézis igazolta az egyszerű UTI tüneteit (fájdalmas, sűrű vizelés, alhasi fájdalom).\n3. Kizártuk a komplikációkat (láz, derékfájás hiánya), valamint a rizikófaktorokat (nem terhes, nincs diabetes).\n4. A differenciáldiagnózis (hüvelyi folyás hiánya) kizárta a vaginitist.\n5. Vizelet stix vizsgálattal igazoltuk a fertőzést (pyuria/nitrit).\n6. B kompetenciájú egység lévén invazív beavatkozást, gyógyszerelést nem végeztünk (nem is indokolt).\n7. Tüneti terápiaként javasoltuk az otthoni fájdalom-/lázcsillapító bevételét.\n8. A beteg nem igényelt sürgős kórházi elhelyezést az eljárásrend alapján.\n9. Mivel mentőápoló önállóan nem hagyhat beteget helyszínen, orvosi konzultáció történt, az eset alapellátásba került átadásra.\n10. Instrukció: Ha a panaszai 48-72 órán belül nem múlnak, keresse fel háziorvosát.'},
+
+{id:2, title:'2. Szimuláció: Komplikált UTI (Pyelonephritis)', diff:'B+ kompetencia', desc:'Egy 68 éves férfihez hívnak. Lázas (39.0 °C), rázza a hideg, és erős jobb oldali deréktáji fájdalma van. B+ kompetencia (gyógyszerezés).', steps:[
+    {sit:'Megérkezel. A beteg a korához képest Elesett állapotú, de ABC-stabil. A "B" kompetencián túl mit tudsz tenni B+ szinten, és mi az első vizsgáló lépés?', opts:[{tx:'Azonnal fájdalomcsillapítót adok látatlanban.',ok:false,fb:'Hibás! Előbb vizsgálni kell.'},{tx:'Helyszínbiztonság, majd teljes ABCDE vizsgálat szepszis jeleinek keresésével, miközben készülök a vénabiztosításra (B+).',ok:true,fb:'Helyes! ABCDE az első, a B+ pedig lehetőséget ad az eszközös beavatkozásra.'},{tx:'Azonnal katéterezem a beteget.',ok:false,fb:'Hibás! Ez nem prehospitális elsődleges feladat.'}]},
+    {sit:'A panaszok kikérdezésekor a beteg erős jobb oldali vesetáji (costovertebralis) fájdalmat jelez, láza 39 °C, hányingere van. Melyik kategóriába esik az eljárásrend szerint?', opts:[{tx:'Egyszerű cystitis.',ok:false,fb:'Hibás! Láz és vesetáji fájdalom van.'},{tx:'Komplikált húgyúti infekció (felső húgyúti).',ok:true,fb:'Helyes! A láz, hidegrázás, costovertebralis érzékenység egyértelműen komplikált infekcióra utal.'},{tx:'Prosztatagyulladás.',ok:false,fb:'Hibás! Arra a gáttáji/kismedencei fájdalom jellemzőbb.'}]},
+    {sit:'Férfi betegeknél egyszerű cystitis ritka, így minden fertőzés hajlamos komplikált lenni. Az eljárásrend alapján mi a legfontosabb kizárandó vészhelyzet ilyen lázas, idős betegnél?', opts:[{tx:'A szepszis (szisztémás fertőzés jelei, vérnyomásesés, tachykardia).',ok:true,fb:'Helyes! Lázas komplikált UTI-nál a szepszis a legnagyobb közvetlen életveszély.'},{tx:'A tüdőgyulladás.',ok:false,fb:'Hibás! Bár kizárandó, a panaszok húgyútiak.'},{tx:'A vakbélgyulladás.',ok:false,fb:'Hibás! Az alhasi fájdalom okozója, de itt egyértelmű derékfájás és vizelési panasz van.'}]},
+    {sit:'A beteg vérnyomása 110/70, pulzusa 105/perc. B+ kompetenciával hogyan avatkozol be a hányinger és a magas láz tüneteinek enyhítésére?', opts:[{tx:'Tüneti terápiaként vénát biztosítok, és intravénás láz- és fájdalomcsillapítót, esetleg hányáscsillapítót adok a kompetencia keretein belül.',ok:true,fb:'Helyes! B+ szinten a gyógyszeres tüneti terápia iv. indokolt a kórházba szállításig.'},{tx:'Hideg vizes borogatást teszek rá és várok.',ok:false,fb:'Hibás! Lehet fizikálisan is hűteni, de az iv. terápia is indokolt.'},{tx:'Adok neki egy Nitrofurantoin tablettát.',ok:false,fb:'Hibás! Komplikált esetben a nitrofurantoin eleve nem adható, és mentőápoló nem rendel el AB-t.'}]},
+    {sit:'Melyik empirikus antibiotikum alkalmazása SZIGORÚAN ELLENJAVALLT a komplikált esetekben (még orvosi jelenlét esetén is) az eljárásrend szerint?', opts:[{tx:'Cefalosporinok.',ok:false,fb:'Hibás! Azok adhatók.'},{tx:'Nitrofurantoin és foszfomicin.',ok:true,fb:'Helyes! Ezek komplikált esetekben nem alkalmazhatók.'},{tx:'Minden antibiotikum.',ok:false,fb:'Hibás! Orvos rendelhet megfelelő AB-t, de a felsorolt kettőt nem.'}]},
+    {sit:'Ha a helyszínen stix vizeletvizsgálatot végeztek, és az pozitív, indokolt-e a vizelettenyésztés (később a kórházban) egy ilyen idős, esetleg visszatérő fertőzéses férfinál?', opts:[{tx:'Igen, multirezisztencia gyanúja miatt a kórházi beutalás és a tenyésztés kötelező.',ok:true,fb:'Helyes! Időseknél, komplikált esetekben a tenyésztés protokolláris.'},{tx:'Nem, felesleges pénzkidobás.',ok:false,fb:'Hibás! Irányelv írja elő.'},{tx:'A mentőben tenyésztem ki.',ok:false,fb:'Hibás! Prehospitálisan nincs tenyésztés.'}]},
+    {sit:'A beteg stabilizálódott a lázcsillapítótól, de továbbra is idős, rizikós beteg komplikált fertőzéssel. Mi a döntés a hospitalizációról?', opts:[{tx:'Otthon hagyom, hívja az ügyeletet.',ok:false,fb:'Hibás!'},{tx:'Kórházba utalás és szállítás szükséges, mivel a komplikált húgyúti fertőzés tünetei bármely betegnél hospitalizációt indokolnak.',ok:true,fb:'Helyes! A komplikált eset mindig kórházi kivizsgálást igényel.'},{tx:'Csak beviszem a legközelebbi gyógyszertárba.',ok:false,fb:'Hibás!'}]},
+    {sit:'A kórházba szállítás folyamata alatt mire figyelsz a mentőgépkocsiban?', opts:[{tx:'Csak arra, hogy minél gyorsabban beérjünk.',ok:false,fb:'Hibás!'},{tx:'A vitális paraméterek folyamatos monitorozására (szepszis felé romlás kockázata).',ok:true,fb:'Helyes! B+ szinten a monitorozás folyamatos.'},{tx:'Teszteket töltetek ki a beteggel.',ok:false,fb:'Hibás!'}]},
+    {sit:'Milyen kórházi osztályra szállítod a komplikált, lázas UTI-s beteget?', opts:[{tx:'Pszichiátriára.',ok:false,fb:'Hibás!'},{tx:'Sürgősségi Betegellátó Osztályra (SBO) vagy urológiai ügyeletre a regionális betegút alapján.',ok:true,fb:'Helyes! Az akut komplikált fertőzések SBO ellátást igényelnek.'},{tx:'Bőrgyógyászatra.',ok:false,fb:'Hibás!'}]},
+    {sit:'Mi a mentőegység feladata a kórházi átadásnál?', opts:[{tx:'Csak lepakolni a beteget.',ok:false,fb:'Hibás!'},{tx:'A pontos anamnézis, vitális paraméterek, beadott iv. gyógyszerek (lázcsillapító) és a komplikált infekció / esetleges szepszis gyanújának precíz átadása (dokumentálva).',ok:true,fb:'Helyes! A prehospitális beavatkozásokat jelenteni kell.'},{tx:'Felírni neki a receptet az SBO-n.',ok:false,fb:'Hibás!'}]}
+], summary:'Részletes Összefoglaló (Sim 2 - B+ kompetencia):\n\n1. Helyszínbiztonság és ABCDE vizsgálat elvégzése után a tüneteket értékeltük.\n2. A 68 éves férfibeteg tünetei (láz, hidegrázás, deréktáji fájdalom) alapján felállt a komplikált húgyúti infekció gyanúja.\n3. Férfi lévén fokozott az egyéb szervek (prosztata) érintettsége, és a szepszis kockázata, ezért ezt folyamatosan vizsgáltuk.\n4. B+ kompetenciával vénabiztosítás történt, majd intravénás láz/fájdalomcsillapító és hányáscsillapító került beadásra tüneti terápiaként.\n5. Szakmai alapismeret: Nitrofurantoin empirikus használata komplikált esetben szigorúan ellenjavallt.\n6. Idős korban és komplikált esetben elengedhetetlen a vizelettenyésztés, amit a kórházban kell elvégezni.\n7. A komplikált húgyúti infekció minden esetben kórházi elhelyezést és további vizsgálatokat (labor, ultrahang) indokol.\n8. A szállítás alatt folyamatos paraméter-monitorozás történt a szepszis prevenciója/felismerése érdekében.\n9. A célállomás az SBO (vagy aktív urológiai ügyelet) volt.\n10. Az átadás során részletesen be lettek számolva az iv. beavatkozások, és a pyelonephritis gyanú is rögzítésre került a dokumentációban.'},
+
+{id:3, title:'3. Szimuláció: Gyermekkori UTI', diff:'B kompetencia', desc:'Egy 4 éves kislányhoz hívnak. Édesanyja szerint sír, ha pisilnie kell, fájlalja a hasát alul, a vizelete zavaros. B kompetenciaszint (gyógyszerelés nélkül).', steps:[
+    {sit:'Megérkezel. Mivel a beteg egy 4 éves gyermek, melyik megközelítést alkalmazod az ABCDE előtt?', opts:[{tx:'A felnőtt NEWS2 skálát.',ok:false,fb:'Hibás! A NEWS2 felnőtteknek való.'},{tx:'A gyermek állapotfelmérés háromszögét (Küllem, Légzési munka, Keringés).',ok:true,fb:'Helyes! Gyermekeknél ezzel kezdődik a felmérés a súlyosság gyors megítélésére.'},{tx:'A vérnyomás azonnali mérését kézzel.',ok:false,fb:'Hibás! A vizuális felmérés megelőzi.'}]},
+    {sit:'A kislány Külleme normális (interaktív), Légzése normális, Keringése (bőrszíne) jó. Az ABCDE vizsgálat során is minden stabil. A panaszok alapján (fájdalmas, gyakori vizelés, zavaros vizelet) mire gyanakszol?', opts:[{tx:'Egyszerű alsó húgyúti fertőzés (cystitis).',ok:true,fb:'Helyes! Ezek a klasszikus egyszerű cystitis tünetei.'},{tx:'Vakbélgyulladás.',ok:false,fb:'Hibás! Alhasi fájdalom lehet, de a vizelési panasz dominál.'},{tx:'Vaginitis.',ok:false,fb:'Hibás! Az folyással járna.'}]},
+    {sit:'Hogyan célszerű vizeletet vizsgálni egy szobatiszta 4 éves gyermeknél a helyszínen az eljárásrend alapján?', opts:[{tx:'Középsugaras vizelettel, a nemi szervek környékének előzetes megtisztítása után.',ok:true,fb:'Helyes! Szobatiszta gyermeknél a felnőttekhez hasonló középsugaras minta a cél.'},{tx:'Katéterezéssel.',ok:false,fb:'Hibás! Prehospitálisan durva és indokolatlan.'},{tx:'Zacskós módszerrel.',ok:false,fb:'Hibás! Az a nem szobatisztákhoz kell, és magas a kontaminációja.'}]},
+    {sit:'A stix (gyorsteszt) kimutatja a pyuriát (gennyet). Mit mond ki egyértelműen az eljárásrend a gyermekek vizeletvizsgálattal igazolt fertőzéseivel kapcsolatban?', opts:[{tx:'Gyermekek vizeletvizsgálattal (stix) igazolt húgyúti fertőzés esetén KÓRHÁZBA irányítandók további vizsgálat céljából.',ok:true,fb:'Helyes! A gyermekek minden esetben kórházi/szakorvosi vizsgálatot igényelnek.'},{tx:'Otthon hagyhatók, ha nincs láz.',ok:false,fb:'Hibás! A gyermek mindig rizikócsoport.'},{tx:'Háziorvos ráér megvizsgálni 3 nap múlva.',ok:false,fb:'Hibás! Kórházi vizsgálat kell.'}]},
+    {sit:'A kislány elkezd lázasodni (38.2 °C). B kompetenciával (nincs gyógyszerelés) hogyan látod el a fájdalmat és a lázat?', opts:[{tx:'Megkérem az édesanyát, hogy adjon a gyermek életkorának/testsúlyának megfelelő, otthon lévő gyermek láz- és fájdalomcsillapító szirupot/kúpot.',ok:true,fb:'Helyes! B szinten a szülő adhat a saját gyógyszeréből a mi javaslatunkra.'},{tx:'Szúrok egy vénát és adok Algopyrint.',ok:false,fb:'Hibás! B kompetencia nem szúr vénát.'},{tx:'Hideg vízbe állítom a gyereket.',ok:false,fb:'Hibás! Drasztikus és traumatizáló.'}]},
+    {sit:'A szállítás megkezdése előtt szükséges-e segélykocsit (gyermek mentőorvosi kocsit) hívni?', opts:[{tx:'Igen, minden gyerekhez kell.',ok:false,fb:'Hibás! Stabil gyerek nem igényel azonnali rohamkocsit.'},{tx:'Nem, az ABCD stabil gyermeknél a hospitalizáció mentővel történő szállítással megoldható, vagy ha a szülő autóval beviszi és a mentésirányítás engedi, úgy is lehetséges, de segélykocsi nem kell.',ok:true,fb:'Helyes! Stabil betegnél B szintű mentő is transzportálhat.'},{tx:'Csak helikopter szállíthatja.',ok:false,fb:'Hibás!'}]},
+    {sit:'Ha a gyermek nem lenne szobatiszta (pl. 1 éves), hogyan kellett volna vizeletet nyerni?', opts:[{tx:'Hólyagtájék hideg vizes dörzsölése után felfogva.',ok:true,fb:'Helyes! Ezt a speciális technikát említi a protokoll a zacskós minta (magas kontamináció) elkerülésére.'},{tx:'Nyomkodással a hasán.',ok:false,fb:'Hibás! Sérülést okozhat.'},{tx:'Tűvel leszívva a hólyagot.',ok:false,fb:'Hibás! Invazív, kórházi eljárás.'}]},
+    {sit:'Mi a Differenciáldiagnosztikai feladat kislányoknál alhasi panaszok esetén?', opts:[{tx:'Csak a UTI.',ok:false,fb:'Hibás!'},{tx:'Kizárni a vaginitist (pl. idegentest, gyulladás a hüvelyben), amit bűzös folyás, viszketés jelezne.',ok:true,fb:'Helyes! Gyermekeknél is előfordulhat.'},{tx:'Kizárni a prosztatagyulladást.',ok:false,fb:'Hibás! Lányoknak nincs prosztatája.'}]},
+    {sit:'A szállítás során a kislány stabil. Milyen információt adsz át a gyermekosztályon a doktornak?', opts:[{tx:'Panaszok kezdete, stix eredménye pozitív, láz, otthon beadott fájdalomcsillapító adagja.',ok:true,fb:'Helyes! A precíz átadás minden eddigi beavatkozást és leletet tartalmaz.'},{tx:'Csak azt, hogy sír a gyerek.',ok:false,fb:'Hibás!'},{tx:'Feltételezem, hogy minden rendben lesz, és távozom.',ok:false,fb:'Hibás!'}]},
+    {sit:'Ha a szülő visszautasítaná a kórházba szállítást, mit tennél?', opts:[{tx:'Rájuk hagyom.',ok:false,fb:'Hibás! Gyermeknél ez fokozott rizikó.'},{tx:'Mentésirányító orvossal/ügyelettel történő konzultációt kezdeményezek, mivel a protokoll egyértelműen kórházi vizsgálatot ír elő stix+ esetben.',ok:true,fb:'Helyes! A mentőápoló nem hagyhat beteget (pláne gyereket) otthon a protokoll ellenében orvosi utasítás nélkül.'},{tx:'Megfenyegetem a szülőt.',ok:false,fb:'Hibás!'}]}
+], summary:'Részletes Összefoglaló (Sim 3 - Gyermek, B kompetencia):\n\n1. A helyszínbiztonság után a 4 éves kislány állapotát a Gyermek állapotfelmérés háromszögével kezdtük (Küllem, Légzés, Keringés mind stabil).\n2. Az ABCDE vizsgálat megerősítette a stabilitást.\n3. Az anamnézis (fájdalmas vizelés, hasfájás) alapján cystitisre gyanakodtunk.\n4. Mivel szobatiszta, a nemi szervek tisztítása után középsugaras vizeletből stix vizsgálatot végeztünk (nem szobatisztánál hólyagtájék hideg vizes dörzsölését alkalmaztuk volna).\n5. A stix pyuriát igazolt.\n6. A fellépő lázra B kompetenciával a szülőt kértük meg az otthoni gyermek gyógyszer beadására.\n7. Az eljárásrend egyértelmű: stix-szel igazolt húgyúti fertőzésben szenvedő gyermeket kötelező kórházba irányítani.\n8. A differenciáldiagnosztika (vaginitis kizárása folyás hiányában) megtörtént.\n9. Szállítás közben nem volt szükség ALS egység bevonására, mert a gyermek stabil volt.\n10. A beteget a gyermekosztályon a teljes anamnézissel és beavatkozások dokumentálásával adtuk át (ha a szülő ellenkezett volna, ügyeleti orvosi/irányítói egyeztetés történt volna).'},
+
+{id:4, title:'4. Szimuláció: Súlyos Szeptikus UTI', diff:'B+ kompetencia', desc:'Egy 82 éves demens, állandó húgyhólyag-katétert viselő nőhöz hívnak. Nagyon gyenge, zavart, "nehezen kap levegőt". B+ kompetencia.', steps:[
+    {sit:'A helyszínen a néni ágyban fekszik, kontaktusba nehezen vonható (AVPU = V). Mi a gyanúd a katéter, az életkor és a gyengeség alapján?', opts:[{tx:'Csak elfáradt.',ok:false,fb:'Hibás! Ez veszélyes feltételezés.'},{tx:'Veszélyeztetett (idős, katéteres), komplikált fertőzésből kiinduló szeptikus állapot állhat fenn.',ok:true,fb:'Helyes! Minden rizikófaktor jelen van a szepszishez.'},{tx:'Szívinfarktus.',ok:false,fb:'Hibás! Bár lehetséges, a katéter és fertőzés esélye magasabb elsődleges gyanúként.'}]},
+    {sit:'Az ABCDE vizsgálatot elkezded. B vizsgálat: Légzésszám 32/perc. C vizsgálat: Pulzus 118/perc, gyenge. Vérnyomás 80/50 Hgmm. CRT > 3 mp. Mit igazolnak a vitális paraméterek?', opts:[{tx:'Kritikus hemodinamikai instabilitást és valószínűsíthető szepszist (szeptikus sokk).',ok:true,fb:'Helyes! Tachypnoe, tachycardia, hypotensio mind a szepszis kritériumai.'},{tx:'Kiszáradást, elég inni adni.',ok:false,fb:'Hibás! Ez már shock állapot.'},{tx:'Egyszerű cystitist.',ok:false,fb:'Hibás! Az egyszerű cystitis nem okoz keringés-összeomlást.'}]},
+    {sit:'B+ kompetenciájúként mi az azonnali párhuzamos teendőd a "B" és "C" vizsgálat során az instabil állapotú szeptikus betegnél?', opts:[{tx:'Megkezdem a NIBP/EKG monitorozást, 100% oxigént adok rezervoáros maszkon, és 2 vastag vénát biztosítok a folyadékterápiához.',ok:true,fb:'Helyes! Súlyos szepszisben az oxigén és a volumenpótlás (véna) B+ szinten elvárás.'},{tx:'Adok neki antibiotikumot tablettában.',ok:false,fb:'Hibás! Shockos beteg per os gyógyszert nem kaphat.'},{tx:'Kihúzom a katétert.',ok:false,fb:'Hibás! A helyszínen nem eltávolítjuk, csak észleljük.'}]},
+    {sit:'A katéterzsákban lévő vizelet gennyes, bűzös. D vizsgálatnál a vércukor normális. E vizsgálatnál lázat (39.2 °C) mérsz. Mivel azonnali ellátást igényel, mit teszel mentésirányítási szempontból?', opts:[{tx:'Semmit, lassan beviszem.',ok:false,fb:'Hibás! Kritikus beteg.'},{tx:'Magasabb szintű mentőegység (ALS/Roham) azonnali riasztását/találkozót kérek, és elindítom a Szeptikus beteg protokollját.',ok:true,fb:'Helyes! A szeptikus shock rohamkocsit/mentőtisztet/orvost igényel a helyszínen vagy a találkozásnál.'},{tx:'Háziorvost hívom ki.',ok:false,fb:'Hibás! Túl lassú a kritikus állapothoz.'}]},
+    {sit:'Amíg várod az ALS egységet, beadhatsz-e empirikus intravénás antibiotikumot B+ kompetenciával?', opts:[{tx:'Igen, be is adom a Nitrofurantoint.',ok:false,fb:'Hibás! A Nitrofurantoin per os van, komplikáltban tilos, és B+ nem ad önállóan iv. AB-t.'},{tx:'Nem, prehospitális AB rendelése orvosi/tiszti kompetencia, én folyadékreszuszcitációt és oxigénterápiát (O2 adás) folytatok.',ok:true,fb:'Helyes! B+ kompetencia iv. krisztalloid folyadékot (Ringer/Salsol) adhat shockban protokoll szerint.'},{tx:'Igen, Bármilyen penicillint.',ok:false,fb:'Hibás!'}]},
+    {sit:'Az eljárásrend külön kitér a kórházi/ápolási otthonban szerzett, katéteres (multirezisztens) fertőzésekre. Mi a teendő ezekkel kapcsolatban a végleges terápiát illetően (kórházban)?', opts:[{tx:'Csak sima Penicillint kapnak.',ok:false,fb:'Hibás!'},{tx:'Tenyésztés (vizelettenyésztés) kötelező az AB terápia megkezdése előtt, mivel a multirezisztencia (MDR) esélye magas.',ok:true,fb:'Helyes! Katéteres, demens idős néninél a rezisztens kórokozó nagyon gyakori.'},{tx:'Nem kell velük semmit csinálni.',ok:false,fb:'Hibás!'}]},
+    {sit:'A beteg vérnyomása a beadott infúzió (bólus) ellenére továbbra is 85/50 Hgmm. A rohamkocsi megérkezik. Szükséges-e a beteg kórházba szállítása?', opts:[{tx:'Igen, szeptikus állapot észlelése esetén AZONNALI kórházi elhelyezés (SBO-n) kötelező.',ok:true,fb:'Helyes! Az irányelv szigorúan fogalmaz.'},{tx:'Nem, otthon kezelhető infúzióval.',ok:false,fb:'Hibás!'},{tx:'Megkérdezzük a beteget, mit szeretne.',ok:false,fb:'Hibás! A beteg zavart (Dementia + Szepszis encephalopathia).'}]},
+    {sit:'Az eljárásrend kitér az önellátásra képtelen (demens) betegekre is. Mi az előírás rájuk vonatkozóan, még "egyszerű" UTI esetén is?', opts:[{tx:'Bekerülhetnek az intézményi körforgásba.',ok:false,fb:'Hibás!'},{tx:'Az egyedül élő, mentális zavarok vagy más ok miatt önellátásra képtelen beteg egyszerű UTI tünetek mellett is hospitalizációt igényel.',ok:true,fb:'Helyes! Ez szociális és biztonsági indikáció.'},{tx:'Mindenképp otthon kell tartani.',ok:false,fb:'Hibás!'}]},
+    {sit:'Mit fog adni az ALS egység (Orvos/Tiszt) a helyszínen vagy a mentőben az iv. AB-ből az eljárásrend alapján (ha már lehet adni)?', opts:[{tx:'Cefalosporint (pl. iv. Cefuroxim/Ceftriaxon) adhat (bár a Sepsis protokoll irányadó itt, nem a sima UTI). Nitrofurantoin TILOS.',ok:true,fb:'Helyes! Súlyos, komplikált esetben a széles spektrumú iv. antibiotikum jön szóba a Sepsis eljárásrend alapján.'},{tx:'Nitrofurantoint iv.',ok:false,fb:'Hibás! Nincs iv. formája a mentőknél, és amúgy is ellenjavallt.'},{tx:'Csak teát.',ok:false,fb:'Hibás!'}]},
+    {sit:'Kórházi átadás SBO-ra. Milyen speciális anamnesztikus adatot emelsz ki?', opts:[{tx:'Azt, hogy mi volt a vacsora.',ok:false,fb:'Hibás!'},{tx:'A katéter viselését, az idős demens alapállapotot, a kezdeti hypotensiót és az erre adott folyadékbólus/O2 mennyiségét.',ok:true,fb:'Helyes! Ezek az adatok életmentőek a sürgősségin a szepszis Bundle indításához.'},{tx:'A néni hajszínét.',ok:false,fb:'Hibás!'}]}
+], summary:'Részletes Összefoglaló (Sim 4 - Súlyos szepszis, B+ kompetencia):\n\n1. A helyszínen egy 82 éves, demens, katéteres beteget találtunk, akinél egyértelmű volt a szepszis veszélye.\n2. Az elsődleges felmérés (ABCDE) azonnal instabil állapotot mutatott: tachypnoe (32/p), tachycardia (118/p), mély hypotensio (80/50), és zavartság.\n3. B+ kompetenciával azonnal 100% oxigént adtunk rezervoáros maszkon, NIBP/EKG monitorozást kezdtünk, és két vénát biztosítottunk intravénás krisztalloid folyadékpótláshoz a shock kezelésére.\n4. A katéterben lévő gennyes vizelet és a magas láz igazolta a szeptikus, komplikált UTI-t.\n5. Az állapot kritikus volta miatt haladéktalanul magasabb szintű egységet (ALS) kértünk a helyszínre.\n6. Mivel B+ egység antibiotikumot nem rendel, de empirikus terápia csak orvosi utasításra (és Nitrofurantoin tilalma mellett) történhetett, a reszuszcitációra fókuszáltunk.\n7. Az eljárásrend tisztázza, hogy intézeti, katéteres fertőzésnél a kórházi tenyésztés kulcsfontosságú az MDR miatt.\n8. A demens, önellátásra képtelen beteg szociális és biztonsági okokból egyszerű UTI esetén is kórházba utalandó, de szepszisnél ez azonnali és kritikus.\n9. Az ALS egység döntése alapján a sepsis szerinti specifikus antibiotikum-terápia (Cefalosporin) is megkezdődött.\n10. A kórházi SBO átadáskor a prehospitális beavatkozások, a katéter ténye, a folyadékmennyiség és a kiinduló hypotensio mind hangsúlyosan átadásra kerültek.'}
+];
+
+// --- RENDER LOGIC ---
+
+window.renderHome = function() {
+    return '<h2 style="font-size:20px;font-weight:700;color:#f3f4f6;margin-bottom:1rem;line-height:1.3">OMSZ Szabványos Eljárásrend<br><span style="font-size:14px;color:#14b8a6">Húgyúti fertőzések prehospitális ellátása</span></h2>' +
+    '<div class="card" style="background:#172554;border-color:#1e3a8a"><div style="font-size:13px;color:#bfdbfe;line-height:1.5">A fertőzés zömmel a genitáliák környékéről ' + window.w('ascendáló') + ' (pl. Escherichia coli). Az eljárásrend célja a sürgősségi ellátás és a kórházi elhelyezés szempontjainak egységesítése. Válassz egyet az alábbi modulok közül! A szövegben található aláhúzott, zöldes szavakra kattintva elérheted a szótár funkciót.</div></div>' +
+    '<div class="g2" style="margin-bottom:.75rem">' +
+    '<button class="home-mod" onclick="window.go(\'chapters\')"><div class="home-mod-icon">📚</div><div class="home-mod-title">Eljárásrend</div><div class="home-mod-desc">A teljes szakmai anyag</div></button>' +
+    '<button class="home-mod" onclick="window.go(\'quiz\')"><div class="home-mod-icon">❓</div><div class="home-mod-title">Kvíz</div><div class="home-mod-desc">20 tesztkérdés magyarázattal</div></button>' +
+    '<button class="home-mod" onclick="window.go(\'sim\')"><div class="home-mod-icon">🚑</div><div class="home-mod-title">Szimuláció</div><div class="home-mod-desc">Klinikai esetgyakorlatok</div></button>' +
+    '<button class="home-mod" onclick="window.go(\'calc\')"><div class="home-mod-icon">🧮</div><div class="home-mod-title">Kalkulátor</div><div class="home-mod-desc">Kórházba utalás & Gyógyszer</div></button>' +
+    '</div>';
+};
+
+window.renderChapters = function() {
+    return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend Fejezetek</h2>' +
+    CDATA.map(function(c) {
+        return '<button class="card-btn" onclick="window.go(\'chapter\',\'' + c.id + '\')" style="display:flex;align-items:center;gap:12px">' +
+        '<div style="font-size:24px;width:40px;height:40px;background:' + c.acc + '20;border-radius:10px;display:flex;align-items:center;justify-content:center">' + c.icon + '</div>' +
+        '<div style="flex:1"><div style="font-size:14px;font-weight:700">' + h(c.title) + '</div><div style="font-size:11px;color:#9ca3af">' + c.secs.length + ' szakasz</div></div>' +
+        '<div style="color:#9ca3af;font-size:20px">›</div></button>';
+    }).join('');
+};
+
+window.renderChapter = function(id) {
+    var c = CDATA.find(function(x) { return x.id === id; });
+    if (!c) return '';
+    
+    var html = '<button class="btn" style="margin-bottom:1rem;background:transparent;border:none;color:#14b8a6;padding:0;font-weight:700" onclick="window.go(\'chapters\')">‹ Vissza a fejezetekhez</button>' +
+    '<h2 style="font-size:18px;font-weight:700;margin-bottom:1rem;color:' + c.acc + '">' + h(c.title) + '</h2>';
+    
+    html += c.secs.map(function(s) {
+        var secHtml = '<div class="card"><h3 style="font-size:14px;font-weight:700;color:#f3f4f6;margin-bottom:.5rem;border-bottom:1px solid #3f3f3f;padding-bottom:.5rem">' + h(s.t) + '</h3>';
+        s.bk.forEach(function(b) {
+            if (b.tp === 'tx') secHtml += '<p style="font-size:13px;color:#d1d5db;margin-bottom:.5rem;line-height:1.5">' + b.tx + '</p>';
+            if (b.tp === 'sub') secHtml += '<div class="sub">' + b.tx + '</div>';
+            if (b.tp === 'bl') secHtml += '<ul class="bl">' + b.items.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>';
+            if (b.tp === 'al') secHtml += '<div class="al al-' + b.lv + '">' + b.tx + '</div>';
+        });
+        secHtml += '</div>';
+        return secHtml;
+    }).join('');
+    
+    return html;
+};
+
+window.renderQuiz = function() {
+    if (QZ.done) {
+        var pct = Math.round(QZ.score / QUIZ.length * 100);
+        var good = pct >= 80;
+        return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem">Kvíz eredmény</h2>' +
+        '<div class="res-box" style="background:' + (good ? '#064e3b' : '#451a03') + ';border-color:' + (good ? '#065f46' : '#78350f') + '">' +
+        '<div style="font-size:42px;font-weight:700;color:' + (good ? '#4ade80' : '#fde68a') + '">' + QZ.score + '/' + QUIZ.length + '</div>' +
+        '<div class="res-lbl" style="color:' + (good ? '#4ade80' : '#fde68a') + '">' + pct + '% – ' + (good ? 'Kiváló!' : 'Van még hova fejlődni.') + '</div>' +
+        '</div>' +
+        '<button class="btn btn-g btn-fw" style="margin-top:1rem" onclick="window.resetQuiz()">Újra megpróbálom</button>';
+    }
+    
+    var q = QUIZ[QZ.idx];
+    return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:18px;font-weight:700;margin:0">Kvíz kérdés</h2><span style="font-size:12px;color:#9ca3af">' + (QZ.idx + 1) + '/' + QUIZ.length + '</span></div>' +
+    '<div class="prog"><div class="progb" style="width:' + ((QZ.idx + 1) / QUIZ.length * 100) + '%;background:#14b8a6"></div></div>' +
+    '<div class="card" style="font-size:14px;font-weight:600;line-height:1.5;margin-bottom:1rem">' + h(q.q) + '</div>' +
+    q.opts.map(function(opt, i) {
+        var cls = 'opt'; 
+        if (QZ.sel !== null) { 
+            if (i === q.ok) cls += ' opt-ok'; 
+            else if (i === QZ.sel) cls += ' opt-no'; 
+        }
+        return '<button class="' + cls + '" ' + (QZ.sel === null ? 'onclick="window.pickQ(' + i + ')"' : '') + '>' + h(opt) + '</button>';
+    }).join('') +
+    (QZ.sel !== null ? '<div class="al al-i" style="margin-top:1rem">' + h(q.exp) + '</div><button class="btn btn-g btn-fw" style="margin-top:1rem" onclick="window.nextQ()">Következő kérdés</button>' : '');
+};
+
+window.renderSim = function() {
+    if (!SI.id) {
+        return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem">Klinikai Szimulációk</h2>' +
+        '<div class="note">Az esetek az eljárásrend alapján lettek összeállítva. Teszteld tudásodat valós szituációkban, lépésről lépésre haladva.</div>' +
+        SIMS.map(function(s) {
+            return '<button class="card-btn" onclick="window.startSim(' + s.id + ')">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:14px;font-weight:700">' + h(s.title) + '</div>' +
+            '<span class="tag ' + (s.diff === 'B kompetencia' ? 'tag-g' : 'tag-y') + '">' + h(s.diff) + '</span></div>' +
+            '<div style="font-size:11px;color:#9ca3af;line-height:1.4">' + h(s.desc) + '</div></button>';
+        }).join('');
+    }
+    
+    var sim = SIMS.find(function(s) { return s.id === SI.id; });
+    
+    if (SI.fin) {
+        var correct = SI.hist.filter(function(h_item) { return sim.steps[h_item.step].opts[h_item.oi].ok; }).length;
+        return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem">' + h(sim.title) + ' - Eredmény</h2>' +
+        '<div class="res-box" style="background:#064e3b;border-color:#065f46;margin-bottom:.75rem">' +
+        '<div style="font-size:36px;font-weight:700;color:#4ade80">' + correct + '/' + sim.steps.length + '</div>' +
+        '<div style="font-size:13px;color:#bbf7d0">helyes döntés</div></div>' +
+        '<div class="al al-i"><strong>Részletes Összefoglaló:</strong><br><br>' + h(sim.summary) + '</div>' +
+        '<button class="btn btn-r btn-fw" onclick="window.resetSim()">Vissza az esetekhez</button>';
+    }
+    
+    var step = sim.steps[SI.step];
+    return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:14px;font-weight:700">' + h(sim.title) + '</div><span style="font-size:12px;color:#9ca3af">' + (SI.step + 1) + '/' + sim.steps.length + '</span></div>' +
+    '<div class="prog"><div class="progb" style="width:' + ((SI.step + 1) / sim.steps.length * 100) + '%;background:#ef4444"></div></div>' +
+    '<div class="card" style="font-size:14px;font-weight:600;line-height:1.5">' + h(step.sit) + '</div>' +
+    step.opts.map(function(opt, i) {
+        var cls = 'opt';
+        if (SI.chosen !== null) { 
+            if (opt.ok) cls += ' opt-ok'; 
+            else if (i === SI.chosen) cls += ' opt-no'; 
+        }
+        return '<button class="' + cls + '" ' + (SI.chosen === null ? 'onclick="window.chooseSim(' + i + ')"' : '') + '>' + h(opt.tx) + '</button>';
+    }).join('') +
+    (SI.chosen !== null ? '<div class="al ' + (step.opts[SI.chosen].ok ? 'al-s' : 'al-d') + '" style="margin-top:10px">' + h(step.opts[SI.chosen].fb) + '</div><button class="btn btn-r btn-fw" style="margin-top:10px" onclick="window.nextSim()">Következő lépés</button>' : '');
+};
+
+window.renderCalc = function() {
+    return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem">Döntéstámogató / Kalkulátor</h2>' +
+    '<div class="card" style="background:#172554;border-color:#1e3a8a"><div style="font-size:14px;font-weight:700;color:#bfdbfe;margin-bottom:12px;border-bottom:1px solid #1e3a8a;padding-bottom:8px">Kórházba Utalás Indikátor Mátrix</div>' +
+    
+    '<label class="chbox-lbl"><input type="checkbox" id="c_laz" onchange="window.runCalc()"><span>Komplikált tünet jelenléte: Láz (>37.7), deréktáji/hát fájdalom, vagy szepszis jelei</span></label>' +
+    '<label class="chbox-lbl"><input type="checkbox" id="c_terhes" onchange="window.runCalc()"><span>Várandós beteg</span></label>' +
+    '<label class="chbox-lbl"><input type="checkbox" id="c_gyerek" onchange="window.runCalc()"><span>Gyermek beteg (stix pozitív esetén)</span></label>' +
+    '<label class="chbox-lbl"><input type="checkbox" id="c_transz" onchange="window.runCalc()"><span>Vese transzplantált</span></label>' +
+    '<label class="chbox-lbl"><input type="checkbox" id="c_vesz" onchange="window.runCalc()"><span>Veszélyeztetett állapot (diabetes, immundeprimált, katéter)</span></label>' +
+    '<label class="chbox-lbl"><input type="checkbox" id="c_onellat" onchange="window.runCalc()"><span>Egyedül élő, demens, vagy önellátásra képtelen</span></label>' +
+    '<label class="chbox-lbl"><input type="checkbox" id="c_peros" onchange="window.runCalc()"><span>Folyadék/gyógyszer szájon át történő bevétele NEM lehetséges</span></label>' +
+    
+    '<div id="calc_res" class="res-box" style="margin-top:1rem;background:#064e3b;border-color:#065f46"><div class="res-lbl" style="color:#4ade80">Nem igényel azonnali kórházi beszállítást.</div><div class="res-txt" style="color:#bbf7d0">Panaszok tartóssága esetén (48-72 óra) háziorvos.<br>A mentőápoló saját döntésből helyszínen nem hagyhat beteget, orvosi konzultáció szükséges!</div></div></div>' +
+    
+    '<div class="card" style="background:#451a03;border-color:#78350f"><div style="font-size:14px;font-weight:700;color:#fde68a;margin-bottom:12px;border-bottom:1px solid #78350f;padding-bottom:8px">Mentőtiszt/Orvos Empirikus Gyógyszer (Egyszerű UTI)</div>' +
+    '<select onchange="window.updateDose(this.value)">' +
+        '<option value="0">Foszfomicin-trometamol</option>' +
+        '<option value="1">Nitrofurantoin</option>' +
+        '<option value="2">Cefalexin</option>' +
+        '<option value="3">Cefuroxim</option>' +
+        '<option value="4">Cefixim</option>' +
+    '</select>' +
+    '<div id="dose_res" style="font-size:14px;color:#fde68a;padding:12px;background:#262626;border-radius:8px;margin-top:10px;text-align:center;font-weight:600">Dózis: 3 g egyszeri dózisban.</div>' +
+    '<div class="al al-d" style="margin-top:12px;font-size:12px">TILOS adni (hazai rezisztencia/előírás miatt): Trimetoprim-szulfametoxazol, Amoxicillin/klavulánsav. Komplikált esetben Nitrofurantoin/Foszfomicin NEM adható!</div></div>';
+};
+
+// --- CONTROLLERS ---
+
+window.runCalc = function() {
+    var c_laz = document.getElementById('c_laz').checked;
+    var c_terhes = document.getElementById('c_terhes').checked;
+    var c_gyerek = document.getElementById('c_gyerek').checked;
+    var c_transz = document.getElementById('c_transz').checked;
+    var c_vesz = document.getElementById('c_vesz').checked;
+    var c_onellat = document.getElementById('c_onellat').checked;
+    var c_peros = document.getElementById('c_peros').checked;
+    
+    var res = document.getElementById('calc_res');
+    
+    if (c_laz || c_terhes || c_gyerek || c_transz || c_vesz || c_onellat || c_peros) {
+        res.style.background = '#450a0a';
+        res.style.borderColor = '#7f1d1d';
+        var rtext = '<div class="res-lbl" style="color:#fca5a5">Kórházba utalás és szállítás SZÜKSÉGES!</div>';
+        var ok = [];
+        if (c_laz) ok.push('Komplikált eset tünete (SBO indikált)');
+        if (c_gyerek) ok.push('Gyermekgyógyászati szakvizsgálat indikált');
+        if (c_terhes || c_vesz || c_transz) ok.push('Speciális / Veszélyeztetett rizikócsoport');
+        if (c_onellat) ok.push('Szociális/Demencia indikáció az önellátás hiánya miatt');
+        if (c_peros) ok.push('Dehidráció/Gyógyszerelési képtelenség veszélye');
+        rtext += '<div class="res-txt" style="color:#fecaca">Okok: ' + ok.join(', ') + '.</div>';
+        res.innerHTML = rtext;
+    } else {
+        res.style.background = '#064e3b';
+        res.style.borderColor = '#065f46';
+        res.innerHTML = '<div class="res-lbl" style="color:#4ade80">Nem igényel azonnali kórházi beszállítást.</div><div class="res-txt" style="color:#bbf7d0">Panaszok tartóssága esetén (48-72 óra) háziorvos.<br>A mentőápoló saját döntésből helyszínen nem hagyhat beteget, orvosi konzultáció szükséges!</div>';
+    }
+};
+
+window.updateDose = function(val) {
+    var d = [
+        "Dózis: 3 g egyszeri dózisban.",
+        "Dózis: 2-4 x 100 mg, minimum 5 napig.",
+        "Dózis: 250-500 mg 6 óránként, 5-7 napig.",
+        "Dózis: 2 x 250 mg, 5-7 napig.",
+        "Dózis: 1 x 400 mg, 1-3 napig."
+    ];
+    document.getElementById('dose_res').innerText = d[val];
+};
+
+window.go = function(s, id) { 
+    SCR = s; 
+    CHID = id || null; 
+    window.render(); 
+};
+
+window.pickQ = function(i) { 
+    if (QZ.sel !== null) return; 
+    QZ.sel = i; 
+    if (i === QUIZ[QZ.idx].ok) QZ.score++; 
+    window.render(); 
+};
+
+window.nextQ = function() { 
+    if (QZ.idx < QUIZ.length - 1) { 
+        QZ.idx++; 
+        QZ.sel = null; 
+    } else {
+        QZ.done = true; 
+    }
+    window.render(); 
+};
+
+window.resetQuiz = function() { 
+    QZ = { idx: 0, sel: null, score: 0, done: false, ans: [] }; 
+    window.render(); 
+};
+
+window.startSim = function(id) { 
+    SI = { id: id, step: 0, chosen: null, hist: [], fin: false }; 
+    window.render(); 
+};
+
+window.chooseSim = function(i) { 
+    if (SI.chosen !== null) return; 
+    SI.chosen = i; 
+    SI.hist.push({ step: SI.step, oi: i }); 
+    window.render(); 
+};
+
+window.nextSim = function() { 
+    var sim = SIMS.find(function(s) { return s.id === SI.id; }); 
+    if (SI.step < sim.steps.length - 1) {
+        SI.step++; 
+        SI.chosen = null;
+    } else {
+        SI.fin = true; 
+    }
+    window.render(); 
+};
+
+window.resetSim = function() { 
+    SI = { id: null, step: 0, chosen: null, hist: [], fin: false }; 
+    window.render(); 
+};
+
+window.render = function() {
+    var c = document.getElementById('ct');
+    if (SCR === 'home') c.innerHTML = window.renderHome();
+    else if (SCR === 'chapters') c.innerHTML = window.renderChapters();
+    else if (SCR === 'chapter') c.innerHTML = window.renderChapter(CHID);
+    else if (SCR === 'quiz') c.innerHTML = window.renderQuiz();
+    else if (SCR === 'sim') c.innerHTML = window.renderSim();
+    else if (SCR === 'calc') c.innerHTML = window.renderCalc();
+    
+    var tabs = ['home', 'chapters', 'quiz', 'sim', 'calc'];
+    var active = SCR === 'chapter' ? 'chapters' : SCR;
+    document.querySelectorAll('.nb').forEach(function(b, i) {
+        if (b.classList) {
+            if (tabs[i] === active) b.classList.add('act');
+            else b.classList.remove('act');
+        }
+    });
+    window.scrollTo(0, 0);
+};
+
+// Inicializálás
+window.render();
+
+</script>
+</body>
+</html>

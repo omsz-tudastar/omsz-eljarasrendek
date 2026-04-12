@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Lehűlésvédelem Eljárásrend</title>
+<style>
+:root {
+  --bg-main: #121212;
+  --bg-card: #1e1e1e;
+  --bg-item: #2a2a2a;
+  --bg-hover: #333333;
+  --border: #3f3f3f;
+  --text-main: #e5e7eb;
+  --text-dim: #9ca3af;
+  --primary: #14b8a6;
+  --primary-hover: #0d9488;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding-bottom: 72px;
+}
+.app {
+  max-width: 700px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+/* NAVIGATION */
+.nav {
+  display: flex;
+  background: #242424;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+}
+.nb {
+  flex: 1;
+  padding: 10px 2px 8px;
+  background: none;
+  border: none;
+  border-top: 3px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+.nb.act { border-top-color: var(--primary); background: rgba(20, 184, 166, 0.05); }
+.ni { font-size: 18px; }
+.nl { font-size: 10px; color: var(--text-dim); font-weight: 500; }
+.nb.act .nl { color: var(--primary); font-weight: 700; }
+
+/* CONTENT AREA */
+.ct { padding: 1.25rem; }
+
+/* TYPOGRAPHY & BLOCKS */
+h1, h2, h3 { color: #f3f4f6; margin-bottom: 0.75rem; line-height: 1.3; }
+h1 { font-size: 22px; font-weight: 800; }
+h2 { font-size: 18px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+h3 { font-size: 15px; font-weight: 700; color: var(--primary); margin-top: 1rem; }
+p { font-size: 14px; line-height: 1.6; margin-bottom: 0.75rem; color: #d1d5db; }
+
+ul.bl { margin: 0 0 1rem 0; padding-left: 1.5rem; }
+ul.bl li { font-size: 14px; color: #d1d5db; line-height: 1.6; margin-bottom: 0.4rem; }
+
+.card {
+  background: var(--bg-item);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.card-btn {
+  background: var(--bg-item);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  transition: background 0.15s, transform 0.1s;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-btn:hover { background: var(--bg-hover); border-color: #4b5563; }
+.card-btn:active { transform: translateY(1px); }
+
+/* ALERTS */
+.al {
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.al-d { background: #450a0a; color: #fca5a5; border: 1px solid #7f1d1d; border-left: 4px solid #ef4444; }
+.al-w { background: #451a03; color: #fde68a; border: 1px solid #78350f; border-left: 4px solid #f59e0b; }
+.al-i { background: #172554; color: #bfdbfe; border: 1px solid #1e3a8a; border-left: 4px solid #3b82f6; }
+.al-s { background: #064e3b; color: #bbf7d0; border: 1px solid #065f46; border-left: 4px solid #10b981; }
+
+/* BUTTONS */
+.btn {
+  padding: 0.75rem 1rem;
+  border: 1px solid #4b5563;
+  border-radius: 8px;
+  background: var(--bg-item);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--bg-hover); }
+.btn-fw { width: 100%; display: block; text-align: center; margin-bottom: 0.5rem; }
+.btn-g { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-g:hover { background: var(--primary-hover); }
+.btn-r { background: var(--danger); color: #fff; border-color: #b91c1c; }
+.btn-r:hover { background: #b91c1c; }
+
+/* GLOSSARY TOOLTIP */
+.glo {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0 2px;
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+.glo:hover { background: rgba(20, 184, 166, 0.2); }
+
+#modal-backdrop {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+#modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 10px; right: 15px;
+  font-size: 24px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+.modal-title { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 10px; text-transform: capitalize; }
+.modal-text { font-size: 14px; color: var(--text-main); line-height: 1.6; }
+
+/* QUIZ & SIM OPTIONS */
+.opt {
+  width: 100%;
+  display: block;
+  padding: 1rem;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  color: #d1d5db;
+  background: var(--bg-item);
+  font-family: inherit;
+  line-height: 1.5;
+  transition: background 0.1s, border-color 0.1s;
+}
+.opt:hover { background: #374151; border-color: #6b7280; }
+.opt-ok { background: #064e3b !important; border-color: #059669 !important; color: #ecfdf5 !important; cursor: default !important; }
+.opt-no { background: #7f1d1d !important; border-color: #b91c1c !important; color: #fef2f2 !important; cursor: default !important; }
+
+/* PROGRESS */
+.prog { height: 6px; background: #333; border-radius: 3px; margin-bottom: 1.25rem; overflow: hidden; }
+.progb { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+
+/* FLASHCARDS */
+.flip {
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1rem;
+  background: #262626;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+}
+.flip.on {
+  border-color: #a78bfa;
+  background: #2e1065;
+}
+
+.tag { display: inline-block; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
+.tag-g { background: #064e3b; color: #ecfdf5; border: 1px solid #059669; }
+.tag-y { background: #78350f; color: #fef3c7; border: 1px solid #d97706; }
+.tag-b { background: #1e3a8a; color: #dbeafe; border: 1px solid #3b82f6; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media(max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav" id="nav">
+    <button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+    <button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+    <button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+    <button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+    <button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+  </nav>
+  <div class="ct" id="ct"></div>
+</div>
+
+<div id="modal-backdrop" onclick="closeModal(event)">
+  <div id="modal-content">
+    <button class="modal-close" onclick="closeModal(event, true)">×</button>
+    <div class="modal-title" id="m-title"></div>
+    <div class="modal-text" id="m-text"></div>
+  </div>
+</div>
+
+<script>
+var SCR = 'home', CHID = null;
+var FC = { idx: 0, flip: false };
+var QZ = { idx: 0, sel: null, score: 0, done: false, ans: [] };
+var SI = { id: null, step: 0, chosen: null, hist: [], fin: false };
+
+// --- DICTIONARY ---
+const GLOSSARY = {
+  'hypothermiás': 'Kihűlt, 35°C alatti testhőmérsékletű beteg.',
+  'hypothermia': 'Kihűlés, a test maghőmérsékletének 35°C alá csökkenése.',
+  'hyperthermiás': 'Kórosan magas testhőmérséklethez társuló (hőártalom).',
+  'hyperthermia': 'Kórosan magas testhőmérséklet.',
+  'prehospitális': 'Kórházba érkezés előtti (helyszíni és szállítás alatti).',
+  'normothermiás': 'Normál testhőmérsékletű (kb. 36,5 - 37,5°C).',
+  'intubált': 'Légcsőbe vezetett tubuson keresztül (mesterségesen) lélegeztetett.',
+  'lélegeztetett': 'Mesterséges lélegeztetésben részesülő.',
+  'immobilissá': 'Mozgásképtelenné (váló).',
+  'immobilis': 'Mozgásképtelen.',
+  'indikációja': 'Javallata, oka egy beavatkozás elvégzésének.',
+  'indikáció': 'Javallat, orvosi indok beavatkozásra.',
+  'izolációs': 'Elszigetelő, a környezettől elzáró (hőszigetelő).',
+  'izoláció': 'Elszigetelés, a környezeti hőmérséklettől (hőátadástól) való elzárás.',
+  'log-rollal': 'Kíméletes, a gerinc tengelyét megtartó betegfordítási technikával.',
+  'log-rollt': 'Kíméletes betegfordítási technikát.',
+  'log-roll': 'Kíméletes betegfordítási technika a gerinc csavarodása nélkül.',
+  'abcde': 'Légút(A), Légzés(B), Keringés(C), Idegrendszer(D), Egyéb(E) vizsgálati és beavatkozási sorrend.'
+};
+
+// Replace text with glossary links, taking care of tags
+function renderText(str) {
+  let safeStr = String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  let keys = Object.keys(GLOSSARY).sort((a,b) => b.length - a.length); // match longest first
+  keys.forEach(k => {
+    let regex = new RegExp('\\b(' + k + ')\\b', 'gi');
+    safeStr = safeStr.replace(regex, '<span class="glo" onclick="openModal(\'$1\')">$&</span>');
+  });
+  return safeStr;
+}
+
+function openModal(word) {
+  let key = word.toLowerCase();
+  let text = GLOSSARY[key] || 'Nincs adat.';
+  document.getElementById('m-title').innerText = word;
+  document.getElementById('m-text').innerText = text;
+  document.getElementById('modal-backdrop').style.display = 'flex';
+}
+
+function closeModal(e, force) {
+  if (force || e.target.id === 'modal-backdrop') {
+    document.getElementById('modal-backdrop').style.display = 'none';
+  }
+}
+
+// --- DATA ---
+const PROTOCOL_DATA = [
+  {
+    id: '1_cel_es_celcsoport',
+    title: 'Cél és Célcsoport',
+    icon: '🎯',
+    sections: [
+      {
+        t: 'Háttér és Cél',
+        c: [
+          { type: 'p', tx: 'A prehospitális ellátás során a betegek fokozottan ki vannak téve a környezet hőártalmainak. Ezek lehetnek önálló megbetegedések (hypothermia, hyperthermiás ártalmak), vagy kiegészítő faktorok (pl. hypothermia súlyos sérülés esetén).' },
+          { type: 'p', tx: 'Gyakran a beavatkozásaink (terápiás hypothermia, súlyos sérült levetkőztetése) teszik ki a beteget hőártalomnak.' },
+          { type: 'al', cl: 'al-s', tx: 'Cél: A további lehűlés megakadályozása, ezzel a hypothermia okozta káros élettani hatások kivédése, megelőzése.' }
+        ]
+      },
+      {
+        t: 'Célcsoportok',
+        c: [
+          { type: 'ul', items: [
+            'Minden hypothermiás beteg (T < 35°C)',
+            'Minden normothermiás beteg, ahol a lehűlés veszélye fokozott:'
+          ]},
+          { type: 'ul', items: [
+            'intubált, lélegeztetett betegek',
+            'súlyos sérültek tudatállapottól függetlenül',
+            'bármilyen okból súlyosan vérző betegek tudatállapottól függetlenül',
+            '20% feletti kiterjedésű legalább másodfokú égés',
+            'minden vízből kimentett beteg',
+            'az ellátó egyéni megítélése szerint'
+          ]}
+        ]
+      },
+      {
+        t: 'Felismerés és Kivételek',
+        c: [
+          { type: 'al', cl: 'al-w', tx: 'Ezen betegcsoportoknál a hypothermia kialakulásának veszélye már 30°C alatti külső hőmérséklet esetén is fennáll, így „jó” időjárás, nyári meleg esetén is védekeznünk kell ellene!' },
+          { type: 'p', tx: 'Hypothermia gyanúja merüljön fel az alábbi esetekben:' },
+          { type: 'ul', items: [
+            'Minden extrém hidegnek kitett ember',
+            'Minden akutan immobilissá vált beteg, főleg, ha egyedül él, leromlott állapotú és/vagy "úgy találtak rá"',
+            'Minden kritikus állapotú beteg'
+          ]},
+          { type: 'al', cl: 'al-d', tx: 'NEM javasolt a lehűlésvédelem terápiás hypothermia alkalmazása esetén. (Újszülöttekre külön eljárásrend vonatkozik, egyéb gyermekeknél az eljárás megegyezik a felnőttel).' }
+        ]
+      }
+    ]
+  },
+  {
+    id: '2_alapelvek_beavatkozas',
+    title: 'Alapelvek és Beavatkozás',
+    icon: '⚕️',
+    sections: [
+      {
+        t: 'Vizsgálat',
+        c: [
+          { type: 'p', tx: 'Az ABCDE vizsgálat során mérjük fel a beteg állapotát, állítsunk fel terápiás tervet, azonosítsuk a lehűlésvédelem szükségességét.' },
+          { type: 'al', cl: 'al-i', tx: 'Bizonytalan esetben (pl. maghőmérő hiánya) a lehűlésvédelem alkalmazása javasolt. Azzal (egyértelmű terápiás hypothermia vagy hyperthermia kivételével) nem ártunk, de az elmulasztása súlyos következményekkel járhat.' }
+        ]
+      },
+      {
+        t: 'Ruházat eltávolítása, betakarás',
+        c: [
+          { type: 'ul', items: [
+            'A nedves, vizes (váladékkal, vérrel szennyezett) ruházatot minden esetben távolítsuk el. A javasolt módszer a vetkőztetés helyett a ruházat levágása.',
+            'A beteg testét lehetőleg töröljük szárazra.',
+            'Traumás esetben (súlyos sérült) a ruházat teljes eltávolítása javasolt az ABCDE vizsgálattal párhuzamosan.',
+            'Sikeres vizsgálat és szárazra törlés után a beteget mielőbb takarjuk be.',
+            'Nem traumás esetben, ha a ruházat biztosan száraz, teljes eltávolítása nem szükséges, de a mellkast és a karokat szabaddá kell tenni.'
+          ]}
+        ]
+      },
+      {
+        t: 'Folyadékterápia',
+        c: [
+          { type: 'al', cl: 'al-d', tx: 'Baleseti hypothermiában nem melegített infúziót adni TILOS!' },
+          { type: 'ul', items: [
+            'Csak indokolt esetben alkalmazzunk folyadékterápiát az alapbetegséget figyelembe véve.',
+            'Kizárólag meleg (37-40°C közötti) infúzió adható.',
+            'Ennek hiányában a folyadékbevitelt minimális szinten kell tartani.',
+            'Önmagában lehűlésvédelem céljából meleg infúziót adni nem indokolt.'
+          ]}
+        ]
+      }
+    ]
+  },
+  {
+    id: '3_izolacio_eszkozok',
+    title: 'Izoláció és Eszközök',
+    icon: '🛡️',
+    sections: [
+      {
+        t: 'Izoláció',
+        c: [
+          { type: 'p', tx: 'Betegeinket izolálni kell a környezettől a direkt hőátadásos és áramlásos hővesztés megelőzésére, valamint a termelt hő bent tartására.' },
+          { type: 'al', cl: 'al-w', tx: 'A fém gerinchordágy igen komoly és folyamatos hőelvonó hatással rendelkezik. Ezért kedvezőbb a műanyag lapáthordágy, de az izoláció ott is kötelező!' },
+          { type: 'p', tx: 'Minden kritikus állapotú beteg mozgatásához javasolt a lapáthordágy használata.' },
+          { type: 'ul', items: [
+            'Eszköz: izolációs buborékfólia (apró buborékjai kiváló hőszigetelők).',
+            'Alkalmazás: közvetlenül a beteg köré kell helyezni (ruha levágása/eltávolítása után), teljesen becsomagolva, körkörös izolációt elérve.'
+          ]}
+        ]
+      }
+    ]
+  },
+  {
+    id: '4_csomagolas_lepesei',
+    title: 'Csomagolás Lépései',
+    icon: '📦',
+    sections: [
+      {
+        t: 'Buborékfólia és Lapáthordágy felhelyezése',
+        c: [
+          { type: 'step', n: 1, tx: 'Lapáthordágy kimérése és a beteg mellé helyezése a harmonika-szerűen összehajtogatott izolációs buborékfóliával. A hordágy pengéit a levágott ruházatra tesszük, hogy a penge a beteg és a ruha közé kerüljön.' },
+          { type: 'step', n: 2, tx: 'Szabályos log-roll a betegen. Az első oldalt kb. 10°-ban emeljük, alátoljuk a lapáthordágy pengéjét a fóliával. A fólia felső felét a beteg teste alá hajtjuk, az alsó felét teljesen kinyitjuk.' },
+          { type: 'step', n: 3, tx: 'Log-roll a másik oldalon. Megemeljük a beteget, kifejtjük a buborékfóliát, betoljuk a másik pengét. MÍG A BETEGET MEGEMELVE TARTJUK, összekapcsoljuk a lapáthordágyat. (Különben a súly/ruha/fólia ellehetetleníti a zárást).' },
+          { type: 'step', n: 4, tx: 'A fólia két végét a beteg fölött összefogva összetekerjük, míg szorosan a testéhez nem ér (arcot szabadon hagyjuk). A lábnál keletkező felesleget visszahajtjuk, és ragtapasz-csíkokkal rögzítjük a csomagolást.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: '5_kiegeszitesek',
+    title: 'Kiegészítések (Trauma és Pozícionálás)',
+    icon: '➕',
+    sections: [
+      {
+        t: 'Eszközök rögzítése és ellátás',
+        c: [
+          { type: 'ul', items: [
+            'Hagyományos takaró: a buborékfólián kívüli rétegként alkalmazandó.',
+            'Fejrögzítő: a buborékfólián KÍVÜL kell a lapáthordágyhoz rögzíteni.',
+            'Medencerögzítő: a log-rollal egyidőben, KÖZVETLENÜL a testre, a fólián BELÜL kell pozícionálni.',
+            'Monitor kábelek: a nyaka/feje mellett ajánlott kivezetni.',
+            'Vénás/IO út: a fóliát a szükséges mértékben ujjunkkal kiszakítjuk, azon áthúzzuk az infúziót.',
+            'Melegítőeszközök (párnák): a fólián BELÜL pozícionálandók.'
+          ]},
+          { type: 'p', tx: 'A buborékfólia egyszer használatos. Kórházban a beteggel együtt adjuk át, nem kell kiemelni belőle.' },
+          { type: 'p', tx: 'Nem traumás esetben nem feltétlenül kell gerinchordágy/lapát, beletehető csak a kinyitott fóliába is. De ha használunk hordágyat, az előző lépések érvényesek. Száraz ruhában lévő beteget a ruhával együtt csomagoljuk be.' }
+        ]
+      }
+    ]
+  }
+];
+
+const CARDS = [
+  { f: 'Mi a lehűlésvédelem elsődleges célja?', b: 'A további lehűlés megakadályozása, ezáltal a hypothermia okozta káros élettani hatások kivédése, megelőzése.' },
+  { f: 'Milyen testhőmérséklet alatt beszélünk hypothermiáról az eljárásrend alapján?', b: 'T < 35°C' },
+  { f: 'Normothermiás betegeknél mikortól fokozott a lehűlés veszélye (külső hőmérséklet)?', b: 'Már 30°C alatti külső hőmérséklet esetén is fennáll a veszély (nyári melegben is védekezni kell!).' },
+  { f: 'Mely betegeknél fokozott a lehűlés veszélye (normothermia esetén is)?', b: 'Intubált/lélegeztetett, súlyos sérült, súlyosan vérző, vízből kimentett, 20% feletti másodfokú égés.' },
+  { f: 'Mikor NEM javasolt a lehűlésvédelem alkalmazása?', b: 'Terápiás hypothermia alkalmazása esetén (illetve újszülötteknél, akiknek külön eljárásrendjük van).' },
+  { f: 'Mit teszünk a vizes, nedves, szennyezett ruházattal?', b: 'Minden esetben távolítsuk el! A javasolt módszer a vetkőztetés helyett a ruházat levágása. Utána a beteget szárazra töröljük.' },
+  { f: 'Traumás betegnél mikor távolítjuk el a ruházatot?', b: 'Az ABCDE vizsgálattal párhuzamosan a ruházat teljes eltávolítása javasolt a sérülések felismerése céljából.' },
+  { f: 'Milyen hőmérsékletű infúzió adható lehűlésvédelem részeként?', b: 'Kizárólag meleg (37-40°C közötti hőmérsékletű) infúzió.' },
+  { f: 'Szabad-e baleseti hypothermiában nem melegített infúziót adni?', b: 'TILOS!' },
+  { f: 'Miért veszélyes a fém gerinchordágy a hőháztartásra?', b: 'Igen komoly és folyamatos hőelvonó hatással rendelkezik. Helyette a műanyag lapáthordágy kedvezőbb.' },
+  { f: 'Milyen hőszigetelő eszközt javasol az eljárásrend?', b: 'Izolációs buborékfóliát, amelyben a beteget teljesen, körkörösen be kell csomagolni.' },
+  { f: 'Log-rollnál mekkora szögben emeljük meg először a beteg oldalát?', b: 'Kb. 10 fokban, ide toljuk be a fóliát és a penge felét.' },
+  { f: 'Mikor kell összekapcsolni a lapáthordágyat a csomagolás során?', b: 'Amikor a beteget megemelve tartjuk a második oldali log-roll során. (Különben a súly/ruha/fólia miatt ellehetetlenülhet).' },
+  { f: 'Hová kerül a fejrögzítő a buborékfóliához képest?', b: 'A buborékfólián KÍVÜL kell rögzíteni a lapáthordágyhoz.' },
+  { f: 'Hová kerül a medencerögzítő a buborékfóliához képest?', b: 'A buborékfólián BELÜL, közvetlenül a beteg testére pozícionálva.' },
+  { f: 'Hogyan biztosítunk vénás/IO hozzáférést a csomagoláson keresztül?', b: 'Az izolációs fóliát ujjunkkal a szükséges mértékben kiszakítjuk, és az infúziót azon keresztül áthúzzuk.' },
+  { f: 'Mi a teendő az izolációs buborékfóliával a kórházi átadáskor?', b: 'Egyszer használatos, így a beteget nem kell kiemelni belőle, azzal együtt adjuk át.' }
+];
+
+const QUIZ = [
+  { q: 'Az eljárásrend szerint hány fokos külső hőmérséklet alatt áll fenn a normothermiás (de veszélyeztetett) betegek lehűlésének veszélye?', opts: ['Kizárólag 10°C alatt', '20°C alatt', 'Már 30°C alatt is', 'Csak téli hónapokban (fagypont alatt)'], ok: 2, exp: 'Már 30°C alatti külső hőmérséklet esetén is fennáll, így nyári melegben is védekezni kell ellene!' },
+  { q: 'Baleseti hypothermiában (T < 35°C) lévő betegnek adható-e szobahőmérsékletű infúzió?', opts: ['Igen, ha gyorsan kell a volumenpótlás.', 'Igen, de csak 250 ml-ig.', 'Nem javasolt, de kivételes esetben megengedett.', 'TILOS! Kizárólag meleg (37-40°C) infúzió adható.'], ok: 3, exp: 'Baleseti hypothermiában nem melegített infúziót adni TILOS!' },
+  { q: 'Melyik hordágy rendelkezik igen komoly és folyamatos hőelvonó hatással?', opts: ['Vákuummatrac', 'Műanyag lapáthordágy', 'Fém gerinchordágy', 'Hálóágy'], ok: 2, exp: 'A fém gerinchordágy hőt von el a testtől, ezért kritikus betegen a lapáthordágy + izoláció javasolt.' },
+  { q: 'Traumás beteg esetében mikor kell a ruházatot teljesen eltávolítani?', opts: ['Csak a kórházban.', 'Már a mentőben, szállítás közben.', 'Az ABCDE vizsgálattal párhuzamosan (levágással).', 'Szigorúan tilos levenni a ruhát a helyszínen.'], ok: 2, exp: 'Trauma esetén a sérülések felmérése céljából a ruházatot az ABCDE alatt teljesen el kell távolítani.' },
+  { q: 'Hová kell felhelyezni a medencerögzítőt a beteg izolációs csomagolása során?', opts: ['A buborékfólián kívülre, hogy jobban tartson.', 'A buborékfólián belülre, közvetlenül a beteg testére.', 'A lapáthordágy pengéjére.', 'Nem szabad medencerögzítőt használni, ha fóliát használunk.'], ok: 1, exp: 'A medencerögzítőt a fólián BELÜL, közvetlenül a testre kell pozícionálni.' },
+  { q: 'Hová kerül a fejrögzítő?', opts: ['A buborékfólián kívül rögzítjük a lapáthordágyhoz.', 'A fólián belül, közvetlenül a fejre.', 'A nyak köré tekerjük a fóliát, az a rögzítő.', 'A lapáthordágyhoz rögzítjük, majd az egészet betekerjük fóliával.'], ok: 0, exp: 'A fejrögzítőt a buborékfólián KÍVÜL kell rögzíteni.' },
+  { q: 'A lapáthordágy összekapcsolását a csomagolás során mikor kell elvégezni?', opts: ['Mielőtt a beteget rátennénk.', 'Miután befejeztük a fólia összetekerését.', 'Amikor a beteget megemelve tartjuk a log-roll során.', 'A kórházi átadás pillanatában.'], ok: 2, exp: 'A második log-roll közben, MÍG a beteget megemelve tartjuk kell összekapcsolni, különben a testsúly és a fólia/ruha ezt ellehetetleníti.' },
+  { q: 'Mi az eljárás bizonytalan testhőmérséklet (pl. maghőmérő hiánya) esetén egy kritikus betegnél?', opts: ['Nem alkalmazunk lehűlésvédelmet, mert kárt okozhatunk.', 'Várunk, amíg a kórházba érünk.', 'Lehűlésvédelem alkalmazása javasolt, mert ezzel nem ártunk.', 'Csak takarót adunk rá, fóliát nem.'], ok: 2, exp: 'Bizonytalan esetben a védelem alkalmazása javasolt, ezzel nem ártunk, de az elmulasztása súlyos következményekkel járhat.' },
+  { q: 'Milyen módon nyitunk utat a vénás vagy IO bemenethez az izolált betegen?', opts: ['Szike segítségével precízen kivágjuk a területet.', 'Ujjunkkal a szükséges mértékben kiszakítjuk a buborékfóliát.', 'Nem nyitunk utat, az infúziót a nyaknál vezetjük ki.', 'A fóliát le kell venni a gyógyszereléshez.'], ok: 1, exp: 'Az izolációs fóliát ujjunkkal a szükséges mértékben kiszakítjuk, és az infúziót ott áthúzzuk.' },
+  { q: 'Mi a teendő a vizes, nedves (vérrel/váladékkal szennyezett) ruházattal?', opts: ['Minden esetben távolítsuk el (lehetőleg levágással) és a beteget töröljük szárazra.', 'Hagyjuk a betegen, és tegyünk rá azonnal fóliát, mert a vetkőztetés időt veszít.', 'Csak a felsőruházatot távolítsuk el.', 'Csomagoljuk fóliába, az majd megszárad.'], ok: 0, exp: 'A nedves ruhát MINDEN esetben el kell távolítani és a beteget szárazra törölni.' }
+];
+
+const SIMS = [
+  {
+    id: 1, title: '1. Szimuláció: Súlyos Trauma', diff: 'B+ kompetencia', 
+    desc: 'Téli, hideg időjárás (0°C). Gázolás történt. A földön egy középkorú férfi fekszik, vérző fejsebbel, tudata beszűkült, combcsonttörés és medencesérülés gyanúja fennáll. B+ kompetencia (szakképzett mentőápoló, gyógyszerezhet, vénát szúrhat).',
+    steps: [
+      { sit: 'Kiérkezés a helyszínre. A rendőrség már biztosítja az utat. Mi az első teendő?', opts: [
+        { tx: 'Azonnal megkezdem a beteg ellátását a ruházat levágásával.', ok: false, fb: 'Hibás! A helyszínbiztonság és egyéni védőfelszerelés mindig az első.' },
+        { tx: 'Védőfelszerelés felvétele és helyszínbiztonság végleges ellenőrzése.', ok: true, fb: 'Helyes! Biztonság az első.' }
+      ]},
+      { sit: 'Az ABCDE felmérés zajlik, a beteg kritikus állapotú. Mit teszel a ruházattal ezen a ponton az eljárásrend alapján?', opts: [
+        { tx: 'A hideg miatt rajta hagyom a vastag télikabátot, és ráteszek egy izolációs fóliát.', ok: false, fb: 'Hibás! Traumás sérültnél fel kell mérni a sérüléseket.' },
+        { tx: 'Az ABCDE vizsgálattal párhuzamosan a ruházat teljes eltávolítását (levágását) végzem el a sérülések felismerése céljából.', ok: true, fb: 'Helyes! Traumánál teljes ruházat eltávolítás szükséges.' }
+      ]},
+      { sit: 'A beteg shockos (pulzus 130/perc, sápadt). Vénát biztosítasz és infúziót kötsz be. Milyen folyadékterápiát alkalmazol az eljárásrend szerint?', opts: [
+        { tx: 'A leggyorsabban elérhető szobahőmérsékletű infúziót adom (Ringer).', ok: false, fb: 'Hibás! A hideg folyadék roncsolja a hőháztartást, traumában tilos a nem melegített folyadék adása hypothermia megelőzésére.' },
+        { tx: 'Kizárólag meleg (37-40°C) infúziót adok.', ok: true, fb: 'Helyes! Csak melegített infúzió adható.' }
+      ]},
+      { sit: 'A mechanizmus alapján medencetörés gyanúja merül fel. Előkészíted az izolációs buborékfóliát és a lapáthordágyat. Hová és hogyan helyezed fel a medencerögzítőt?', opts: [
+        { tx: 'A csomagolás végén, az izolációs fólián kívülre helyezem fel.', ok: false, fb: 'Hibás! A medencerögzítőnek a testen kell lennie.' },
+        { tx: 'A log-rollal egyidőben, a buborékfólián BELÜL, közvetlenül a beteg testére pozícionálom.', ok: true, fb: 'Helyes! A rögzítőt a fólián belül, direkt a testre tesszük.' }
+      ]},
+      { sit: 'Miért lapáthordágyat használsz és nem a fém gerinchordágyat a beteg rögzítéséhez és mozgatásához?', opts: [
+        { tx: 'Mert a fém gerinchordágy komoly és folyamatos hőelvonó hatással bír.', ok: true, fb: 'Helyes! A lapáthordágy hőtani szempontból is kedvezőbb kritikus betegnél.' },
+        { tx: 'Mert a lapáthordágy jobban rögzíti a medencét.', ok: false, fb: 'Hibás! Nem ezért, hanem a fém hőelvonó hatása miatt.' }
+      ]},
+      { sit: 'Kezdődik a csomagolás (1. lépés). Hová teszed a lapáthordágy előkészített pengéjét és a harmonikaszerűen hajtogatott fóliát?', opts: [
+        { tx: 'A levágott ruházatra teszem, hogy a log-roll után a penge a beteg teste és a ruha közé kerüljön.', ok: true, fb: 'Helyes! Így a tiszta fólia a test alá kerül.' },
+        { tx: 'A földre, a ruha mellé, és a beteget később ráemelem.', ok: false, fb: 'Hibás! A log-roll technikát kell használni a ruha fölött.' }
+      ]},
+      { sit: '2. lépés. Log-roll az első oldalra. Mekkora szögben emeled a beteget?', opts: [
+        { tx: 'Kb. 90 fokban (teljesen az oldalára).', ok: false, fb: 'Hibás! Súlyos trauma/medence esetén csak minimális emelés kell.' },
+        { tx: 'Kb. 10 fokban, és betolom a fóliát a penge felével.', ok: true, fb: 'Helyes! Kíméletes log-roll, minimális emeléssel.' }
+      ]},
+      { sit: '3. lépés. Log-roll a másik oldalon. Mikor kapcsolod össze a lapáthordágy két felét?', opts: [
+        { tx: 'Miután visszaengedtem a beteget a hátára.', ok: false, fb: 'Hibás! A súly és a ruha ellehetetleníti a zárást.' },
+        { tx: 'Amikor a beteget még megemelve tartjuk.', ok: true, fb: 'Helyes! Emelt helyzetben kapcsolható könnyedén össze.' }
+      ]},
+      { sit: '4. lépés. Hogyan zárod a csomagolást az izolációs buborékfóliával?', opts: [
+        { tx: 'A fólia végét a beteg feje köré tekerem, hogy az arcát is védjem a széltől.', ok: false, fb: 'Hibás! Az arcot szabadon kell hagyni.' },
+        { tx: 'A két végét a test fölött összefogva összetekerem, amíg szorosan a testhez nem ér, majd a lábnál a felesleget visszahajtom és ragtapasszal rögzítem (az arc szabad).', ok: true, fb: 'Helyes! Ez a fólia zárásának előírt módja.' }
+      ]},
+      { sit: 'Hová kerül a fejrögzítő?', opts: [
+        { tx: 'A buborékfólián kívül rögzítem a lapáthordágyhoz.', ok: true, fb: 'Helyes! A fólián kívül.' },
+        { tx: 'A fólián belül, közvetlenül a fej mellé.', ok: false, fb: 'Hibás! A fólián kívül rögzítendő.' }
+      ]},
+      { sit: 'Hogyan oldod meg az EKG/monitor kábelek kivezetését a zárt csomagolásból?', opts: [
+        { tx: 'A lábánál hagyom ki a kábeleket.', ok: false, fb: 'Hibás! A lábnál zárt a csomagolás.' },
+        { tx: 'A beteg nyaka/feje mellett vezetem ki a kábeleket.', ok: true, fb: 'Helyes! A feji nyílásnál a legegyszerűbb.' }
+      ]},
+      { sit: 'A beteget beemelitek a mentőautóba. Mi a teendő a vizsgálattal kapcsolatban a mozgatás után?', opts: [
+        { tx: 'Kritikus betegen 5-10 percenként, illetve betegmozgatás után az ABCDE vizsgálatot automatikusan az elejéről ismétlem.', ok: true, fb: 'Helyes! Az ABCDE ismétlése elengedhetetlen.' },
+        { tx: 'Csak a monitor adatait figyelem a kórházig.', ok: false, fb: 'Hibás! A fizikális vizsgálat (ABCDE) isméltése kötelező.' }
+      ]}
+    ],
+    summary: 'Összefoglaló (Trauma): Helyszínbiztonság után az ABCDE felmérés a trauma elvek (cABCDE) alapján zajlott. A ruházatot maradéktalanul levágtuk. Folyadékpótlásra szigorúan csak melegített (37-40°C) infúziót alkalmaztunk. A medencerögzítő a log-roll alatt KÖZVETLENÜL a testre (fólián belülre) került. Hőelvonó hatása miatt kerültük a fém gerinchordágyat, helyette lapáthordágyat használtunk buborékfóliával bélelve. A log-rollt 10 fokos emeléssel végeztük, a hordágy összekapcsolása a beteg MÁSODIK emelése KÖZBEN történt. A csomagolást a test felett betekerve, lábnál visszahajtva rögzítettük (arc szabadon). A fejrögzítő a fólián KÍVÜLRE, a monitor kábelek a nyaknál kivezetve kerültek elhelyezésre. A mozgatás után ismételt ABCDE vizsgálat történt.'
+  },
+  {
+    id: 2, title: '2. Szimuláció: Nem Traumás Kihűlés (Hypothermia)', diff: 'B kompetencia',
+    desc: 'Nyári este (hőmérséklet 18°C). Lakossági bejelentésre egy földön fekvő idős hölgyhöz érkeztek. Vizeletével/székletével szennyezett, nedves ruhában fekszik mozdulatlanul, feltehetően tegnap óta. Maghőmérőtök nincs. B kompetenciaszint (gyógyszerelés nélkül).',
+    steps: [
+      { sit: 'A helyszín biztonságos. A néni "U" (Unresponsive) tudatállapotú, légzése gyér de stabil. Hőmérőtök nincs. Kell-e lehűlésvédelmet alkalmazni 18°C fokban bezárt szobában?', opts: [
+        { tx: 'Nem, mert a szoba hőmérséklete nem extrém hideg.', ok: false, fb: 'Hibás! Az akutan immobilis betegeknél 30°C alatt is fennáll a veszély.' },
+        { tx: 'Igen. Bizonytalan esetben (maghőmérő hiányában) is javasolt, mert ezzel nem ártunk, elmulasztása viszont súlyos következménnyel járhat.', ok: true, fb: 'Helyes! Kétség esetén mindig védjük a beteget a lehűléstől.' }
+      ]},
+      { sit: 'A néni ruházata nedves (vizeletes). Mit teszel a ruhával a nem traumás, lehűlt betegen?', opts: [
+        { tx: 'A vizes, szennyezett ruházatot minden esetben távolítsuk el (lehetőleg levágva), és töröljük szárazra a testét.', ok: true, fb: 'Helyes! A vizes ruha elvonja a hőt, muszáj eltávolítani.' },
+        { tx: 'Rajta hagyom, mert a levételével hőt veszítene, inkább azonnal betakarom.', ok: false, fb: 'Hibás! A nedves ruha alatta folyamatosan hűtené.' }
+      ]},
+      { sit: 'A nénit megszárítottad. Hordágyra kell tenni. Nem traumás esetben kötelező-e a lapáthordágy alkalmazása a becsomagoláshoz?', opts: [
+        { tx: 'Nem feltétlenül szükséges. A beteget beletehetjük előre kinyitott izolációs buborékfóliába is hordágy nélkül.', ok: true, fb: 'Helyes! Nem traumás beteg esetén a hordágy nem kötelező a fólia alá.' },
+        { tx: 'Igen, a lapáthordágy minden esetben előírás.', ok: false, fb: 'Hibás! Csak trauma / kritikus állapotú szállításnál javasolt.' }
+      ]},
+      { sit: 'Van nálatok 2 db egyszer használatos aktív melegítőpárna (kémiai hőtaszak). Hová helyezed ezeket a betegen?', opts: [
+        { tx: 'A csomagoláson (buborékfólián) kívülre.', ok: false, fb: 'Hibás! A fólián kívül nem érnek sokat.' },
+        { tx: 'Az izolációs buborékfólián BELÜL helyezzük el őket, az alkalmazási előiratuk szerint.', ok: true, fb: 'Helyes! A fólián belül kell tartani a termelt hőt.' }
+      ]},
+      { sit: 'A nénit belehelyezted a fóliába. Hogyan zárod be a fóliát?', opts: [
+        { tx: 'Egyszerűen csak ráhajtom a tetejére.', ok: false, fb: 'Hibás! A körkörös, légmentes izoláció fontos.' },
+        { tx: 'A beteg fölött összefogva összetekerem, egészen addig, míg szorosan a beteg testéhez nem ér, majd lábnál visszahajtom és ragtapasszal rögzítem.', ok: true, fb: 'Helyes! A tekeréses technika a szabályos.' }
+      ]},
+      { sit: 'Mivel tudod még fokozni a hővédelmet a buborékfólia rögzítése után?', opts: [
+        { tx: 'Hagyományos takarókkal betakarom a fólián KÍVÜLI rétegként.', ok: true, fb: 'Helyes! A hagyományos takaró remek kiegészítő.' },
+        { tx: 'Hőlégfúvót irányítok rá a mentőben.', ok: false, fb: 'Hibás! Aktív melegítés protokolljába ez nem tartozik bele.' }
+      ]},
+      { sit: 'A szállítás alatt B kompetenciaszintű ápolóként kötsz-e be szobahőmérsékletű (kb. 20 fokos, ami a mentőben volt) infúziót volumenpótlás céljából?', opts: [
+        { tx: 'Nem! Baleseti hypothermiában nem melegített infúziót adni TILOS. (Egyébként B szinten önállóan nem is köthet be infúziót iv. gyógyszerelés/folyadékterápia indikáció nélkül).', ok: true, fb: 'Helyes! Tilos a hideg/szobahőmérsékletű infúzió.' },
+        { tx: 'Igen, mert a dehidráció súlyosabb probléma.', ok: false, fb: 'Hibás! A hideg folyadék végzetes arrythmiát (kamrafibrillációt) válthat ki hypothermiában.' }
+      ]},
+      { sit: 'Hogyan monitorozod a csomagolt beteget az út során?', opts: [
+        { tx: 'Az SpO2 kábelt a kezéhez vezetem, ehhez kilyukasztom a fóliát a mellkas felett.', ok: false, fb: 'Hibás! Nem indokolt feleslegesen kilyukasztani, a kábelek máshol mennek.' },
+        { tx: 'A monitor kábeleket a nyaka-feje mellett (a nyitott arcrésznél) vezetem ki.', ok: true, fb: 'Helyes! Ez a legkisebb hőszivárgást okozó megoldás.' }
+      ]},
+      { sit: 'A kórházba érkezéskor a sürgősségi osztályon hogyan adod át a beteget?', opts: [
+        { tx: 'Benn a kocsiban kicsomagolom, összehajtom a fóliát (újrahasznosítás miatt), és takaróban adom át.', ok: false, fb: 'Hibás! A buborékfólia egyszer használatos.' },
+        { tx: 'A fólia egyszer használatos eszköz. Nem emelem ki belőle a beteget, a beteggel (és a fóliával) együtt adom át a kórházi személyzetnek.', ok: true, fb: 'Helyes! Ezzel elkerüljük az újabb hőveszteséget az átadás alatt.' }
+      ]},
+      { sit: 'Mi az eljárásrend elsődleges célja, amit ezzel az ellátással teljesítettél?', opts: [
+        { tx: 'A maghőmérséklet 37°C-ra való aktív felmelegítése a helyszínen.', ok: false, fb: 'Hibás! A prehospitalis szak nem az aktív felmelegítésről szól, hanem a védelemről.' },
+        { tx: 'A további lehűlés megakadályozása, és a hypothermia okozta káros élettani hatások megelőzése/kivédése.', ok: true, fb: 'Helyes! A "lehűlésvédelem" (és nem felmelegítés) a prehospitális cél.' }
+      ]}
+    ],
+    summary: 'Összefoglaló (Nem traumás hypothermia): A kiérkezéskor megállapítottuk, hogy a 18°C-os hőmérséklet és az akut immobilitás elég indikáció a lehűlésvédelemhez (30°C alatt minden kritikus beteg veszélyeztetett). A vizes, szennyezett ruhát azonnal eltávolítottuk, a testet szárazra töröltük. Nem traumás esetben nem használtunk lapáthordágyat, hanem a beteget közvetlenül az izolációs buborékfóliába helyeztük. A melegítőpárnákat a fólián BELÜLRE tettük, majd a fóliát a beteg felett összefogva szorosan betekertük (arc szabadon). Hagyományos takarókkal betakartuk KÍVÜLRŐL. Hideg/szobahőmérsékletű infúzió adása (főleg B kompetenciával és hypothermiában) SZIGORÚAN TILOS volt. A kábeleket a nyaknál vezettük ki. A kórházban a beteget a fóliában hagyva, fóliával együtt adtuk át, mivel az egyszer használatos. Célunk a további hőveszteség megakadályozása volt.'
+  }
+];
+
+// --- RENDER FUNCTIONS ---
+function h(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderBlock(b) {
+  if (b.type === 'p') return '<p>' + renderText(b.tx) + '</p>';
+  if (b.type === 'ul') return '<ul class="bl">' + b.items.map(i => '<li>' + renderText(i) + '</li>').join('') + '</ul>';
+  if (b.type === 'al') return '<div class="al ' + b.cl + '">' + renderText(b.tx) + '</div>';
+  if (b.type === 'step') return '<div style="display:flex;gap:12px;margin-bottom:12px;background:#262626;padding:12px;border-radius:8px;"><div style="width:28px;height:28px;border-radius:50%;background:var(--primary);color:#111;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + b.n + '</div><div style="font-size:14px;line-height:1.5;color:#e5e7eb">' + renderText(b.tx) + '</div></div>';
+  return '';
+}
+
+function renderHome() {
+  return `
+    <div style="margin-bottom:1.5rem">
+      <div style="font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Országos Mentőszolgálat</div>
+      <h1>Lehűlésvédelem Szabványos Eljárásrend</h1>
+      <p style="font-size:13px;color:var(--text-dim)">Kiadás: 2014.02.06. · Visszavonásig érvényes</p>
+    </div>
+    
+    <div class="grid" style="margin-bottom:1rem">
+      <button class="card-btn" onclick="go('chapters')">
+        <div style="font-size:24px">📚</div>
+        <div><div style="font-size:15px;font-weight:700">Eljárásrend</div><div style="font-size:12px;color:var(--text-dim)">A protokoll teljes szövege</div></div>
+      </button>
+      <button class="card-btn" onclick="go('flash')">
+        <div style="font-size:24px">🃏</div>
+        <div><div style="font-size:15px;font-weight:700">Flashkártyák</div><div style="font-size:12px;color:var(--text-dim)">${CARDS.length} kártya a tanuláshoz</div></div>
+      </button>
+      <button class="card-btn" onclick="go('quiz')">
+        <div style="font-size:24px">❓</div>
+        <div><div style="font-size:15px;font-weight:700">Kvíz</div><div style="font-size:12px;color:var(--text-dim)">${QUIZ.length} kérdés, azonnali kiértékelés</div></div>
+      </button>
+      <button class="card-btn" onclick="go('sim')">
+        <div style="font-size:24px">🚑</div>
+        <div><div style="font-size:15px;font-weight:700">Szimuláció</div><div style="font-size:12px;color:var(--text-dim)">${SIMS.length} klinikai eset feldolgozása</div></div>
+      </button>
+    </div>
+    <div class="al al-s" style="font-size:13px">
+      <strong>Vonatkozik:</strong> Az Országos Mentőszolgálat valamennyi mentőegységére.
+    </div>
+  `;
+}
+
+function renderChapters() {
+  let html = '<h2>Eljárásrend (Tananyag)</h2>';
+  PROTOCOL_DATA.forEach(c => {
+    html += `
+      <button class="card-btn" style="margin-bottom:10px" onclick="go('chapter', '${c.id}')">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(20,184,166,0.1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${c.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:#f3f4f6">${h(c.title)}</div>
+          <div style="font-size:12px;color:var(--text-dim)">${c.sections.length} szakasz</div>
+        </div>
+        <div style="color:var(--text-dim);font-size:20px;font-weight:bold">›</div>
+      </button>
+    `;
+  });
+  return html;
+}
+
+function renderChapter(id) {
+  const c = PROTOCOL_DATA.find(x => x.id === id);
+  if (!c) return '';
+  let html = `
+    <button onclick="go('chapters')" style="background:none;border:none;cursor:pointer;color:var(--primary);font-size:14px;margin-bottom:1rem;font-weight:700">‹ Vissza</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+      <div style="width:46px;height:46px;border-radius:12px;background:rgba(20,184,166,0.15);display:flex;align-items:center;justify-content:center;font-size:24px">${c.icon}</div>
+      <h2 style="border:none;margin:0;font-size:20px">${h(c.title)}</h2>
+    </div>
+  `;
+  c.sections.forEach(s => {
+    html += `<div class="card"><h3>${h(s.t)}</h3>`;
+    s.c.forEach(b => { html += renderBlock(b); });
+    html += `</div>`;
+  });
+  return html;
+}
+
+function renderFlash() {
+  const card = CARDS[FC.idx];
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="margin:0;border:none">Flashkártyák</h2>
+      <span style="font-size:13px;color:var(--text-dim);font-weight:600">${FC.idx + 1} / ${CARDS.length}</span>
+    </div>
+    <div class="flip ${FC.flip ? 'on' : ''}" onclick="flipCard()">
+      ${FC.flip ? 
+        `<div style="font-size:11px;font-weight:800;color:#c4b5fd;text-transform:uppercase;letter-spacing:1px;margin-bottom:15px">Válasz</div>
+         <div style="font-size:15px;color:#d1d5db;line-height:1.6;white-space:pre-line">${renderText(card.b)}</div>` : 
+        `<div style="font-size:11px;font-weight:800;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:15px">Kérdés</div>
+         <div style="font-size:17px;font-weight:700;color:#f3f4f6;line-height:1.5">${renderText(card.f)}</div>
+         <div style="font-size:12px;color:var(--text-dim);margin-top:20px">Kattints a kártyára a fordításhoz ↺</div>`
+      }
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" style="flex:1" onclick="navCard(-1)">‹ Előző</button>
+      <button class="btn btn-g" style="flex:1" onclick="flipCard()">Fordít</button>
+      <button class="btn" style="flex:1" onclick="navCard(1)">Következő ›</button>
+    </div>
+  `;
+}
+
+function renderQuiz() {
+  if (QZ.done) {
+    const pct = Math.round(QZ.score / QUIZ.length * 100);
+    const good = pct >= 80;
+    let html = `
+      <h2>Kvíz eredmény</h2>
+      <div style="background:${good ? '#064e3b' : '#451a03'};border:1px solid ${good ? '#065f46' : '#78350f'};border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:48px;font-weight:800;color:${good ? '#4ade80' : '#fde68a'}">${QZ.score} / ${QUIZ.length}</div>
+        <div style="font-size:16px;font-weight:700;color:${good ? '#4ade80' : '#fde68a'};margin-top:8px">${pct}% – ${good ? 'Kiváló!' : 'Próbáld újra!'}</div>
+      </div>
+    `;
+    const wrong = QZ.ans.filter(a => !a.ok);
+    if (wrong.length > 0) {
+      html += `<h3 style="margin-bottom:10px;color:#f3f4f6">Helytelen válaszok:</h3>`;
+      wrong.forEach(a => {
+        const q = QUIZ[a.qi];
+        html += `
+          <div class="card" style="border-left:4px solid var(--danger)">
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px">${renderText(q.q)}</div>
+            <div style="font-size:13px;color:#fca5a5;margin-bottom:4px;line-height:1.4">✗ Válasz: ${renderText(q.opts[a.pi])}</div>
+            <div style="font-size:13px;color:#4ade80;margin-bottom:8px;line-height:1.4">✓ Helyes: ${renderText(q.opts[q.ok])}</div>
+            <div style="font-size:12px;color:var(--text-dim);background:#262626;padding:8px;border-radius:6px;line-height:1.4">${renderText(q.exp)}</div>
+          </div>
+        `;
+      });
+    } else {
+      html += `<div class="al al-s">Tökéletes! Minden kérdésre helyesen válaszoltál.</div>`;
+    }
+    html += `<button class="btn btn-g btn-fw" onclick="resetQuiz()">Kvíz Újraindítása</button>`;
+    return html;
+  }
+
+  const q = QUIZ[QZ.idx];
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h2 style="border:none;margin:0">Kvíz</h2>
+      <span style="font-size:13px;color:var(--text-dim);font-weight:600">${QZ.idx + 1} / ${QUIZ.length}</span>
+    </div>
+    <div class="prog"><div class="progb" style="width:${((QZ.idx + 1) / QUIZ.length) * 100}%;background:var(--primary)"></div></div>
+    
+    <div class="card" style="background:#262626">
+      <p style="font-size:16px;font-weight:700;color:#f3f4f6;margin:0">${renderText(q.q)}</p>
+    </div>
+  `;
+  
+  q.opts.forEach((opt, i) => {
+    let cls = 'opt';
+    if (QZ.sel !== null) {
+      if (i === q.ok) cls += ' opt-ok';
+      else if (i === QZ.sel) cls += ' opt-no';
+    }
+    html += `<button class="${cls}" ${QZ.sel === null ? `onclick="pickQ(${i})"` : ''}>${renderText(opt)}</button>`;
+  });
+
+  if (QZ.sel !== null) {
+    html += `
+      <div class="al al-i" style="margin-top:1rem">${renderText(q.exp)}</div>
+      <button class="btn btn-g btn-fw" onclick="nextQ()">${QZ.idx < QUIZ.length - 1 ? 'Következő Kérdés →' : 'Eredmény Mutatása'}</button>
+    `;
+  }
+  return html;
+}
+
+function renderSim() {
+  if (!SI.id) {
+    let html = `<h2>Klinikai Szimulációk</h2>
+      <div class="al al-w">Válaszd ki a szituációt! A döntési pontok a prehospitális lehűlésvédelem eljárásrendjének lépésein vezetnek végig.</div>`;
+    SIMS.forEach(s => {
+      html += `
+        <button class="card-btn" style="display:block" onclick="startSim(${s.id})">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-size:16px;font-weight:700;color:#f3f4f6">${h(s.title)}</div>
+            <span class="tag ${s.diff.includes('+') ? 'tag-g' : 'tag-b'}">${h(s.diff)}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px;line-height:1.4">${h(s.desc)}</div>
+          <div style="font-size:12px;color:var(--primary);font-weight:600">${s.steps.length} döntési pont</div>
+        </button>
+      `;
+    });
+    return html;
+  }
+
+  const sim = SIMS.find(s => s.id === SI.id);
+  
+  if (SI.fin) {
+    const correct = SI.hist.filter(h => sim.steps[h.step].opts[h.oi].ok).length;
+    let html = `
+      <h2>${h(sim.title)} – Értékelés</h2>
+      <div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem">
+        <div style="font-size:42px;font-weight:800;color:#4ade80">${correct} / ${sim.steps.length}</div>
+        <div style="font-size:14px;color:#4ade80;font-weight:700;margin-top:5px">Helyes Döntés</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--primary);background:rgba(20,184,166,0.05)">
+        <h3 style="margin-top:0;margin-bottom:10px">Részletes Összefoglaló</h3>
+        <p style="margin:0;line-height:1.6">${renderText(sim.summary)}</p>
+      </div>
+      <h3 style="color:#f3f4f6;margin-bottom:10px">Lépéseid:</h3>
+    `;
+    SI.hist.forEach((hh, i) => {
+      const st = sim.steps[hh.step];
+      const opt = st.opts[hh.oi];
+      html += `
+        <div class="card" style="margin-bottom:8px;padding:12px">
+          <div style="font-size:13px;font-weight:700;color:#f3f4f6;margin-bottom:6px">${i+1}. ${renderText(st.sit)}</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:${opt.ok ? '#4ade80' : '#fca5a5'}">${opt.ok ? '✓' : '✗'} ${renderText(opt.tx)}</div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.4">${renderText(opt.fb)}</div>
+        </div>
+      `;
+    });
+    html += `<button class="btn btn-fw" style="margin-top:15px;background:#374151" onclick="resetSim()">Vissza a szimulációkhoz</button>`;
+    return html;
+  }
+
+  const step = sim.steps[SI.step];
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:14px;font-weight:700;color:var(--primary)">${h(sim.title)}</div>
+      <span style="font-size:13px;color:var(--text-dim);font-weight:600">${SI.step + 1} / ${sim.steps.length}</span>
+    </div>
+    <div class="prog"><div class="progb" style="width:${((SI.step + 1) / sim.steps.length) * 100}%;background:var(--warning)"></div></div>
+    
+    ${SI.step === 0 ? `<div class="al al-i" style="font-size:13px">${renderText(sim.desc)}</div>` : ''}
+    
+    <div class="card" style="background:#262626;border-color:#4b5563">
+      <p style="font-size:16px;font-weight:700;color:#f3f4f6;line-height:1.5;margin:0">${renderText(step.sit)}</p>
+    </div>
+  `;
+  
+  step.opts.forEach((opt, i) => {
+    let cls = 'opt';
+    if (SI.chosen !== null) {
+      if (opt.ok) cls += ' opt-ok';
+      else if (i === SI.chosen) cls += ' opt-no';
+    }
+    html += `<button class="${cls}" style="font-size:15px" ${SI.chosen === null ? `onclick="chooseSim(${i})"` : ''}>${renderText(opt.tx)}</button>`;
+  });
+
+  if (SI.chosen !== null) {
+    const isOk = step.opts[SI.chosen].ok;
+    html += `
+      <div class="al ${isOk ? 'al-s' : 'al-d'}" style="margin-top:1rem">${renderText(step.opts[SI.chosen].fb)}</div>
+      <button class="btn btn-g btn-fw" onclick="nextSim()">${SI.step < sim.steps.length - 1 ? 'Következő Lépés →' : 'Értékelés Mutatása'}</button>
+    `;
+  }
+  return html;
+}
+
+function render() {
+  const c = document.getElementById('ct');
+  c.innerHTML = '';
+  if (SCR === 'home') c.innerHTML = renderHome();
+  else if (SCR === 'chapters') c.innerHTML = renderChapters();
+  else if (SCR === 'chapter') c.innerHTML = renderChapter(CHID);
+  else if (SCR === 'flash') c.innerHTML = renderFlash();
+  else if (SCR === 'quiz') c.innerHTML = renderQuiz();
+  else if (SCR === 'sim') c.innerHTML = renderSim();
+  
+  const tabs = ['home', 'chapters', 'flash', 'quiz', 'sim'];
+  const active = SCR === 'chapter' ? 'chapters' : SCR;
+  document.querySelectorAll('.nb').forEach((b, i) => {
+    if(tabs[i]) {
+      b.classList.toggle('act', tabs[i] === active);
+    }
+  });
+  window.scrollTo(0, 0);
+}
+
+// --- CONTROLLERS ---
+window.go = function(s, id) { SCR = s; CHID = id || null; render(); };
+
+// Flashcards
+window.flipCard = function() { FC.flip = !FC.flip; render(); };
+window.navCard = function(dir) {
+  FC.flip = false;
+  FC.idx = (FC.idx + dir + CARDS.length) % CARDS.length;
+  render();
+};
+
+// Quiz
+window.pickQ = function(i) {
+  if (QZ.sel !== null) return;
+  QZ.sel = i;
+  const isOk = i === QUIZ[QZ.idx].ok;
+  if (isOk) QZ.score++;
+  QZ.ans.push({ qi: QZ.idx, pi: i, ok: isOk });
+  render();
+};
+window.nextQ = function() {
+  if (QZ.idx < QUIZ.length - 1) {
+    QZ.idx++;
+    QZ.sel = null;
+  } else {
+    QZ.done = true;
+  }
+  render();
+};
+window.resetQuiz = function() {
+  QZ = { idx: 0, sel: null, score: 0, done: false, ans: [] };
+  render();
+};
+
+// Sim
+window.startSim = function(id) {
+  SI.id = id; SI.step = 0; SI.chosen = null; SI.hist = []; SI.fin = false;
+  render();
+};
+window.chooseSim = function(i) {
+  if (SI.chosen !== null) return;
+  SI.chosen = i;
+  SI.hist.push({ step: SI.step, oi: i });
+  render();
+};
+window.nextSim = function() {
+  const sim = SIMS.find(s => s.id === SI.id);
+  if (SI.step < sim.steps.length - 1) {
+    SI.step++;
+    SI.chosen = null;
+  } else {
+    SI.fin = true;
+  }
+  render();
+};
+window.resetSim = function() {
+  SI = { id: null, step: 0, chosen: null, hist: [], fin: false };
+  render();
+};
+
+// Start
+render();
+</script>
+</body>
+</html>

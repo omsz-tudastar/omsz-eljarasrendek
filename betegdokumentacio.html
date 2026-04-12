@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ IFT ESETLAP Eljárásrend</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.4rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+/* GLOSSARY WORD */
+.gw{color:#38bdf8;text-decoration:underline;text-decoration-style:dotted;cursor:pointer;font-weight:600;}
+/* GLOSSARY MODAL */
+#dictModal{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);width:90%;max-width:400px;background:#1e3a8a;color:#bfdbfe;border:1px solid #3b82f6;border-radius:12px;padding:15px;box-shadow:0 10px 25px rgba(0,0,0,0.5);display:none;z-index:1000;}
+#dictModal strong{color:#ffffff;display:block;margin-bottom:5px;font-size:15px;}
+#dictClose{position:absolute;top:10px;right:10px;background:none;border:none;color:#bfdbfe;font-size:22px;cursor:pointer;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+/* INPUTS */
+input[type=number], input[type=date]{width:100%;background:#2a2a2a;border:1px solid #4b5563;border-radius:8px;padding:8px;color:#e5e7eb;font-family:inherit;margin-bottom:10px;}
+select{width:100%;padding:7px 10px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:13px;color:#e5e7eb;font-family:inherit;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátorok</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+<div id="dictModal">
+    <button id="dictClose" onclick="closeDict()">×</button>
+    <strong id="dictTitle">Szó</strong>
+    <div id="dictDesc" style="font-size: 13px;">Magyarázat</div>
+</div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={tab:'age',ageDOB:'',ageDate:'',gcs_e:4,gcs_v:5,gcs_m:6};
+
+const DICT = {
+    "IFT": "Intelligens Fedélzeti Terminál. Elektronikus adatrögzítő eszköz a mentőgépjárműveken.",
+    "ESETLAP": "Az IFT-n futó szoftver, amely a mentés során keletkező betegadatok elektronikus dokumentálására szolgál.",
+    "MIR": "Mentésirányítási Rendszer. A komplett elektronikus mentésirányítási rendszer.",
+    "CAD": "Computer Aided Dispatch. A bejövő feladatok rögzítése, a mentőegységek elektronikus felügyelete.",
+    "CAROL": "Digitális hívásfogadó rendszer márkaneve. A bejövő hívások kezelését végzi.",
+    "GIS": "Geographical Information System. Térinformatikai rendszer, a mentési helyszínek térképes megjelenítésére.",
+    "EESZT": "Elektronikus Egészségügyi Szolgáltatási Tér. A betegek e-Kórtörténetét tartalmazó felhő.",
+    "TAJ": "Társadalombiztosítási Azonosító Jel.",
+    "EHR": "Electronic Health Record (eKórtörténet). A betegek EESZT-ben tárolt kórtörténeti anyaga.",
+    "TETRA": "Terrestrial Trunked Radio. Földfelszíni trönkölt rádiórendszer az OMSZ kommunikációjához.",
+    "ICS": "Irányító Csoport. Mentésirányítók, akik a feladatokat osztják és engedélyeket adnak ki.",
+    "IVIR": "Integrált Vállalatirányítási Rendszer. Rendszer, amelynek kódjával a személyzet azonosítja magát.",
+    "ROSC": "Return of Spontaneous Circulation. A spontán keringés visszatérése újraélesztés során.",
+    "CPR": "Cardiopulmonary Resuscitation. Újraélesztés (Mellkasi kompressziók és lélegeztetés).",
+    "T-CPR": "Telefonon vezérelt újraélesztés (amelyet a mentésirányító irányít a kiérkezésig).",
+    "AED": "Automated External Defibrillator. Félautomata defibrillátor.",
+    "NIV": "Non-Invasive Ventilation. Nem invazív gépi lélegeztetés.",
+    "CPAP": "Continuous Positive Airway Pressure. Folyamatos pozitív légúti nyomás.",
+    "EtCO2": "End-tidal CO2. Kilégzés végi szén-dioxid koncentráció.",
+    "LMA": "Laryngealis maszk. Szupraglottikus légútbiztosító eszköz."
+};
+
+function showDict(word) {
+    const modal = document.getElementById('dictModal');
+    document.getElementById('dictTitle').innerText = word;
+    document.getElementById('dictDesc').innerText = DICT[word] || "Nincs adat a szótárban.";
+    modal.style.display = 'block';
+}
+function closeDict() {
+    document.getElementById('dictModal').style.display = 'none';
+}
+function gw(word, label) {
+    return '<span class="gw" onclick="showDict(\'' + word + '\')">' + (label || word) + '</span>';
+}
+
+var CDATA=[
+{id:'c1',title:'I-IV. Alapok és Rendszerek',icon:'💻',acc:'#14b8a6',secs:[
+{t:'Célok és Bevezetés',bk:[
+{tp:'bl',items:[
+    'Az '+gw('IFT')+' és az '+gw('ESETLAP')+' szoftver működésének bemutatása a kivonuló állomány számára.',
+    'A betegadatok elektronikus dokumentálása 2018.11.01. óta kötelező az '+gw('EESZT')+'-be feltöltés céljából.',
+    'A papíralapú dokumentumokat (EKG, CODE SUMMARY) elektronikusan (e-Media) rögzíteni kell.',
+    'Az elektronikusan rögzített adatok pontosak és etikailag helytállóak legyenek.'
+]}]},
+{t:'MIR - Mentésirányítási Rendszer',bk:[
+{tp:'bl',items:[
+    'A '+gw('MIR')+' alrendszerei: '+gw('CAD')+' (feladatok, egységek követése), '+gw('CAROL')+' (hívásfogadó), '+gw('GIS')+' (térinformatika).',
+    'A riasztás az '+gw('IFT')+'-n és a '+gw('TETRA')+' rádión is megjelenik.',
+    'Minden lezárt feladat adatai bekerülnek a szerverekre és automatikusan feltöltődnek az '+gw('EESZT')+'-be.'
+]}]}
+]},
+{id:'c2',title:'V-VI. Belépés és Alapképernyő',icon:'🔑',acc:'#3b82f6',secs:[
+{t:'Bejelentkezés a rendszerbe',bk:[
+{tp:'bl',items:[
+    'Jármű beléptetése: Rendszám, '+gw('TETRA')+' kód, vezető '+gw('IVIR')+' kódja és jelszava.',
+    'A műszak idejét (kezdete/vége) meg kell adni minden tagra vonatkozóan.',
+    'Mentőegység típusának (pl. MGO, ESE, ROH) és eszközhiányának jelölése.',
+    'A személyzet (ápoló, orvos, stb.) '+gw('IVIR')+' kóddal és jelszóval lép be. Ezt követően sötétzöld státuszt kap az egység.'
+]}]},
+{t:'Alapképernyő és Vonulás',bk:[
+{tp:'bl',items:[
+    'Feladat nélkül: Engedélykérés, Üzemi út vagy Tankolás rögzítése lehetséges.',
+    'Riasztás: Hangjelzéssel és felugró panellel érkezik, elfogadás után a státusz sárgára vált (vonulás).',
+    'Hálózat hiánya esetén: "Eset offline rögzítése" használható a kapott esetszám megadásával.',
+    'Vonulás közbeni akadályoztatás az "Új veszteglés" menüpontban rögzítendő (ok, becsült idő).'
+]}]}
+]},
+{id:'c3',title:'VI.6 Helyszíni dokumentáció I.',icon:'📋',acc:'#f59e0b',secs:[
+{t:'Betegadatok és Csempék',bk:[
+{tp:'bl',items:[
+    'Helyszínre érkezés: A km óra állás rögzítése és a "Helyszínen" gomb megnyomása (narancs státusz).',
+    'Betegadatok: Név, '+gw('TAJ')+', születési idő (a gép automatikusan életkort számol), lakcím.',
+    'A navigációs menü csempés rendszerű. A ki nem töltött szürke, a kitöltött narancs.',
+    'A beteg szempontjából nem releváns csempéket (pl. Trauma egy belgyógyászati esetnél) hosszan nyomva inaktiválni kell.'
+]}]},
+{t:'Mi történt? / Vezető tünet / Anamnézis',bk:[
+{tp:'bl',items:[
+    'Mi történt?: A panaszok kezdete (ó/p, becslés is jelölhető), testtömeg, és szabad szöveges helyzetleírás rögzítése kötelező.',
+    'Vezető tünet: Fájdalom (hely, jelleg, erősség 1-10 skálán) és más tünetek (pl. fulladás) kiválasztása.',
+    'Anamnézis: Auto/heteroanamnézis jelölése, allergia, szedett gyógyszerek, korábbi betegségek, és az utolsó étkezés óta eltelt idő megadása.'
+]}]}
+]},
+{id:'c4',title:'VI.6 Helyszíni vizsgálat II. (ABCDE)',icon:'🔍',acc:'#8b5cf6',secs:[
+{t:'Légút és Légzés (A-B)',bk:[
+{tp:'bl',items:[
+    'Légút (A): Tisztaság rögzítése. Ha nem tiszta, az elzáródás oka (váladék, idegentest) megadandó.',
+    'Légzés (B): Van-e légzés? Ha van, tiszta vagy kóros? Légzési hangok hallgatózással (pl. szörtyzörej, sípolás). Légzésszám.'
+]}]},
+{t:'Keringés és Idegrendszer (C-D)',bk:[
+{tp:'bl',items:[
+    'Keringés (C): Van-e keringés? Pulzus tapinthatósága (perifériás/centrális), minősége. Szívhang, ritmus.',
+    'Idegrendszer (D): Eszmélet (AVPU), GCS pontszám (Szem, Verbális, Motoros), pupilla (tágasság, fényreakció), neurológiai eltérés.'
+]}]},
+{t:'Has, Bőr és Trauma kiegészítők',bk:[
+{tp:'bl',items:[
+    'Has: Puha, betapintható-e? Nyomásérzékenység, izomvédekezés.',
+    'Bőr: Normál, sápadt, verejtékes, cianotikus, márványozott.',
+    'Végtag/Trauma: A testtérképen az érintett pontokra kattintva jelölhető a sérülés (zúzódás, törés stb.). Többszörös sérülés és égés (fok, %) is rögzíthető.'
+]}]}
+]},
+{id:'c5',title:'VI.6 Beavatkozások rögzítése',icon:'💉',acc:'#ef4444',secs:[
+{t:'Újraélesztés (CPR)',bk:[
+{tp:'bl',items:[
+    'A '+gw('CPR')+' megkezdésének pontos ideje (vagy becslés).',
+    'Szemtanú által megkezdett (vagy '+gw('T-CPR')+') újraélesztés jelölése.',
+    'Defibrillátor ('+gw('AED')+' vagy manuális) használata: első ritmus, sokk(ok) száma, leadás ideje és energiája.',
+    'Kimenetel: Sikeres szállítás, '+gw('ROSC')+' (pulzus visszatérésének pontos ideje), vagy abbahagyás.'
+]}]},
+{t:'Gyógyszerek és Intubáció',bk:[
+{tp:'bl',items:[
+    'Gyógyszeradás: Az "Új gyógyszeres beavatkozás" gombbal hatóanyag alapján keresve. Be kell írni az időpontot, a dózist és a beviteli utat (iv, per os, intranasalis).',
+    'Egyes gyógyszereknél (pl. Fentanil) a kiszerelés is kötelezően választandó felugró ablakból.',
+    'Intubáció: Módja (pl. endotrachealis, '+gw('LMA')+'), ideje, indikációja. Laringoszkópiák száma és alkalmazott segéd-gyógyszerek (relaxáns, altató).'
+]}]}
+]}
+];
+
+var CARDS=[
+{cat:'Rendszer',f:'Mi a teendő, ha a tablet nem csatlakozik a hálózathoz, de rádión feladatot kapunk?',b:'A kezdőképernyőn az "Eset offline rögzítése" gombot kell használni. A mentésirányítótól (ICS) kapott esetszámot és adatokat be kell írni.'},
+{cat:'Jármű / Műszak',f:'Kinek kell bejelentkeznie a "Járművezető" csempén BLS egységnél?',b:'A mentőgépkocsi-vezetőnek, a saját IVIR kódjával és jelszavával. Olyan egységeknél (pl. motor), ahol a vezető ápoló is, mindkét helyen be kell lépnie.'},
+{cat:'Dokumentáció',f:'Hogyan kell eljárni olyan csempékkel, amik a betegnél nem relevánsak (pl. Trauma egy belgyógyászati esetben)?',b:'A navigációs menüben hosszan kell nyomni a csempén, ezzel inaktiválódik (kiszürkül), és a gép automatikusan átlépi.'},
+{cat:'Gyógyszer',f:'Hogyan keresünk gyógyszert a "Gyógyszeres beavatkozások" csempén?',b:'A "Hatóanyag" (és nem a márkanév) megadásával, a keresőmezőbe gépelve vagy a listából kiválasztva. Rögzíteni kell a pontos időt, dózist és a beviteli utat.'},
+{cat:'Gyógyszer',f:'Mit kell tenni Kábítószer (pl. Fentanil) intranasalis adása esetén a szoftverben?',b:'Az "Intranasalis gyógyszeradás" csempén kell kiválasztani, beírni a dózist és az időt. A csempe elhagyásakor felugró ablak kéri a pontos kiszerelést. Később az "Utólagos megjegyzésben" a maradék kiöntését is jelezni kell.'},
+{cat:'Újraélesztés',f:'Hol rögzítjük, ha az újraélesztés sikeres volt (ROSC)?',b:'Az "Újraélesztés" csempe 4. oldalán, beírva a pulzus első visszatérésének pontos időpontját.'},
+{cat:'Sérülés',f:'Hogyan dokumentáljuk a medence sérülést a szoftverben?',b:'A "Trauma" csempén a testtérképen az adott területre kattintva felugró ablakban kiválaszthatjuk a sérülés típusát (pl. zúzódás, törés gyanúja).'},
+{cat:'Szülés',f:'Lezajlott szülés esetén hány esetlapot kell írni?',b:'KETTŐT. Külön esetlapot kötelező vezetni az anyáról (Szülés csempék) és az újszülöttről (Újszülött adaptáció csempe).'},
+{cat:'Események',f:'Hol látjuk az összes bevitt beavatkozást és gyógyszert egyben a lezárás előtt?',b:'Az "Áttekintő" csempén, ahol időrendi sorrendben listázódik az összes gyógyszer, esemény és beavatkozás.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: BLS Újraélesztés (B kompetencia)',diff:'B kompetencia',desc:'Mentőápolóként (nem gyógyszerezhet) teljesítesz szolgálatot. A műszakod indul, majd rádión kapod a riasztást (a tabletnek épp nincs hálózata). Újraélesztéshez vonultok.',steps:[
+{sit:'A műszak kezdetén átveszitek az autót. A gépkocsivezető belépteti a járművet. Mentőápolóként mi a teendőd az IFT-n a bejelentkezéshez?',opts:[{tx:'Csak várom, hogy a központ küldjön feladatot.',ok:false,fb:'Hibás! Személyzetként be kell lépned az alkalmazásba.'},{tx:'A Személyzet csempén a "Mentőápoló" gombra koppintok, beírom az IVIR kódomat és a jelszavamat.',ok:true,fb:'Helyes! BLS egységnél a mentőápoló az egységvezető, így kell belépnie.'},{tx:'Az "Orvos/Mentőtiszt" gombot választom.',ok:false,fb:'Hibás! B kompetenciával a mentőápoló mezőt kell használni.'}]},
+{sit:'Az ICS rádión jelzi: "Új feladat, 60 éves férfi összeesett, nem lélegzik. Esetszám: 12345." A tablet kijelzőjén nincs hálózat (piros ikon). Mit teszel?',opts:[{tx:'Azonnal megnyomom a kezdőképernyőn az "Eset offline rögzítése" gombot, és beírom az ICS-től kapott esetszámot.',ok:true,fb:'Helyes! Ha nincs hálózat, kötelező az offline rögzítés az esetszám egyeztetésével.'},{tx:'Indulunk és a papíralapú eseti naplót töltöm csak ki.',ok:false,fb:'Hibás! A tabletet offline módban is használni kell.'},{tx:'Várok, amíg visszajön a hálózat.',ok:false,fb:'Hibás! A riasztás azonnali vonulást igényel.'}]},
+{sit:'Megkapjátok a címet. Melyik gombot kell megnyomnod az IFT-n az induláskor?',opts:[{tx:'A "Helyszínen" gombot.',ok:false,fb:'Hibás! Még csak most indultok el.'},{tx:'A "Vonulás megkezdése" gombot, amivel a státusz bordóra vált.',ok:true,fb:'Helyes! Ez jelzi az ICS felé is (ha van rádiókapcsolat), hogy megindult az egység.'},{tx:'Az "Engedélykérés" gombot.',ok:false,fb:'Hibás! Erre nincs szükség riasztáskor.'}]},
+{sit:'Megérkeztek a címre. Megnyomod a "Helyszínen" gombot (narancs státusz). A hozzátartozó már nyomja a beteg mellkasát. Melyik csempét NYITOD MEG először a beavatkozásokhoz?',opts:[{tx:'Az "Újraélesztés" csempét, hogy azonnal dokumentáljam az eseményt.',ok:true,fb:'Helyes! A legkritikusabb beavatkozást, az újraélesztést azonnal meg kell kezdeni, és a csempéjén az időadatokat minél előbb rögzíteni érdemes.'},{tx:'A "Betegadatok" csempét, hogy lekérdezzem az EESZT-t.',ok:false,fb:'Hibás! Újraélesztésnél nincs idő EESZT lekérdezésre az első percekben.'},{tx:'A "Fájdalom" csempét.',ok:false,fb:'Hibás! Keringésmegállásnál ez teljesen irreleváns.'}]},
+{sit:'A Betegdokumentáció navigációs menüjében sok csempe van. Hogyan tünteted el a nem relevánsakat (pl. Trauma, Szülés) az újraélesztés alatt?',opts:[{tx:'Belemegyek és beírom, hogy "Nem történt".',ok:false,fb:'Hibás! Van ennél sokkal gyorsabb módszer.'},{tx:'A menüben hosszan rányomok a nem szükséges csempékre, amitől azok inaktívvá válnak (kiszürkülnek).',ok:true,fb:'Helyes! Ezzel rengeteg időt spórolsz a dokumentáció során, mert a "Következő" gomb átugorja őket.'},{tx:'Törlöm a csempéket a beállításokban.',ok:false,fb:'Hibás! Nincs ilyen funkció.'}]},
+{sit:'Az "Újraélesztés 1" oldalon mit kell bepipálnod az eddigi információk alapján?',opts:[{tx:'"T-CPR történt" és a CPR megkezdésének idejét.',ok:false,fb:'Hibás! A laikus nyomta, nem biztos, hogy telefonos irányítással.'},{tx:'"Szemtanú CPR történt", és a CPR megkezdésének idejét (ha nem pontos, akkor a "becslés" boxot is).',ok:true,fb:'Helyes! A hozzátartozó nyomta a mellkast, tehát laikus/szemtanú CPR történt.'},{tx:'Csak azt, hogy a mentőegység CPR-t végzett.',ok:false,fb:'Hibás! A kiérkezés előtti laikus tevékenységet is rögzíteni kell.'}]},
+{sit:'Felhelyezed a félautomata defibrillátort (AED). A gép ritmust elemez, sokkot nem javasol (Asystolia). Hol jelölöd ezt az "Újraélesztés" csempén?',opts:[{tx:'Az 1. oldalon a keringésmegállás okánál.',ok:false,fb:'Hibás! Ott az okot jelöljük (pl. kardiális), nem a ritmust.'},{tx:'Az "Újraélesztés 2" oldalon az AED használatánál bejelölöm a "Nem sokkolandó" gombot, és az első ritmushoz beírom az asystoliát.',ok:true,fb:'Helyes! Az AED működését és az első ritmust itt dokumentáljuk pontosan.'},{tx:'Sehol, csak a papír CODE SUMMARY lesz kinyomtatva.',ok:false,fb:'Hibás! Az IFT-ben kötelező rögzíteni a gép által adott ritmust is.'}]},
+{sit:'B kompetenciaszintű ápolóként intubálhatsz-e, és hol jelölöd az egyszerű légútbiztosítást (pl. tubus/maszk)?',opts:[{tx:'Igen, intubálok, és az Intubáció csempén rögzítem.',ok:false,fb:'Hibás! B kompetenciával nem végezhetsz endotrachealis intubációt.'},{tx:'Nem intubálok. Az IFT-ben a "További beavatkozások" csempén, vagy a légút/légzés megjegyzéseinél rögzítem a ballonos/maszkos lélegeztetést (NIV/BMV) és az OPA-t.',ok:true,fb:'Helyes! B szinten non-invazív légútbiztosítás van, amit az "Intubációt megelőző beavatkozásoknál" (ha aktív az az oldal) vagy a további beavatkozásoknál lehet jelölni.'},{tx:'Gyógyszerrel relaxálok, majd supraglottikus eszközt (LMA) helyezek be.',ok:false,fb:'Hibás! Gyógyszert sem adhatsz be B kompetenciaszinten.'}]},
+{sit:'A folyamatos kompresszió és lélegeztetés mellett a beteg pulzusa visszatér. Hol rögzíted a sikert az IFT-n?',opts:[{tx:'Az "Esemény" csempén veszek fel egy új eseményt.',ok:false,fb:'Hibás! Van dedikált hely a ROSC dokumentálására az újraélesztés menüben.'},{tx:'Az "Újraélesztés 4" csempén beírom a "Pulzus első visszatérésének időpontja" mezőbe a pontos időt, és a kimenetelhez a sikeres ROSC-t.',ok:true,fb:'Helyes! Ez a protokolláris helye a sikeres újraélesztés (ROSC) dokumentálásának.'},{tx:'Elegendő a "Betegátadás" felületen beírni.',ok:false,fb:'Hibás! Az újraélesztési adatlapot pontosan ki kell tölteni a statisztika és dokumentáció miatt.'}]},
+{sit:'Sikeres ROSC után a beteget kórházba szállítjátok, átadjátok az orvosnak. Mi az utolsó teendőd a tableten az állomásra indulás előtt?',opts:[{tx:'Csak kilépek a programból.',ok:false,fb:'Hibás! Az esetlapot véglegesíteni kell.'},{tx:'A "Betegátadás" menüben kitöltöm az átvevő orvos nevét, a pecsétszámát, az érkező km-t, majd az "Eset lezárása" gombra koppintok, amivel a dokumentum bekerül a MIR-be és az EESZT-be.',ok:true,fb:'Helyes! Az eset lezárásával válik a dokumentum véglegessé, megváltoztathatatlanná, és felkerül a felhőbe.'},{tx:'Törlöm az inaktív csempéket, hogy kevesebb helyet foglaljanak.',ok:false,fb:'Hibás! Az inaktív csempéket nem kell "törölni", az eset lezárásával minden mentésre kerül.'}]}
+],summary:'Részletes Összefoglaló (B kompetencia - Újraélesztés): A műszak kezdetén a mentőápoló az IVIR kódjával belépett a Személyzet csempén. Riasztáskor a hálózat hiánya miatt azonnal az "Eset offline rögzítése" funkciót használta az ICS-től kapott esetszám alapján. A "Vonulás megkezdése" majd a helyszínre érés ("Helyszínen") státuszok valós idejű gombnyomással lettek rögzítve. Mivel újraélesztésre volt szükség, azonnal megnyitottuk az "Újraélesztés" csempét, a nem releváns csempéket (Trauma, Szülés) pedig hosszan nyomva inaktiváltuk. Az Újraélesztés 1. oldalán jelöltük a laikus CPR-t és az időpontokat. Az AED elemzése Asystoliát mutatott, ezt az Újraélesztés 2. oldalán "Nem sokkolandó" és Asystolia ritmusként vittük be. B kompetenciaszint révén gyógyszeres intubáció nem történt, az egyszerű légútbiztosítást a megfelelő menüben rögzítettük. A ROSC (keringés visszatérése) idejét az Újraélesztés 4. oldalán mentettük el. Végül a kórházi érkezéskor az Átadás felületén orvosi adatokkal és a km óra állással sikeresen lezártuk az esetet, így a dokumentáció az EESZT-be is felkerült.'},
+
+{id:2,title:'2. Szimuláció: Közlekedési baleset, Intranasalis Fentanil (B+ kompetencia)',diff:'B+ kompetencia',desc:'Mentőápolóként dolgozol, B+ kompetenciával (gyógyszerezhetsz). Egy roncsba szorult, súlyos mellkasi sérülthöz vonultok. A beteg erős fájdalomra panaszkodik.',steps:[
+{sit:'A műszak elején a jármű átvételekor veszed észre, hogy a gyermek ambu ballon hiányzik. Hol jelzed ezt a belépéskor?',opts:[{tx:'Bejelentem a rádión, de a tableten nem tudom jelölni.',ok:false,fb:'Hibás! A tableten erre külön felület van.'},{tx:'A Bejelentkezés képernyőn az "Eszközhiány" (fecskendő ikon) csempére koppintok, kiválasztom a hiányzó eszközt, amitől a csempe pirosra vált.',ok:true,fb:'Helyes! Az eszközhiány jelölése kötelező és a csempe piros színe figyelemfelhívó az Irányító Csoport felé is.'},{tx:'Az "Egyéb személyzet" menübe írom be.',ok:false,fb:'Hibás! Az a vizsgakocsizók/szekundánsok rögzítésére van.'}]},
+{sit:'Vonulás közben egy vasúti átjáróban leeresztett sorompó állít meg titeket 5 percre. Hogyan rögzíted a szoftverben?',opts:[{tx:'A Vonulás képernyőn a "Veszteglés ideje, oka" gombra koppintok, felveszem az új veszteglést: ok (pl. vasúti átjáró) és beírom a becsült hosszt.',ok:true,fb:'Helyes! Ez indokolja majd a meghosszabbodott vonulási időt.'},{tx:'Az "Eset offline rögzítése" gombot használom.',ok:false,fb:'Hibás! A hálózat működik, vonulásban vagyunk.'},{tx:'Semmit nem teszek, majd a végén az Epikrízisbe beírom.',ok:false,fb:'Hibás! Valós időben kell rögzíteni a késedelmet az arra szolgáló funkcióval.'}]},
+{sit:'Megérkeztek a helyszínre. A beteg a roncsban van, közlekedési baleset. Melyik csempét kell mindenképpen megnyitnod a mechanizmus tisztázására?',opts:[{tx:'A "Nem traumás vérzés" csempét.',ok:false,fb:'Hibás! Ez a beteg traumás.'},{tx:'A "Közlekedési baleset" és a "Sérülés" csempéket.',ok:true,fb:'Helyes! Itt kell rögzíteni, hogy mi ütközött mivel, a beteg hol ült (pl. gépjármű vezető) és használta-e a biztonsági övet.'},{tx:'A "Mérgezés" csempét.',ok:false,fb:'Hibás! A közlekedési baleset a releváns.'}]},
+{sit:'A beteg panaszkodik: "Nagyon fáj a mellkasom!". A "Fájdalom" csempén rögzíted ezt. A "Trauma" csempén hogyan dokumentálod a sérülést?',opts:[{tx:'Rákoppintok a kék emberi alak (testtérkép) mellkasára, majd a felugró ablakban kiválasztom a sérülés típusát (pl. zúzódás, bordatörés gyanú).',ok:true,fb:'Helyes! A grafikus interfészen az érintőpontokkal lehet bevinni a sérülést, amit a gép jobb oldalon összesít.'},{tx:'Csak egy szabad szöveges mező van, oda beírom, hogy "Mellkas sérült".',ok:false,fb:'Hibás! A szoftver interaktív testtérképet használ a lokalizációra.'},{tx:'A Trauma csempét inaktiválom, mert az orvosi hatáskör.',ok:false,fb:'Hibás! A trauma rögzítése kompetenciaszinttől független.'}]},
+{sit:'A beteg erős fájdalma miatt (NRS: 9/10) B+ kompetenciaszinten intranasalis Fentanilt adsz. Melyik csempén dokumentálod ezt ELSŐKÉNT?',opts:[{tx:'A "További beavatkozások" zöld gombjánál.',ok:false,fb:'Hibás! A kábítószer-tartalmú orrspraynek saját dedikált csempéje van.'},{tx:'Az "Intranasalis gyógyszeres beavatkozások" csempén, ahol kiválasztom a Fentanilt, megadom a beadás okát és a pontos időpontot.',ok:true,fb:'Helyes! Az IN adagolás külön csempén indul.'},{tx:'Az "Epikrízis" szövegbe beírom és kész.',ok:false,fb:'Hibás! A strukturált adatrögzítés a gyógyszereknél kötelező.'}]},
+{sit:'Az IN Fentanil bevitelekor a szoftver hogyan viselkedik az "Intranasalis" csempe elhagyásakor az eljárásrend alapján?',opts:[{tx:'Automatikusan lezárja az Esetlapot.',ok:false,fb:'Hibás! A beavatkozás nem zárja le az esetet.'},{tx:'Egy felugró ablakban kéri, hogy válasszuk ki a megfelelő KISZERELÉSŰ Fentanil készítményt (mert kábítószer), és az adatokat automatikusan átemeli a "Gyógyszeres beavatkozások" csempére.',ok:true,fb:'Helyes! Szigorú gyógyszerelszámolás miatt a kiszerelést is pontosítani kell.'},{tx:'Megkérdezi, hogy biztosan adtunk-e gyógyszert.',ok:false,fb:'Hibás! A kiszerelés megadását kényszeríti ki.'}]},
+{sit:'A fájdalomcsillapítás után a beteg bal mellkasfele nem emelkedik, feszülő PTX alakul ki. B+ szinten tű dekompressziót (mellkas detenzionálást) végzel. Melyik csempén rögzíted a beavatkozást?',opts:[{tx:'A "Légzés" csempén beírom az Egyéb megjegyzésbe.',ok:false,fb:'Hibás! Van strukturált beavatkozás rögzítő.'},{tx:'A "További beavatkozások" csempén az "Új beavatkozás" zöld fülre koppintva, a listából kiválasztom a mellkas detenzionálást, és megadom a pontos kezdeti időpontot.',ok:true,fb:'Helyes! Minden invazív és egyéb beavatkozás strukturált listából választható a "További beavatkozásoknál".'},{tx:'A "Trauma" csempén a "Sérülés nincs" gombbal.',ok:false,fb:'Hibás! Az a rögzített trauma törlésére szolgál.'}]},
+{sit:'A beavatkozás után stabilizálódik. Nyakrögzítő gallért és medenceövet (SAM sling) helyeztek fel. Ezt hogyan rögzíted?',opts:[{tx:'Szintén a "További beavatkozások" csempén az Új beavatkozás gombbal kikeresem a "Rögzítés..." elemeket a felugró ablakból.',ok:true,fb:'Helyes! Az összes rögzítéstechnikai eszköz felhelyezése itt listázható.'},{tx:'Nem rögzítem sehova, a kórházban úgyis látják, hogy rajta van.',ok:false,fb:'Hibás! Minden felhasznált anyagot és beavatkozást kötelező adminisztrálni.'},{tx:'A "Bőr" csempén rögzítem.',ok:false,fb:'Hibás! Annak semmi köze a rögzítőeszközökhöz.'}]},
+{sit:'Kórházba indultok. Hirtelen ellenőrizni szeretnéd az összes eddig beadott gyógyszert és rögzített beavatkozást időrendben. Hol teheted meg gyorsan?',opts:[{tx:'Minden csempét egyenként újra végiglapozok.',ok:false,fb:'Hibás! Ez lassú és balesetveszélyes vonulás közben.'},{tx:'A menüsorban az "Áttekintő" csempére koppintok, ami időrendi sorrendben listázza a beavatkozásokat és eseményeket.',ok:true,fb:'Helyes! Az Áttekintő pontosan ezt a funkciót látja el a gyors ellenőrzéshez.'},{tx:'A "Szülés" csempén.',ok:false,fb:'Hibás! Ez a beteg nem terhes, és nem a szülés csempe az áttekintő.'}]},
+{sit:'Átadjátok a beteget a Traumatológián. Kábítószert is használtatok (Fentanil orrspray maradéka). Mit nem szabad elfelejtened az eset lezárása (Betegátadás) ELŐTT?',opts:[{tx:'A "Közlekedési baleset" csempét törölni kell.',ok:false,fb:'Hibás! Az adatokat sosem töröljük.'},{tx:'Az "Utólagos megjegyzés" csempén (vagy epikrízisben) feltüntetni a kábítószer kiöntésének/megsemmisítésének tényét, majd ezután a "Betegátadás" gombbal véglegesíteni az esetet az orvos adataival.',ok:true,fb:'Helyes! Az IFT protokoll hangsúlyozza az utólagos megjegyzés kábítószer-elszámolási fontosságát lezárás előtt.'},{tx:'Csak egy aláírás kell a tabletre a betegtől.',ok:false,fb:'Hibás! Kábítószer elszámolásról van szó, írásos megjegyzés szükséges.'}]}
+],summary:'Részletes Összefoglaló (B+ kompetencia - Trauma): A műszak elején a belépéskor az "Eszközhiány" csempén rögzítettük a hiányzó eszközt (a csempe pirosra váltott). Vonulás közben a vasúti átjáró miatt a "Veszteglés" menüpontban rögzítettük az okot és a becsült időt. A baleseti helyszínre érve a "Közlekedési baleset" és a "Trauma" csempéken a testtérkép használatával dokumentáltuk a mellkasi sérülést és az ütközés mechanizmusát. B+ kompetenciával intranasalis Fentanilt adtunk: ezt a dedikált "Intranasalis gyógyszeres beavatkozás" csempén kezdtük rögzíteni. A szoftver kilépéskor kötelezően bekérte a gyógyszer pontos kiszerelését, majd az adatokat automatikusan átemelte a Gyógyszeres beavatkozások listájába. A feszülő PTX miatti tű dekompressziót (mellkas detenzionálást), a nyakgallér és a medenceöv felhelyezését is a "További beavatkozások" csempénél, legördülő listákból kiválasztva dokumentáltuk. Az "Áttekintő" csempén ellenőriztük a bevitt adatokat időrendben. Végül az átadás során az "Utólagos megjegyzésben" rögzítettük a kábítószer (Fentanil) maradékának kiöntését, és az átvevő orvos pecsétszámával véglegesen lezártuk a feladatot.'},
+
+{id:3,title:'3. Szimuláció: Szülés otthon (B kompetencia)',diff:'B kompetencia',desc:'Mentőápolóként dolgozol, B kompetenciával. Otthonában vajúdó, 39 hetes terhes kismamához vonultok. A szülés a helyszínen megindul.',steps:[
+{sit:'Riasztást kaptok az IFT-n. A feladat elfogadása után a Vonulás képernyőre juttok. Miért fontos ellenőrizni és szükség esetén módosítani az induló km adatot?',opts:[{tx:'Mert a gép mindig automatikusan 0-t ír be.',ok:false,fb:'Hibás! A gép az előző záró km-t ajánlja fel.'},{tx:'Mert a rendszer az előző feladat záró km-jét ajánlja fel. Ha eltérés van, indokolni is kell a módosítás okát.',ok:true,fb:'Helyes! A jármű naplózása szempontjából kritikus az egyezés, eltérésnél a rendszer okot kér.'},{tx:'Nem fontos, a GPS méri a távolságot.',ok:false,fb:'Hibás! A kilométeróra állása jogi és adminisztratív adat.'}]},
+{sit:'A helyszínre érve rányomsz a "Helyszínen" gombra (narancs státusz). A kismama az ágyon fekszik, láthatóan erős fájásai vannak. Melyik csempét NYITOD MEG a Betegadatok kitöltése után azonnal?',opts:[{tx:'A "Szülés" csempét, hogy a megindult szülés állapotát rögzítsem.',ok:true,fb:'Helyes! Minden specifikus helyzetnek megvan a fő csempéje. A szülés csempe aktiválja a terhességgel kapcsolatos kérdéseket.'},{tx:'A "Trauma" csempét.',ok:false,fb:'Hibás! Nem történt baleset.'},{tx:'A "Mérgezés" csempét.',ok:false,fb:'Hibás! Relevancia nélküli.'}]},
+{sit:'A "Szülés 1" csempén kiválasztod a "Megindult szülés" gombot. Milyen további, terhességre vonatkozó adatok válnak így szerkeszthetővé (szürkülnek ki) az eljárásrend alapján?',opts:[{tx:'Csak a vércsoport és a RH faktor.',ok:false,fb:'Hibás! Más demográfiai és szülészeti adatok kellenek.'},{tx:'A "Gondozott terhesség?", "Hányadik terhesség?", "Hányadik szülés?" és a "Becsült idő hetekben" mezők.',ok:true,fb:'Helyes! Ezek az alapvető anamnesztikus szülészeti kérdések a szoftverben.'},{tx:'A kismama vérnyomásának grafikonja.',ok:false,fb:'Hibás! A vérnyomást nem ezen a csempén rögzítjük.'}]},
+{sit:'A vajúdás alatt megreped a magzatburok. Ezt hol és hogyan dokumentálod a szoftverben?',opts:[{tx:'A "Szülés 2" csempén a "Megrepedt burok" gombra koppintok, ami aktiválja az időpont megadásához szükséges szürke mezőt, majd kitöltöm a magzatvíz minőségét (pl. tiszta, véres, meconiumos).',ok:true,fb:'Helyes! A Szülés 2. oldal a burokrepedést és a magzatvíz minőségét hivatott rögzíteni.'},{tx:'Az "Anamnézis" csempén a megjegyzésekben.',ok:false,fb:'Hibás! Van dedikált struktúrált rögzítő felület.'},{tx:'Az "Események" között felveszek egy egyéni eseményt.',ok:false,fb:'Hibás! A Szülés csempét kell használni.'}]},
+{sit:'A csecsemő megszületik. Az IFT eljárásrend nagyon szigorúan fogalmaz a megszületést követő dokumentációs gyakorlatról. Mi ez a KÖTELEZŐ lépés?',opts:[{tx:'Elég csak egy "Utólagos megjegyzésbe" beírni, hogy egészséges fiú született.',ok:false,fb:'Hibás! Ez adminisztratív és jogi hiba lenne.'},{tx:'Mind az anyáról, mind az újszülöttről KÜLÖN-KÜLÖN esetlapot kötelező vezetni. Nem helyes gyakorlat, ha az újszülöttről nem készül új esetlap a rendszerben.',ok:true,fb:'Helyes! A két paciens miatt két Esetlapot (két egyedi esetszámot) kell generálni a szoftverben.'},{tx:'Az anya esetlapján a "Trauma" csempét kitöltöm a babának.',ok:false,fb:'Hibás! Nonszensz.'}]},
+{sit:'Az újszülött számára megnyitott új (második) esetlapon melyik az a dedikált csempe, amit azonnal meg kell nyitnod?',opts:[{tx:'"Újszülött adaptáció" csempe.',ok:true,fb:'Helyes! Itt rögzítik a baba születés utáni paramétereit (APGAR elemeket).'},{tx:'"Trauma" csempe.',ok:false,fb:'Hibás! Ez szülészeti esemény.'},{tx:'"Gyógyszeres beavatkozás".',ok:false,fb:'Hibás! B kompetenciával pláne nem adsz egyből gyógyszert egy egészséges babának.'}]},
+{sit:'Az "Újszülött adaptáció" csempén mik azok a legkritikusabb időadatok, amiket óra, perc pontossággal elsőként be kell írnod a billentyűzet segítségével?',opts:[{tx:'A magzatvíz elfolyásának ideje.',ok:false,fb:'Hibás! Az az anya esetlapjára kerül.'},{tx:'A "Születés időpontja" és hogy mikor "saját spontán lélegzik/felsír" az újszülött.',ok:true,fb:'Helyes! Ezek a legfontosabb életjelek kezdeti idejét jelölik a szoftverben.'},{tx:'A köldökzsinór elvágásának ideje.',ok:false,fb:'Hibás! A születés és a légzés megindulása az első.'}]},
+{sit:'A baba bőrszínét (rózsaszín, acrocyanosis, cyanosis) és izomtónusát az IFT-ben hogyan tudod rögzíteni?',opts:[{tx:'A képernyőn lévő "Bőrszín" és "Tónus" mezőkre koppintva felugró ablakokból választhatom ki a megfelelő paramétert.',ok:true,fb:'Helyes! A szoftver legördülő menük/felugró ablakok formájában tartalmazza ezeket.'},{tx:'Szabad szövegesen gépelem be az Epikrízisbe.',ok:false,fb:'Hibás! Strukturált adatrögzítés kell.'},{tx:'A Fájdalom csempén jelölöm.',ok:false,fb:'Hibás! Nem releváns.'}]},
+{sit:'Az ellátás során a babát szárazra törlöd és meleg takaróba burkolod (kihűlés elleni védelem). Az "Újszülött adaptáció" csempén hol dokumentálod ezt B kompetenciával?',opts:[{tx:'Sehol, ezt nem kell felírni.',ok:false,fb:'Hibás! Minden beavatkozást dokumentálunk.'},{tx:'Az "Adaptációhoz segítés" blokkban pipálom ki a "Szárazra törlés" és "Melegen tartás" négyzeteket.',ok:true,fb:'Helyes! A szoftver pontosan erre a két alap (BLS) beavatkozásra biztosít checkboxokat.'},{tx:'Gyógyszeres beavatkozásként.',ok:false,fb:'Hibás! Ezek nem gyógyszerek.'}]},
+{sit:'A sikeres otthonszülés után mindkét beteget kórházba szállítjátok. Az esetek lezárásakor (Betegátadás) mi a teendő a két tabletes Esetlappal?',opts:[{tx:'Csak az anyáét zárom le, az újszülötté automatikusan beolvad.',ok:false,fb:'Hibás! Két különálló dokumentum.'},{tx:'Mindkét (anya és újszülött) Esetlapot külön-külön le kell zárni az átvevő intézmény és orvos megadásával (orvosi pecsétszám, érkező km), hogy mindkettő bekerüljön a MIR-be és az EESZT-be.',ok:true,fb:'Helyes! A két önálló beteg két önálló adminisztrációs folyamat végét (lezárását) igényli.'},{tx:'Kinyomtatom és kidobom.',ok:false,fb:'Hibás! Szigorú EESZT és MIR integráció van.'}]}
+],summary:'Részletes Összefoglaló (B kompetencia - Szülés): A vonulás megkezdése előtt a gépkocsivezető ellenőrizte az induló km adatot, ami az IFT-ben mindig a korábbi záró km-t ajánlja fel. A helyszínen az ápoló a Betegadatok után azonnal a dedikált "Szülés 1" csempét nyitotta meg. Itt a "Megindult szülés" megjelölésével aktiválódott az anamnesztikus rész (gondozott terhesség, hetek száma). A burokrepedést a "Szülés 2" csempén dokumentáltuk (időpont és magzatvíz jellege). Miután a gyermek megszületett, az eljárásrend legszigorúbb szabályát követve: egy MÁSODIK, vadonatúj Esetlapot nyitottunk az újszülöttnek. Az újszülött adatlapján az "Újszülött adaptáció" csempén a billentyűzettel rögzítettük a születés és az első felsírás/légzés pontos óra/perc időpontját. A bőrszínt és az izomtónust a felugró ablakokból választottuk ki. A BLS (B kompetencia) szintű beavatkozásokat, mint a "Szárazra törlés" és "Melegen tartás", az Adaptációhoz segítés blokk checkboxaival pipáltuk ki. Végül a kórházban (Betegátadás) mindkét, különálló Esetlapot (anya és újszülött) orvosi pecsétszám és záró km megadásával egyenként lezártuk, biztosítva az EESZT-be történő sikeres adatfeltöltést.'}
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Betegdokumentáció az IFT-n</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v2.0 · 2022.09.30.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','Kivonatolt tananyag'],['flash','🃏','Flashkártyák','Tanulókártyák'],['sim','🚑','Szimuláció','B és B+ esetek'],['calc','🧮','Kalkulátorok','GCS és Életkor']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az OMSZ valamennyi kivonuló dolgozójára kompetenciaszintnek megfelelően.</div></div>';
+}
+
+function rb(b){
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  return '';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend Fejezetek</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek (IFT Szoftver)</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' ellenőrző kérdés</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function gcsInterp(){
+var tot=CA.gcs_e+CA.gcs_v+CA.gcs_m;
+var lbl=tot>=13?'Enyhe (≥13)':tot>=9?'Közepes (9-12)':'Súlyos (≤8)';
+var col=tot>=13?'#4ade80':tot>=9?'#fde68a':'#fca5a5';
+var bg=tot>=13?'#064e3b':tot>=9?'#451a03':'#450a0a';
+return {tot:tot,lbl:lbl,col:col,bg:bg};
+}
+
+function calcAge() {
+    if(!CA.ageDOB) return "-";
+    if(!CA.ageDate) return "-";
+    let dob = new Date(CA.ageDOB);
+    let today = new Date(CA.ageDate);
+    if(isNaN(dob.getTime()) || isNaN(today.getTime())) return "Hiba";
+    let age = today.getFullYear() - dob.getFullYear();
+    let m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age >= 0 ? age + " év" : "Érvénytelen";
+}
+
+function renderCalc(){
+function tabBtn(id,lbl){return '<button onclick="setCalcTab(\''+id+'\')" style="flex:1;padding:.5rem;border:1px solid '+(CA.tab===id?'#14b8a6':'#3f3f3f')+';border-radius:8px;background:'+(CA.tab===id?'#14b8a6':'#2a2a2a')+';color:'+(CA.tab===id?'#111827':'#d1d5db')+';cursor:pointer;font-size:13px;font-weight:600;font-family:inherit">'+lbl+'</button>';}
+function sel(lb,id,opts,val,fn){return '<div style="margin-bottom:.65rem"><div style="font-size:11px;font-weight:600;color:#9ca3af;margin-bottom:3px">'+lb+'</div><select id="'+id+'" onchange="'+fn+'(this.value)">'+opts.map(([v,l])=>'<option value="'+v+'" '+(String(v)===String(val)?'selected':'')+'>'+v+' – '+h(l)+'</option>').join('')+'</select></div>';}
+
+var gi=gcsInterp();
+
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">IFT Kalkulátorok</h2>'+
+'<div style="display:flex;gap:7px;margin-bottom:.75rem">'+tabBtn('age','Életkor (Szoftver)')+tabBtn('gcs','GCS Számító')+'</div>'+
+(CA.tab==='gcs'?
+sel('Szemnyitás','gce',[['4','Spontán'],['3','Felszólításra'],['2','Fájdalomingerre'],['1','Nincs']],CA.gcs_e,'setGCSE')+
+sel('Verbális válasz','gcv',[['5','Orientált'],['4','Zavart'],['3','Nem megfelelő szavak'],['2','Érthetetlen hangok'],['1','Nincs']],CA.gcs_v,'setGCSV')+
+sel('Motoros válasz','gcm',[['6','Utasítást végrehajt'],['5','Ingert lokalizál'],['4','Ingert elhárít'],['3','Flexió (dekortikált)'],['2','Extenzió (decerebrált)'],['1','Nincs']],CA.gcs_m,'setGCSM')+
+'<div class="card" style="background:'+gi.bg+';border:1px solid '+gi.col+'40; text-align:center"><div style="font-size:42px;font-weight:700;color:'+gi.col+'">'+gi.tot+'</div><div style="font-size:14px;color:'+gi.col+'">'+h(gi.lbl)+'</div><div style="font-size:11px;color:#9ca3af">Szem: '+CA.gcs_e+' | Verbális: '+CA.gcs_v+' | Motor: '+CA.gcs_m+'</div></div>'
+:
+'<div class="card">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px">Születési Dátum</div>'+
+'<input type="date" value="'+CA.ageDOB+'" oninput="setDOB(this.value)" onchange="setDOB(this.value)">'+
+'<div style="font-size:13px;font-weight:600;color:#9ca3af;margin-bottom:6px;margin-top:10px">Aktuális Eset Dátuma</div>'+
+'<input type="date" value="'+CA.ageDate+'" oninput="setAgeDate(this.value)" onchange="setAgeDate(this.value)">'+
+'<div class="card" style="background:#172554;border:1px solid #1e3a8a;margin-top:1rem;text-align:center">'+
+'<div style="font-size:13px;color:#bfdbfe;margin-bottom:4px">A szoftver által számolt életkor:</div><div style="font-size:32px;font-weight:700;color:#60a5fa;margin-bottom:1rem">'+calcAge()+'</div>'+
+'</div><div style="font-size:12px;color:#9ca3af;margin-top:1rem;line-height:1.5">A betegadatok rögzítésekor a naptárikon segítségével a rendszer automatikusan számolja ki a páciens korát.</div></div>');
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc')c.innerHTML=renderCalc();
+var tabs=['home','chapters','flash','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){
+    if(tabs[i]){
+        b.classList.toggle('act',tabs[i]===active);
+    }
+});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+window.setCalcTab=function(t){CA.tab=t;render();};
+window.setGCSE=function(v){CA.gcs_e=+v;render();};
+window.setGCSV=function(v){CA.gcs_v=+v;render();};
+window.setGCSM=function(v){CA.gcs_m=+v;render();};
+window.setDOB=function(v){CA.ageDOB=v;render();};
+window.setAgeDate=function(v){CA.ageDate=v;render();};
+
+let td = new Date();
+let tzOffset = td.getTimezoneOffset() * 60000;
+let localISOTime = (new Date(td - tzOffset)).toISOString().slice(0, 10);
+CA.ageDate = localISOTime;
+
+render();
+</script>
+</body>
+</html>

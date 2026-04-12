@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIV és CPAP Alkalmazása - OMSZ Eljárásrend</title>
+<style>
+:root{--bg:#121212;--bg-card:#1e1e1e;--bg-sec:#2a2a2a;--text:#e5e7eb;--text-mut:#9ca3af;--prim:#14b8a6;--prim-hov:#0d9488;--err:#ef4444;--succ:#22c55e;--warn:#f59e0b;--brd:#3f3f3f;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:72px;}
+.app{max-width:720px;margin:0 auto;background:var(--bg-card);min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.5);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);overflow-x:auto;}
+.nb{flex:1;min-width:70px;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:border-color .2s;color:var(--text-mut);}
+.nb.act{border-top-color:var(--prim);color:var(--prim);}
+.ni{font-size:18px;}
+.nl{font-size:10px;font-weight:600;}
+/* CONTENT */
+.ct{padding:1.2rem;}
+/* CARDS & TYPOGRAPHY */
+h1{font-size:20px;font-weight:700;margin-bottom:.5rem;}
+h2{font-size:18px;font-weight:700;margin-bottom:.8rem;color:#f3f4f6;}
+h3{font-size:15px;font-weight:700;color:var(--prim);margin-bottom:.5rem;border-bottom:1px solid var(--brd);padding-bottom:.3rem;}
+.card{background:var(--bg-sec);border:1px solid var(--brd);border-radius:10px;padding:1rem;margin-bottom:.8rem;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.8rem 0 .4rem;}
+ul.bl{margin:0 0 .6rem;padding-left:1.4rem;}
+ul.bl li{font-size:13px;line-height:1.6;margin-bottom:.3rem;color:#d1d5db;}
+.note{font-size:12px;color:var(--text-mut);padding:.6rem;background:#262626;border-radius:8px;margin-bottom:.6rem;line-height:1.5;border-left:3px solid var(--prim);}
+/* ALERTS */
+.al{border-radius:8px;padding:.8rem;margin-bottom:.8rem;font-size:13px;line-height:1.5;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+/* BUTTONS */
+.btn{padding:.6rem 1rem;border:1px solid #4b5563;border-radius:8px;background:var(--bg-sec);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:all .15s;text-align:center;}
+.btn:hover{background:#374151;}
+.btn-g{background:var(--prim);color:#111;border-color:var(--prim);}
+.btn-g:hover{background:var(--prim-hov);}
+.btn-r{background:var(--err);color:#fff;border-color:var(--err);}
+.btn-fw{width:100%;display:block;}
+/* TABLES */
+.tbl-wrap{overflow-x:auto;margin-bottom:.8rem;border-radius:8px;border:1px solid var(--brd);}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:7px;text-align:left;font-weight:700;color:#9ca3af;border-bottom:1px solid var(--brd);background:#262626;}
+table.tbl td{padding:7px;border-bottom:1px solid #333;color:#d1d5db;}
+/* GLOSSARY LINK */
+.glo{color:var(--prim);text-decoration:underline;text-decoration-style:dashed;cursor:help;font-weight:600;}
+/* MODAL */
+.mod-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000;}
+.mod{background:var(--bg-card);border:1px solid var(--brd);border-radius:12px;width:90%;max-width:400px;padding:1.5rem;box-shadow:0 10px 25px rgba(0,0,0,.5);}
+.mod-t{font-size:16px;font-weight:700;color:var(--prim);margin-bottom:.5rem;}
+.mod-d{font-size:14px;color:#d1d5db;line-height:1.5;margin-bottom:1.5rem;}
+/* QUIZ & SIM */
+.opt{width:100%;display:block;padding:.8rem;margin-bottom:8px;border:1px solid var(--brd);border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:var(--bg-sec);line-height:1.4;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;background:var(--prim);transition:width .3s;}
+/* FLASHCARD */
+.flip{border:2px solid var(--brd);border-radius:12px;padding:1.5rem;min-height:180px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;background:#262626;margin-bottom:1rem;}
+/* CALC */
+.c-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+input[type=number]{width:100%;background:#262626;border:1px solid var(--brd);border-radius:8px;padding:10px;color:var(--text);font-size:14px;}
+.res-box{background:#172554;border:1px solid #1e3a8a;border-radius:10px;padding:1rem;text-align:center;margin-top:1rem;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('theory')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szituációk</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Számítások</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="mod-bg" id="gloMod" onclick="closeGlo(event)">
+<div class="mod" onclick="event.stopPropagation()">
+<div class="mod-t" id="gloT"></div>
+<div class="mod-d" id="gloD"></div>
+<button class="btn btn-fw" onclick="closeGlo(event, true)">Bezárás</button>
+</div>
+</div>
+
+<script>
+// --- DICTIONARY ---
+const GLO = {
+"CPAP": "Continuous Positive Airway Pressure: A légzés támogatásának formája, mely során a légzési ciklus teljes hosszában azonos, meghatározott nagyságú pozitív nyomást biztosítunk.",
+"NIV": "Noninvasive ventilation (Non-invazív lélegeztetés): Endotracheális tubus nélküli, pozitív nyomású lélegeztetési forma, archoz illeszkedő maszk segítségével.",
+"FiO2": "A belélegzett levegő oxigénfrakciója (koncentrációja). Például 100% = 1.0, 40% = 0.40.",
+"PEEP": "Positive End-Expiratory Pressure: Pozitív kilégzésvégi nyomás. Megakadályozza az alveolusok összeesését a kilégzés végén.",
+"VT": "Tidal Volume (Légzési térfogat): Egy nyugodt légvétellel beszívott és kifújt levegő mennyisége. Célérték NIV esetén: 7-10 ml/ttkg.",
+"MV": "Minute Volume (Percventiláció): Egy perc alatt belélegzett levegő mennyisége (VT x légzésszám).",
+"COPD": "Krónikus obstruktív tüdőbetegség. Akut exacerbatiója a CPAP/NIV egyik fő indikációja.",
+"BIPAP": "Bi-level Positive Airway Pressure: Kétfázisú pozitív légúti nyomású lélegeztetés. Két különböző nyomásszint (belégzési és kilégzési) váltakozása.",
+"Pinsp": "Belégzési nyomásszint BIPAP/Bi-level üzemmódban.",
+"Tinsp": "Belégzési idő hossza másodpercben.",
+"SpO2": "Perifériás oxigénszaturáció, pulzoximéterrel mérve.",
+"EtCO2": "Kilégzésvégi szén-dioxid koncentráció (End-tidal CO2).",
+"Barotrauma": "A tüdőszövet pozitív nyomás okozta sérülése (pl. túl magas PEEP/nyomás miatt kialakuló pneumothorax).",
+"Trigger": "Légzésérzékelő funkció a lélegeztetőgépen: a gép áramlás- vagy nyomásváltozás alapján ismeri fel a beteg légzéskezdeményezését.",
+"PS": "Pressure Support (Nyomástámogatás): A beteg spontán légvételének támogatása egy beállított plusz nyomással a PEEP felett."
+};
+
+function g(t){return `<span class="glo" onclick="showGlo('${t}')">${t}</span>`;}
+
+// --- THEORY DATA ---
+const THEORY = [
+{t: "Bevezetés és Hatások", b: `
+<div class="note">A ${g('CPAP')}/${g('NIV')} használatával csökken a halálozás, az intubációs szükséglet és az intenzív osztályos napok száma.</div>
+<ul class="bl">
+<li>Csökkenti: légzésszámot, szívfrekvenciát, nehézlégzést, acidózist, hypercapniát.</li>
+<li>Növeli: légzési térfogatot (${g('VT')}) és percventilációt (${g('MV')}).</li>
+<li>Javítja az oxigénszaturációt (${g('SpO2')}).</li>
+</ul>
+<div class="al al-d">Hemodinamikai hatás: A pozitív nyomás csökkenti a vénás visszaáramlást (preload) és a jobb kamrai verőtérfogatot, így vérnyomáscsökkenést okozhat!</div>
+`},
+{t: "Eszközök (Mentőápolói - B/B+)", b: `
+<div class="sub">DIMAIR-EVE CPAP Maszk</div>
+<ul class="bl">
+<li>Minimum <b>A kompetenciaszinthez</b> kötött (BLS egységeken is).</li>
+<li>Folyamatos pozitív nyomás Venturi elv alapján. Áramlás változtatásával állítható a nyomás.</li>
+<li>0.30 - 0.40 (30-40%) ${g('FiO2')}-t biztosít. Kettős oxigenizációval (orrszonda a maszk alatt) növelhető.</li>
+<li>Hemodinamikai instabilitás (RRsys < 90 Hgmm) esetén <b>NEM használható</b>!</li>
+</ul>
+<div class="sub">O-Two CPAP eszköz</div>
+<ul class="bl">
+<li>Az oxigénáramlás növelésével generál pozitív nyomást. Maximum ~60% ${g('FiO2')}.</li>
+<li>Kezdeti beállítás: 5-7 vízcm (8-9 l/perc áramlás).</li>
+</ul>
+<div class="al al-w">A DIMAIR Total Face Standard arcmaszk használata C, D, E kompetenciához kötött, így B/B+ ápoló önállóan nem alkalmazza!</div>
+`},
+{t: "Indikációk és Kontraindikációk", b: `
+<div class="sub">Indikációk (Prehospitálisan)</div>
+<ul class="bl">
+<li>Légzési elégtelenség: légzésszám > 30/perc és/vagy ${g('SpO2')} < 90% oxigén adása ellenére.</li>
+<li>Súlyos dyspnoe a légzőizmok kifáradásának jeleivel (paradox légzés, segédizmok).</li>
+<li>Kórképek: 1. ${g('COPD')} akut exacerbatiója, 2. Heveny szívelégtelenség.</li>
+<li>Telefonos konzultációval: Pneumonia, Asthma, Cysticus fibrosis stb.</li>
+</ul>
+<div class="sub">Kontraindikációk</div>
+<ul class="bl">
+<li>Eszméletlenség, vagy légútvédelmi képtelenség (hányás, nyelészavar).</li>
+<li>Kooperációs képtelenség.</li>
+<li>Hemodinamikai instabilitás (RRsys < 90 Hgmm) folyadékpótlás ellenére.</li>
+<li>Arc/koponya traumája, deformitása.</li>
+<li>Pneumothorax gyanúja.</li>
+</ul>
+`},
+{t: "Alkalmazás Lépései és Pszichés Vezetés", b: `
+<ul class="bl">
+<li><b>1. ABCDE és Pozicionálás:</b> Félülő/ülő helyzet. Szoros monitorozás (EKG, RR, ${g('SpO2')}, légzésszám).</li>
+<li><b>2. Pszichés támogatás:</b> Kritikus lépés! "Yes set" alkalmazása ("Szeretne könnyebben lélegezni?"). Pozitív szuggesztiók ("Segítek Önnek"). Tilos a "próbálja meg" kifejezés.</li>
+<li><b>3. Maszk kiválasztása:</b> Megfelelő méret. A gép/eszköz teljes beállítása ELŐTT ne rögzítsük szorosan. Hagyjunk 1 ujjnyi helyet a pántok alatt.</li>
+<li><b>4. Paraméterek beállítása:</b> Kezdő ${g('PEEP')} 5-7 vízcm. Lassan, 1-2 vízcm-enként emelhető terápiás válasz alapján.</li>
+</ul>
+<div class="al al-i">Ha a ${g('CPAP')} nem elérhető vagy nem tolerált: Nem visszalégző maszk (15 l/perc) + Orrszonda (15 l/perc) = Kettős oxigenizáció.</div>
+`}
+];
+
+// --- FLASHCARDS ---
+const CARDS = [
+{f:"Mik a CPAP prehospitális indikációi?", b:"Légzésszám > 30/perc, SpO2 < 90% O2 adása ellenére.\nSúlyos dyspnoe, kimerülés.\nFő kórképek: COPD akut exacerbatiója, Heveny szívelégtelenség."},
+{f:"Mik a CPAP kontraindikációi?", b:"- Eszméletlenség, légútvédelmi képtelenség\n- Kooperáció hiánya\n- RRsys < 90 Hgmm\n- Arc/koponya trauma\n- Pneumothorax gyanú"},
+{f:"Mi a DIMAIR-EVE maszk FiO2 kapacitása és hogyan javítható?", b:"30-40% közötti oxigénkoncentrációt biztosít.\nMagasabb áramlás nem növeli a FiO2-t.\nJavítani orrszondával lehet a maszk alatt (kettős oxigenizáció)."},
+{f:"Hogyan változik a vérnyomás CPAP/NIV alkalmazásakor?", b:"Csökkenhet.\nA mellűri pozitív nyomás csökkenti a vénás visszaáramlást (preload), így csökken a perctérfogat. Szoros RR monitorozás kötelező!"},
+{f:"Mennyi a kezdő PEEP beállítás egyszerű eszközök (pl. O-Two)?", b:"5-7 vízcm.\nA terápiás válasznak megfelelően 1-2 vízcm-ként emelhető (max. 10-ig indokolt eseteken kívül)."},
+{f:"Milyen pszichés kommunikációt tilos alkalmazni a maszknál?", b:"A \"próbálja meg\" vagy \"hátha sikerül\" kifejezéseket kerülni kell, mert kudarcot sugallnak.\nHelyette cselekvő igék: \"Segítek Önnek\", \"Azt szeretném, hogy...\""},
+{f:"Mi a teendő, ha a beteg RRsys < 90 Hgmm és CPAP indikált lenne?", b:"A CPAP kontraindikált hemodinamikai instabilitás esetén!\nAlternatíva: kettős oxigenizáció (nem visszalégző maszk + orrszonda egyidejűleg)."},
+{f:"DIMAIR-EVE: 8 l/perc áramlás mekkora PEEP-et generál?", b:"Körülbelül 11 vízcm nyomást (szivárgásmentes illeszkedés esetén)."},
+{f:"Milyen légzési térfogat (VT) elérése a cél?", b:"7-10 ml/ttkg nagyságú légzési térfogat elérése a cél.\n(COPD akut exacerbatióban kb. 350-400 ml)."}
+];
+
+// --- QUIZ ---
+const QUIZ = [
+{q:"Melyik kórkép egyértelmű indikációja a CPAP prehospitális alkalmazásának telefonos konzultáció NÉLKÜL?", o:["Pneumonia","Asthma bronchiale","Heveny szívelégtelenség","Cysticus fibrosis"], a:2, x:"A COPD akut exacerbatiója és a heveny szívelégtelenség az elsődleges, konzultáció nélkül is alkalmazható indikációk."},
+{q:"Mi a DIMAIR-EVE maszk minimum kompetencia feltétele?", o:["Csak orvos (E)","Mentőtiszt (D)","BLS egységeken is, minimum A kompetencia","Kizárólag B+ kompetencia"], a:2, x:"A DIMAIR-EVE elsődlegesen BLS egységekre való, minimum A kompetenciaszinthez kötött."},
+{q:"Hogyan hat a CPAP a hemodinamikára?", o:["Növeli a vérnyomást a szimpatikus tónus miatt","Nincs hatással a keringésre","Csökkenti a vénás visszaáramlást, így vérnyomásesést okozhat","Növeli a jobb kamrai verőtérfogatot"], a:2, x:"A megemelkedett mellűri nyomás csökkenti a vénás visszaáramlást (preload), ezáltal a vérnyomás csökkenhet."},
+{q:"Mekkora oxigénkoncentrációt (FiO2) tud biztosítani a DIMAIR-EVE önmagában?", o:["100%","80-90%","30-40%","Kb. 21%"], a:2, x:"Az eszköz 30-40% közötti FiO2-t biztosít a Venturi rendszer miatt."},
+{q:"Mi a teendő, ha a lélegeztető maszknál jelentős a szivárgás?", o:["Teljes erőből a beteg arcára szorítjuk a pántokat","Másik méretű vagy minőségű maszkot választunk","Levesszük és azonnal intubálunk","Növeljük a PEEP-et 20 vízcm-re"], a:1, x:"A túl szoros maszk rontja a kooperációt. Szivárgás esetén igazítás, vagy másik méret/maszk választása szükséges."},
+{q:"Mennyi a javasolt kezdő PEEP egyszerű eszközöknél (O-Two)?", o:["1-2 vízcm","5-7 vízcm","10-12 vízcm","15 vízcm"], a:1, x:"Mindig 5-7 vízcm PEEP/CPAP szinttel kezdünk, majd terápiás válasz alapján 1-2 vízcm-ként emelünk."},
+{q:"Melyik KONTRAINDIKÁCIÓ a CPAP prehospitális alkalmazásakor?", o:["Légzésszám 35/perc","Pneumothorax (légmell) gyanúja","SpO2 85%","Tachycardia (110/perc)"], a:1, x:"A PTX gyanú abszolút kontraindikáció a barotrauma fokozódásának veszélye miatt."},
+{q:"Mi a helyes pszichés kommunikáció a CPAP felhelyezésekor?", o:["\"Próbáljuk meg ezt a maszkot, hátha sikerül levegőt venni.\"","\"Ne izguljon, minden rendben lesz.\"","\"Szeretne könnyebben lélegezni? Segítek Önnek, a gép támogatni fogja.\"","\"Ha nem tűri a maszkot, be kell csöveznünk!\""], a:2, x:"A \"yes set\" és a cselekvő igék, pozitív szuggesztiók a helyesek."},
+{q:"Hogyan érhető el a kettős oxigenizáció CPAP gép/eszköz hiánya esetén?", o:["Két nem visszalégző maszk egymásra helyezésével","Nem visszalégző maszk (15 l/perc) + Orrszonda (15 l/perc) együttes alkalmazásával","Kizárólag orrszondával 30 l/perc áramlással","Kézi ballonnal folyamatosan fújva"], a:1, x:"Maszk alatti nagyáramlású orrszonda kombinációja a kettős oxigenizáció."}
+];
+
+// --- SIMULATIONS (B/B+ COMPETENCE ONLY) ---
+const SIMS = [
+{
+  id: 1, diff: "B+ kompetencia", t: "1. Szituáció: COPD akut exacerbatió", 
+  d: "72 éves férfi, ismert COPD-s beteg. Fotelban ülve küzd a levegőért. B+ (gyógyszerezni tudó) ápolói szint.",
+  steps: [
+    {q: "Megérkezés után mi az első teendőd?", o:["Rögtön ráteszem a CPAP maszkot","ABCDE vizsgálat, pozicionálás (félülő/ülő), 100% O2 maszkon át, és monitorozás kezdése","Azonnali vénabiztosítás","Kikérdezem a hozzátartozót a gyógyszerekről"], a:1, x:"Légzési elégtelen betegnél az ABCDE felmérés, pozicionálás és azonnali O2 terápia az első lépés."},
+    {q: "A beteg légzésszáma 34/perc, SpO2 82%, erősen használja a segédizmait. Vérnyomása 150/90 Hgmm, eszméleténél van, de kimerült. Indikált a CPAP?", o:["Nem, mert a vérnyomása túl magas.","Nem, mert kimerült.","Igen, a COPD akut exacerbatiója és a paraméterek (légzésszám >30, SpO2 <90%, kimerülés) alapján indikált.","Igen, de csak telefonos konzultáció után."], a:2, x:"COPD akut exacerbatió egyértelmű indikáció, a kritériumok (RR>30, SpO2<90%, fáradás) teljesülnek."},
+    {q: "Ellenőrzöd a kontraindikációkat. Melyik tényező ZÁRNÁ KI a CPAP alkalmazását?", o:["Súlyos dyspnoe","Szisztolés vérnyomás 80 Hgmm","SpO2 85%","Tachykardia"], a:1, x:"A hemodinamikai instabilitás (RRsys < 90 Hgmm) kontraindikáció!"},
+    {q: "A beteg vérnyomása megfelelő. Hogyan kezded meg a felkészítését a DIMAIR-EVE CPAP maszkra?", o:["Szó nélkül az arcára nyomom a maszkot.","Határozottan rászólok, hogy nyugodjon meg.","Alkalmazom a 'yes set'-et: 'Szeretne jobban lenni? Segítek Önnek, ez a gép könnyíteni fog a légzésén.'","Azt mondom: 'Próbáljuk meg, hátha segít.'"], a:2, x:"Pozitív szuggesztió és a 'yes set' alkalmazása elengedhetetlen a kooperációhoz. A 'próbálja meg' tiltott!"},
+    {q: "A DIMAIR-EVE maszkhoz az 5 vízcm-es kezdő PEEP eléréséhez mekkora áramlást állítasz be a palackon?", o:["5 l/perc","8 l/perc","10 l/perc","15 l/perc"], a:0, x:"A DIMAIR-EVE táblázata szerint 5 l/perc áramlás generál kb. 5 vízcm PEEP-et."},
+    {q: "A maszkot felhelyezed. Hogyan rögzíted?", o:["Tiszta erőből meghúzom a pántokat a teljes szigeteléshez.","Csak a kezemmel tartom végig.","A pántokat úgy állítom be, hogy egy ujj könnyedén aláférjen, minimális szivárgás megengedett.","A betegre bízom, hogy tartsa."], a:2, x:"A kényelem és kooperáció fontosabb a 100%-os szigetelésnél. A pántok alá férjen be egy ujj."},
+    {q: "B+ kompetenciával milyen kiegészítő, párhuzamos terápiát végzel?", o:["Lefektetem a beteget.","Vénát biztosítok, EKG-t teszek fel, vérnyomást monitorozok.","Azonnal RSI-hez szükséges gyógyszereket szívok fel.","Telefonos konzultációt kérek intubációhoz."], a:1, x:"A kritikus beteg folyamatos monitorozást és (B+ szinten) vénabiztosítást igényel a gyógyszereléshez."},
+    {q: "A DIMAIR-EVE 40% FiO2-t ad. COPD-s beteg esetén mi a cél oxigénszaturáció?", o:["100%","Minél magasabb, annál jobb","88-92% között","80% felett elegendő"], a:2, x:"COPD akut exacerbatió esetén a cél SpO2 tartomány 88-92%."},
+    {q: "Ha az SpO2 nem éri el a 88%-ot a DIMAIR maszkkal, hogyan emelheted a FiO2-t B/B+ szinten?", o:["Felemelem az áramlást 15 l/percre.","Leválasztom és ballonos lélegeztetést kezdek.","Orrszondát teszek a maszk alá nagyáramlású (15 l/perc) oxigénnel (kettős oxigenizáció).","Nem teszek semmit, 40% a maximum."], a:2, x:"A DIMAIR esetén az áramlás a nyomást emeli, nem az O2 koncentrációt! A FiO2 orrszonda alápárnázásával javítható."},
+    {q: "A beteg állapota javul (RR: 22/perc, SpO2: 90%). Mi a szállítási stratégia?", o:["Helyszínen hagyható.","CPAP folytatása mellett szállítás Olyan célintézménybe, ahol ez folytatható (ISBAR jelentéssel).","Maszk levétele, csak orrszondával szállítás.","Azonnali rohanás, megkülönböztető jelzés nélkül."], a:1, x:"A terápia folytatása mellett kell szállítani a megfelelő fogadóhelyre."}
+  ],
+  sum: "COPD-s betegnél az indikáció (légzési elégtelenség) egyértelmű volt. A vérnyomás stabil volt, így a kontraindikációkat kizártuk. Pszichés vezetéssel előkészítettük a beteget, majd a DIMAIR-EVE maszkkal 5 l/perc (5 vízcm) áramlással kezdtük a terápiát. B+ szinten vénát biztosítottunk és monitoroztunk. Mivel COPD-s a beteg, a cél SpO2 88-92% volt. Ha ez nem elég, orrszondát (kettős oxigenizáció) alkalmazhattunk volna a maszk alatt. A beteget a CPAP fenntartásával, javuló állapotban szállítottuk."
+},
+{
+  id: 2, diff: "B kompetencia", t: "2. Szituáció: Heveny szívelégtelenség (O-Two eszköz)",
+  d: "80 éves nő, éjjel heves nehézlégzésre ébredt. Szörtyzörejek hallhatók. B (szakképzett mentőápoló, nem gyógyszerez) szint.",
+  steps: [
+    {q: "Az ABCDE vizsgálat alatt SpO2 78%, légzés 38/perc, RR 180/100 Hgmm. B kompetenciaszinttel mi a teendő a CPAP indikációját illetően?", o:["Telefonos konzultáció szükséges a CPAP megkezdése előtt.","Heveny szívelégtelenségben a CPAP alkalmazása azonnal ajánlott prehospitálisan, B kompetenciával is.","B szinten CPAP nem kezdhető.","Várom az orvost."], a:1, x:"A heveny szívelégtelenség kifejezett indikáció a korai CPAP alkalmazásra."},
+    {q: "A mentőgépkocsin O-Two CPAP eszköz áll rendelkezésre. Milyen FiO2-t képes ez biztosítani?", o:["Pontosan 100%-ot.","Maximum kb. 60%-ot.","Csak 21%-ot.","30-40%-ot."], a:1, x:"Az O-Two eszköz az oxigént a nyomás generálására is használja, így max. 60% körüli FiO2-t ad."},
+    {q: "Az O-Two eszközzel mekkora kezdő PEEP értéket célozzunk meg?", o:["5-7 vízcm","10 vízcm","15 vízcm","3 vízcm"], a:0, x:"Egyszerű eszközöknél mindig 5-7 vízcm PEEP szinttel kezdünk."},
+    {q: "A 8 vízcm-es CPAP/PEEP eléréséhez az O-Two táblázata alapján mekkora áramlást (l/perc) kell beállítanod a reduktoron?", o:["5 l/perc","8 l/perc","10 l/perc","15 l/perc"], a:2, x:"A táblázat szerint 8 vízcm PEEP-hez 10 l/perc áramlás szükséges az O-Two eszközön."},
+    {q: "A beteg nagyon szorong, fulladásérzése van. Mit mondasz neki, hogy elfogadja a maszkot?", o:["'Sajnos ezt muszáj feltenni, különben megfullad.'","'Tudom, hogy kellemetlen, de kérem, engedje, hogy a légzése a maga ritmusában szépen lelassuljon, segítek Önnek.'","'Vegyen mély levegőket, amennyire csak tud!'","'Próbáljuk meg, talán jó lesz.'"], a:1, x:"A megnyugtató hangszín, az empátia kifejezése és a pozitív vezetés elengedhetetlen a sikerhez."},
+    {q: "Felhelyezted az O-Two maszkot. Mit kell kiemelten monitoroznod a pozitív nyomás bevezetése után?", o:["A vércukorszintet","A vérnyomást (RR), mert a CPAP hemodinamikai instabilitást/vérnyomásesést okozhat","A testhőmérsékletet","A pupillákat"], a:1, x:"A preload csökkenése miatt a perctérfogat és a vérnyomás eshet, ami szívelégtelenségben kritikus lehet."},
+    {q: "10 perc múlva a beteg állapota nem javul kellően. B kompetencia lévén nem gyógyszerezhetsz. Mit teszel a CPAP beállítással?", o:["Leveszem a maszkot és BVM lélegeztetésbe kezdek.","A PEEP értékét 1-2 vízcm-enként óvatosan emelem (max 10-ig), és segélykocsit/telefonos konzultációt kérek.","Hirtelen 20 vízcm-re emelem a PEEP-et.","Tiszta oxigénre kapcsolok CPAP nélkül."], a:1, x:"Ha nem javul, a PEEP óvatosan (1-2 vízcm) emelhető, és magasabb szintű segítség (segélykocsi) kérése kötelező."},
+    {q: "Az SpO2 még mindig csak 85%. O-Two eszköz esetén hogyan tudod növelni az oxigenizációt (FiO2)?", o:["A nyomásszelep tekerésével.","Magasabb PEEP beállításával.","Több oxigénpalack esetén orrszondát helyezek a maszk alá nagyáramlású (15 l/perc) O2-vel.","Az O-Two eszköznél ez nem lehetséges."], a:2, x:"Kettős oxigenizációval (orrszonda a maszk alá) javítható az oxigénkoncentráció egyszerű eszközök esetén."},
+    {q: "A beteg hirtelen hányni kezd a maszk alatt. Mi a teendő?", o:["Gyorsan megemelem a CPAP nyomást, hogy visszaszorítsam a hányadékot.","Azonnal leveszem a maszkot, légutat biztosítok, leszívom a váladékot (kontraindikáció lépett fel).","Felszólítom, hogy nyelje le.","Pszichésen megnyugtatom."], a:1, x:"A hányás, légútvédelmi képtelenség abszolút kontraindikációja a CPAP-nak. Maszk le, légútbiztosítás!"},
+    {q: "Szerencsére a leszívás után a beteg kitisztult. CPAP helyett (mivel már kontraindikált) mit alkalmazol az ALS egység érkezéséig?", o:["Ismét felrakom a CPAP-ot.","Kettős oxigenizációt (nem visszalégző maszk + orrszonda O2) vagy eszközös/BVM lélegeztetést, ha a légzés elégtelenné válik.","Semmit, várom az orvost.","Sima orrszondát 2 l/perc O2-vel."], a:1, x:"Maszk intolerancia/hányás esetén CPAP meghiúsul; oxigenizáció más módon (kettős O2) vagy intubációs előkészület (ballon) kell."}
+  ],
+  sum: "Heveny szívelégtelenségben a korai CPAP (itt O-Two eszközzel) életmentő volt. B kompetenciával is azonnal indítható! Beállítottuk a kezdő 5-7 vízcm PEEP-hez szükséges (10 l/perc = 8 vízcm) áramlást. Fontos volt a pszichés vezetés, és a vérnyomás szoros monitorozása a hemodinamikai hatások miatt. Mivel a FiO2 nem volt 100%, orrszondával (kettős oxigenizáció) javítottuk az értékeket. A szituáció végén bekövetkező hányás (légútvédelmi képtelenség) azonnal kontraindikálta a CPAP folytatását, így a maszkot levettük és légutat biztosítottunk."
+}
+];
+
+// --- STATE ---
+let QState = { idx: 0, score: 0, ans: null, done: false };
+let SState = { id: null, idx: 0, hist: [], sel: null };
+let CState = { w: 70, dFlow: 5, oFlow: 8 };
+
+// --- NAV ---
+window.go = function(id) {
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('act'));
+  let btn = document.querySelector(`.nb[onclick="go('${id}')"]`);
+  if (btn) btn.classList.add('act');
+  
+  let out = '';
+  if (id === 'home') out = getHome();
+  if (id === 'theory') out = getTheory();
+  if (id === 'flash') out = getFlash();
+  if (id === 'quiz') { QState = { idx: 0, score: 0, ans: null, done: false }; out = getQuiz(); }
+  if (id === 'sim') { SState.id = null; out = getSims(); }
+  if (id === 'calc') out = getCalc();
+  
+  document.getElementById('ct').innerHTML = out;
+  window.scrollTo(0, 0);
+};
+
+// --- GLOSSARY ---
+window.showGlo = function(term) {
+  let cleanTerm = term.replace(/[^a-zA-Z0-9-]/g, '');
+  for(let k in GLO) {
+    if(k.toLowerCase() === cleanTerm.toLowerCase() || term.includes(k)) {
+      document.getElementById('gloT').innerText = k;
+      document.getElementById('gloD').innerText = GLO[k];
+      document.getElementById('gloMod').style.display = 'flex';
+      return;
+    }
+  }
+};
+window.closeGlo = function(e, force=false) {
+  if(force || e.target.id === 'gloMod') {
+    document.getElementById('gloMod').style.display = 'none';
+  }
+};
+
+// --- VIEWS ---
+function getHome() {
+  return `
+    <h1>Non-invazív Lélegeztetés (CPAP/NIV)</h1>
+    <div style="font-size:13px;color:var(--text-mut);margin-bottom:1.5rem;">Prehospitális eljárásrend alapján (B / B+ kompetencia)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="card" style="cursor:pointer;margin-bottom:0;" onclick="go('theory')">
+        <div style="font-size:24px;margin-bottom:5px;">📚</div>
+        <div style="font-weight:700;">Tananyag</div>
+        <div style="font-size:11px;color:var(--text-mut)">Eljárásrend lépései</div>
+      </div>
+      <div class="card" style="cursor:pointer;margin-bottom:0;" onclick="go('quiz')">
+        <div style="font-size:24px;margin-bottom:5px;">❓</div>
+        <div style="font-weight:700;">Kvíz</div>
+        <div style="font-size:11px;color:var(--text-mut)">Tudásellenőrzés</div>
+      </div>
+      <div class="card" style="cursor:pointer;margin-bottom:0;" onclick="go('sim')">
+        <div style="font-size:24px;margin-bottom:5px;">🚑</div>
+        <div style="font-weight:700;">Szituációk</div>
+        <div style="font-size:11px;color:var(--text-mut)">Interaktív esetek</div>
+      </div>
+      <div class="card" style="cursor:pointer;margin-bottom:0;" onclick="go('calc')">
+        <div style="font-size:24px;margin-bottom:5px;">🧮</div>
+        <div style="font-weight:700;">Számítások</div>
+        <div style="font-size:11px;color:var(--text-mut)">Áramlás & PEEP</div>
+      </div>
+    </div>
+  `;
+}
+
+function getTheory() {
+  let h = `<h2>Elméleti Tananyag</h2>`;
+  THEORY.forEach(t => {
+    h += `<div class="card"><h3>${t.t}</h3>${t.b}</div>`;
+  });
+  return h;
+}
+
+let FCState = { i: 0, flipped: false };
+window.flipC = function() { FCState.flipped = !FCState.flipped; document.getElementById('ct').innerHTML = getFlash(); };
+window.nextC = function(dir) { 
+  FCState.i = (FCState.i + dir + CARDS.length) % CARDS.length; 
+  FCState.flipped = false; 
+  document.getElementById('ct').innerHTML = getFlash(); 
+};
+function getFlash() {
+  let c = CARDS[FCState.i];
+  return `
+    <h2>Kártyák (${FCState.i+1} / ${CARDS.length})</h2>
+    <div class="flip" onclick="flipC()">
+      ${FCState.flipped 
+        ? `<div style="color:var(--prim);font-weight:700;margin-bottom:10px;">Válasz</div><div style="font-size:14px;white-space:pre-line;">${c.b}</div>` 
+        : `<div style="font-size:16px;font-weight:600;">${c.f}</div><div style="font-size:11px;color:var(--text-mut);margin-top:15px;">Kattints a fordításhoz</div>`}
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-fw" onclick="nextC(-1)">Előző</button>
+      <button class="btn btn-fw" onclick="nextC(1)">Következő</button>
+    </div>
+  `;
+}
+
+window.ansQ = function(i) {
+  if(QState.ans !== null) return;
+  QState.ans = i;
+  if(i === QUIZ[QState.idx].a) QState.score++;
+  document.getElementById('ct').innerHTML = getQuiz();
+};
+window.nextQz = function() {
+  QState.idx++;
+  QState.ans = null;
+  if(QState.idx >= QUIZ.length) QState.done = true;
+  document.getElementById('ct').innerHTML = getQuiz();
+};
+function getQuiz() {
+  if(QState.done) {
+    let pct = Math.round(QState.score / QUIZ.length * 100);
+    return `
+      <h2>Kvíz Eredmény</h2>
+      <div class="res-box">
+        <div style="font-size:36px;color:var(--prim);font-weight:700;">${QState.score} / ${QUIZ.length}</div>
+        <div>Eredmény: ${pct}%</div>
+      </div>
+      <button class="btn btn-g btn-fw" style="margin-top:1rem;" onclick="go('quiz')">Újrakezdés</button>
+    `;
+  }
+  let q = QUIZ[QState.idx];
+  let h = `
+    <h2>Kvíz (${QState.idx+1} / ${QUIZ.length})</h2>
+    <div class="prog"><div class="progb" style="width:${(QState.idx/QUIZ.length)*100}%"></div></div>
+    <div class="card"><div style="font-size:15px;font-weight:600;margin-bottom:5px;">${q.q}</div></div>
+  `;
+  q.o.forEach((opt, i) => {
+    let cls = 'opt';
+    if(QState.ans !== null) {
+      if(i === q.a) cls += ' opt-ok';
+      else if(i === QState.ans) cls += ' opt-no';
+    }
+    h += `<button class="${cls}" ${QState.ans===null?`onclick="ansQ(${i})"`:''}>${opt}</button>`;
+  });
+  if(QState.ans !== null) {
+    h += `<div class="al al-i">${q.x}</div>`;
+    h += `<button class="btn btn-g btn-fw" onclick="nextQz()">Következő</button>`;
+  }
+  return h;
+}
+
+window.startS = function(id) { SState.id = id; SState.idx = 0; SState.hist = []; SState.sel = null; document.getElementById('ct').innerHTML = getSims(); };
+window.ansS = function(i) {
+  if(SState.sel !== null) return;
+  SState.sel = i;
+  SState.hist.push(i);
+  document.getElementById('ct').innerHTML = getSims();
+};
+window.nextS = function() {
+  let sim = SIMS.find(s => s.id === SState.id);
+  SState.idx++;
+  SState.sel = null;
+  document.getElementById('ct').innerHTML = getSims();
+};
+function getSims() {
+  if(SState.id === null) {
+    let h = `<h2>Szituációs Gyakorlatok</h2>`;
+    SIMS.forEach(s => {
+      h += `
+        <button class="btn btn-fw" style="text-align:left;margin-bottom:10px;padding:1rem;" onclick="startS(${s.id})">
+          <div style="font-size:14px;color:var(--prim);margin-bottom:4px;">${s.diff}</div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px;">${s.t}</div>
+          <div style="font-size:12px;color:var(--text-mut);font-weight:400;">${s.d}</div>
+        </button>`;
+    });
+    return h;
+  }
+  
+  let sim = SIMS.find(s => s.id === SState.id);
+  if(SState.idx >= sim.steps.length) {
+    let pts = 0;
+    SState.hist.forEach((ans, i) => { if(ans === sim.steps[i].a) pts++; });
+    return `
+      <h2>Eredmény: ${sim.t}</h2>
+      <div class="res-box">
+        <div style="font-size:32px;color:var(--prim);font-weight:700;">${pts} / ${sim.steps.length}</div>
+        <div style="font-size:12px;">helyes döntés</div>
+      </div>
+      <div class="al al-i" style="margin-top:1rem;"><b>Részletes Összefoglaló:</b><br><br>${sim.sum}</div>
+      <button class="btn btn-fw" style="margin-top:1rem;" onclick="go('sim')">Vissza a szituációkhoz</button>
+    `;
+  }
+  
+  let step = sim.steps[SState.idx];
+  let html = `
+    <div style="font-size:12px;color:var(--prim);margin-bottom:5px;">Lépés ${SState.idx+1} / ${sim.steps.length}</div>
+    <div class="prog"><div class="progb" style="width:${(SState.idx/sim.steps.length)*100}%"></div></div>
+    <div class="card"><div style="font-size:14px;font-weight:600;">${step.q}</div></div>
+  `;
+  step.o.forEach((opt, i) => {
+    let cls = 'opt';
+    if(SState.sel !== null) {
+      if(i === step.a) cls += ' opt-ok';
+      else if(i === SState.sel) cls += ' opt-no';
+    }
+    html += `<button class="${cls}" ${SState.sel===null?`onclick="ansS(${i})"`:''}>${opt}</button>`;
+  });
+  
+  if(SState.sel !== null) {
+    html += `<div class="al ${SState.sel===step.a?'al-s':'al-d'}">${step.x}</div>`;
+    html += `<button class="btn btn-g btn-fw" onclick="nextS()">${SState.idx===sim.steps.length-1?'Befejezés és Értékelés':'Következő lépés'}</button>`;
+  }
+  return html;
+}
+
+// --- CALC ---
+// Élő frissítés eseménykezelője, ami csak a DOM-elemek tartalmát cseréli, így a beviteli mező nem veszíti el a fókuszt
+window.updLive = function(f, val) {
+  let numVal = parseFloat(val);
+  if(isNaN(numVal)) numVal = 0; // Biztonsági visszaesés, ha üres a mező
+  CState[f] = numVal;
+
+  if (f === 'w') {
+    let vtMin = CState.w * 7;
+    let vtMax = CState.w * 10;
+    let resVt = document.getElementById('res_vt');
+    if (resVt) resVt.innerHTML = vtMin + " - " + vtMax + " ml";
+  }
+
+  if (f === 'dFlow') {
+    let dFlowMap = {5:{p:5,f:40}, 6:{p:7,f:40}, 7:{p:9,f:40}, 8:{p:11,f:40}, 9:{p:14,f:40}, 10:{p:16,f:40}, 11:{p:19,f:40}};
+    let dRes = dFlowMap[CState.dFlow] || {p:"?",f:"?"};
+    
+    let lblDFlow = document.getElementById('lbl_dFlow');
+    if (lblDFlow) lblDFlow.innerHTML = CState.dFlow;
+    
+    let resDp = document.getElementById('res_d_p');
+    if (resDp) resDp.innerHTML = "PEEP: " + dRes.p + " vízcm";
+    
+    let resDf = document.getElementById('res_d_f');
+    if (resDf) resDf.innerHTML = "FiO2: ~" + dRes.f + "%";
+  }
+
+  if (f === 'oFlow') {
+    let oFlowMap = {8:{p:5,f:54}, 9:{p:7,f:57}, 10:{p:8,f:59}, 12:{p:10,f:62}, 15:{p:15,f:67}, 20:{p:20,f:73}, 25:{p:25,f:77}};
+    let keys = Object.keys(oFlowMap).map(Number);
+    let closestO = keys.reduce((a, b) => Math.abs(b - CState.oFlow) < Math.abs(a - CState.oFlow) ? b : a);
+    let oRes = oFlowMap[closestO];
+    
+    let lblOFlow = document.getElementById('lbl_oFlow');
+    if (lblOFlow) lblOFlow.innerHTML = CState.oFlow;
+
+    let resOp = document.getElementById('res_o_p');
+    if (resOp) resOp.innerHTML = "CPAP: ~" + oRes.p + " vízcm";
+
+    let resOf = document.getElementById('res_o_f');
+    if (resOf) resOf.innerHTML = "FiO2: ~" + oRes.f + "%";
+
+    let resOc = document.getElementById('res_o_c');
+    if (resOc) resOc.innerHTML = "(A legközelebbi táblázatos érték alapján: " + closestO + " l/perc)";
+  }
+};
+
+function getCalc() {
+  let vtMin = CState.w * 7;
+  let vtMax = CState.w * 10;
+  
+  let dFlowMap = {5:{p:5,f:40}, 6:{p:7,f:40}, 7:{p:9,f:40}, 8:{p:11,f:40}, 9:{p:14,f:40}, 10:{p:16,f:40}, 11:{p:19,f:40}};
+  let dRes = dFlowMap[CState.dFlow] || {p:"?",f:"?"};
+  
+  let oFlowMap = {8:{p:5,f:54}, 9:{p:7,f:57}, 10:{p:8,f:59}, 12:{p:10,f:62}, 15:{p:15,f:67}, 20:{p:20,f:73}, 25:{p:25,f:77}};
+  let closestO = Object.keys(oFlowMap).reduce((a, b) => Math.abs(b - CState.oFlow) < Math.abs(a - CState.oFlow) ? b : a);
+  let oRes = oFlowMap[closestO];
+
+  return `
+    <h2>Számítások és Kalkulátorok</h2>
+    
+    <div class="card">
+      <h3>Légzési térfogat (VT) Célérték</h3>
+      <div style="font-size:12px;color:var(--text-mut);margin-bottom:10px;">Cél: 7-10 ml/ttkg</div>
+      <div class="c-row">
+        <span style="font-size:13px;">Testtömeg (kg):</span>
+        <input type="number" style="width:100px;" value="${CState.w}" oninput="updLive('w', this.value)">
+      </div>
+      <div class="res-box" style="padding:10px;">
+        <span id="res_vt" style="font-size:20px;font-weight:700;color:var(--prim);">${vtMin} - ${vtMax} ml</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>DIMAIR-EVE CPAP</h3>
+      <div style="font-size:12px;color:var(--text-mut);margin-bottom:10px;">Áramlás vs. PEEP beállítás</div>
+      <div class="c-row">
+        <span style="font-size:13px;">Áramlás (l/perc): <b id="lbl_dFlow">${CState.dFlow}</b></span>
+        <input type="range" min="5" max="11" step="1" style="width:150px;accent-color:var(--prim);" value="${CState.dFlow}" oninput="updLive('dFlow', this.value)">
+      </div>
+      <div class="res-box" style="padding:10px;">
+        <div id="res_d_p" style="font-size:18px;font-weight:700;color:var(--prim);">PEEP: ${dRes.p} vízcm</div>
+        <div id="res_d_f" style="font-size:12px;">FiO2: ~${dRes.f}%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>O-Two Eszköz</h3>
+      <div class="c-row">
+        <span style="font-size:13px;">Áramlás (l/perc): <b id="lbl_oFlow">${CState.oFlow}</b></span>
+        <input type="range" min="8" max="25" step="1" style="width:150px;accent-color:var(--prim);" value="${CState.oFlow}" oninput="updLive('oFlow', this.value)">
+      </div>
+      <div class="res-box" style="padding:10px;">
+        <div id="res_o_p" style="font-size:18px;font-weight:700;color:var(--prim);">CPAP: ~${oRes.p} vízcm</div>
+        <div id="res_o_f" style="font-size:12px;">FiO2: ~${oRes.f}%</div>
+        <div id="res_o_c" style="font-size:10px;margin-top:5px;color:var(--text-mut);">(A legközelebbi táblázatos érték alapján: ${closestO} l/perc)</div>
+      </div>
+    </div>
+  `;
+}
+
+// Init
+go('home');
+</script>
+</body>
+</html>

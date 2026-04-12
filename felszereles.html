@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Minimum Felszerelés</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+--bg:#0f1117;--bg2:#181c27;--bg3:#1e2336;
+--border:#2a2f45;--border2:#363c58;
+--text:#e8eaf0;--text2:#9ba3bf;--text3:#6b7280;
+--acc:#3b82f6;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:var(--bg);min-height:100vh;}
+.nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.4);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#60a5fa;}
+.ni{font-size:15px;}
+.nl{font-size:9px;color:var(--text3);font-weight:400;}
+.nb.act .nl{color:#60a5fa;font-weight:600;}
+.ct{padding:1rem;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:var(--text);}
+.card-btn:hover{background:var(--bg3);}
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#2d1515;color:#fca5a5;border:1px solid #7f1d1d;}
+.al-w{background:#2d2008;color:#fcd34d;border:1px solid #78350f;}
+.al-i{background:#0f1f3d;color:#93c5fd;border:1px solid #1e3a6e;}
+.al-s{background:#0f2d1a;color:#86efac;border:1px solid #166534;}
+.note{font-size:12px;color:var(--text2);padding:.5rem .75rem;background:var(--bg3);border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid var(--border);}
+.sub{font-size:13px;font-weight:600;color:var(--text2);margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:var(--text);line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#0f1f3d;border-radius:8px;margin-bottom:5px;font-size:13px;color:#93c5fd;line-height:1.5;border-left:3px solid #3b82f6;}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg3);}
+table.tbl td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text2);}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+.prog{height:4px;background:var(--border2);border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+.btn{padding:.55rem 1rem;border:1px solid var(--border2);border-radius:8px;background:var(--bg3);cursor:pointer;font-size:13px;color:var(--text);font-family:inherit;transition:all .15s;}
+.btn:hover{background:var(--border);}
+.btn-b{background:#1d4ed8;color:#fff;border-color:#1d4ed8;}
+.btn-b:hover{background:#1e40af;}
+.btn-r{background:#dc2626;color:#fff;border-color:#dc2626;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-g{background:#16a34a;color:#fff;border-color:#16a34a;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid var(--border);border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:var(--text);background:var(--bg2);font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:var(--bg3);}
+.opt-ok{background:#0f2d1a!important;border-color:#166534!important;color:#86efac!important;cursor:default!important;}
+.opt-no{background:#2d1515!important;border-color:#7f1d1d!important;color:#fca5a5!important;cursor:default!important;}
+.flip{border:2px solid var(--border2);border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:var(--bg2);}
+.flip.on{border-color:#7c3aed;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+.ch-row{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:var(--text);}
+.ch-row:hover{background:var(--bg3);}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-b{background:#1e3a6e;color:#93c5fd;}
+.tag-y{background:#2d2008;color:#fcd34d;}
+.tag-r{background:#2d1515;color:#fca5a5;}
+.tag-g{background:#0f2d1a;color:#86efac;}
+/* CHECKLIST */
+.cl-item{display:flex;align-items:flex-start;gap:10px;padding:.5rem .75rem;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:background .15s;}
+.cl-item:hover{background:var(--bg3);}
+.cl-item.checked{background:#0f2d1a;}
+.cl-box{flex-shrink:0;width:20px;height:20px;border-radius:4px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s;color:transparent;}
+.cl-box.on{background:#16a34a;border-color:#16a34a;color:#fff;}
+.cl-txt{font-size:13px;color:var(--text);line-height:1.5;}
+.cl-txt.on{text-decoration:line-through;color:var(--text3);}
+.cl-qty{font-size:11px;color:var(--text3);margin-left:auto;flex-shrink:0;padding-left:6px;}
+.star{color:#fbbf24;font-size:11px;}
+/* DRUG TABLE */
+.drug-row{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.drug-name{font-size:12px;font-weight:600;color:var(--text);flex:1;}
+.drug-dose{font-size:11px;color:var(--text2);text-align:right;flex-shrink:0;}
+/* DICTIONARY MODAL */
+.dict-w{color:#60a5fa;text-decoration:underline dotted;cursor:pointer;font-weight:600;transition:color .15s;}
+.dict-w:hover{color:#93c5fd;}
+.modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-bg.show{opacity:1;pointer-events:all;}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;width:100%;max-width:400px;box-shadow:0 10px 25px rgba(0,0,0,0.5);transform:translateY(20px);transition:transform .2s;}
+.modal-bg.show .modal-box{transform:translateY(0);}
+.m-title{font-size:16px;font-weight:700;color:#60a5fa;margin-bottom:8px;}
+.m-desc{font-size:14px;color:var(--text);line-height:1.5;margin-bottom:1rem;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('check')"><span class="ni">✔</span><span class="nl">Ellenőrzés</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('drugs')"><span class="ni">💊</span><span class="nl">Gyógyszer</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div id="dict-mod" class="modal-bg" onclick="hideDict(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div id="dict-t" class="m-title"></div>
+    <div id="dict-d" class="m-desc"></div>
+    <button class="btn btn-fw" onclick="hideDict()">Bezárás</button>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var CL={bag:null,checked:{}};
+
+// ── TANANYAG ──────────────────────────────────────────────────────
+var CDATA=[
+{id:'celok',title:'Célok és Háttér',icon:'🎯',acc:'#1d4ed8',secs:[
+{t:'I. Célok',bk:[
+{tp:'bl',items:['A beteg feltalálási helyéhez mindenképpen helyszínre juttatandó felszerelések meghatározása','A felszerelés táskákban elhelyezett mennyiségének és elrendezésének meghatározása','Fő alapelv: általában egyetlen, bármilyen életkorú és állapotú beteg ellátásához megfelelő minőségű és mennyiségű felszerelés meghatározása']},
+]},
+{t:'II. Háttér',bk:[
+{tp:'bl',items:['A korszerű helyszíni sürgősségi ellátás megkívánja, hogy a kritikus vagy instabil állapotú betegek ellátásához szükséges felszerelés időben rendelkezésre álljon','A bejelentési információ nem enged egyértelműen következtetni a beteg tényleges állapotára – azt a mentőegység csak helyszínre érkezéskor tapasztalja meg','A kiérkezéskor instabil állapotú beteg esetében a felszerelés hiánya az ellátás késlekedéséhez, további állapotromláshoz vezethet','Az egységes, magas szintű ellátás érdekében a meghatározott minőségű és mennyiségű minimum felszerelést kell MINDEN esetben a beteg feltalálási helyére juttatni']},
+]}
+]},
+{id:'minimum',title:'Minimum Felszerelés Áttekintése',icon:'🎒',acc:'#1d4ed8',secs:[
+{t:'III. A beteg feltalálási helyére juttatandó minimum felszerelés',bk:[
+{tp:'al',lv:'w',tx:'A táskák tartalma SZIGORÚAN MEGHATÁROZOTT. Csak az OMSZ-nál rendszeresített eszköz, készítmény lehet bennük. Ettől eltérni kizárólag az Orvos Igazgató engedélyével lehetséges!'},
+{tp:'sub',tx:'BLS egység (mentőápoló + gépkocsivezető):'},
+{tp:'kr',items:['1. Mentőhátizsák (ABCD-táska) – kötelező','2. Félautomata külső defibrillátor (AED) – kötelező','3. Motoros váladékszívó – amennyiben rendelkezésre áll','4. Betegfigyelő monitor – amennyiben rendelkezésre áll']},
+{tp:'sub',tx:'ALS egység (orvos / mentőtiszt):'},
+{tp:'kr',items:['1. AB-táska – kötelező','2. CD-táska – kötelező','3. Defibrillátor-monitor egység – kötelező','4. Motoros váladékszívó – kötelező']},
+{tp:'note',tx:'A beteg feltalálási helyére juttatandó felszerelés minden egység esetében kiegészülhet a bejelentés alapján várható beavatkozásokhoz szükséges egyéb eszközökkel: trauma táska, lapáthordágy, buborékfólia, head-block, perfúzor stb.'},
+{tp:'note',tx:'A csillaggal jelölt (*) eszközök nem kötelező elemek, azonban rendelkezésre állás esetén ELHELYEZENDŐEK!'}
+]}
+]},
+{id:'abcd',title:'Mentőhátizsák (ABCD-táska)',icon:'🟢',acc:'#16a34a',secs:[
+{t:'A mentőhátizsák általános leírása',bk:[
+{tp:'al',lv:'s',tx:'A mentőhátizsák (ABCD-táska) meghatározott rendben tartalmaz minden eszközt (életkortól függetlenül), mely szükséges lehet az ABCDE szerinti betegvizsgálathoz, légútbiztosításhoz, lélegeztetéshez, vérzéscsillapításhoz, vénabiztosításhoz, szülésvezetéshez.\n\nTartalmazza az összes mentőápolói kompetenciaszinten belül alkalmazható betegellátáshoz szükséges GYÓGYSZERT is.'},
+{tp:'sub',tx:'Belső elrendezés (felső rész):'},
+{tp:'bl',items:['Szülészeti csomag (felső sarokban)','EH védőkesztyű, védőszemüveg, szájmaszk','NPA: 4, 6, 7 mm; OPA: 00, 0, 1, 2, 3, 4','Oxigénpalack reduktorral (2 l)','Tűledobó henger','Váladékszívó, durva leszívó toldattal (Yankauer)','(Felnőtt) lélegeztető ballon, rezervoárral, maszkok, oxigén összekötő cső, PEEP-szelep*, HME-filter*','Nem visszalégző (rezervoáros) oxigénmaszkok, orrszonda','Nebulizátoros maszkok, fenoterol–ipratropium-bromid oldat, szalbutamol, 0,9% NaCl amp.','AeroChamber/Babyhaler*, O-Two*']},
+{tp:'sub',tx:'Belső elrendezés (alsó rész):'},
+{tp:'bl',items:['Műszertartó tok (kötszervágó olló, anatómiai csipesz, testhőmérő)','Vénabiztosító szett (iv. kanülök, fecskendők, tűk, NaCl 0,9% amp., 5x5 cm steril lap/papírvatta)','Ampullatár','Infúziós palack tartó (krisztalloid, infúziós szerelék, iv. kanülök 16G/18G/20G 1-1db, 10 ml NaCl 0,9% amp., 10 ml fecskendő, strangulációs gumi)','Kötszertartó','Leszívó katéterek','Laryngealis maszkok (1-5. méret*)','Fonendoszkóp, TTEKG, vérnyomásmérő, vércukormérő, pulzoximéter','Intraossealis fúró és tűk*']},
+{tp:'sub',tx:'Elülső zsák:'},
+{tp:'bl',items:['AED elhelyezhetőség','Eszközök összegyűjtése helyszínről induláskor','Hulladék összegyűjtése']}
+]},
+{t:'Mentőhátizsák – Diagnosztikai eszközök és légút',bk:[
+{tp:'sub',tx:'Diagnosztikai eszközök:'},
+{tp:'ftable2',rows:[['Fonendoszkóp','1 db'],['Ujjra csíptethető pulzoximéter','1 db'],['Vérnyomásmérő','1 db'],['Vércukormérő','1 db'],['Vércukor stix','1 doboz'],['Testhőmérő','1 db'],['TTEKG','1 db'],['Öntapadó EKG-elektróda (TTEKG-hoz)','3 db']]},
+{tp:'sub',tx:'Légútbiztosítás eszközei:'},
+{tp:'ftable2',rows:[['NPA – nasopharyngealis tubus 4 mm','2 db'],['NPA – nasopharyngealis tubus 6 mm','2 db'],['NPA – nasopharyngealis tubus 7 mm','2 db'],['OPA – oropharyngealis tubus 00-s','1 db'],['OPA – oropharyngealis tubus 1-es','1 db'],['OPA – oropharyngealis tubus 2-es','1 db'],['OPA – oropharyngealis tubus 3-as','1 db'],['OPA – oropharyngealis tubus 4-es','2 db'],['Váladékszívó kézi/taposó','1 db'],['Leszívó katéter 8 Ch','2 db'],['Leszívó katéter 10 Ch','2 db'],['Leszívó katéter 12 Ch','2 db'],['Leszívó katéter 16 Ch','2 db'],['Durva váladékszívó toldalék (Yankauer)','1 db'],['Laryngealis maszk 1-es méret *','1 db'],['Laryngealis maszk 2-es méret *','1 db'],['Laryngealis maszk 3-as méret *','1 db'],['Laryngealis maszk 4-es méret *','1 db'],['Laryngealis maszk 5-ös méret *','1 db']]}
+]},
+{t:'Mentőhátizsák – Lélegeztetés és oxigenizáció',bk:[
+{tp:'sub',tx:'Lélegeztetés eszközei:'},
+{tp:'ftable2',rows:[['Felnőtt lélegeztető ballon, rezervoárral','1 db'],['Gyermek lélegeztető ballon, rezervoárral *','1 db'],['Maszk lélegeztető ballonhoz 0-s méret *','1 db'],['Maszk lélegeztető ballonhoz 1-es méret *','1 db'],['Maszk lélegeztető ballonhoz 2-es méret *','1 db'],['Maszk lélegeztető ballonhoz 3-as méret *','1 db'],['Maszk lélegeztető ballonhoz 4-es méret *','1 db'],['Maszk lélegeztető ballonhoz 5-ös méret','1 db'],['Oxigén összekötő cső lélegeztető ballonhoz','1 db'],['HME-filter, felnőtt *','1 db']]},
+{tp:'sub',tx:'Oxigenizáció, terápia:'},
+{tp:'ftable2',rows:[['Oxigénpalack reduktorral 2 l','1 db'],['Oxigén orrszonda','1 db'],['Oxigén maszk nebulizátorral, felnőtt','1 db'],['Oxigén maszk nebulizátorral, gyerek','1 db'],['Oxigén maszk rezervoárral (nem visszalégző), felnőtt','1 db'],['Oxigén maszk rezervoárral (nem visszalégző), gyerek','1 db'],['O-Two maszk (szeleppel, toldalékcsővel, fejpánttal) *','1 db'],['PEEP szelep *','1 db'],['NaCl 0,9% inj. 10 ml','1 db'],['Fenoterol – ipratropium-bromid oldat','1 db'],['Szalbutamol inhalációs szuszpenzió','1 db'],['AeroChamber/Babyhaler *','1 db'],['CO-riasztó *','1 db']]}
+]},
+{t:'Mentőhátizsák – Vénabiztosítás, vérzéscsillapítás, szülészet',bk:[
+{tp:'sub',tx:'Vénabiztosítás, gyógyszerelés eszközei:'},
+{tp:'ftable2',rows:[['Intravénás kanül 14 G','2 db'],['Intravénás kanül 16 G','3 db'],['Intravénás kanül 18 G','3 db'],['Intravénás kanül 20 G','3 db'],['Intravénás kanül 22 G','2 db'],['Intravénás kanül 24 G','2 db'],['Infúziós szerelék','2 db'],['Ragtapasz','1 db'],['Papírvatta','10 db'],['Krisztalloid infúzió 500 ml','1 db'],['Glükóz 20%','1 db'],['Háromágú csap infúzióhoz','1 db'],['Strangulációs gumi','1 db'],['Dezinficiens bőrfertőtlenítéshez','1 db'],['Fecskendő 5 ml','5 db'],['Fecskendő 10 ml','5 db'],['MAD (fecskendő + gyógyszerporlasztó intranasalis) *','1 db'],['Tű 18 G','10 db'],['Tű 21 G','5 db'],['Tű 22 G','5 db'],['EZ-IO fúró *','1 db'],['EZ-IO piros tű 15 mm *','1 db'],['EZ-IO kék tű 25 mm *','1 db'],['EZ-IO sárga tű 45 mm *','1 db']]},
+{tp:'note',tx:'EZ-IO fúró (és tűk) helyett alternatívan:\nBIG felnőtt méret* (1 db) + BIG gyerek méret* (1 db)'},
+{tp:'sub',tx:'Vérzéscsillapítás:'},
+{tp:'ftable2',rows:[['Steril lapok több méretben','15 db'],['Gyorskötözők több méretben','5 db'],['Speciális vérzéscsillapító kötszer *','1 db'],['Rugalmas csőháló kötszer 5-ös méret *','2 m'],['Rugalmas csőháló kötszer 8-as méret *','2 m'],['Sebfertőtlenítő oldat','1 db'],['Háromszögletű kendő','2 db'],['Tourniquet *','2 db'],['Kötszervágó olló','1 db'],['Anatómiai csipesz','1 db'],['Kocher/Pean (felnőtt)','1 db'],['Rugalmas pólya *','1 db']]},
+{tp:'sub',tx:'Szülészeti csomag:'},
+{tp:'ftable2',rows:[['Újszülött nyákszívó','1 db'],['Izolációs fólia (gyerek méret)','1 db'],['Köldökcsat','2 db'],['5x5 cm steril lap','2 cs.'],['Steril gumikesztyű (több méret)','1-1 pár'],['Polietilén (átlátszó) zsák (sterilen csomagolva)','1 db']]},
+{tp:'sub',tx:'Egyéb:'},
+{tp:'ftable2',rows:[['Tűledobó henger (műanyag)','1 db'],['Egyszerhasználatos vizsgáló kesztyű (több méret)','10 db'],['Védőszemüveg','3 db'],['Szájmaszk','3 db']]}
+]},
+{t:'Mentőhátizsák – Gyógyszerek',bk:[
+{tp:'al',lv:'i',tx:'A mentőhátizsák az összes mentőápolói kompetenciaszinten alkalmazható gyógyszert tartalmazza.'},
+{tp:'ftable2',rows:[['Acetilszalicilsav tabl. 500 mg/tbl.','2 tbl.'],['Adrenalin inj. 1 mg/ml','3 amp.'],['Diazepám rektális oldat 10 mg','1 db'],['Diazepám rektális oldat 5 mg','2 db'],['Glükagon inj. 1 mg','1 db'],['Ibuprofén kúp 60 mg/kúp','2 db'],['Kaptopril tabl. 12,5 mg/tbl.','min. 2 tbl.'],['Klopidogrél tabl. 75 mg/tbl.','8 tbl.'],['Metamizol-nátrium inj. 1 g/2 ml','2 amp.'],['Midazolám inj. 5 mg/1 ml *','2 amp.'],['Nátrium-klorid 0,9% inj. 10 ml','4 amp.'],['Nitroglicerin 0,4 mg/dózis','1 db'],['Prednizon kúp 30 mg/kúp','2 db']]}
+]}
+]},
+{id:'aed',title:'AED és tartozékai',icon:'⚡',acc:'#dc2626',secs:[
+{t:'2. sz. függelék – Félautomata külső defibrillátor (AED)',bk:[
+{tp:'ftable2',rows:[['AED készülék','1 db'],['Egyszerhasználatos öntapadó defibrillátor elektróda, felnőtt','1 pár'],['Egyszerhasználatos öntapadó defibrillátor elektróda, gyerek *','1 pár'],['EKG-monitor kábel (LIFEPAK 1000 esetén) *','1 db'],['Öntapadó EKG-elektróda (LIFEPAK 1000 esetén) *','12 db']]},
+{tp:'al',lv:'w',tx:'GYERMEK ELEKTRÓDA: Gyermek méretű (0-8 év / 0-25 kg) öntapadó defibrillátor elektróda KIZÁRÓLAG LIFEPAK 500/1000 típusú AED készülékekhez használható!\n\nNEM használható LIFEPAK 12/15 típusú készülékekhez, AED üzemmódban sem!'},
+{tp:'al',lv:'d',tx:'FONTOS! A LIFEPAK 12/15 típusú készülékekhez tartozó gyermek méretű Pediatric QUIK-COMBO (RTS) elektródák NEM használhatóak AED készülékekhez!'}
+]}
+]},
+{id:'monitor',title:'Betegfigyelő Monitor',icon:'📟',acc:'#7c3aed',secs:[
+{t:'3. sz. függelék – Betegfigyelő monitor és tartozékai',bk:[
+{tp:'note',tx:'Amennyiben rendelkezésre áll – BLS egységek számára.'},
+{tp:'ftable2',rows:[['Betegfigyelő monitor','1 db'],['Vérnyomásmérő mandzsetta, felnőtt','1 db'],['Pulzoximéter, felnőtt','1 db'],['EKG-monitor kábel *','1 db'],['Öntapadó EKG-elektróda *','12 db']]}
+]}
+]},
+{id:'szivo',title:'Motoros Váladékszívó',icon:'🔴',acc:'#dc2626',secs:[
+{t:'4. sz. függelék – Motoros váladékszívó',bk:[
+{tp:'bl',items:['Akkumulátorról működtethető, elektromos váladékszívó berendezés','Merev leszívó toldattal csatlakoztatva']},
+{tp:'al',lv:'i',tx:'Az OMSZ-nál elsődlegesen rendszeresített motoros váladékszívó:\nBoscarol OB 2012 FA\n\nMind ALS egységek, mind BLS egységek tartozéka. A korábban használt motoros váladékszívók csak ennek hiányában használhatóak.'}
+]}
+]},
+{id:'abtaska',title:'AB-táska',icon:'🔴',acc:'#dc2626',secs:[
+{t:'5. sz. függelék – Az AB-táska leírása',bk:[
+{tp:'al',lv:'i',tx:'Az AB-táska meghatározott rendben és mennyiségben tartalmazza a légzésvizsgálathoz, légútbiztosításhoz, oxigén- és inhalációs terápiához, lélegeztetéshez szükséges eszközöket.\n\nElválaszthatatlan részét képezi az emelt szintű légútbiztosítás eszközeit tartalmazó „TERÍTŐTÁSKA".'},
+{tp:'sub',tx:'Belső elrendezés:'},
+{tp:'bl',items:['NPA: 4, 6, 7 mm; OPA: 00, 1, 2, 3, 4','Oxigénpalack reduktorral','Váladékszívó, durva leszívó toldattal','(Felnőtt) lélegeztető ballon: rezervoárral, maszkok (4,5), oxigén összekötő cső, PEEP-szelep, (felnőtt) HME-filter','(Gyermek) lélegeztető ballon: rezervoárral, maszkok (0,1,2,3), (gyermek) HME-filter','Nebulizátoros maszkok, fenoterol–ipratrópium-bromid oldat, szalbutamol, 0,9% NaCl, O-Two','Nem visszalégző (rezervoáros) oxigénmaszk (felnőtt, gyermek), orrszonda','AeroChamber/Babyhaler*','Nasalis kapnográf (felnőtt, gyermek)*']},
+{tp:'sub',tx:'Terítőtáska (alsó rész):'},
+{tp:'bl',items:['Leszívó katéterek','Conicotomia-szett','Thoracostomia-szett','Veszélyes hulladék tároló zsák (sárga zsák)','Intravénás kanül 14 G, sebészi varrótű, fonal*','Magill-fogók (felnőtt, gyermek*)','Tubusrögzítő szalagok','Lapocok (Macintosh, Miller)','Laringoszkóp nyél','Kapnográf szenzor, HME-filter (felnőtt, gyermek), kolorimetrikus eszköz*','Oropharyngealis tubusok','Endotrachealis tubusok (teljes méretsor)','RSI-csekklista, NPA-k, RSI-dózistáblázat, gyomorszonda (felnőtt, gyermek)*','Fecskendő 20 ml','Ampullatár, fecskendőcsomag']}
+]},
+{t:'AB-táska – Minimumfelszerelés részletezve',bk:[
+{tp:'sub',tx:'Diagnosztikai eszközök:'},
+{tp:'ftable2',rows:[['Ujjra csíptethető pulzoximéter *','1 db'],['Nasalis kapnográf szenzor, felnőtt *','1 db'],['Nasalis kapnográf szenzor, gyermek *','1 db']]},
+{tp:'sub',tx:'Légútbiztosítás:'},
+{tp:'ftable2',rows:[['NPA 4 mm','2 db'],['NPA 6 mm','2 db'],['NPA 7 mm','2 db'],['OPA 00-s','1 db'],['OPA 0-s','1 db'],['OPA 1-es','1 db'],['OPA 2-es','1 db'],['OPA 3-as','1 db'],['OPA 4-es','1 db'],['Váladékszívó kézi/taposó','1 db'],['Leszívó katéter 8 Ch','3 db'],['Leszívó katéter 10 Ch','3 db'],['Leszívó katéter 12 Ch','3 db'],['Leszívó katéter 16 Ch','3 db'],['Durva váladékszívó toldalék (Yankauer)','1 db'],['Laryngealis maszk 1-es méret','1 db'],['Laryngealis maszk 2-es méret','1 db'],['Laryngealis maszk 3-as méret','1 db'],['Laryngealis maszk 4-es méret','1 db'],['Laryngealis maszk 5-es méret','1 db']]},
+{tp:'sub',tx:'Lélegeztetés:'},
+{tp:'ftable2',rows:[['Felnőtt lélegeztető ballon, rezervoárral','1 db'],['Gyermek lélegeztető ballon, rezervoárral','1 db'],['Maszk lélegeztető ballonhoz 0-s','1 db'],['Maszk lélegeztető ballonhoz 1-es','1 db'],['Maszk lélegeztető ballonhoz 2-es','1 db'],['Maszk lélegeztető ballonhoz 3-as','1 db'],['Maszk lélegeztető ballonhoz 4-es','1 db'],['Maszk lélegeztető ballonhoz 5-ös','1 db'],['PEEP-szelep','1 db'],['Oxigén összekötő cső lélegeztető ballonhoz','1 db'],['HME-filter, felnőtt','1 db'],['HME-filter, gyermek','1 db']]},
+{tp:'sub',tx:'Oxigenizáció, terápia:'},
+{tp:'ftable2',rows:[['Oxigénpalack reduktorral 2 l','1 db'],['Oxigén orrszonda','1 db'],['Oxigén maszk nebulizátorral, felnőtt','1 db'],['Oxigén maszk nebulizátorral, gyermek','1 db'],['Oxigén maszk rezervoárral (nem visszalégző), felnőtt','2 db'],['Oxigén maszk rezervoárral (nem visszalégző), gyermek','2 db'],['O-Two maszk *','1 db'],['NaCl 0,9% inj. 10 ml','1 db'],['Fenoterol – ipratropium-bromid oldat','1 db'],['Szalbutamol inhalációs szuszpenzió','1 db'],['AeroChamber/Babyhaler *','1 db'],['Intravénás kanül 14 G (thoracostomia tűhöz)','2 db'],['Thoracostomia-szett','1 db'],['Conicotomia-szett','1 db'],['Terítőtáska','1 db'],['Bougie tároló henger','1 db'],['CO-riasztó *','1 db']]}
+]},
+{t:'AB-táska – Thoracostomia, Conicotomia, Terítőtáska',bk:[
+{tp:'sub',tx:'Thoracostomia-szett tartalma:'},
+{tp:'ftable2',rows:[['EH steril szike 22-es méret','1 db'],['Pean gyermek','1 db'],['Pean felnőtt','1 db'],['Steril kesztyű 7-es méret','1 pár'],['Steril kesztyű 8-as méret','1 pár'],['Sebfertőtlenítő oldat','1 db']]},
+{tp:'sub',tx:'Conicotomia-szett tartalma:'},
+{tp:'ftable2',rows:[['EH steril szike 22-es méret','1 db'],['Tracheatágító','1 db'],['Endotrachealis tubus 6 mm cuffos','1 db'],['Steril kesztyű 7-es méret','1 pár'],['Steril kesztyű 8-as méret','1 pár']]},
+{tp:'sub',tx:'Terítőtáska tartalma:'},
+{tp:'ftable2',rows:[['Kapnográf szenzor','1 db'],['Kolorimetrikus eszköz *','1 db'],['Laringoszkóp Macintosh-lapoc 2-es','1 db'],['Laringoszkóp Macintosh-lapoc 3-as','1 db'],['Laringoszkóp Macintosh-lapoc 4-es','2 db'],['Laringoszkóp Macintosh-lapoc 5-ös *','1 db'],['Laringoszkóp Miller-lapoc 1-es','1 db'],['Laringoszkóp nyél','2 db'],['Tubusrögzítő szalag','2 db'],['ET tubus 2,0 mm (cuff nélküli)','1 db'],['ET tubus 2,5 mm (cuff nélküli)','1 db'],['ET tubus 3,0 mm (cuff nélküli)','1 db'],['ET tubus 3,5 mm (cuff nélküli)','1 db'],['ET tubus 4,0 mm (cuffos)','1 db'],['ET tubus 4,5 mm (cuffos)','1 db'],['ET tubus 5,0 mm (cuffos)','1 db'],['ET tubus 6,0 mm (cuffos)','1 db'],['ET tubus 7,0 mm (cuffos)','1 db'],['ET tubus 8,0 mm (cuffos)','2 db'],['Gyomorszonda felnőtt *','1 db'],['Gyomorszonda gyermek *','1 db'],['RSI-dózistáblázat','1 db'],['RSI-csekklista','1 db'],['20 ml fecskendő','1 db'],['NPA 4 mm','2 db'],['NPA 6 mm','2 db'],['NPA 7 mm','2 db'],['OPA 00-s','1 db'],['OPA 0-s','1 db'],['OPA 1-es','1 db'],['OPA 2-es','1 db'],['OPA 3-as','1 db'],['OPA 4-es','1 db'],['HME-filter felnőtt','1 db'],['HME-filter gyermek','1 db'],['Magill-fogó felnőtt','1 db'],['Magill-fogó gyermek *','1 db'],['Ampullatár (fix)','1 db']]},
+{tp:'sub',tx:'Bougie tároló henger tartalma:'},
+{tp:'ftable2',rows:[['Bougie 15 Ch','2 db'],['Bougie 10 Ch','1 db']]},
+{tp:'sub',tx:'Egyéb az AB-táskában:'},
+{tp:'ftable2',rows:[['Veszélyes hulladék tároló zsák (sárga zsák)','1 db'],['Szemetes zsák','1 db'],['Alkoholos filctoll *','1 db'],['Sebészi varrótű *','1 db'],['Sebészi fonal *','1 db']]}
+]},
+{t:'AB-táska – Ampullatár gyógyszerek (RSI)',bk:[
+{tp:'al',lv:'d',tx:'Az AB-táska ampullatára kizárólag RSI/emelt szintű légútbiztosítás gyógyszereit tartalmazza!'},
+{tp:'ftable2',rows:[['Atropin inj. 1 mg/1 ml','1 amp.'],['Etomidát inj. 20 mg/10 ml','1 amp.'],['Fentanil inj. 250 µg/5 ml','1 amp.'],['Ketamin inj. 500 mg/10 ml','1 amp.'],['Rokurónium inj. 50 mg/5 ml','2 amp.'],['Szukcinilkolin inj. 100 mg/2 ml','2 amp.'],['Fecskendőcsomag matricákkal (felnőtt) *','1 cs.'],['Fecskendőcsomag matricákkal (gyermek) *','1 cs.'],['10 ml fecskendő','2 db'],['Injekciós tű 18 G','2 db'],['NaCl 0,9% inj. 10 ml','3 amp.']]},
+{tp:'note',tx:'RSI fecskendőcsomagok hiányában szükséges még:\nFecskendő 1 ml × 3 db\nFecskendő 2 ml × 2 db\nFecskendő 10 ml × 2 db\nFecskendő 20 ml × 1 db\nTű 18 G × 8 db'}
+]}
+]},
+{id:'cdtaska',title:'CD-táska',icon:'🔵',acc:'#1d4ed8',secs:[
+{t:'6. sz. függelék – A CD-táska leírása',bk:[
+{tp:'al',lv:'i',tx:'A CD-táska meghatározott rendben és mennyiségben tartalmazza azokat az eszközöket és gyógyszereket, amelyek a keringés és az idegrendszer vizsgálatához, vénabiztosításhoz, vérzéscsillapításhoz, szülésvezetéshez, valamint a beteg ellátásához szükségesek.'},
+{tp:'sub',tx:'Belső elrendezés:'},
+{tp:'bl',items:['Szülészeti csomag','Intraossealis fúró és tűk','Ampullatár','Tűledobó henger','Krisztalloid infúziók, infúziós szerelékek','Vérnyomásmérő, TTEKG, vércukormérő','Műszertartó tok (kötszervágó olló, anatómiai csipesz, szike, Kocher/Pean*, testhőmérő)','Kötszertartó','Vénabiztosító szett','Infúziós palack tartók','Gumikesztyűk']}
+]},
+{t:'CD-táska – Diagnosztikai eszközök és vénabiztosítás',bk:[
+{tp:'sub',tx:'Diagnosztikai eszközök:'},
+{tp:'ftable2',rows:[['Fonendoszkóp','1 db'],['Vérnyomásmérő','1 db'],['Vércukormérő','1 db'],['Vércukor stix','1 doboz'],['Hőmérő','1 db'],['Fa spatula','3 db'],['TTEKG','1 db']]},
+{tp:'sub',tx:'Vénabiztosításhoz szükséges eszközök:'},
+{tp:'ftable2',rows:[['Intravénás kanül 14 G','2 db'],['Intravénás kanül 16 G','4 db'],['Intravénás kanül 18 G','4 db'],['Intravénás kanül 20 G','4 db'],['Intravénás kanül 22 G','2 db'],['Intravénás kanül 24 G','2 db'],['Infúziós szerelék','3 db'],['Ragtapasz','1 db'],['Papírvatta','10 db'],['Krisztalloid infúzió 500 ml','2 db'],['Glükóz 5%','1 db'],['Glükóz 20%','1 db'],['Háromágú csap infúzióhoz','2 db'],['Strangulációs gumi','1 db'],['Bőrfertőtlenítő oldat','1 db'],['Fecskendő 2 ml','5 db'],['Fecskendő 5 ml','5 db'],['Fecskendő 10 ml','5 db'],['Tű 18 G','5 db'],['Tű 20 G','5 db'],['Tű 21 G','5 db'],['EZ-IO fúró','1 db'],['EZ-IO piros tű 15 mm','1 db'],['EZ-IO kék tű 25 mm','1 db'],['EZ-IO sárga tű 45 mm','1 db']]},
+{tp:'note',tx:'EZ-IO fúró (és tűk) helyett alternatívan:\nBIG felnőtt méret (1 db) + BIG gyermek méret (1 db)'}
+]},
+{t:'CD-táska – Vérzéscsillapítás, szülészet, egyéb',bk:[
+{tp:'sub',tx:'Vérzéscsillapítás eszközei:'},
+{tp:'ftable2',rows:[['Steril lapok több méretben','15 db'],['Gyorskötözők több méretben','5 db'],['Speciális vérzéscsillapító kötszer *','1 db'],['Rugalmas csőháló kötszer 5-ös méret *','2 m'],['Rugalmas csőháló kötszer 8-as méret *','2 m'],['Sebfertőtlenítő oldat','1 db'],['Háromszögletű kendő','2 db'],['Tourniquet *','2 db'],['Kötszervágó olló','1 db'],['Anatómiai csipesz','1 db'],['EH steril szike 22-es méret','1 db'],['Kocher/Pean felnőtt *','1 db'],['Hólyagkatéter *','2 db'],['Rugalmas pólya *','2 db']]},
+{tp:'sub',tx:'Szülészeti csomag:'},
+{tp:'ftable2',rows:[['Újszülött nyákszívó','1 db'],['Izolációs fólia (gyerek méret)','1 db'],['Köldökcsat','2 db'],['5x5 cm steril lap','2 cs.'],['Steril gumikesztyű (több méret)','1-1 pár'],['Polietilén (átlátszó) zsák (sterilen csomagolva)','1 db']]},
+{tp:'sub',tx:'Egyéb:'},
+{tp:'ftable2',rows:[['Tűledobó henger (műanyag)','1 db'],['Broselow-szalag *','1 db'],['Katéterzsák *','2 db'],['Egyszerhasználatos vizsgáló kesztyű (több méret)','15 db'],['Védőszemüveg','4 db'],['Szájmaszk','4 db']]}
+]},
+{t:'CD-táska – Ampullatár gyógyszerek (1. rész)',bk:[
+{tp:'al',lv:'w',tx:'Fontos! Az ampullatárban kábítószer csak meghatározott mennyiségben helyezhető el. A Kábítószer Kezelési Szabályzatban a kocsik páncélkazettájába rendszeresített mennyiségű kábítószereket a Szabályzatnak megfelelően kell tárolni.'},
+{tp:'sub',tx:'CD-táska gyógyszerek (A–M):'},
+{tp:'ftable2',rows:[['Acetilszalicilsav tabl. 500 mg/tbl.','min. 2 tabl.'],['Adenozin inj. 6 mg/3 ml','5 amp.'],['Adrenalin inj. 1 mg/1 ml','10 amp.'],['Amiodaron inj. 150 mg/3 ml','3 amp.'],['Atropin inj. 1 mg/1 ml','3 amp.'],['Ceftriaxon 1 g por oldathoz','2 amp.'],['Diazepám rektális oldat 10 mg','1 oldat'],['Diazepám rektális oldat 5 mg','2 oldat'],['Dobutamin 250 mg por oldathoz','1 amp.'],['Drotaverin inj. 40 mg/2 ml','2 amp.'],['Fenitoin inj. 250 mg/5 ml','5 amp.'],['Fenoterol–ipratrópium-bromid oldat','1 üveg'],['Fentanil inj. 250 µg/5 ml','1 amp.'],['Furoszemid inj. 20 mg/2 ml','5 amp.'],['Glükagon inj. 1 mg','1 db'],['Haloperidol inj. 5 mg/1 ml','2 amp.'],['Ibuprofén kúp 60 mg/kúp','2 végbélkúp'],['Kalcium inj. 500 mg/5 ml','3 amp.'],['Kaptopril tabl. 12,5 mg/tbl.','min. 3 tabl.'],['Ketamin inj. 500 mg/10 ml','1 amp.'],['Klopidogrél tabl. 75 mg/tbl.','8 tabl.'],['Klórpiramin inj. 20 mg/1 ml','1 amp.'],['Lidokain inj. 1% 100 mg/10 ml','1 amp.']]}
+]},
+{t:'CD-táska – Ampullatár gyógyszerek (2. rész)',bk:[
+{tp:'sub',tx:'CD-táska gyógyszerek (M–V):'},
+{tp:'ftable2',rows:[['Magnézium inj. 1 g/10 ml','4 amp.'],['Metamizol-nátrium inj. 1 g/2 ml','2 amp.'],['Metilprednizolon inj. 40 mg','3 amp.'],['Metoklopramid inj. 10 mg/2 ml','1 amp.'],['Metoprolol inj. 5 mg/5 ml','3 amp.'],['Midazolám inj. 5 mg/1 ml','3 amp.'],['Morfin inj. 1% 10 mg/1 ml','2 amp.'],['Naloxon inj. 0,4 mg/1 ml','2 amp.'],['Nátrium-bikarbonát inj. 8,4% 10 ml','6 amp.'],['– VAGY – Nátrium-bikarbonát inj. 8,4% 20 ml','3 amp.'],['Nátrium-heparin inj. 25 000 NE/5 ml','1 amp.'],['NaCl inj. 0,9% 10 ml','5 amp.'],['Nitroglicerin 0,4 mg/expozíció aerosol','1 db'],['Nitroglicerin inj. 10 mg/10 ml','1 amp.'],['Noradrenalin inj. 1 mg/1 ml','2 amp.'],['Oxitocin inj. 5 NE/1 ml','2 amp.'],['Prednizon kúp 30 mg/kúp','2 végbélkúp'],['Propofol inj. 1% 200 mg/20 ml','1 amp.'],['Szalbutamol inhalációs szuszpenzió','1 tartály'],['Terbutalin inj. 0,5 mg/1 ml','1 amp.'],['Tranexámsav inj. 500 mg/5 ml','2 amp.'],['Urapidil inj. 25 mg/5 ml','1 amp.'],['Verapamil inj. 5 mg/2 ml','2 amp.']]},
+{tp:'note',tx:'Az ampullatárban javasolt MAD- és perfúzor-dózistáblázat* elhelyezése.'}
+]}
+]},
+{id:'defib',title:'Defibrillátor-Monitor Egység',icon:'❤',acc:'#dc2626',secs:[
+{t:'7. sz. függelék – Defibrillátor-monitor egység és tartozékai',bk:[
+{tp:'ftable2',rows:[['Vérnyomásmérő mandzsetta, felnőtt','1 db'],['Vérnyomásmérő mandzsetta, felnőtt, nagy méret *','1 db'],['Vérnyomásmérő mandzsetta, gyermek','1 db'],['Vérnyomásmérő mandzsetta, csecsemő *','1 db'],['Pulzoximéter, felnőtt','1 db'],['Pulzoximéter, gyermek *','1 db'],['Pulzoximéter, csecsemő *','1 db'],['EKG-monitor kábel (4-elvezetéses)','1 db'],['12-elvezetéses EKG kiegészítő kábel (6-elvezetéses)','1 db'],['Öntapadó EKG-elektróda','20 db'],['EKG-csipesz *','4 db'],['Mellkasi EKG-elektródák *','6 db'],['Maghőmérő szenzor *','1 db'],['Toldókábel maghőmérőhöz *','1 db'],['Kapnográf','1 db'],['Egyszerhasználatos öntapadó defibrillátor elektróda, felnőtt','1 pár'],['Egyszerhasználatos öntapadó defibrillátor elektróda, gyerek','1 pár'],['Terápiás kábel (felragasztható elektródához)','1 db'],['Defibrillátor lapát, felnőtt','1 pár'],['EKG-zselé','1 db'],['EKG-papír (tartalék)','1 db']]},
+{tp:'note',tx:'A gyermek defibrillátor lapát* (1 pár) helyét a rendelkezésre álló tér alapján határozzuk meg: defibrillátor-monitor egység táskája, ill. AB- vagy CD-táska.'},
+{tp:'al',lv:'d',tx:'FONTOS! A LIFEPAK 12/15 típusú készülékekhez tartozó gyermek méretű Pediatric QUIK-COMBO (RTS) elektródák NEM használhatóak AED készülékekhez!'}
+]}
+]},
+{id:'trauma',title:'Trauma Táska',icon:'🟡',acc:'#d97706',secs:[
+{t:'8. sz. függelék – Trauma táska (emelt szintű mentőegységek részére)',bk:[
+{tp:'al',lv:'w',tx:'Egységesen tartalmazza a nyakrögzítés, végtagrögzítés, medencerögzítés eszközeit.\n\nEmelt szintű (ALS) mentőegységek számára kötelező!'},
+{tp:'sub',tx:'Rögzítő eszközök:'},
+{tp:'ftable2',rows:[['Merev nyaki gallér, állítható (felnőtt)','2 db'],['Merev nyaki gallér, állítható (gyermek)','2 db'],['Medencerögzítő','1 db'],['Húzósín','min. 1 db'],['Végtagrögzítő (több méret)','min. 2 db']]},
+{tp:'note',tx:'A feltüntetett felszerelések leírt mennyiségben történő elhelyezése az egységes táska hiányában is kötelező.'}
+]}
+]}
+];
+
+// ── FLASHCARDS ────────────────────────────────────────────────────
+var CARDS=[
+{cat:'Általános',f:'Mi a BLS egység minimum felszerelése a beteg feltalálási helyére?',b:'1. Mentőhátizsák (ABCD-táska) – kötelező\n2. AED – kötelező\n3. Motoros váladékszívó – ha rendelkezésre áll\n4. Betegfigyelő monitor – ha rendelkezésre áll'},
+{cat:'Általános',f:'Mi az ALS egység minimum felszerelése a beteg feltalálási helyére?',b:'1. AB-táska – kötelező\n2. CD-táska – kötelező\n3. Defibrillátor-monitor egység – kötelező\n4. Motoros váladékszívó – kötelező'},
+{cat:'Általános',f:'Mit jelentenek a csillaggal (*) jelölt eszközök az eljárásrendben?',b:'NEM kötelező elemek, AZONBAN rendelkezésre állás esetén ELHELYEZENDŐK a táskában.'},
+{cat:'Általános',f:'Mikor kell a BLS egységnek is trauma tréninget vinni?',b:'A trauma táska nem automatikus – a bejelentés alapján várható beavatkozásokhoz szükséges esetén kell vinni (trauma esetén, lapáthordágy, buborékfólia, head-block stb.).'},
+{cat:'Mentőhátizsák',f:'Mit tartalmaz a mentőhátizsák általánosan?',b:'Minden eszközt (életkortól függetlenül), mely szükséges lehet:\n• ABCDE szerinti betegvizsgálathoz\n• légútbiztosításhoz\n• lélegeztetéshez\n• vérzéscsillapításhoz\n• vénabiztosításhoz\n• szülésvezetéshez\n\n+ Az összes mentőápolói kompetenciaszinten belül alkalmazható gyógyszert.'},
+{cat:'Mentőhátizsák',f:'Milyen OPA méretek találhatók a mentőhátizsákban?',b:'OPA: 00, 0, 1, 2, 3, 4 (4-esből 2 db, a többiből 1-1 db)'},
+{cat:'Mentőhátizsák',f:'Milyen NPA méretek találhatók a mentőhátizsákban?',b:'NPA: 4 mm (2 db), 6 mm (2 db), 7 mm (2 db)'},
+{cat:'Mentőhátizsák',f:'Mekkora az oxigénpalack a mentőhátizsákban?',b:'2 literes oxigénpalack reduktorral – 1 db'},
+{cat:'Mentőhátizsák',f:'Milyen intravénás kanülök találhatók a mentőhátizsákban?',b:'14G (2db), 16G (3db), 18G (3db), 20G (3db), 22G (2db), 24G (2db)'},
+{cat:'Mentőhátizsák',f:'Mik a mentőhátizsák gyógyszerei? (Sorolj fel legalább 8-at!)',b:'Acetilszalicilsav 500mg×2\nAdrenalin 1mg/ml×3\nDiazepám rektális 10mg×1, 5mg×2\nGlükagon 1mg×1\nIbuprofén kúp 60mg×2\nKaptopril 12,5mg×min.2\nKlopidogrél 75mg×8\nMetamizol 1g/2ml×2\nMidazolám 5mg/1ml×2*\nNaCl 0,9% 10ml×4\nNitroglicerin 0,4mg/dózis×1\nPrednizon kúp 30mg×2'},
+{cat:'AED',f:'Milyen AED elektróda típusok NEM kompatibilisek egymással?',b:'LIFEPAK 500/1000 típusú AED-hez való gyermek elektróda (Infant/Child Reduced Energy)\nNEM HASZNÁLHATÓ LIFEPAK 12/15 típusú készülékekhez!\n\nPediatric QUIK-COMBO (RTS) elektróda sem használható AED-hez!'},
+{cat:'AED',f:'Milyen életkorig/testsúlyig vonatkozik a gyermek AED elektróda?',b:'0-8 év / 0-25 kg'},
+{cat:'AB-táska',f:'Mi az AB-táska fő funkciója és mi az elválaszthatatlan része?',b:'Légzésvizsgálathoz, légútbiztosításhoz, oxigén- és inhalációs terápiához, lélegeztetéshez szükséges eszközök.\n\nElválaszthatatlan része: a TERÍTŐTÁSKA (emelt szintű légútbiztosítás eszközei)'},
+{cat:'AB-táska',f:'Milyen endotrachealis tubus méreteket tartalmaz az AB-táska terítőtáskája?',b:'Cuff nélküli: 2,0 / 2,5 / 3,0 / 3,5 mm (1-1 db)\nCuffos: 4,0 / 4,5 / 5,0 / 6,0 / 7,0 mm (1-1 db)\nCuffos 8,0 mm: 2 db'},
+{cat:'AB-táska',f:'Milyen laringoszkóp lapocok találhatók a terítőtáskában?',b:'Macintosh 2-es (1 db)\nMacintosh 3-as (1 db)\nMacintosh 4-es (2 db)\nMacintosh 5-ös* (1 db)\nMiller 1-es (1 db)\nLaringoszkóp nyél (2 db)'},
+{cat:'AB-táska',f:'Milyen gyógyszereket tartalmaz az AB-táska ampullatára?',b:'Atropin 1mg/1ml × 1 amp.\nEtomidát 20mg/10ml × 1 amp.\nFentanil 250µg/5ml × 1 amp.\nKetamin 500mg/10ml × 1 amp.\nRokurónium 50mg/5ml × 2 amp.\nSzukcinilkolin 100mg/2ml × 2 amp.\n\n(RSI/intubációs gyógyszerek!)'},
+{cat:'AB-táska',f:'Mit tartalmaz a thoracostomia-szett?',b:'EH steril szike 22-es méret (1 db)\nPean gyermek (1 db)\nPean felnőtt (1 db)\nSteril kesztyű 7-es (1 pár)\nSteril kesztyű 8-as (1 pár)\nSebfertőtlenítő oldat (1 db)'},
+{cat:'AB-táska',f:'Mit tartalmaz a conicotomia-szett?',b:'EH steril szike 22-es méret (1 db)\nTracheatágító (1 db)\nET tubus 6 mm cuffos (1 db)\nSteril kesztyű 7-es (1 pár)\nSteril kesztyű 8-as (1 pár)'},
+{cat:'CD-táska',f:'Mi a CD-táska fő funkciója?',b:'Keringés és idegrendszer vizsgálatához, vénabiztosításhoz, vérzéscsillapításhoz, szülésvezetéshez, valamint a beteg ellátásához szükséges eszköz és gyógyszerek.'},
+{cat:'CD-táska',f:'Hány ampulla adrenalin van a CD-táskában?',b:'10 ampulla (adrenalin inj. 1 mg/1 ml)\n\nSzemben a mentőhátizsák 3 ampullájával!'},
+{cat:'CD-táska',f:'Milyen opioid szer és mennyi van a CD-táskában?',b:'Morfin inj. 1% 10 mg/1 ml × 2 amp.\nFentanil inj. 250 µg/5 ml × 1 amp.\n(+ Naloxon 0,4 mg/1 ml × 2 amp. antidotumként)'},
+{cat:'CD-táska',f:'Mire való a Tranexámsav a CD-táskában?',b:'Tranexámsav inj. 500 mg/5 ml × 2 amp.\n\nAntifibrinolitikum – súlyos vérzés (pl. trauma) esetén alkalmazható a véralvadás segítésére.'},
+{cat:'Defibrillátor',f:'Milyen mandzsetta méretek vannak a defibrillátor-monitor egységnél?',b:'Felnőtt (1 db)\nFelnőtt, nagy méret* (1 db)\nGyermek (1 db)\nCsecsemő* (1 db)'},
+{cat:'Defibrillátor',f:'Hány öntapadó EKG-elektróda van a defibrillátor-monitor egységnél?',b:'20 db öntapadó EKG-elektróda'},
+{cat:'Trauma táska',f:'Mit tartalmaz a trauma táska és kinek kötelező?',b:'Emelt szintű (ALS) mentőegységek számára kötelező.\n\nTartalom:\n• Merev nyaki gallér, állítható, felnőtt (2 db)\n• Merev nyaki gallér, állítható, gyermek (2 db)\n• Medencerögzítő (1 db)\n• Húzósín (min. 1 db)\n• Végtagrögzítő, több méret (min. 2 db)'},
+{cat:'Trauma táska',f:'Szükséges-e a trauma táska BLS egységeknek?',b:'NEM automatikusan kötelező.\n\nA bejelentés alapján várható beavatkozásokhoz szükséges esetén kell vinni. Az eljárásrend szerint emelt szintű egységek részére kötelező.'},
+{cat:'Szülészeti csomag',f:'Mi van a szülészeti csomagban?',b:'Újszülött nyákszívó (1 db)\nIzolációs fólia, gyerek méret (1 db)\nKöldökcsat (2 db)\n5x5 cm steril lap (2 cs.)\nSteril gumikesztyű (több méret, 1-1 pár)\nPolietilén (átlátszó) zsák, sterilen csomagolva (1 db)'},
+{cat:'Általános',f:'Mikor szükséges az Orvos Igazgató engedélye a felszereléssel kapcsolatban?',b:'Kötelező engedély szükséges:\n1. Ha a táska tartalmától el akarnak térni\n2. Ha nem rendszeresített eszközt terveznek alapítványi úton beszerezni a mentőgépjárműre/táskára\n\nNem engedélyezett: az Orvos Igazgatóság által nem támogatott eszközök használata.'}
+];
+
+// ── QUIZ ──────────────────────────────────────────────────────────
+var QUIZ=[
+{q:'Mi a BLS egység kötelező minimum felszerelése a beteg feltalálási helyére?',opts:['Csak a mentőhátizsák','Mentőhátizsák + AED','Mentőhátizsák, AED + kötelezően a motoros váladékszívó is','AB-táska, CD-táska, defibrillátor'],ok:1,exp:'BLS egységnek kötelező a mentőhátizsák (ABCD-táska) és az AED. A motoros váladékszívó és betegfigyelő monitor csak "amennyiben rendelkezésre áll" alapon.'},
+{q:'Mit jelent a csillaggal (*) jelölt eszköz az eljárásrendben?',opts:['Kötelező eszköz','Elavult, már nem szükséges','Nem kötelező, de rendelkezésre állás esetén elhelyezendő','Kizárólag orvos által kezelhető'],ok:2,exp:'A csillaggal jelölt eszközök nem kötelező elemek, AZONBAN rendelkezésre állás esetén ELHELYEZENDŐK.'},
+{q:'Hány db 4-es méretű OPA (Guedel-tubus) van a mentőhátizsákban?',opts:['1 db','2 db','3 db','4 db'],ok:1,exp:'A mentőhátizsákban OPA: 00(1db), 1(1db), 2(1db), 3(1db), 4(2db). A 4-es méretből 2 db van!'},
+{q:'Melyik kijelentés IGAZ a gyermek AED elektródákra vonatkozóan?',opts:['Bármely LIFEPAK típushoz használható','Kizárólag LIFEPAK 500/1000 típusú AED-hez használható','Kizárólag LIFEPAK 12/15 típusú készülékekhez használható','Szabad váltogatni a felnőtt és gyermek elektróda között'],ok:1,exp:'A gyermek méretű (0-8 év/0-25 kg) öntapadó defibrillátor elektróda KIZÁRÓLAG LIFEPAK 500/1000 típusú AED készülékekhez használható. NEM használható LIFEPAK 12/15 típusú készülékekhez!'},
+{q:'Az AB-táska elválaszthatatlan részét képezi:',opts:['A szülészeti csomag','A terítőtáska (emelt szintű légútbiztosítás eszközei)','A CD-táska ampullatára','A trauma táska'],ok:1,exp:'Az AB-táska elválaszthatatlan részét képezi az emelt szintű légútbiztosítás eszközeit tartalmazó "terítőtáska".'},
+{q:'Hány ampulla adrenalin van a CD-táskában?',opts:['3 amp.','5 amp.','10 amp.','15 amp.'],ok:2,exp:'A CD-táskában adrenalin inj. 1 mg/1 ml: 10 ampulla. A mentőhátizsákban csak 3 ampulla van.'},
+{q:'Mit tartalmaz a conicotomia-szett az AB-táskában?',opts:['Csak szike és tracheatágító','EH steril szike, tracheatágító, ET tubus 6mm cuffos, steril kesztyűk','EH steril szike, Pean fogók, sebfertőtlenítő oldat, steril kesztyűk','ET tubusok teljes méretsor, laringoszkóp lapocok'],ok:1,exp:'A conicotomia-szett tartalma: EH steril szike 22-es méret, tracheatágító, ET tubus 6mm cuffos, steril kesztyű 7-es és 8-as méret.'},
+{q:'Milyen gyógyszerek vannak az AB-táska ampullatárában?',opts:['Kardiovaszkuláris gyógyszerek (adrenalin, amiodaron)','RSI/intubációs gyógyszerek (etomidát, rokurónium, szukcinilkolin stb.)','Csak fájdalomcsillapítók','Az összes mentőápolói hatóköri gyógyszer'],ok:1,exp:'Az AB-táska ampullatára RSI/intubációs gyógyszereket tartalmaz: Atropin, Etomidát, Fentanil, Ketamin, Rokurónium, Szukcinilkolin – és NaCl 0,9% öblítőkként.'},
+{q:'Hány db intravénás kanül (16G) van a CD-táskában?',opts:['2 db','3 db','4 db','5 db'],ok:2,exp:'A CD-táskában: 14G (2db), 16G (4db), 18G (4db), 20G (4db), 22G (2db), 24G (2db). A 16G-ból 4 db van.'},
+{q:'A motoros váladékszívó (Boscarol OB 2012 FA) melyik egységek tartozéka?',opts:['Csak ALS egységeké','Csak BLS egységeké','Mind ALS, mind BLS egységeké','Csak speciális egységeké'],ok:2,exp:'A Boscarol OB 2012 FA MIND ALS egységek, MIND BLS egységek tartozéka. A korábban használt motoros váladékszívók csak ennek hiányában használhatóak.'},
+{q:'A trauma táska melyik egységek számára kötelező?',opts:['Minden mentőegység számára','Kizárólag ALS (emelt szintű) mentőegységek számára','Csak ha traumás beteget szállítanak','A BLS egységek számára is kötelező'],ok:1,exp:'A trauma táska elrendezése: "(emelt szintű mentőegységek részére)" – tehát kizárólag ALS egységek számára kötelező.'},
+{q:'Hány db köldökcsat van a szülészeti csomagban?',opts:['1 db','2 db','3 db','4 db'],ok:1,exp:'A szülészeti csomagban: újszülött nyákszívó (1db), izolációs fólia (1db), köldökcsat (2db), 5x5cm steril lap (2cs.), steril gumikesztyű (1-1 pár), polietilén zsák (1db).'},
+{q:'Melyik gyógyszer van a CD-táskában, de a mentőhátizsákban NINCS?',opts:['Adrenalin','Klopidogrél','Morfin','Kaptopril'],ok:2,exp:'Morfin (inj. 1% 10mg/1ml × 2 amp.) csak a CD-táskában van. A mentőhátizsákban nincs morfin, csak metamizol, adrenalin és a felsorolt egyéb gyógyszerek.'},
+{q:'Hány db öntapadó EKG-elektróda van a defibrillátor-monitor egységnél?',opts:['12 db','15 db','20 db','25 db'],ok:2,exp:'A defibrillátor-monitor egységnél 20 db öntapadó EKG-elektróda található.'},
+{q:'Melyik intravénás folyadék van a mentőhátizsákban?',opts:['Csak krisztalloid infúzió 500ml','Krisztalloid 500ml + Glükóz 20%','Krisztalloid 500ml + Glükóz 5% + Glükóz 20%','Krisztalloid 500ml + Glükóz 5% + Glükóz 10%'],ok:1,exp:'A mentőhátizsákban: krisztalloid infúzió 500ml (1db) + Glükóz 20% (1db). A CD-táskában bővebb a választék: krisztalloid 2db + Glükóz 5% + Glükóz 20%.'},
+{q:'Mit tartalmaz a bougie tároló henger az AB-táskában?',opts:['Bougie 15Ch (1db) + Bougie 10Ch (1db)','Bougie 15Ch (2db) + Bougie 10Ch (1db)','Bougie 15Ch (3db)','Bougie 10Ch (2db) + Bougie 15Ch (2db)'],ok:1,exp:'A bougie tároló henger tartalma: Bougie 15 Ch (2 db) + Bougie 10 Ch (1 db).'},
+{q:'Hány db fecskendő (10 ml) van a mentőhátizsákban?',opts:['2 db','3 db','5 db','10 db'],ok:2,exp:'A mentőhátizsákban fecskendő 5 ml (5db) és fecskendő 10 ml (5db) található.'},
+{q:'Mi az elsődlegesen rendszeresített motoros váladékszívó típusa az OMSZ-nál?',opts:['Boscarol OB 2012 FA','LIFEPAK 15','Yankauer Pro','DeVilbiss 7305'],ok:0,exp:'Az OMSZ-nál elsődlegesen rendszeresített motoros váladékszívó: Boscarol OB 2012 FA.'},
+{q:'Hány db háromszögletű kendő van a mentőhátizsák kötszertartójában?',opts:['1 db','2 db','3 db','4 db'],ok:1,exp:'A kötszertartóban: sebfertőtlenítő oldat, ragtapasz, csőháló kötszer*, gyorskötözők (5db), steril lapok (15db), háromszögletű kendő (2db), tourniquet*, rugalmas pólya*.'},
+{q:'Milyen tranexámsav (Exacyl) mennyiség van a CD-táskában és mi a felhasználási területe?',opts:['1 amp. 250mg/5ml – véralvadás gátlásra','2 amp. 500mg/5ml – antifibrinolitikum, súlyos vérzésnél','3 amp. 100mg/1ml – vérhígításra','Nincs tranexámsav a CD-táskában'],ok:1,exp:'Tranexámsav inj. 500 mg/5 ml × 2 amp. van a CD-táskában. Antifibrinolitikum – súlyos vérzésnél (pl. trauma) alkalmazható a fibrinolízis gátlásával.'}
+];
+
+// ── ELLENŐRZŐLISTA ────────────────────────────────────────────────
+var BAGS={
+abcd:{name:'Mentőhátizsák (ABCD-táska)',color:'#16a34a',icon:'🟢',cats:[
+{cat:'Diagnosztikai eszközök',items:[
+{n:'Fonendoszkóp',q:'1 db',star:false},{n:'Pulzoximéter (ujjra csíptethető)',q:'1 db',star:false},
+{n:'Vérnyomásmérő',q:'1 db',star:false},{n:'Vércukormérő',q:'1 db',star:false},
+{n:'Vércukor stix',q:'1 doboz',star:false},{n:'Testhőmérő',q:'1 db',star:false},
+{n:'TTEKG',q:'1 db',star:false},{n:'Öntapadó EKG-elektróda (TTEKG-hoz)',q:'3 db',star:false}
+]},
+{cat:'Légútbiztosítás',items:[
+{n:'NPA 4 mm',q:'2 db',star:false},{n:'NPA 6 mm',q:'2 db',star:false},{n:'NPA 7 mm',q:'2 db',star:false},
+{n:'OPA 00-s',q:'1 db',star:false},{n:'OPA 1-es',q:'1 db',star:false},{n:'OPA 2-es',q:'1 db',star:false},
+{n:'OPA 3-as',q:'1 db',star:false},{n:'OPA 4-es',q:'2 db',star:false},
+{n:'Váladékszívó kézi/taposó',q:'1 db',star:false},{n:'Leszívó katéter 8 Ch',q:'2 db',star:false},
+{n:'Leszívó katéter 10 Ch',q:'2 db',star:false},{n:'Leszívó katéter 12 Ch',q:'2 db',star:false},
+{n:'Leszívó katéter 16 Ch',q:'2 db',star:false},{n:'Yankauer (durva toldalék)',q:'1 db',star:false},
+{n:'Laryngealis maszk 1-es',q:'1 db',star:true},{n:'Laryngealis maszk 2-es',q:'1 db',star:true},
+{n:'Laryngealis maszk 3-as',q:'1 db',star:true},{n:'Laryngealis maszk 4-es',q:'1 db',star:true},
+{n:'Laryngealis maszk 5-ös',q:'1 db',star:true}
+]},
+{cat:'Lélegeztetés és oxigenizáció',items:[
+{n:'Felnőtt lélegeztető ballon, rezervoárral',q:'1 db',star:false},{n:'Gyermek lélegeztető ballon, rezervoárral',q:'1 db',star:true},
+{n:'Maszk lélegeztető ballonhoz 0-s',q:'1 db',star:true},{n:'Maszk lélegeztető ballonhoz 1-es',q:'1 db',star:true},
+{n:'Maszk lélegeztető ballonhoz 2-es',q:'1 db',star:true},{n:'Maszk lélegeztető ballonhoz 3-as',q:'1 db',star:true},
+{n:'Maszk lélegeztető ballonhoz 4-es',q:'1 db',star:true},{n:'Maszk lélegeztető ballonhoz 5-ös',q:'1 db',star:false},
+{n:'Oxigén összekötő cső lélegeztető ballonhoz',q:'1 db',star:false},{n:'HME-filter, felnőtt',q:'1 db',star:true},
+{n:'Oxigénpalack reduktorral 2 l',q:'1 db',star:false},{n:'Oxigén orrszonda',q:'1 db',star:false},
+{n:'Oxigén maszk nebulizátorral, felnőtt',q:'1 db',star:false},{n:'Oxigén maszk nebulizátorral, gyerek',q:'1 db',star:false},
+{n:'Oxigén maszk rezervoárral (NRL), felnőtt',q:'1 db',star:false},{n:'Oxigén maszk rezervoárral (NRL), gyerek',q:'1 db',star:false},
+{n:'PEEP szelep',q:'1 db',star:true},{n:'O-Two maszk',q:'1 db',star:true},
+{n:'Fenoterol–ipratropium-bromid oldat',q:'1 db',star:false},{n:'Szalbutamol inhalációs szuszpenzió',q:'1 db',star:false},
+{n:'NaCl 0,9% inj. 10 ml',q:'1 db',star:false},{n:'AeroChamber/Babyhaler',q:'1 db',star:true},{n:'CO-riasztó',q:'1 db',star:true}
+]},
+{cat:'Vénabiztosítás és kötszer',items:[
+{n:'IV kanül 14G',q:'2 db',star:false},{n:'IV kanül 16G',q:'3 db',star:false},{n:'IV kanül 18G',q:'3 db',star:false},
+{n:'IV kanül 20G',q:'3 db',star:false},{n:'IV kanül 22G',q:'2 db',star:false},{n:'IV kanül 24G',q:'2 db',star:false},
+{n:'Infúziós szerelék',q:'2 db',star:false},{n:'Krisztalloid infúzió 500 ml',q:'1 db',star:false},
+{n:'Glükóz 20%',q:'1 db',star:false},{n:'Háromágú csap',q:'1 db',star:false},
+{n:'Strangulációs gumi',q:'1 db',star:false},{n:'Fecskendő 5 ml',q:'5 db',star:false},{n:'Fecskendő 10 ml',q:'5 db',star:false},
+{n:'Tű 18G',q:'10 db',star:false},{n:'Tű 21G',q:'5 db',star:false},{n:'Tű 22G',q:'5 db',star:false},
+{n:'Steril lapok több méretben',q:'15 db',star:false},{n:'Gyorskötözők',q:'5 db',star:false},
+{n:'Háromszögletű kendő',q:'2 db',star:false},{n:'Sebfertőtlenítő oldat',q:'1 db',star:false},
+{n:'Kötszervágó olló',q:'1 db',star:false},{n:'Anatómiai csipesz',q:'1 db',star:false},
+{n:'Kocher/Pean felnőtt',q:'1 db',star:false},{n:'Tourniquet',q:'2 db',star:true}
+]},
+{cat:'Gyógyszerek',items:[
+{n:'Acetilszalicilsav 500mg',q:'2 tbl.',star:false},{n:'Adrenalin inj. 1mg/ml',q:'3 amp.',star:false},
+{n:'Diazepám rektális 10mg',q:'1 db',star:false},{n:'Diazepám rektális 5mg',q:'2 db',star:false},
+{n:'Glükagon inj. 1mg',q:'1 db',star:false},{n:'Ibuprofén kúp 60mg',q:'2 db',star:false},
+{n:'Kaptopril 12,5mg',q:'min. 2 tbl.',star:false},{n:'Klopidogrél 75mg',q:'8 tbl.',star:false},
+{n:'Metamizol-nátrium inj. 1g/2ml',q:'2 amp.',star:false},{n:'Midazolám inj. 5mg/1ml',q:'2 amp.',star:true},
+{n:'NaCl 0,9% inj. 10ml',q:'4 amp.',star:false},{n:'Nitroglicerin 0,4mg/dózis',q:'1 db',star:false},
+{n:'Prednizon kúp 30mg',q:'2 db',star:false}
+]},
+{cat:'Szülészeti csomag + egyéb',items:[
+{n:'Újszülött nyákszívó',q:'1 db',star:false},{n:'Izolációs fólia, gyerek méret',q:'1 db',star:false},
+{n:'Köldökcsat',q:'2 db',star:false},{n:'5x5 cm steril lap',q:'2 cs.',star:false},
+{n:'Steril gumikesztyű, több méret',q:'1-1 pár',star:false},{n:'Polietilén zsák (sterilen)',q:'1 db',star:false},
+{n:'Tűledobó henger',q:'1 db',star:false},{n:'Vizsgálókesztyű (több méret)',q:'10 db',star:false},
+{n:'Védőszemüveg',q:'3 db',star:false},{n:'Szájmaszk',q:'3 db',star:false}
+]}
+]},
+aed:{name:'AED és tartozékai',color:'#dc2626',icon:'⚡',cats:[
+{cat:'AED felszerelés',items:[
+{n:'AED készülék',q:'1 db',star:false},
+{n:'Öntapadó defibrillátor elektróda, felnőtt',q:'1 pár',star:false},
+{n:'Öntapadó defibrillátor elektróda, gyerek (0-8 év/0-25 kg)',q:'1 pár',star:true},
+{n:'EKG-monitor kábel (LIFEPAK 1000)',q:'1 db',star:true},
+{n:'Öntapadó EKG-elektróda (LIFEPAK 1000)',q:'12 db',star:true}
+]}
+]},
+abtaska:{name:'AB-táska',color:'#dc2626',icon:'🔴',cats:[
+{cat:'Légútbiztosítás',items:[
+{n:'NPA 4 mm',q:'2 db',star:false},{n:'NPA 6 mm',q:'2 db',star:false},{n:'NPA 7 mm',q:'2 db',star:false},
+{n:'OPA 00-s',q:'1 db',star:false},{n:'OPA 0-s',q:'1 db',star:false},{n:'OPA 1-es',q:'1 db',star:false},
+{n:'OPA 2-es',q:'1 db',star:false},{n:'OPA 3-as',q:'1 db',star:false},{n:'OPA 4-es',q:'1 db',star:false},
+{n:'Váladékszívó kézi/taposó',q:'1 db',star:false},{n:'Leszívó katéter 8 Ch',q:'3 db',star:false},
+{n:'Leszívó katéter 10 Ch',q:'3 db',star:false},{n:'Leszívó katéter 12 Ch',q:'3 db',star:false},
+{n:'Leszívó katéter 16 Ch',q:'3 db',star:false},{n:'Yankauer',q:'1 db',star:false},
+{n:'Laryngealis maszk 1-es',q:'1 db',star:false},{n:'Laryngealis maszk 2-es',q:'1 db',star:false},
+{n:'Laryngealis maszk 3-as',q:'1 db',star:false},{n:'Laryngealis maszk 4-es',q:'1 db',star:false},
+{n:'Laryngealis maszk 5-ös',q:'1 db',star:false}
+]},
+{cat:'Lélegeztetés és oxigenizáció',items:[
+{n:'Felnőtt lélegeztető ballon, rezervoárral',q:'1 db',star:false},{n:'Gyermek lélegeztető ballon, rezervoárral',q:'1 db',star:false},
+{n:'Maszk 0-s',q:'1 db',star:false},{n:'Maszk 1-es',q:'1 db',star:false},{n:'Maszk 2-es',q:'1 db',star:false},
+{n:'Maszk 3-as',q:'1 db',star:false},{n:'Maszk 4-es',q:'1 db',star:false},{n:'Maszk 5-ös',q:'1 db',star:false},
+{n:'PEEP-szelep',q:'1 db',star:false},{n:'Oxigén összekötő cső',q:'1 db',star:false},
+{n:'HME-filter felnőtt',q:'1 db',star:false},{n:'HME-filter gyermek',q:'1 db',star:false},
+{n:'Oxigénpalack reduktorral 2 l',q:'1 db',star:false},{n:'Oxigén orrszonda',q:'1 db',star:false},
+{n:'Oxigén maszk nebulizátorral, felnőtt',q:'1 db',star:false},{n:'Oxigén maszk nebulizátorral, gyermek',q:'1 db',star:false},
+{n:'Oxigén maszk rezervoárral (NRL), felnőtt',q:'2 db',star:false},{n:'Oxigén maszk rezervoárral (NRL), gyermek',q:'2 db',star:false},
+{n:'O-Two maszk',q:'1 db',star:true},{n:'NaCl 0,9% 10 ml',q:'1 db',star:false},
+{n:'Fenoterol–ipratropium-bromid oldat',q:'1 db',star:false},{n:'Szalbutamol inhalációs szuszpenzió',q:'1 db',star:false},
+{n:'AeroChamber/Babyhaler',q:'1 db',star:true}
+]},
+{cat:'Invazív légútbiztosítás',items:[
+{n:'Thoracostomia-szett (komplett)',q:'1 szett',star:false},{n:'Conicotomia-szett (komplett)',q:'1 szett',star:false},
+{n:'Terítőtáska (komplett – laringoszkóp, tubusok, stb.)',q:'1 db',star:false},
+{n:'Bougie tároló henger (15Ch×2 + 10Ch×1)',q:'1 db',star:false},
+{n:'IV kanül 14G (thoracostomia tűhöz)',q:'2 db',star:false}
+]},
+{cat:'AB-táska ampullatár (RSI)',items:[
+{n:'Atropin inj. 1mg/1ml',q:'1 amp.',star:false},{n:'Etomidát inj. 20mg/10ml',q:'1 amp.',star:false},
+{n:'Fentanil inj. 250µg/5ml',q:'1 amp.',star:false},{n:'Ketamin inj. 500mg/10ml',q:'1 amp.',star:false},
+{n:'Rokurónium inj. 50mg/5ml',q:'2 amp.',star:false},{n:'Szukcinilkolin inj. 100mg/2ml',q:'2 amp.',star:false},
+{n:'10 ml fecskendő',q:'2 db',star:false},{n:'Injekciós tű 18G',q:'2 db',star:false},{n:'NaCl 0,9% inj. 10ml',q:'3 amp.',star:false}
+]}
+]},
+cdtaska:{name:'CD-táska',color:'#1d4ed8',icon:'🔵',cats:[
+{cat:'Diagnosztikai eszközök',items:[
+{n:'Fonendoszkóp',q:'1 db',star:false},{n:'Vérnyomásmérő',q:'1 db',star:false},
+{n:'Vércukormérő',q:'1 db',star:false},{n:'Vércukor stix',q:'1 doboz',star:false},
+{n:'Hőmérő',q:'1 db',star:false},{n:'Fa spatula',q:'3 db',star:false},{n:'TTEKG',q:'1 db',star:false}
+]},
+{cat:'Vénabiztosítás',items:[
+{n:'IV kanül 14G',q:'2 db',star:false},{n:'IV kanül 16G',q:'4 db',star:false},{n:'IV kanül 18G',q:'4 db',star:false},
+{n:'IV kanül 20G',q:'4 db',star:false},{n:'IV kanül 22G',q:'2 db',star:false},{n:'IV kanül 24G',q:'2 db',star:false},
+{n:'Infúziós szerelék',q:'3 db',star:false},{n:'Krisztalloid infúzió 500ml',q:'2 db',star:false},
+{n:'Glükóz 5%',q:'1 db',star:false},{n:'Glükóz 20%',q:'1 db',star:false},
+{n:'Háromágú csap',q:'2 db',star:false},{n:'Strangulációs gumi',q:'1 db',star:false},
+{n:'Fecskendő 2ml',q:'5 db',star:false},{n:'Fecskendő 5ml',q:'5 db',star:false},{n:'Fecskendő 10ml',q:'5 db',star:false},
+{n:'Tű 18G',q:'5 db',star:false},{n:'Tű 20G',q:'5 db',star:false},{n:'Tű 21G',q:'5 db',star:false},
+{n:'EZ-IO fúró',q:'1 db',star:false},{n:'EZ-IO piros tű 15mm',q:'1 db',star:false},
+{n:'EZ-IO kék tű 25mm',q:'1 db',star:false},{n:'EZ-IO sárga tű 45mm',q:'1 db',star:false}
+]},
+{cat:'Vérzéscsillapítás + szülészet',items:[
+{n:'Steril lapok több méretben',q:'15 db',star:false},{n:'Gyorskötözők',q:'5 db',star:false},
+{n:'Sebfertőtlenítő oldat',q:'1 db',star:false},{n:'Háromszögletű kendő',q:'2 db',star:false},
+{n:'Tourniquet',q:'2 db',star:true},{n:'Kötszervágó olló',q:'1 db',star:false},
+{n:'Anatómiai csipesz',q:'1 db',star:false},{n:'EH steril szike 22-es',q:'1 db',star:false},
+{n:'Újszülött nyákszívó',q:'1 db',star:false},{n:'Izolációs fólia gyerek méret',q:'1 db',star:false},
+{n:'Köldökcsat',q:'2 db',star:false},{n:'5x5cm steril lap',q:'2 cs.',star:false},
+{n:'Steril gumikesztyű, több méret',q:'1-1 pár',star:false},{n:'Polietilén zsák (sterilen)',q:'1 db',star:false}
+]},
+{cat:'CD-táska gyógyszerek (A–L)',items:[
+{n:'Acetilszalicilsav tabl. 500mg',q:'min. 2 tabl.',star:false},{n:'Adenozin inj. 6mg/3ml',q:'5 amp.',star:false},
+{n:'Adrenalin inj. 1mg/1ml',q:'10 amp.',star:false},{n:'Amiodaron inj. 150mg/3ml',q:'3 amp.',star:false},
+{n:'Atropin inj. 1mg/1ml',q:'3 amp.',star:false},{n:'Ceftriaxon 1g por oldathoz',q:'2 amp.',star:false},
+{n:'Diazepám rektális 10mg',q:'1 oldat',star:false},{n:'Diazepám rektális 5mg',q:'2 oldat',star:false},
+{n:'Dobutamin 250mg por oldathoz',q:'1 amp.',star:false},{n:'Drotaverin inj. 40mg/2ml',q:'2 amp.',star:false},
+{n:'Fenitoin inj. 250mg/5ml',q:'5 amp.',star:false},{n:'Fenoterol–ipratrópium-bromid oldat',q:'1 üveg',star:false},
+{n:'Fentanil inj. 250µg/5ml',q:'1 amp.',star:false},{n:'Furoszemid inj. 20mg/2ml',q:'5 amp.',star:false},
+{n:'Glükagon inj. 1mg',q:'1 db',star:false},{n:'Haloperidol inj. 5mg/1ml',q:'2 amp.',star:false},
+{n:'Ibuprofén kúp 60mg',q:'2 végbélkúp',star:false},{n:'Kalcium inj. 500mg/5ml',q:'3 amp.',star:false},
+{n:'Kaptopril tabl. 12,5mg',q:'min. 3 tabl.',star:false},{n:'Ketamin inj. 500mg/10ml',q:'1 amp.',star:false},
+{n:'Klopidogrél tabl. 75mg',q:'8 tabl.',star:false},{n:'Klórpiramin inj. 20mg/1ml',q:'1 amp.',star:false},
+{n:'Lidokain inj. 1% 100mg/10ml',q:'1 amp.',star:false}
+]},
+{cat:'CD-táska gyógyszerek (M–V)',items:[
+{n:'Magnézium inj. 1g/10ml',q:'4 amp.',star:false},{n:'Metamizol-nátrium inj. 1g/2ml',q:'2 amp.',star:false},
+{n:'Metilprednizolon inj. 40mg',q:'3 amp.',star:false},{n:'Metoklopramid inj. 10mg/2ml',q:'1 amp.',star:false},
+{n:'Metoprolol inj. 5mg/5ml',q:'3 amp.',star:false},{n:'Midazolám inj. 5mg/1ml',q:'3 amp.',star:false},
+{n:'Morfin inj. 1% 10mg/1ml',q:'2 amp.',star:false},{n:'Naloxon inj. 0,4mg/1ml',q:'2 amp.',star:false},
+{n:'Nátrium-bikarbonát inj. 8,4% 10ml',q:'6 amp.',star:false},{n:'Nátrium-heparin inj. 25000NE/5ml',q:'1 amp.',star:false},
+{n:'NaCl inj. 0,9% 10ml',q:'5 amp.',star:false},{n:'Nitroglicerin 0,4mg/expozíció aerosol',q:'1 db',star:false},
+{n:'Nitroglicerin inj. 10mg/10ml',q:'1 amp.',star:false},{n:'Noradrenalin inj. 1mg/1ml',q:'2 amp.',star:false},
+{n:'Oxitocin inj. 5NE/1ml',q:'2 amp.',star:false},{n:'Prednizon kúp 30mg',q:'2 végbélkúp',star:false},
+{n:'Propofol inj. 1% 200mg/20ml',q:'1 amp.',star:false},{n:'Szalbutamol inhalációs szuszpenzió',q:'1 tartály',star:false},
+{n:'Terbutalin inj. 0,5mg/1ml',q:'1 amp.',star:false},{n:'Tranexámsav inj. 500mg/5ml',q:'2 amp.',star:false},
+{n:'Urapidil inj. 25mg/5ml',q:'1 amp.',star:false},{n:'Verapamil inj. 5mg/2ml',q:'2 amp.',star:false}
+]}
+]},
+defib:{name:'Defibrillátor-Monitor Egység',color:'#dc2626',icon:'❤',cats:[
+{cat:'Defibrillátor-monitor tartozékai',items:[
+{n:'Vérnyomásmérő mandzsetta, felnőtt',q:'1 db',star:false},{n:'Vérnyomásmérő mandzsetta, felnőtt nagy méret',q:'1 db',star:true},
+{n:'Vérnyomásmérő mandzsetta, gyermek',q:'1 db',star:false},{n:'Vérnyomásmérő mandzsetta, csecsemő',q:'1 db',star:true},
+{n:'Pulzoximéter, felnőtt',q:'1 db',star:false},{n:'Pulzoximéter, gyermek',q:'1 db',star:true},
+{n:'Pulzoximéter, csecsemő',q:'1 db',star:true},
+{n:'EKG-monitor kábel (4-elvezetéses)',q:'1 db',star:false},{n:'12-elvezetéses EKG kiegészítő kábel',q:'1 db',star:false},
+{n:'Öntapadó EKG-elektróda',q:'20 db',star:false},{n:'EKG-csipesz',q:'4 db',star:true},
+{n:'Mellkasi EKG-elektródák',q:'6 db',star:true},{n:'Maghőmérő szenzor',q:'1 db',star:true},
+{n:'Toldókábel maghőmérőhöz',q:'1 db',star:true},{n:'Kapnográf',q:'1 db',star:false},
+{n:'Defibrillátor elektróda öntapadó, felnőtt',q:'1 pár',star:false},
+{n:'Defibrillátor elektróda öntapadó, gyerek',q:'1 pár',star:false},
+{n:'Terápiás kábel (felragasztható elektródához)',q:'1 db',star:false},
+{n:'Defibrillátor lapát, felnőtt',q:'1 pár',star:false},
+{n:'EKG-zselé',q:'1 db',star:false},{n:'EKG-papír (tartalék)',q:'1 db',star:false}
+]}
+]},
+trauma:{name:'Trauma Táska (ALS)',color:'#d97706',icon:'🟡',cats:[
+{cat:'Rögzítő eszközök',items:[
+{n:'Merev nyaki gallér állítható (felnőtt)',q:'2 db',star:false},{n:'Merev nyaki gallér állítható (gyermek)',q:'2 db',star:false},
+{n:'Medencerögzítő',q:'1 db',star:false},{n:'Húzósín',q:'min. 1 db',star:false},
+{n:'Végtagrögzítő (több méret)',q:'min. 2 db',star:false}
+]}
+]}
+};
+
+// ── DRUG REFERENCE ────────────────────────────────────────────────
+var DRUGDATA={
+mentohatizsak:{name:'Mentőhátizsák (BLS)',color:'#16a34a',drugs:[
+['Acetilszalicilsav tabl.','500 mg/tbl.','2 tbl.'],
+['Adrenalin inj.','1 mg/ml','3 amp.'],
+['Diazepám rektális oldat','10 mg','1 db'],
+['Diazepám rektális oldat','5 mg','2 db'],
+['Glükagon inj.','1 mg','1 db'],
+['Ibuprofén kúp','60 mg/kúp','2 db'],
+['Kaptopril tabl.','12,5 mg/tbl.','min. 2 tbl.'],
+['Klopidogrél tabl.','75 mg/tbl.','8 tbl.'],
+['Metamizol-nátrium inj.','1 g/2 ml','2 amp.'],
+['Midazolám inj. *','5 mg/1 ml','2 amp.'],
+['NaCl inj. 0,9%','10 ml','4 amp.'],
+['Nitroglicerin','0,4 mg/dózis','1 db'],
+['Prednizon kúp','30 mg/kúp','2 db']
+]},
+abtaska:{name:'AB-táska (RSI gyógyszerek)',color:'#dc2626',drugs:[
+['Atropin inj.','1 mg/1 ml','1 amp.'],
+['Etomidát inj.','20 mg/10 ml','1 amp.'],
+['Fentanil inj.','250 µg/5 ml','1 amp.'],
+['Ketamin inj.','500 mg/10 ml','1 amp.'],
+['Rokurónium inj.','50 mg/5 ml','2 amp.'],
+['Szukcinilkolin inj.','100 mg/2 ml','2 amp.'],
+['NaCl inj. 0,9%','10 ml','3 amp.']
+]},
+cdtaska:{name:'CD-táska (ALS)',color:'#1d4ed8',drugs:[
+['Acetilszalicilsav tabl.','500 mg/tbl.','min. 2 tabl.'],
+['Adenozin inj.','6 mg/3 ml','5 amp.'],
+['Adrenalin inj.','1 mg/1 ml','10 amp.'],
+['Amiodaron inj.','150 mg/3 ml','3 amp.'],
+['Atropin inj.','1 mg/1 ml','3 amp.'],
+['Ceftriaxon por oldathoz','1 g','2 amp.'],
+['Diazepám rektális','10 mg','1 db'],
+['Diazepám rektális','5 mg','2 db'],
+['Dobutamin por oldathoz','250 mg','1 amp.'],
+['Drotaverin inj.','40 mg/2 ml','2 amp.'],
+['Fenitoin inj.','250 mg/5 ml','5 amp.'],
+['Fenoterol–ipratrópium-bromid','oldat','1 üveg'],
+['Fentanil inj.','250 µg/5 ml','1 amp.'],
+['Furoszemid inj.','20 mg/2 ml','5 amp.'],
+['Glükagon inj.','1 mg','1 db'],
+['Haloperidol inj.','5 mg/1 ml','2 amp.'],
+['Ibuprofén kúp','60 mg/kúp','2 db'],
+['Kalcium inj.','500 mg/5 ml','3 amp.'],
+['Kaptopril tabl.','12,5 mg/tbl.','min. 3 tabl.'],
+['Ketamin inj.','500 mg/10 ml','1 amp.'],
+['Klopidogrél tabl.','75 mg/tbl.','8 tabl.'],
+['Klórpiramin inj.','20 mg/1 ml','1 amp.'],
+['Lidokain inj. 1%','100 mg/10 ml','1 amp.'],
+['Magnézium inj.','1 g/10 ml','4 amp.'],
+['Metamizol-nátrium inj.','1 g/2 ml','2 amp.'],
+['Metilprednizolon inj.','40 mg','3 amp.'],
+['Metoklopramid inj.','10 mg/2 ml','1 amp.'],
+['Metoprolol inj.','5 mg/5 ml','3 amp.'],
+['Midazolám inj.','5 mg/1 ml','3 amp.'],
+['Morfin inj. 1%','10 mg/1 ml','2 amp.'],
+['Naloxon inj.','0,4 mg/1 ml','2 amp.'],
+['Nátrium-bikarbonát inj. 8,4%','10 ml','6 amp.'],
+['Nátrium-heparin inj.','25 000 NE/5 ml','1 amp.'],
+['NaCl inj. 0,9%','10 ml','5 amp.'],
+['Nitroglicerin aerosol','0,4 mg/expozíció','1 db'],
+['Nitroglicerin inj.','10 mg/10 ml','1 amp.'],
+['Noradrenalin inj.','1 mg/1 ml','2 amp.'],
+['Oxitocin inj.','5 NE/1 ml','2 amp.'],
+['Prednizon kúp','30 mg/kúp','2 db'],
+['Propofol inj. 1%','200 mg/20 ml','1 amp.'],
+['Szalbutamol inhalációs szuszpenzió','','1 tartály'],
+['Terbutalin inj.','0,5 mg/1 ml','1 amp.'],
+['Tranexámsav inj.','500 mg/5 ml','2 amp.'],
+['Urapidil inj.','25 mg/5 ml','1 amp.'],
+['Verapamil inj.','5 mg/2 ml','2 amp.']
+]}
+};
+
+// ── DICTIONARY (SZÓTÁR) ───────────────────────────────────────────
+var DICT=[
+{w:'ALS',d:'Advanced Life Support – Emelt szintű mentőegység vagy ellátás.'},
+{w:'BLS',d:'Basic Life Support – Alapszintű mentőegység vagy ellátás.'},
+{w:'AED',d:'Automated External Defibrillator – Félautomata külső defibrillátor.'},
+{w:'NPA',d:'Nasopharyngealis tubus – Orrgaratba vezethető légútbiztosító eszköz.'},
+{w:'OPA',d:'Oropharyngealis tubus (Guedel-tubus) – Szájgaratba vezethető légútbiztosító eszköz.'},
+{w:'PEEP',d:'Positive End-Expiratory Pressure – Pozitív kilégzés végi nyomás (szelep).'},
+{w:'HME',d:'Heat and Moisture Exchanger – Hő- és nedvességcserélő, antibakteriális lélegeztetőszűrő.'},
+{w:'RSI',d:'Rapid Sequence Intubation – Gyors szekvenciájú intubálás (sürgősségi altatás és légútbiztosítás).'},
+{w:'TTEKG',d:'Transtelefonikus EKG – Távdiagnosztikára (EKG-görbe továbbítására) alkalmas EKG készülék.'},
+{w:'cuff',d:'Felfújható rögzítő mandzsetta (pl. endotrachealis tubus végén).'},
+{w:'cuffos',d:'Felfújható rögzítő mandzsettával rendelkező (tubus).'},
+{w:'Bougie',d:'Hajlékony intubációs vezetőnyárs nehéz légútbiztosításhoz.'},
+{w:'Tourniquet',d:'Artériás érszorító végtagi, életveszélyes vérzések csillapítására.'},
+{w:'Conicotomia',d:'Sürgősségi sebészi légútbiztosítás a nyakon (gégepormetszés).'},
+{w:'Thoracostomia',d:'Sürgősségi mellkasmegnyitás (feszülő légmell tehermentesítése).'},
+{w:'Nebulizátor',d:'Gyógyszerporlasztó maszk (inhalációs terápiához).'},
+{w:'Perfúzor',d:'Fecskendős infúziós pumpa (gyógyszerek pontos adagolásához).'},
+{w:'Krisztalloid',d:'Egyszerű sókat tartalmazó intravénás infúziós oldat (pl. NaCl 0,9%).'},
+{w:'Intraossealis',d:'Csonton belüli, csontvelőüregbe fúrt (alternatív vénabiztosítás).'},
+{w:'Intranasalis',d:'Orrnyálkahártyán keresztüli gyógyszerbejuttatás.'},
+{w:'MAD',d:'Mucosal Atomization Device - orrnyálkahártyán keresztüli gyógyszerbejuttató.'},
+{w:'Head-block',d:'Fejrögzítő eszköz trauma (gerincsérülés gyanúja) esetén.'},
+{w:'Dezinficiens',d:'Fertőtlenítőszer.'},
+{w:'Antifibrinolitikum',d:'Véralvadást segítő, a vérrögök lebomlását gátló gyógyszer (pl. tranexámsav).'}
+];
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function h_d(s){
+  let out = h(s);
+  let words = DICT.map((x, i) => ({w: x.w, i: i})).sort((a,b) => b.w.length - a.w.length);
+  words.forEach(item => {
+    let reg = new RegExp('\\b(' + item.w.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + ')\\b', 'gi');
+    out = out.replace(reg, function(m, p1, offset, str) {
+      let before = str.substring(0, offset);
+      let open = (before.match(/<span/g) || []).length;
+      let close = (before.match(/<\/span>/g) || []).length;
+      if (open > close) return m;
+      return '<span class="dict-w" onclick="event.stopPropagation(); showDict(' + item.i + ')">' + m + '</span>';
+    });
+  });
+  return out;
+}
+
+function renderBlock(b){
+if(b.tp==='al')return '<div class="al al-'+b.lv+'">'+h_d(b.tx)+'</div>';
+if(b.tp==='note')return '<div class="note">'+h_d(b.tx)+'</div>';
+if(b.tp==='sub')return '<div class="sub">'+h_d(b.tx)+'</div>';
+if(b.tp==='bl')return '<ul class="bl">'+b.items.map(i=>'<li>'+h_d(i)+'</li>').join('')+'</ul>';
+if(b.tp==='kr')return '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+h_d(i)+'</div>').join('')+'</div>';
+if(b.tp==='ftable2'){
+  return '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Eszköz / Gyógyszer</th><th style="text-align:right;white-space:nowrap">Mennyiség</th></tr></thead><tbody>'+
+  b.rows.map(r=>'<tr><td>'+h_d(r[0])+'</td><td style="text-align:right;color:#60a5fa;font-weight:600;white-space:nowrap">'+h_d(r[1])+'</td></tr>').join('')+
+  '</tbody></table></div>';
+}
+return '';
+}
+
+// ── SCREENS ───────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:21px;font-weight:700;color:#e8eaf0;margin-bottom:4px;line-height:1.2">Minimum Felszerelés</h1>'+
+'<div style="font-size:13px;color:#6b7280">A beteg feltalálási helyére juttatandó felszerelés · v3.0 · 2019.05.21.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Tananyag','10 fejezet, teljes tartalom'],['check','✅','Ellenőrzőlista','Interaktív táskák'],['flash','🃏','Flashkártyák','30 forgatható kártya'],['quiz','❓','Kvíz','20 kérdés visszajelzéssel'],['drugs','💊','Gyógyszer lista','Összes gyógyszer táskánként']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" style="background:#181c27;border:1px solid #2a2f45;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s" onmouseover="this.style.background=\'#1e2336\'" onmouseout="this.style.background=\'#181c27\'"><div style="font-size:24px;margin-bottom:6px">'+ic+'</div><div style="font-size:14px;font-weight:600;color:#e8eaf0;margin-bottom:2px">'+h_d(lb)+'</div><div style="font-size:11px;color:#6b7280">'+h_d(d)+'</div></button>').join('')+
+'</div>'+
+'<div class="al al-i">Szerzők: Toldi Ferenc, Dr. Kocsis Tibor · Jóváhagyta: Dr. Csató Gábor, Dr. Pápai György · Vonatkozik: Az OMSZ valamennyi kivonuló dolgozójára, kompetenciaszintnek megfelelően.</div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem">Tananyag</h2>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')"><div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'30;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div><div style="flex:1"><div style="font-size:14px;font-weight:600;color:#e8eaf0">'+h_d(c.title)+'</div><div style="font-size:11px;color:#6b7280">'+c.secs.length+' szakasz</div></div><div style="color:#6b7280;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#60a5fa;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'30;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div><h2 style="font-size:17px;font-weight:700;color:#e8eaf0;margin:0">'+h_d(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #2a2f45">'+h_d(s.t)+'</h3>'+s.bk.map(b=>renderBlock(b)).join('')+'</div>').join('');
+}
+
+function renderCheck(){
+var bags=[
+{id:'abcd',name:'Mentőhátizsák (ABCD)',color:'#16a34a',icon:'🟢',unit:'BLS'},
+{id:'aed',name:'AED',color:'#dc2626',icon:'⚡',unit:'BLS'},
+{id:'abtaska',name:'AB-táska',color:'#dc2626',icon:'🔴',unit:'ALS'},
+{id:'cdtaska',name:'CD-táska',color:'#1d4ed8',icon:'🔵',unit:'ALS'},
+{id:'defib',name:'Defibrillátor-Monitor',color:'#dc2626',icon:'❤',unit:'ALS'},
+{id:'trauma',name:'Trauma Táska',color:'#d97706',icon:'🟡',unit:'ALS'}
+];
+if(!CL.bag){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.5rem">Ellenőrzőlista</h2>'+
+'<div class="note" style="margin-bottom:.75rem">Válassz egy táskát az interaktív ellenőrzőlista megnyitásához.</div>'+
+bags.map(b=>{
+var bag=BAGS[b.id];
+var total=bag.cats.reduce((s,c)=>s+c.items.length,0);
+var checked=Object.keys(CL.checked).filter(k=>k.startsWith(b.id+':')).length;
+var pct=total?Math.round(checked/total*100):0;
+return '<button class="card-btn" onclick="setBag(\''+b.id+'\')">'+
+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'+
+'<div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">'+b.icon+'</span><div style="font-size:14px;font-weight:600;color:#e8eaf0">'+h_d(b.name)+'</div></div>'+
+'<span class="tag '+(b.unit==='BLS'?'tag-g':'tag-b')+'">'+b.unit+'</span></div>'+
+'<div style="font-size:11px;color:#6b7280;margin-bottom:6px">'+total+' eszköz · '+checked+' ellenőrizve</div>'+
+'<div style="height:4px;background:#2a2f45;border-radius:2px"><div style="height:4px;border-radius:2px;background:'+b.color+';width:'+pct+'%"></div></div>'+
+'</button>';}).join('');
+}
+var bag=BAGS[CL.bag];
+var binfo=bags.find(b=>b.id===CL.bag);
+var total=bag.cats.reduce((s,c)=>s+c.items.length,0);
+var checked=Object.keys(CL.checked).filter(k=>k.startsWith(CL.bag+':')).length;
+return '<button onclick="setBag(null)" style="background:none;border:none;cursor:pointer;color:#60a5fa;font-size:14px;margin-bottom:.65rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">'+
+'<div style="font-size:16px;font-weight:700;color:#e8eaf0">'+h_d(bag.name)+'</div>'+
+'<div style="font-size:13px;color:#60a5fa;font-weight:600">'+checked+' / '+total+'</div></div>'+
+'<div class="prog"><div class="progb" style="width:'+(total?Math.round(checked/total*100):0)+'%;background:'+binfo.color+'"></div></div>'+
+bag.cats.map(cat=>{
+var catChecked=cat.items.filter((it,i)=>CL.checked[CL.bag+':'+cat.cat+':'+i]).length;
+return '<div class="card"><div style="font-size:13px;font-weight:700;color:#9ba3bf;margin-bottom:.5rem;display:flex;justify-content:space-between">'+h_d(cat.cat)+'<span style="font-size:11px;color:#6b7280">'+catChecked+'/'+cat.items.length+'</span></div>'+
+cat.items.map((it,i)=>{
+var key=CL.bag+':'+cat.cat+':'+i;
+var on=!!CL.checked[key];
+return '<div class="cl-item'+(on?' checked':'')+'" onclick="toggleCheck(\''+key.replace(/'/g,"\\'")+'\')" >'+
+'<div class="cl-box'+(on?' on':'')+'">'+( on?'✓':'')+'</div>'+
+'<div class="cl-txt'+(on?' on':'')+'">'+h_d(it.n)+(it.star?'<span class="star"> *</span>':'')+'</div>'+
+'<div class="cl-qty">'+h(it.q)+'</div></div>';
+}).join('')+'</div>';}).join('')+
+'<button class="btn btn-r btn-fw" style="margin-top:.5rem" onclick="resetBag()">Visszaállítás</button>';
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#3b82f6':'#2a2f45')+';background:'+(FC.cat===c?'#3b82f6':'#1e2336')+';color:'+(FC.cat===c?'#fff':'#9ba3bf')+';cursor:pointer;font-family:inherit">'+h_d(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#6b7280;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+'</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#e8eaf0;line-height:1.7;text-align:left;white-space:pre-line">'+h_d(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h_d(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#e8eaf0;line-height:1.5">'+h_d(card.f)+'</div>'+
+'<div style="font-size:11px;color:#6b7280;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="event.stopPropagation(); navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="event.stopPropagation(); flipCard()">Fordít</button><button class="btn btn-fw" onclick="event.stopPropagation(); navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#0f2d1a':'#2d2008')+';border:1px solid '+(good?'#166534':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#86efac':'#fcd34d')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#86efac':'#fcd34d')+'">'+pct+'% – '+(good?'Kiváló!':'Ismételd át a felszerelési listákat!')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#e8eaf0">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#e8eaf0;margin-bottom:4px">'+h_d(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válaszod: '+h_d(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#86efac;margin-bottom:5px">✓ Helyes: '+h_d(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ba3bf">'+h_d(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény!</div>')+
+'<button class="btn btn-b btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#e8eaf0">Kvíz</h2><span style="font-size:12px;color:#6b7280">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#3b82f6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem"><p style="font-size:15px;font-weight:600;color:#e8eaf0;line-height:1.5;margin:0">'+h_d(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+h_d(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h_d(q.exp)+'</div><button class="btn btn-b btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderDrugs(){
+var tabs=[{id:'mentohatizsak',label:'Mentőhátizsák'},{id:'abtaska',label:'AB-táska (RSI)'},{id:'cdtaska',label:'CD-táska'}];
+var cur=window._dtab||'mentohatizsak';
+var d=DRUGDATA[cur];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem">Gyógyszer referencia</h2>'+
+'<div style="display:flex;gap:6px;margin-bottom:.75rem;flex-wrap:wrap">'+tabs.map(t=>'<button onclick="setDrugTab(\''+t.id+'\')" style="padding:.4rem .7rem;border:1px solid '+(cur===t.id?d.color:'#2a2f45')+';border-radius:8px;background:'+(cur===t.id?d.color:'#1e2336')+';color:'+(cur===t.id?'#fff':'#9ba3bf')+';cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">'+t.label+'</button>').join('')+'</div>'+
+'<div class="card"><div style="font-size:13px;font-weight:700;color:'+d.color+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #2a2f45">'+h_d(d.name)+' – '+d.drugs.length+' gyógyszer</div>'+
+d.drugs.map(([name,dose,qty])=>'<div class="drug-row"><div class="drug-name">'+h_d(name)+'</div><div class="drug-dose"><span style="color:#6b7280">'+h_d(dose)+'</span> &nbsp;<span style="font-weight:700;color:'+d.color+'">'+h_d(qty)+'</span></div></div>').join('')+'</div>';
+}
+
+function render(keepScroll){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='check')c.innerHTML=renderCheck();
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='drugs')c.innerHTML=renderDrugs();
+var tabs=['home','chapters','check','flash','quiz','drugs'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+if(!keepScroll) window.scrollTo(0,0);
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render(true);};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render(true);};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render(true);};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.setBag=function(id){CL.bag=id;render();};
+window.toggleCheck=function(key){if(CL.checked[key])delete CL.checked[key];else CL.checked[key]=true;render(true);};
+window.resetBag=function(){var prefix=CL.bag+':';Object.keys(CL.checked).filter(k=>k.startsWith(prefix)).forEach(k=>delete CL.checked[k]);render();};
+window.setDrugTab=function(t){window._dtab=t;render(true);};
+
+window.showDict=function(i){
+  document.getElementById('dict-t').innerText=DICT[i].w;
+  document.getElementById('dict-d').innerText=DICT[i].d;
+  document.getElementById('dict-mod').classList.add('show');
+};
+window.hideDict=function(e){
+  if(e && e.target.id!=='dict-mod' && !e.target.classList.contains('btn')) return;
+  document.getElementById('dict-mod').classList.remove('show');
+};
+
+render();
+</script>
+</body>
+</html>

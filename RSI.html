@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – RSI Eljárásrend</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);position:relative;}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-r:hover{background:#991b1b;border-color:#991b1b;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;}
+/* QUIZ/SIM OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+/* INPUTS & CHECKLISTS */
+input[type=number]{width:100%;border:1px solid #4b5563;border-radius:8px;padding:12px;color:#e5e7eb;font-family:inherit;background:#1a1a1a;font-size:16px;}
+input[type=number]:focus{outline:none;border-color:#14b8a6;box-shadow:0 0 0 2px rgba(20,184,166,0.2);}
+input[type=checkbox].cl-cb{width:20px;height:20px;accent-color:#14b8a6;cursor:pointer;flex-shrink:0;margin-top:2px;}
+.cl-label{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #3f3f3f;cursor:pointer;transition:all .2s;}
+.cl-label:hover{background:#33333340;}
+.cl-cb:checked + span {text-decoration:line-through;color:#6b7280;}
+/* DICTIONARY (FW) */
+.fw{border-bottom:1px dotted #14b8a6;color:#14b8a6;cursor:pointer;font-weight:600;}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(3px);}
+.modal-content{background:#2a2a2a;border:1px solid #4b5563;border-radius:12px;padding:1.5rem;width:100%;max-width:400px;position:relative;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.modal-close{position:absolute;top:12px;right:15px;background:none;border:none;color:#9ca3af;font-size:28px;line-height:1;cursor:pointer;transition:color .2s;}
+.modal-close:hover{color:#f3f4f6;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1.2rem 1rem;cursor:pointer;text-align:center;font-family:inherit;transition:all .2s;color:#e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.home-mod:hover{background:#333;border-color:#14b8a6;transform:translateY(-2px);box-shadow:0 4px 12px rgba(20,184,166,0.15);}
+.home-icon{font-size:32px;margin-bottom:10px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('lists')"><span class="ni">📋</span><span class="nl">Csekklisták</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div class="modal-overlay" id="dictModal" onclick="closeDef(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeDef(event)">&times;</button>
+    <h3 id="dictTitle" style="color:#14b8a6;margin-bottom:12px;font-size:18px;font-weight:700;padding-right:20px;">Szó</h3>
+    <p id="dictDesc" style="color:#e5e7eb;font-size:14px;line-height:1.6;">Magyarázat</p>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={weight:'', age:'', tab:'drugs'}; 
+
+var DICT = {
+  'apnoe': 'Légzésleállás, légzésszünet.',
+  'apnoés': 'Légzésleállással járó. (Apnoés oxigenizáció: légzőmozgás nélküli passzív oxigénáramlás a tüdőbe.)',
+  'preoxigenizáció': 'Magas oxigénkoncentráció belélegeztetése az intubáció előtt, hogy a tüdő oxigénraktárai (FRC) feltöltődjenek, és az apnoe alatt ne alakuljon ki hypoxia.',
+  'hypoxaemia': 'Kórosan alacsony oxigénszint a vérben.',
+  'hypoxia': 'Oxigénhiányos állapot a szövetekben.',
+  'hypotensio': 'Kórosan alacsony vérnyomás.',
+  'hypovolaemia': 'Csökkent keringő vérmennyiség (pl. vérzés, kiszáradás miatt).',
+  'fasciculatio': 'Izomrostok akaratlan, látható, gyors rángása (pl. depolarizáló izomrelaxáns, mint a szukcinilkolin beadásakor).',
+  'thoracostomia': 'Sebészeti beavatkozás, mely során a mellkasfalat megnyitják (pl. feszülő légmell detenzionálására).',
+  'cico': 'CICO: Can\'t Intubate, Can\'t Oxygenate. Életveszélyes helyzet, amikor a beteget sem intubálni, sem maszkkal oxigenizálni nem lehet. Sebészi légútbiztosítást igényel.',
+  'eclampsia': 'Terhességi rángógörcs, az eclampsia a preeclampsia súlyos, életveszélyes szövődménye.',
+  'preeclampsia': 'Terhességi toxémia (magas vérnyomás, fehérjevizelés).',
+  'icp': 'Intracranialis nyomás, azaz koponyaűri nyomás.',
+  'toxidróma': 'Bizonyos mérgezésekre (toxinokra) jellemző tünetegyüttes.',
+  'niv': 'Non-invazív lélegeztetés (maszkon keresztül történő gépi lélegeztetés).',
+  'bougie': 'Hosszú, rugalmas vezetőpálca (Eschmann-pálca), melyet nehéz intubáció esetén a hangrésen átvezetnek, majd erre fűzik rá az endotracheális tubust.',
+  'cormack': 'Cormack-Lehane skála (I-IV): a hangrés láthatóságát osztályozó rendszer laringoszkópia során.',
+  'burp': 'Backward, Upward, Rightward Pressure: a pajzsporcra gyakorolt hátrafelé, felfelé és jobbra irányuló nyomás, mely javíthatja a hangrés láthatóságát laringoszkópia során.',
+  'epiglottis': 'Gégekloptyú. Nyeléskor lezárja a légcsövet.',
+  'conicotomia': 'Sürgősségi sebészi légútbiztosítás, a pajzsporc és a gyűrűporc közötti ligamentum conicum átvágásával.',
+  'ligamentum conicum': 'A pajzsporc és a gyűrűporc közötti kötőszövetes hártya a nyakon, melyet conicotomia során átvágnak.',
+  'laringoszkópia': 'A gége és a hangrés eszközös, vizuális feltárása intubáció céljából.',
+  'supraglotticus': 'A hangrés (glottis) felett elhelyezkedő (pl. laryngealis maszk - LMA).'
+};
+
+function fwt(text) {
+  var words = Object.keys(DICT);
+  var re = new RegExp('\\b(' + words.join('|') + ')\\b', 'gi');
+  return text.replace(re, function(match) {
+    var lowerMatch = match.toLowerCase();
+    return '<span class="fw" onclick="showDef(\'' + lowerMatch + '\')">' + match + '</span>';
+  });
+}
+
+function showDef(word) {
+  document.getElementById('dictTitle').innerText = word.toUpperCase();
+  document.getElementById('dictDesc').innerText = DICT[word];
+  document.getElementById('dictModal').style.display = 'flex';
+}
+
+function closeDef(e) {
+  if (e.target.id === 'dictModal' || e.target.classList.contains('modal-close')) {
+    document.getElementById('dictModal').style.display = 'none';
+  }
+}
+
+var CDATA = [
+{id:'cel_jav', title:'Célok és Indikációk', icon:'🎯', secs:[
+  {t:'Indikációk', bk:[
+    {tp:'bl', items:[
+      'Elzáródott, vagy fenyegetett, egyszerű eszközökkel nem biztosítható légút',
+      'Igazolt kritikus oxigenizációs zavar, konzervatív kezelésre és NIV-re nem reagáló súlyos heveny légzési elégtelenség',
+      'Tartós és mély eszméletlenség',
+      'Koponyasérülés miatt, vagy más okból súlyosan agitált, küzdő, kezelhetetlen zavart tudatú beteg'
+    ]},
+    {tp:'al', lv:'i', tx:'Az RSI (Rapid Sequence Intubation) az endotrachealis intubálással végzett sürgősségi légútbiztosítás "arany standardja". Végső cél a DASH-1A: Definitive Airway Sine Hypoxia/Hypotensio on 1st Attempt (Sikeres intubáció az első kísérletre hypoxia és hypotensio nélkül).'}
+  ]},
+  {t:'Kockázat-előny elemzés', bk:[
+    {tp:'bl', items:[
+      'Anatómiai sajátosságok (nehéz légút gyanúja)',
+      'Személyi és tárgyi feltételek',
+      'Kórfolyamat dinamikája',
+      'Kórházba érkezés idejének becslése',
+      'Beteg életkilátásai, esendősége',
+      'Szukcinilkolin ellenjavallatai'
+    ]}
+  ]}
+]},
+{id:'folyamat', title:'Az RSI Folyamata', icon:'🔄', secs:[
+  {t:'1-2. Előkészületek és Helyszín', bk:[
+    {tp:'kr', items:[
+      'Szükség esetén légútbiztosítás egyszerű eszközökkel (áll-előemelés, OPA, NPA), szívás.',
+      '100% oxigén (15 l/perc), hypoxiásoknál kettős oxigenizáció (maszk + orrszonda).',
+      'Kettő stabil véna vagy IO út.',
+      'Monitorozás: SpO2, NIBP, EKG.'
+    ]},
+    {tp:'al', lv:'d', tx:'Optimális helyszín: 360 fokos hozzáférés, térdmagasságú elhelyezés. Mentőjárművön belül RSI-t végezni az extrém körülményeket kivéve TILOS! (Árnyékos, védett helyen, járművön kívül).'}
+  ]},
+  {t:'3. Telefonos Konzultáció', bk:[
+    {tp:'al', lv:'w', tx:'Minden RSI előtt (kivéve periarrest helyzet) KÖTELEZŐ!'}
+  ]},
+  {t:'4. Pozíciók', bk:[
+    {tp:'bl', items:[
+      'Nem traumás: "sniffing" pozíció (orr a legmagasabb, fül a sternum vonalában), nyakszirti alápolcolás.',
+      'Trauma gyanú: MILS neutrális fejhelyzetben, nyakszirti alápolcolással.',
+      'Tömeges felsőtest/obesitas: HELP pozíció (hát közepétől lépcsőzetes alápolcolás).',
+      'Gyermek (főleg 2 év alatt): neutrális fejhelyzet a VÁLLAK alápolcolásával.',
+      'Operátor: fej mögött térdel. Segítő 1: beteg jobb oldalán térdel (csekklista, gyógyszer).'
+    ]}
+  ]},
+  {t:'5. Preoxigenizáció', bk:[
+    {tp:'bl', items:[
+      'Létfontosságú: oxigéntartalékot képez az apnoe idejére.',
+      '15 l/perc, rezervoáros maszk.',
+      'Hypoxiás, nem traumás légzési elégtelennél preferált a gépi NIV vagy négykezes ballonos lélegeztetés PEEP szeleppel.'
+    ]}
+  ]},
+  {t:'6-7. Szedálás és Keringés', bk:[
+    {tp:'bl', items:[
+      'Agitált, küzdő beteg szedálása: Ketamin 0.25-0.5 mg/ttkg iv.',
+      'Midazolam: 0.02 mg/ttkg iv. (hypotensióban vigyázni!).',
+      'Keringés optimalizálása: Indukció ELŐTT érpálya feltöltése (krisztalloid bólusok).',
+      'Push Dose Adrenalin: Minden nem hipertóniás betegnél KÖTELEZŐ előkészíteni (100x hígítás: 10 mikrogramm/ml).'
+    ]}
+  ]}
+]},
+{id:'indukcio', title:'Gyógyszerek és Indukció', icon:'💉', secs:[
+  {t:'Gyógyszerek (Gyorsan, egymás után, bólusban)', bk:[
+    {tp:'sub', tx:'Indukciós szer:'},
+    {tp:'bl', items:[
+      'Ketamin: 2 mg/ttkg (max 200 mg). Felezett (1 mg/ttkg) rossz állapot, hypotensio esetén.',
+      'Etomidát: 0.3 mg/ttkg (max 20 mg). Ha ketamin kontraindikált (extrém magas vérnyomás).',
+      'Mélyen eszméletlen, instabil betegnél (vagy toxidróma esetén) el is hagyható.'
+    ]},
+    {tp:'sub', tx:'Izomrelaxáns:'},
+    {tp:'bl', items:[
+      'Szukcinilkolin (Lysthenon): 2 mg/ttkg (max 200 mg), tízesre kerekítve (pl. 70 kg -> 140 mg).',
+      'A Lysthenon hígítás nélkül szívandó fel! A megemelt dózis miatt a 2 ml-es régi szabály megváltozott.',
+      'Kontraindikáció: allergia, malignus hyperthermia, hyperkalaemia veszélye.',
+      'Alternatíva: Rokurónium 2 mg/ttkg (telefonos konzultációhoz kötött).'
+    ]}
+  ]},
+  {t:'Ketamin és Lysthenon új szabályok', bk:[
+    {tp:'al', lv:'w', tx:'KETAMIN SINTETICA: 50 mg/ml, 2 ml-es ampulla (Összesen 100 mg/ampulla). Sárga címke.\n\nLYSTHENON (Suxamethonium): 20 mg/ml, 5 ml-es ampulla (Összesen 100 mg/ampulla). 2-7°C között kell tárolni a hűtőtáskában. Terítőtáskában szobahőn 7 napig jó. Piros-fekete címke.'}
+  ]}
+]},
+{id:'apnoe', title:'Légútbiztosítás és ETI', icon:'🫁', secs:[
+  {t:'Apnoés oxigenizáció', bk:[
+    {tp:'bl', items:[
+      'Lényege: A relaxáns hatás beálltától passzív áramlással oxigenizál.',
+      'Nasopharyngealis módszer: NP tubusba vezetett oxigén (15 l/perc).',
+      'Nasalis módszer: Orrszonda, folyamatos 15 l/perc áramlással.',
+      'Laringoszkópia alatt folyamatosan megy!'
+    ]}
+  ]},
+  {t:'Laringoszkópia és Intubáció (ETI)', bk:[
+    {tp:'kr', items:[
+      'Fasciculatio lezajlása után (kb. 40 mp) kezdjük.',
+      'Állkapocs lazaságát ellenőrizni.',
+      'Félvak próbálkozás TILOS! Csak Cormack I-II fokozatnál intubálunk.',
+      'BOUGIE használata minden RSI során KÖTELEZŐ!',
+      'Operátor addig nem veszi le a szemét a hangrésről, amíg a kapnográfia meg nem erősíti az ETI-t.'
+    ]}
+  ]},
+  {t:'A 30 másodperces eljárás (ha nem látszik a hangrés)', bk:[
+    {tp:'al', lv:'d', tx:'Ha a szaturáció esik, azonnal légúti segédeszközök + ballonos maszkos reoxigenizáció!'},
+    {tp:'bl', items:[
+      'Pozíció korrekciója (beteg és operátor).',
+      'Szívás (durva toldattal).',
+      'BURP manőver (Backward, Upward, Rightward Pressure a pajzsporcra).',
+      'Lapoc be-ki, lapoc csere (McCoy).',
+      'Operátor csere.'
+    ]}
+  ]},
+  {t:'Posztintubációs ellátás', bk:[
+    {tp:'bl', items:[
+      'Tubus ellenőrzés: kapnográf (!!!), hallgatózás 5 ponton, szimmetrikus mellkas kitérés.',
+      'Tubusrögzítés szalaggal.',
+      'Hosszú hatású relaxáns: Rokurónium 0.5 mg/ttkg (mielőbb).',
+      'Szedatoanalgézia (Altatás): Elengedhetetlen! Propofol + Fentanyl, vagy vérnyomásesés esetén Ketamin.'
+    ]}
+  ]}
+]},
+{id:'gyermek', title:'Gyermek RSI és Sebészi Légút', icon:'👶', secs:[
+  {t:'Gyermek (8 év alatt) specifikumok', bk:[
+    {tp:'bl', items:[
+      'Dózisok testtömegre számítva megegyeznek a felnőttével.',
+      'Atropin (0.02 mg/ttkg) vagustónus okozta bradycardiában megfontolandó (legyen felszívva).',
+      'Pozíció: Vállak alápolcolása kötelező csecsemő/kisded esetén.',
+      'Apnoés oxigenizáció itt orrszondával történik (NPA kerülendő).',
+      'Indukció után óvatos ballonos-maszkos lélegeztetés kell a deszaturáció megelőzésére.'
+    ]}
+  ]},
+  {t:'Sebészi légútbiztosítás (Conicotomia)', bk:[
+    {tp:'al', lv:'d', tx:'Indikáció: CICO (Can\'t intubate, can\'t oxygenate) helyzet. A beteg nem intubálható és ballonos maszkkal/LMA-val nem oxigenizálható.'},
+    {tp:'bl', items:[
+      'Fej hátrabillentése a nyakhoz való hozzáféréshez.',
+      'Laryngealis kézfogással pajzsporc és ligamentum conicum tapintása.',
+      'Szike harántirányú döfése a ligamentumba.',
+      'Tracheatágító, majd Bougie bevezetése.',
+      '6 mm-es ET tubus felvezetése a bougie-n.',
+      'Gyermekeknél (8 év alatt): Tracheostomia vagy Tű-conicotomia (14G kanüllel).'
+    ]}
+  ]}
+]}
+];
+
+var LISTS = [
+{t:'RSI előtti kérdés-felelet csekklista', id:'rsi', b:[
+  'Telefonos konzultáció megtörtént?',
+  'Árnyékos, védett helyszín? (IGEN)',
+  'A beteg pozíciója optimális? (HELP/sniffing/nyakszirti alápolcolás) (IGEN)',
+  'Egyszerű légútbiztosító eszköz rescue kéznél? (IGEN)',
+  'Stifneck eltávolítva/kinyitva? (Trauma esetén) (IGEN)',
+  'MILS biztosítva? (IGEN)',
+  'Százas maszk felhelyezve? Zsák mozog? (IGEN)',
+  'Oxigénpalack minimum félig? Tartalék kész? (IGEN)',
+  'Monitor, Pulzus, Kezdeti NIBP 2-3 percenként beállítva? (IGEN)',
+  'Szaturáció értékelve?',
+  'Kapnográf csatlakoztatva és tesztelve? (IGEN)',
+  'Két vénás kanül átöblítve, átjárható? (IGEN)',
+  'Ketamin / Etomidát dózisa felszívva? (mg/ml)',
+  'Szukcinilkolin dózisa felszívva? (mg/ml)',
+  'Intubációt követő szedációs terv rögzítve?',
+  'Lapocok működnek? (Elsődleges/Másodlagos)',
+  'Szívó a fej alatt, működőképes? Másodlagos szívó kész? (IGEN)',
+  'Bougie megfelelő méretben előkészítve? (Ch)',
+  'Tubusok mérete ellenőrizve? Mandzsetta fecskendő csatlakoztatva? (IGEN)',
+  'Ballon-kapnográf-filter sorrend helyes? (IGEN)',
+  'Sebészi légút felszerelés elérhető? (IGEN)',
+  'Apnoés oxigenizációra előkészülve? (IGEN)',
+  'Gyógyszerek: ki adja, hova, sorrend megbeszélve?'
+]},
+{t:'Crash RSI csekklista', id:'crash', b:[
+  'Valóban crash (periarrest) helyzet áll fenn? (IGEN)',
+  'Árnyékos hely biztosítva? (IGEN)',
+  'Beteg pozíció optimális? (IGEN)',
+  'Ballon-kapnográf-filter együtt van? (IGEN)',
+  'Oxigén a ballonra csatlakoztatva? (IGEN)',
+  'Vénás út kész? Infúzió folyik? (IGEN)',
+  'Lapoc mérete ellenőrizve? Működik?',
+  'Szívó a fej alatt? (IGEN)',
+  'Bougie és Tubus mérete megfelelő?',
+  'Gyógyszer dózisok (Ketamin, Lysthenon) felszívva?'
+]}
+];
+
+var SIMS = [
+{id:1, title:'1. Szimuláció (B kompetencia): Asszisztencia Standard RSI-nél', diff:'B kompetencia', desc:'A helyszínen egy 45 éves, súlyosan agitált, koponyasérült férfit látnak el. A mentőorvos/mentőtiszt döntése alapján RSI következik. Te mint B kompetenciájú mentőápoló asszisztálsz.', steps:[
+  {sit:'Az orvos kéri az RSI előkészítését. Mi a legelső feladatod a helyszín megválasztásánál?', opts:[
+    {tx:'Benn maradunk a mentőautóban, mert ott minden kézre esik.', ok:false, fb:'Hibás! Mentőjárműben RSI-t végezni tilos (extrém kivétellel).'},
+    {tx:'A mentőautón kívül, tágas, 360 fokban körüljárható, árnyékos helyet keresek, a hordágyat térdmagasságba engedem.', ok:true, fb:'Helyes! Az eljárásrend pontosan ezt írja elő.'}
+  ]},
+  {sit:'A helyszín megvan. A beteg súlyosan küzd, letépi a maszkot. Az orvos telefonál, hogy konzultáljon. Milyen pozícióba helyezed a traumás beteget az indukcióhoz?', opts:[
+    {tx:'Erősen hátrahajtom a fejét (sniffing).', ok:false, fb:'Hibás! Traumagyanú esetén a nyaki gerincet óvni kell.'},
+    {tx:'Neutrális fejhelyzetben (MILS), nyakszirti alápolcolással.', ok:true, fb:'Helyes! Trauma esetén ez a biztonságos RSI pozíció.'}
+  ]},
+  {sit:'Elkezded a terítést. Melyik eszközt KELL kötelezően előkészíteni az intubációhoz minden RSI során?', opts:[
+    {tx:'Bougie-t (Eschmann pálcát) a megfelelő méretben.', ok:true, fb:'Helyes! A bougie használata minden RSI során kötelező.'},
+    {tx:'Csak a laringoszkópot és a tubust.', ok:false, fb:'Hibás! A bougie kötelező.'}
+  ]},
+  {sit:'Az orvos felszívja a gyógyszereket. A protokoll szerint melyik gyógyszert kell legelsőként felszívni?', opts:[
+    {tx:'A Ketamint.', ok:false, fb:'Hibás!'},
+    {tx:'A Szukcinilkolint (Lysthenon).', ok:true, fb:'Helyes! A Lysthenont szívjuk fel először a piros-fekete címkés fecskendőbe.'}
+  ]},
+  {sit:'Hol tartjátok a Lysthenont a mentőautóban az új utasítás alapján?', opts:[
+    {tx:'A sima gyógyszeres ampullariumban, szobahőn állandóan.', ok:false, fb:'Hibás! 7 nap után tönkremegy.'},
+    {tx:'Az erre rendszeresített gyógyszertároló hűtőtáskában (2-7 °C), amit 12 óránként jégakkuval hűtünk.', ok:true, fb:'Helyes! Ez az új lysthenon protokoll.'}
+  ]},
+  {sit:'Következik a "Csekklista olvasása". Mi a feladatod B kompetenciájú ápolóként a csekklista olvasása alatt?', opts:[
+    {tx:'A beteg bal oldalánál állok és a pumpát nyomom.', ok:false, fb:'Hibás!'},
+    {tx:'Térdelek az orvos jobb vállánál, a beteg jobb oldalán, kezemben a csekklistával, és szigorú rend szerint végigkérdezem.', ok:true, fb:'Helyes! Az ápoló olvassa a csekklistát és adogatja az eszközöket.'}
+  ]},
+  {sit:'A preoxigenizáció után az orvos beadja a gyógyszereket (indukció). Mi a teendőd az apnoés oxigenizáció biztosításához (nasopharyngealis módszer)?', opts:[
+    {tx:'Nasopharyngealis tubust vezetek be, majd az oxigéncsövet rácsatlakoztatom 15 l/perc áramlással, mialatt az orvos állkiemelést végez.', ok:true, fb:'Helyes! Ez biztosítja a passzív oxigenizációt az apnoe (relaxáció) alatt.'},
+    {tx:'Gyorsan elkezdem nyomni a ballont nagy nyomással.', ok:false, fb:'Hibás! Ballonos lélegeztetés csak speciális indikációval kell laringoszkópia előtt.'}
+  ]},
+  {sit:'Az orvos bevezeti a laringoszkópot. Látja a hangrést. Mit csinálsz a bougie-val?', opts:[
+    {tx:'A kezébe adom, majd erősen fogom a végét, hogy ne csússzon ki.', ok:false, fb:'Hibás! Az ápoló a bougie adását követően annak végét nem fogja.'},
+    {tx:'A kezébe adom a bougie-t, és utána a végét nem fogom, hogy ne akadályozzam az operátor mozgását.', ok:true, fb:'Helyes! Csapatmunka, szigorú koreográfia.'}
+  ]},
+  {sit:'Az intubáció megtörtént, a tubus bent van. Honnan tudjátok BIZTOSAN, hogy a tubus jó helyen van?', opts:[
+    {tx:'A kapnográfia/kapnometria (EtCO2) megfelelő görbét mutat.', ok:true, fb:'Helyes! A kapnográf a legmegbízhatóbb módszer.'},
+    {tx:'Megpárásodik a tubus fala.', ok:false, fb:'Hibás! Ez nem bizonyító erejű.'}
+  ]},
+  {sit:'A tubus pozícióját hallgatózással is ellenőrizni kell. Hány ponton?', opts:[
+    {tx:'2 ponton.', ok:false, fb:'Hibás!'},
+    {tx:'5 ponton (mindkét oldalon apicalisan és basalisan, valamint a gyomor felett).', ok:true, fb:'Helyes! Az 5 pontos hallgatózás kötelező.'}
+  ]},
+  {sit:'Mivel rögzíted a tubust?', opts:[
+    {tx:'1 cm széles, 1 m hosszú szalaggal, a tubuson csomóval, a beteg nyaka alatt átvezetve.', ok:true, fb:'Helyes! Ez a standard tubusrögzítési módszer.'},
+    {tx:'Ragasztószalaggal az arcára ragasztom.', ok:false, fb:'Hibás! Csak szalaggal történő rögzítés az elfogadott.'}
+  ]}
+], summary:'RSI Asszisztencia összefoglaló (B kompetencia): Az RSI optimális helyszíne a járművön kívül van. Traumagyanú miatt a pozíció neutrális MILS volt. Terítésnél a bougie előkészítése kötelező. A gyógyszerek közül elsőként a hűtött Lysthenont szívtuk fel. A csekklistát az ápoló olvasta az orvos jobb oldalán térdelve. Indukció után NPA-val 15 l/perc apnoés oxigenizációt biztosítottunk. A laringoszkópia alatt a bougie adásakor annak végét el kellett engedni. A sikeres intubációt a kapnográfia erősítette meg, ezt követte az 5 pontos hallgatózás, végül a szalagos rögzítés.'},
+
+{id:2, title:'2. Szimuláció (B+ kompetencia): Crash RSI periarrest betegnél', diff:'B+ kompetencia', desc:'Egy 60 éves beteg hirtelen összeesett. A helyszínen megtartott, de rendkívül instabil keringés, agonalis légzés fogad (periarrest helyzet). B+ kompetenciájú (gyógyszerező) mentőápolóként dolgozol orvos irányítása alatt.', steps:[
+  {sit:'A beteg periarrest (keringésmegállás-közeli) állapotban van. Milyen RSI indikáció áll fenn?', opts:[
+    {tx:'Standard RSI, teljes előkészítéssel.', ok:false, fb:'Hibás! Nincs idő standard RSI-re.'},
+    {tx:'CRASH intubálás (indukció) azonnali oxigenizációval.', ok:true, fb:'Helyes! A periarrest állapot a Crash RSI indikációja.'}
+  ]},
+  {sit:'Mi a legelsődlegesebb cél ebben a pillanatban a CRASH helyzetben?', opts:[
+    {tx:'Azonnal belenyomni a laringoszkópot a szájába.', ok:false, fb:'Hibás! Nem megfelelő az oxigenizáció.'},
+    {tx:'A beteg oxigenizációjának fenntartása: kétszemélyes, négykezes ballonos-maszkos lélegeztetés 100% oxigénnel és légúti segédeszközökkel (OPA, NPA).', ok:true, fb:'Helyes! A hypoxia azonnali elhárítása a prioritás az ETI kivitelezéséig.'}
+  ]},
+  {sit:'B+ kompetenciával milyen vénás utat próbálsz biztosítani, amíg a társad lélegeztet?', opts:[
+    {tx:'Nem próbálkozom, csak az orvos szúrhat.', ok:false, fb:'Hibás! B+ ápoló vénát és IO-t is biztosíthat.'},
+    {tx:'Nagy lumenű perifériás vénát vagy intraossealis (IO) utat biztosítok.', ok:true, fb:'Helyes! A gyógyszerek bejuttatásához megbízható út kell azonnal.'}
+  ]},
+  {sit:'A telefonos konzultáció mikor történik Crash RSI esetén?', opts:[
+    {tx:'Mindenképpen előtte.', ok:false, fb:'Hibás!'},
+    {tx:'Kivételesen ETI után közvetlenül, az állapotstabilizálással párhuzamosan.', ok:true, fb:'Helyes! Periarrest helyzetben az ellátás nem késlekedhet.'}
+  ]},
+  {sit:'A Crash RSI esetén melyik csekklistát használjátok?', opts:[
+    {tx:'A teljes, standard csekklistát.', ok:false, fb:'Hibás! Időveszteség.'},
+    {tx:'A Rövidített (Crash) csekklistát olvassuk gyorsan.', ok:true, fb:'Helyes! Ez tartalmazza csak a legkritikusabb lépéseket.'}
+  ]},
+  {sit:'A beteg izomtónusa részben megtartott. Milyen gyógyszereket kell felszívnod orvosi utasításra a Crash indukcióhoz?', opts:[
+    {tx:'Semmit, azonnal próbáljuk intubálni.', ok:false, fb:'Hibás! Ha van izomtónus, az intubálás sérülést okozhat és sikertelen lehet.'},
+    {tx:'Indukciós szer és 2 mg/ttkg Szukcinilkolin a gyors relaxációhoz.', ok:true, fb:'Helyes! Crash helyzetben is indokolt a relaxáns alkalmazása megtartott tónus esetén.'}
+  ]},
+  {sit:'Elvégzitek a rövidített csekklistát. A laringoszkópia során az orvos nem látja a hangrést. Elindul a "30 másodperces eljárás". Te asszisztensként mit végzel a nyakon?', opts:[
+    {tx:'BURP manővert (hátrafelé, felfelé, jobbra nyomás a pajzsporcon).', ok:true, fb:'Helyes! Ez javíthatja a hangrés láthatóságát.'},
+    {tx:'Sellick manővert (cricoid nyomás).', ok:false, fb:'Hibás! Az eljárásrend már nem ajánlja rutinszerűen, a BURP a standard.'}
+  ]},
+  {sit:'A 30 másodperces eljárás részeként, ha a szaturáció közben esik, mit kell azonnal tenni?', opts:[
+    {tx:'Tovább próbálkozni a tubussal.', ok:false, fb:'Hibás! A hypoxia megöli a beteget.'},
+    {tx:'Azonnali ballonos-maszkos reoxigenizáció légúti segédeszközökkel (2 NPA, 1 OPA), négykezes technikával.', ok:true, fb:'Helyes! A szaturáció fenntartása mindennél fontosabb.'}
+  ]},
+  {sit:'A reoxigenizáció sikeres. Második kísérlet következik bougie-val. Sikerül! A cső pozíciója jó. Mit adsz azonnal a hosszú távú relaxációhoz?', opts:[
+    {tx:'Még egy adag Lysthenont.', ok:false, fb:'Hibás! A szukcinilkolin csak rövid indukcióra való.'},
+    {tx:'Rokuróniumot (0.5 mg/ttkg) egyszeri bólusban.', ok:true, fb:'Helyes! A tubus rögzítése után azonnal hosszú hatású relaxáns kell.'}
+  ]},
+  {sit:'A relaxált betegnél mi a további teendő a gyógyszerelés kapcsán a szállítás alatt?', opts:[
+    {tx:'Megfelelő szedatoanalgézia (altatás és fájdalomcsillapítás).', ok:true, fb:'Helyes! A relaxált beteg adekvát altatása elengedhetetlen!'},
+    {tx:'Semmi, a relaxáns elég, hisz nem mozog.', ok:false, fb:'Hibás! Hatalmas hiba! A beteg ébren, bénultan mindent érezne.'}
+  ]}
+], summary:'Crash RSI összefoglaló (B+ kompetencia): A periarrest beteg azonnali 100% O2 ballonos-maszkos lélegeztetést igényelt. B+ ápolóként perifériás vénát biztosítottunk. A telefonos konzultáció az intubáció utánra maradt. A Crash csekklistát használtuk, és a megtartott izomtónus miatt ketamint és Lysthenont szívtunk fel. Az első laringoszkópia sikertelen volt, így indult a 30 mp-es eljárás (BURP manőver). A leeső szaturáció miatt azonnali reoxigenizáció történt. A második kísérlet sikeres volt a bougie-val. Végül rokuróniumot adtunk, és gondoskodtunk a relaxált beteg altatásáról.'},
+
+{id:3, title:'3. Szimuláció (B+ kompetencia): Gyermek RSI (4 éves)', diff:'B+ kompetencia', desc:'Egy 4 éves, 16 kg-os kislány súlyos légzési elégtelenség (astma/anaphylaxia) miatt kimerült. Standard gyermek RSI következik. Te gyógyszerező (B+) ápolóként veszel részt az ellátásban.', steps:[
+  {sit:'Az első lépés a gyógyszerek és eszközök méreteinek kiszámítása. Mennyi a 4 éves gyermek testtömege a képlet alapján?', opts:[
+    {tx:'(4 + 4) * 2 = 16 kg.', ok:true, fb:'Helyes! Ezzel az értékkel dolgozunk a dózisoknál.'},
+    {tx:'(4 * 2) + 8 = 16 kg.', ok:false, fb:'Hibás képlet, bár az eredmény véletlenül jó.'}
+  ]},
+  {sit:'Mekkora méretű cuffos tubust készítesz elő a képlet alapján?', opts:[
+    {tx:'(4 / 4) + 3.5 = 4.5 mm-es tubus.', ok:true, fb:'Helyes! (életkor / 4) + 3.5'},
+    {tx:'Fixen 5.0 mm-est.', ok:false, fb:'Hibás! Számolni kell.'}
+  ]},
+  {sit:'A 4.5 mm-es tubushoz milyen méretű bougie-t kell kikészítened az eljárásrend alapján?', opts:[
+    {tx:'Semmilyet, 5 mm alatt nem használunk bougie-t.', ok:true, fb:'Helyes! 5 mm alatti tubushoz nem javasolt.'},
+    {tx:'10 Ch méretűt.', ok:false, fb:'Hibás! Az az 5-6 mm-es tubusokhoz való.'}
+  ]},
+  {sit:'Milyen pozícióba helyezitek a 4 éves kisgyermeket a laringoszkópiához?', opts:[
+    {tx:'Sniffing pozíció nyakszirti alápolcolással.', ok:false, fb:'Hibás! A nagy relatív fejméret miatt ez gyermeknél nem jó.'},
+    {tx:'Neutrális fejhelyzet a VÁLLAK alápolcolásával.', ok:true, fb:'Helyes! Kisgyermekeknél a vállak alápolcolása szükséges a megfelelő légúti tengelyhez.'}
+  ]},
+  {sit:'Gyermek RSI esetén melyik gyógyszert kell még előkészíteni a vagustónus okozta bradycardia esetére?', opts:[
+    {tx:'Adrenalint 1 mg dózisban.', ok:false, fb:'Hibás!'},
+    {tx:'Atropint (0.02 mg/ttkg, itt kb. 0.3 mg) felszívva, készenlétben.', ok:true, fb:'Helyes! A hypoxia és a laringoszkópia könnyen bradycardiát okoz gyermekeknél.'}
+  ]},
+  {sit:'Az orvos Ketamint kér indukcióhoz (2 mg/kg). Mennyit szívsz fel a 16 kg-os gyermeknek?', opts:[
+    {tx:'32 mg-ot.', ok:true, fb:'Helyes! 16 kg * 2 mg/kg = 32 mg.'},
+    {tx:'64 mg-ot.', ok:false, fb:'Hibás! Ez túladagolás.'}
+  ]},
+  {sit:'Lysthenont (2 mg/kg) is kér az orvos. A 16 kg-os gyermeknek mennyit készítesz a 20 mg/ml-es (új) ampullából?', opts:[
+    {tx:'32 mg (kb. 1.6 ml) Lysthenon.', ok:true, fb:'Helyes! 16 kg * 2 = 32 mg.'},
+    {tx:'0.5 ml-t.', ok:false, fb:'Hibás dózis.'}
+  ]},
+  {sit:'Gyermeknél hogyan végzitek az apnoés oxigenizációt a laringoszkópia alatt?', opts:[
+    {tx:'Nasopharyngealis tubussal.', ok:false, fb:'Hibás! Gyermeknél az NPA használata kerülendő a preoxigenizáció/apnoe során.'},
+    {tx:'Orrszondával (nasalis módszer).', ok:true, fb:'Helyes! Gyermekeknél az orrszonda a megfelelő eszköz.'}
+  ]},
+  {sit:'A laringoszkópia előtt (indukció után) gyermekeknél mi a kötelező eljárás a deszaturáció megelőzésére?', opts:[
+    {tx:'Semmi, várni kell a fasciculatio végéig.', ok:false, fb:'Hibás! A gyermekek oxigéntartaléka kicsi.'},
+    {tx:'Óvatos, kis nyomással történő ballonos-maszkos lélegeztetés.', ok:true, fb:'Helyes! Gyermekeknél (8 év alatt) kötelező az indukció utáni ballonos lélegeztetés a hypoxia megelőzésére.'}
+  ]},
+  {sit:'A cső bent van, a kapnográf jelez. A mentőben szállításkor mi az ELENGEDHETETLEN teendő a kisgyermek tubusának védelmében?', opts:[
+    {tx:'A fej rögzítése head blokkal a véletlen extubáció elkerülésére.', ok:true, fb:'Helyes! A rövid trachea miatt a tubus könnyen kicsúszhat gyermekeknél.'},
+    {tx:'Folyamatosan kézzel fogni a tubust.', ok:false, fb:'Hibás! Nem biztonságos.'}
+  ]}
+], summary:'Gyermek RSI összefoglaló (B+ kompetencia): A 4 éves gyermek paramétereit kiszámoltuk (Súly: 16 kg, Tubus: 4.5 mm). 5 mm alatti tubushoz nem készítettünk bougie-t. A megfelelő tengelyhez a vállakat polcoltuk alá. A vagustónus kivédésére atropint szívtunk fel készenlétbe. A ketamin és a lysthenon dózisait (32-32 mg) pontosan számoltuk. Az apnoés oxigenizációt orrszondával biztosítottuk. Gyermek lévén az indukció után óvatos ballonos lélegeztetést végeztünk a laringoszkópia megkezdéséig. A sikeres intubáció után a véletlen extubáció megelőzése érdekében a fejet head blokkal rögzítettük.'},
+
+{id:4, title:'4. Szimuláció (B/B+ kompetencia): CICO és Sebészi Légút', diff:'B+ kompetencia', desc:'Súlyos égési sérült. Arca, nyaka pörkös. Az intubáció kétszer sikertelen volt. A beteg deszaturál (SpO2 65%), ballonos maszkkal sem lehet már lélegeztetni. Te vagy az asszisztens ápoló.', steps:[
+  {sit:'Milyen helyzet alakult ki?', opts:[
+    {tx:'Ez egy stabil, hypoxiás állapot, még van idő.', ok:false, fb:'Hibás! Ez kritikus életveszély.'},
+    {tx:'Ez egy CICO (Can\'t intubate, can\'t oxygenate) helyzet. A beteg nem intubálható és nem oxigenizálható.', ok:true, fb:'Helyes! Ez a sebészi légút egyértelmű indikációja.'}
+  ]},
+  {sit:'Az orvos bejelenti: "Sebészi légútbiztosítás következik!" Mennyi idő alatt kell az egész eljárásnak lezajlania?', opts:[
+    {tx:'Maximum 30 másodperc alatt.', ok:true, fb:'Helyes! A hypoxiás károsodás elkerülése végett.'},
+    {tx:'2 perc alatt.', ok:false, fb:'Hibás! Az túl sok.'}
+  ]},
+  {sit:'Hogyan pozicionáljátok a beteget azonnal a conicotomiához?', opts:[
+    {tx:'Fejemelés megszüntetése, a fej maximális hátrabillentése a nyakhoz való gyors hozzáféréshez.', ok:true, fb:'Helyes! Életmentő beavatkozás, a légút az első.'},
+    {tx:'Oldalfekvésbe tesszük a vérzés miatt.', ok:false, fb:'Hibás! Hanyattfekve, hátraszegett fejjel.'}
+  ]},
+  {sit:'Mit adsz az orvos kezébe elsőként az előkészített rescue eszközök közül?', opts:[
+    {tx:'Szikét.', ok:true, fb:'Helyes! A bemetszéshez szike kell.'},
+    {tx:'Laryngoszkópot.', ok:false, fb:'Hibás! A laringoszkópia már megbukott.'}
+  ]},
+  {sit:'Az orvos laryngealis kézfogással azonosítja az anatómiát. Hol ejti a metszést felnőttnél?', opts:[
+    {tx:'A gyűrűporc (cricoid) alatt.', ok:false, fb:'Hibás!'},
+    {tx:'A ligamentum conicum magasságában (pajzsporc és gyűrűporc között).', ok:true, fb:'Helyes! Ez a conicotomia helye.'}
+  ]},
+  {sit:'Mivel a beteg égéssérült és a nyaka ödémás, az orvos nem tapintja a ligamentumot. Mit kell tennie az eljárásrend szerint?', opts:[
+    {tx:'Feladni és újra maszkozni.', ok:false, fb:'Hibás! CICO helyzetben a maszkolás nem működik.'},
+    {tx:'Hosszanti metszést végezni a nyak középvonalában (5-10 cm), majd a lágyrészeket széttolva ujjal eljutni a ligamentumig.', ok:true, fb:'Helyes! Ez a tompa feltárás módszere nehéz anatómiánál.'}
+  ]},
+  {sit:'A szikét beszúrja a ligamentumba. Mit csúsztatsz be/adogatod mellé a nyílásba?', opts:[
+    {tx:'Trachea tágítót, majd azt 90 fokkal elforgatva kinyitjátok a rést.', ok:true, fb:'Helyes! A tágító nyitva tartja a légcsövet a tubus bevezetéséhez.'},
+    {tx:'Rögtön egy 8.0-as tubust.', ok:false, fb:'Hibás! A nyílás túl szűk és a 8-as tubus nagy.'}
+  ]},
+  {sit:'A rés nyitva van a tágítóval. Mi a következő lépés az intubáláshoz a nyakon keresztül?', opts:[
+    {tx:'Közvetlenül beletolni a tubust.', ok:false, fb:'Hibás! Nehéz és sérülést okozhat.'},
+    {tx:'Bougie-t vezetni a nyílásba a tracheába, majd ezen keresztül felvezetni az endotrachealis tubust.', ok:true, fb:'Helyes! A bougie-val (szike-bougie technika) sokkal biztonságosabb a bevezetés.'}
+  ]},
+  {sit:'Mekkora méretű endotrachealis tubust fűztök fel a bougie-ra felnőtt beteg conicotomiája esetén?', opts:[
+    {tx:'8.0 vagy 8.5 mm-est.', ok:false, fb:'Hibás! Túl nagy a nyíláshoz.'},
+    {tx:'6.0 mm-es tubust.', ok:true, fb:'Helyes! Felnőttnél 6 mm-es tubust használunk sebészi légúthoz.'}
+  ]},
+  {sit:'Meddig toljátok be a 6.0-os tubust a nyakon keresztül?', opts:[
+    {tx:'Amíg ütközik.', ok:false, fb:'Hibás! Egyoldali főhörgő intubációhoz vezetne.'},
+    {tx:'Csak addig, amíg a cuff felső széle eltűnik a tracheában, majd felfújjuk.', ok:true, fb:'Helyes! Nem szabad mélyre tolni.'}
+  ]}
+], summary:'CICO és Sebészi Légút összefoglaló (B+ kompetencia): Az égési sérülés miatti sikertelen ETI és elégtelen maszking CICO helyzetet eredményezett. Ekkor a sebészi légút az egyetlen életmentő megoldás, amit 30 másodpercen belül el kell végezni. A beteget azonnal pozícionáltuk: fejemelés megszüntetve, fej maximálisan hátrabillentve. Az ödéma miatt az orvos hosszanti metszéssel és tompa feltárással jutott el a ligamentum conicumhoz. A szúrás után a tracheatágítóval biztosítottuk a rést. A nyílásba bougie-t vezettünk, és erre fűztünk rá egy 6.0 mm-es ET-tubust. A tubust csak a cuff eltűnéséig toltuk be, felfújtuk, majd a szokásos módon (kapnográf, hallgatózás) ellenőriztük.'}
+];
+
+function setCalcTab(tab) {
+  CA.tab = tab;
+  render();
+}
+
+function updateVal(field, val) {
+  CA[field] = val; 
+  // Részleges DOM frissítés a beviteli mező fókusztartása érdekében
+  var res = document.getElementById('calc_results');
+  if(res) {
+    res.innerHTML = renderCalcResults();
+  }
+}
+
+function resetChecklists() {
+  document.querySelectorAll('.cl-cb').forEach(function(cb) {
+    cb.checked = false;
+  });
+}
+
+function renderHome() {
+  return '<div style="background:linear-gradient(135deg, #0d9488, #115e59);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 4px 15px rgba(13,148,136,0.3);">' +
+  '<div style="font-size:11px;font-weight:700;color:#ccfbf1;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>' +
+  '<h1 style="font-size:22px;font-weight:700;color:#ffffff;margin-bottom:4px;line-height:1.2">Sürgősségi Intubálás (RSI)</h1>' +
+  '<div style="font-size:13px;color:#99f6e4">Szabványos Eljárásrend v4.0 · 2024.12.12.</div></div>' +
+  '<div class="g2" style="margin-bottom:.75rem">' +
+  '<button onclick="go(\'chapters\')" class="home-mod"><div class="home-icon">📚</div><div style="font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:2px;">Eljárásrend</div><div style="font-size:12px;color:#9ca3af;">Teljes protokoll</div></button>' +
+  '<button onclick="go(\'lists\')" class="home-mod"><div class="home-icon">📋</div><div style="font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:2px;">Csekklisták</div><div style="font-size:12px;color:#9ca3af;">RSI és Crash</div></button>' +
+  '<button onclick="go(\'sim\')" class="home-mod"><div class="home-icon">🚑</div><div style="font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:2px;">Szimulációk</div><div style="font-size:12px;color:#9ca3af;">Mentőápolói esetek</div></button>' +
+  '<button onclick="go(\'calc\')" class="home-mod"><div class="home-icon">🧮</div><div style="font-size:15px;font-weight:700;color:#f3f4f6;margin-bottom:2px;">Kalkulátor</div><div style="font-size:12px;color:#9ca3af;">Dózis & Paraméterek</div></button>' +
+  '</div>' +
+  '<div class="card" style="background:#064e3b;border-color:#065f46;box-shadow:0 2px 10px rgba(6,78,59,0.2);"><div style="font-size:13px;color:#bbf7d0;line-height:1.5;"><b>Figyelem:</b> Új gyógyszerelési szabályok: Lysthenon (hűtés, hígítatlan) és Ketamin (100mg/2ml)! <br><br>Kattints a szaggatott vonallal jelölt szavakra a magyarázatukért!</div></div>';
+}
+
+function renderChapters() {
+  if (CHID) {
+    var c = CDATA.find(x => x.id === CHID);
+    var html = '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button><h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin-bottom:.85rem">' + c.icon + ' ' + c.title + '</h2>';
+    c.secs.forEach(s => {
+      html += '<div class="card"><h3 style="font-size:14px;font-weight:700;color:#14b8a6;margin-bottom:.65rem;border-bottom:1px solid #3f3f3f;padding-bottom:5px;">' + s.t + '</h3>';
+      s.bk.forEach(b => {
+        if (b.tp === 'bl') {
+          html += '<ul class="bl">' + b.items.map(i => '<li>' + fwt(i) + '</li>').join('') + '</ul>';
+        } else if (b.tp === 'al') {
+          html += '<div class="al al-' + b.lv + '">' + fwt(b.tx) + '</div>';
+        } else if (b.tp === 'kr') {
+          html += b.items.map(i => '<div class="kr">✓ ' + fwt(i) + '</div>').join('');
+        } else if (b.tp === 'sub') {
+          html += '<div class="sub">' + fwt(b.tx) + '</div>';
+        }
+      });
+      html += '</div>';
+    });
+    return html;
+  }
+  
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend Fejezetek</h2>' +
+  CDATA.map(c => '<button class="card-btn" onclick="go(\'chapters\', \'' + c.id + '\')"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:26px;">' + c.icon + '</div><div><div style="font-size:15px;font-weight:700;color:#f3f4f6">' + c.title + '</div><div style="font-size:12px;color:#9ca3af">' + c.secs.length + ' szakasz</div></div></div></button>').join('');
+}
+
+function renderLists() {
+  var html = '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Csekklisták</h2>';
+  LISTS.forEach((l, idx) => {
+    html += '<div class="card" id="list_' + l.id + '"><h3 style="font-size:15px;font-weight:700;color:#14b8a6;margin-bottom:.65rem;">' + l.t + '</h3><div style="font-size:13px;color:#d1d5db;line-height:1.6;">';
+    l.b.forEach((item, i) => {
+      html += '<label class="cl-label"><input type="checkbox" class="cl-cb"><span>' + item + '</span></label>';
+    });
+    html += '</div></div>';
+  });
+  html += '<button class="btn btn-r btn-fw" style="margin-top:5px;" onclick="resetChecklists()">Visszaállítás (Összes törlése)</button>';
+  return html;
+}
+
+function renderSim() {
+  if (!SI.id) {
+    return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs Esetek</h2>' +
+    SIMS.map(s => '<button class="card-btn" onclick="startSim(' + s.id + ')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:15px;font-weight:700;color:#f3f4f6">' + s.title + '</div><span style="font-size:11px;padding:3px 8px;border-radius:12px;background:#064e3b;color:#ecfdf5;font-weight:600;">' + s.diff + '</span></div><div style="font-size:13px;color:#9ca3af;margin-bottom:8px;line-height:1.4;">' + s.desc + '</div><div style="font-size:12px;font-weight:600;color:#14b8a6">' + s.steps.length + ' kérdés</div></button>').join('');
+  }
+  
+  var sim = SIMS.find(s => s.id === SI.id);
+  if (SI.fin) {
+    var correct = SI.hist.filter(h => sim.steps[h.step].opts[h.oi].ok).length;
+    return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">' + sim.title + ' - Eredmény</h2>' +
+    '<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:.75rem;box-shadow:0 4px 12px rgba(0,0,0,0.2);"><div style="font-size:42px;font-weight:700;color:#4ade80">' + correct + '/' + sim.steps.length + '</div><div style="font-size:14px;color:#4ade80;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:5px;">helyes döntés</div></div>' +
+    '<div class="al al-i" style="font-size:14px;"><strong>Részletes Összefoglaló:</strong><br><br>' + fwt(sim.summary) + '</div>' +
+    '<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px;font-size:14px;font-weight:600;">Vissza az esetekhez</button>';
+  }
+  
+  var step = sim.steps[SI.step];
+  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">' + sim.title + '</div><span style="font-size:13px;font-weight:600;color:#9ca3af">' + (SI.step + 1) + '/' + sim.steps.length + '</span></div>' +
+  '<div class="prog"><div class="progb" style="width:' + ((SI.step + 1) / sim.steps.length * 100) + '%;background:#14b8a6"></div></div>' +
+  '<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.6;margin:0">' + fwt(step.sit) + '</p></div>' +
+  step.opts.map((opt, i) => {
+    var cls = 'opt';
+    if (SI.chosen !== null) {
+      if (opt.ok) cls += ' opt-ok';
+      else if (i === SI.chosen && !opt.ok) cls += ' opt-no';
+    }
+    return '<button class="' + cls + '" ' + (SI.chosen === null ? 'onclick="chooseSim(' + i + ')"' : '') + ' style="font-size:14px;">' + fwt(opt.tx) + '</button>';
+  }).join('') +
+  (SI.chosen !== null ? '<div class="al ' + (step.opts[SI.chosen].ok ? 'al-s' : 'al-d') + '" style="font-size:14px;">' + fwt(step.opts[SI.chosen].fb) + '</div><button class="btn btn-g btn-fw" onclick="nextSim()" style="font-size:14px;font-weight:600;margin-top:10px;">' + (SI.step < sim.steps.length - 1 ? 'Következő helyzet →' : 'Eredmények megtekintése') + '</button>' : '');
+}
+
+function renderCalcResults() {
+  var html = '';
+  if (CA.tab === 'drugs') {
+    var kgInput = parseFloat(CA.weight);
+    var valid = !isNaN(kgInput) && kgInput > 0;
+    
+    var ket = valid ? (kgInput * 2) + ' mg' : '-';
+    var ket_half = valid ? (kgInput * 1) + ' mg' : '-';
+    var ket_sed = valid ? (kgInput * 0.25).toFixed(1) + " - " + (kgInput * 0.5).toFixed(1) + ' mg' : '-';
+    
+    var eto_calc = valid ? Math.min((kgInput * 0.3), 20).toFixed(1) : '-';
+    var eto = valid ? eto_calc + ' mg' : '-';
+    
+    var lys_calc = valid ? Math.min(Math.round((kgInput * 2)/10) * 10, 200) : '-';
+    var lys = valid ? lys_calc + ' mg' : '-';
+    var lys_ml = valid ? '(' + (lys_calc / 20) + ' ml)' : '';
+    
+    var roc = valid ? (kgInput * 0.5).toFixed(1) + ' mg' : '-';
+
+    html += '<div class="card" style="border-left:4px solid #eab308">' +
+    '<div style="font-weight:700;color:#fde68a;margin-bottom:5px;font-size:14px;">Ketamin (2 mg/ttkg)</div><div style="font-size:26px;font-weight:700;color:#eab308;margin-bottom:5px">' + ket + '</div><div style="font-size:13px;color:#9ca3af">Felezett: ' + ket_half + ' | Szedáláshoz: ' + ket_sed + '</div></div>' +
+    '<div class="card" style="border-left:4px solid #ef4444">' +
+    '<div style="font-weight:700;color:#fca5a5;margin-bottom:5px;font-size:14px;">Szukcinilkolin (Lysthenon - 2 mg/ttkg, kerekítve)</div><div style="font-size:26px;font-weight:700;color:#ef4444;margin-bottom:5px">' + lys + ' <span style="font-size:18px;">' + lys_ml + '</span></div><div style="font-size:13px;color:#9ca3af">Új 20mg/ml ampullából. Hígítatlanul. Max 200mg.</div></div>' +
+    '<div class="card" style="border-left:4px solid #eab308">' +
+    '<div style="font-weight:700;color:#fde68a;margin-bottom:5px;font-size:14px;">Etomidát (0.3 mg/ttkg)</div><div style="font-size:26px;font-weight:700;color:#eab308;margin-bottom:5px">' + eto + '</div><div style="font-size:13px;color:#9ca3af">Max 20 mg. Hígítás nélkül.</div></div>' +
+    '<div class="card" style="border-left:4px solid #ef4444">' +
+    '<div style="font-weight:700;color:#fca5a5;margin-bottom:5px;font-size:14px;">Rokurónium (0.5 mg/ttkg)</div><div style="font-size:26px;font-weight:700;color:#ef4444;margin-bottom:5px">' + roc + '</div></div>';
+  } else {
+    var ageInput = parseFloat(CA.age);
+    var valid = !isNaN(ageInput) && ageInput > 0 && ageInput <= 10;
+    
+    var w = valid ? (ageInput + 4) * 2 + ' kg' : '-';
+    var tube = valid ? ((ageInput / 4) + 3.5).toFixed(1) + ' mm' : '-';
+    var depth = valid ? ((ageInput / 2) + 12).toFixed(1) + ' cm' : '-';
+    var tubeNum = valid ? ((ageInput / 4) + 3.5) : 0;
+    var bougie = valid ? (tubeNum > 6 ? '15 Ch' : (tubeNum >= 5 ? '10 Ch' : 'Nem ajánlott')) : '-';
+    var atr = valid ? (((ageInput + 4) * 2) * 0.02).toFixed(2) + ' mg' : '-';
+    
+    html += '<div class="card"><div style="font-size:13px;color:#9ca3af;margin-bottom:2px;font-weight:600;">Becsült Testtömeg</div><div style="font-size:26px;font-weight:700;color:#14b8a6">' + w + '</div></div>' +
+    '<div class="card"><div style="font-size:13px;color:#9ca3af;margin-bottom:2px;font-weight:600;">Cuffos Tubusméret (mm)</div><div style="font-size:26px;font-weight:700;color:#60a5fa">' + tube + '</div></div>' +
+    '<div class="card"><div style="font-size:13px;color:#9ca3af;margin-bottom:2px;font-weight:600;">Tubusmélység (cm, fogsornál)</div><div style="font-size:26px;font-weight:700;color:#c084fc">' + depth + '</div></div>' +
+    '<div class="card"><div style="font-size:13px;color:#9ca3af;margin-bottom:2px;font-weight:600;">Bougie Méret</div><div style="font-size:22px;font-weight:700;color:#fde68a">' + bougie + '</div></div>' +
+    '<div class="card"><div style="font-size:13px;color:#9ca3af;margin-bottom:2px;font-weight:600;">Atropin dózis (0.02 mg/ttkg)</div><div style="font-size:22px;font-weight:700;color:#fca5a5">' + atr + '</div></div>';
+  }
+  return html;
+}
+
+function renderCalc() {
+  function tabBtn(id, lbl) { return '<button onclick="setCalcTab(\'' + id + '\')" style="flex:1;padding:.6rem;border:1px solid ' + (CA.tab === id ? '#14b8a6' : '#3f3f3f') + ';border-radius:8px;background:' + (CA.tab === id ? '#14b8a6' : '#2a2a2a') + ';color:' + (CA.tab === id ? '#111827' : '#d1d5db') + ';cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;transition:background 0.2s;">' + lbl + '</button>'; }
+  
+  var html = '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok</h2>' +
+  '<div style="display:flex;gap:8px;margin-bottom:1rem">' + tabBtn('drugs', 'Gyógyszerek') + tabBtn('peds', 'Gyermek (1-10 év)') + '</div>';
+
+  if (CA.tab === 'drugs') {
+    var kgInput = parseFloat(CA.weight);
+    var valid = !isNaN(kgInput) && kgInput > 0;
+    
+    html += '<div class="card"><div style="font-size:14px;font-weight:600;color:#9ca3af;margin-bottom:8px">Testtömeg (kg)</div>' +
+    '<input type="number" min="1" max="250" value="' + (valid ? kgInput : '') + '" placeholder="Kattints ide és írd be..." onfocus="this.select()" oninput="updateVal(\'weight\', this.value)"></div>';
+  } else {
+    var ageInput = parseFloat(CA.age);
+    var valid = !isNaN(ageInput) && ageInput > 0 && ageInput <= 10;
+    
+    html += '<div class="card"><div style="font-size:14px;font-weight:600;color:#9ca3af;margin-bottom:8px">Életkor (1-10 év)</div>' +
+    '<input type="number" min="1" max="10" value="' + (valid ? ageInput : '') + '" placeholder="Kattints ide és írd be..." onfocus="this.select()" oninput="updateVal(\'age\', this.value)"></div>';
+  }
+  
+  // A dinamikus rész külön div-be kerül, melyet id alapján frissítünk gépeléskor
+  html += '<div id="calc_results">' + renderCalcResults() + '</div>';
+  
+  return html;
+}
+
+function render() {
+  var c = document.getElementById('ct');
+  if (SCR === 'home') c.innerHTML = renderHome();
+  else if (SCR === 'chapters') c.innerHTML = renderChapters();
+  else if (SCR === 'lists') c.innerHTML = renderLists();
+  else if (SCR === 'sim') c.innerHTML = renderSim();
+  else if (SCR === 'calc') c.innerHTML = renderCalc();
+  
+  var tabs = ['home', 'chapters', 'lists', 'sim', 'calc'];
+  var active = SCR === 'chapter' ? 'chapters' : SCR;
+  document.querySelectorAll('.nb').forEach((b, i) => { b.classList.toggle('act', tabs[i] === active); });
+  window.scrollTo(0, 0);
+}
+
+window.go = function(s, id) { SCR = s; CHID = id || null; render(); };
+window.startSim = function(id) { SI.id = id; SI.step = 0; SI.chosen = null; SI.hist = []; SI.fin = false; render(); };
+window.chooseSim = function(i) { if (SI.chosen !== null) return; SI.chosen = i; SI.hist.push({ step: SI.step, oi: i }); render(); };
+window.nextSim = function() { var sim = SIMS.find(s => s.id === SI.id); if (SI.step < sim.steps.length - 1) { SI.step++; SI.chosen = null; } else SI.fin = true; render(); };
+window.resetSim = function() { SI = { id: null, step: 0, chosen: null, hist: [], fin: false }; render(); };
+
+render();
+</script>
+</body>
+</html>

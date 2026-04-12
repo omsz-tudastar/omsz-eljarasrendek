@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ - Újszülöttek Lehűlés Elleni Védelme</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);overflow-x:auto;}
+.nb{flex:1;padding:9px 5px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;min-width:70px;}
+.nb.act{border-top-color:#38bdf8;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;text-align:center;}
+.nb.act .nl{color:#38bdf8;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#0ea5e920;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #0ea5e9;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:6px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:6px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* BUTTONS & FORMS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0284c7;color:#fff;border-color:#0284c7;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+select, input[type=number], input[type=text]{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:13px;color:#e5e7eb;font-family:inherit;margin-bottom:10px;outline:none;}
+select:focus, input:focus{border-color:#38bdf8;}
+/* QUIZ & SIM OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;background:#38bdf8;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* CHAPTER ROW */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;color:#e5e7eb;}
+/* TAG */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+/* GLOSSARY WORD */
+.gl-word{color:#38bdf8;text-decoration:underline;text-decoration-style:dotted;cursor:pointer;font-weight:600;}
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:999;padding:1rem;}
+.modal-box{background:#1e1e1e;border:1px solid #3f3f3f;border-radius:12px;width:100%;max-width:400px;padding:1.5rem;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.modal-title{font-size:18px;font-weight:700;color:#38bdf8;margin-bottom:.5rem;text-transform:capitalize;}
+.modal-body{font-size:14px;color:#d1d5db;line-height:1.5;margin-bottom:1.5rem;}
+</style>
+</head>
+<body>
+
+<div class="modal-overlay" id="glModal" onclick="if(event.target===this) closeGl()">
+  <div class="modal-box">
+    <div class="modal-title" id="glModalTitle"></div>
+    <div class="modal-body" id="glModalBody"></div>
+    <button class="btn btn-fw" onclick="closeGl()">Bezárás</button>
+  </div>
+</div>
+
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<script>
+var SCR='home', CHID=null;
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={type:'erett', temp:25, weight:3.0, mat:'stabil'};
+
+const GLOSSARY = {
+  'mortalitás': 'Halálozás, halálozási arányszám.',
+  'morbiditás': 'Megbetegedési arány, a betegségek előfordulási gyakorisága.',
+  'perinatalis': 'Születés körüli (a terhesség 28. hetétől az újszülöttkor 7. napjáig tartó időszak).',
+  'hypoglykaemia': 'Kórosan alacsony vércukorszint.',
+  'hyperthermia': 'Túlmelegedés, kórosan magas testhőmérséklet.',
+  'hypothermia': 'Kihűlés, kórosan alacsony testhőmérséklet (36,5°C alatt újszülötteknél).',
+  'konvekció': 'Hőáramlás: a test körül áramló hideg levegő által történő hőleadás.',
+  'kondukció': 'Hővezetés: közvetlen érintkezés hideg felszínnel (pl. vizsgálóasztal).',
+  'evaporáció': 'Párolgás: hőleadás nedves bőrfelszínről.',
+  'radiáció': 'Hősugárzás: hőleadás a meleg felszínről a hűvösebb külvilág felé.',
+  'obszerváció': 'Megfigyelés, a beteg állapotának nyomon követése.',
+  'transzport': 'Szállítás, a beteg kórházba juttatása.',
+  'termoreguláció': 'Hőszabályozás, a testhőmérséklet állandó szinten tartásának képessége.',
+  'neutrális pozíció': 'Semleges testhelyzet, a nyak nincs sem túlzottan hátrahajtva, sem előreszegve.',
+  'prehospitális': 'Kórházba érkezés előtti, helyszíni és szállítás alatti ellátás.',
+  'adaptáció': 'Alkalmazkodás (az újszülött esetében a méhen kívüli élethez történő alkalmazkodás szakasza).',
+  'noninvazív': 'Bőrön keresztüli, tűszúrást vagy a testbe történő behatolást nem igénylő eljárás.'
+};
+
+window.showGl = function(word) {
+  document.getElementById('glModalTitle').innerText = word;
+  document.getElementById('glModalBody').innerText = GLOSSARY[word.toLowerCase()];
+  document.getElementById('glModal').style.display = 'flex';
+};
+
+window.closeGl = function() {
+  document.getElementById('glModal').style.display = 'none';
+};
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function h_gl(text) {
+  let res = h(text);
+  let keys = Object.keys(GLOSSARY).sort((a,b) => b.length - a.length);
+  keys.forEach(key => {
+    let regex = new RegExp('\\b(' + key + '(?:t|ban|ben|hoz|hez|höz|nak|nek|val|vel|ra|re|ról|ről)?)\\b', 'gi');
+    res = res.replace(regex, '<span class="gl-word" onclick="showGl(\'$1\')">$1</span>');
+  });
+  return res;
+}
+
+var CDATA=[
+{id:'celok',title:'I-II. Célok és Bevezetés',icon:'🎯',secs:[
+{t:'I. Célok',bk:[
+{tp:'bl',items:['Az újszülöttek és koraszülöttek lehűlés elleni védelmének jelentősége.','A testhőmérséklet csökkenésének mechanizmusai.','A hővesztés megakadályozásának lehetőségei.','A jelenleg elérhető lehűlés ellen védő eszközök jellemzői.','Az OMSZ munkájának egységesítése, a káros/haszontalan beavatkozások mellőzése.']}
+]},
+{t:'II. Bevezetés',bk:[
+{tp:'al',lv:'d',tx:'Kiemelt feladat a lehűlés elleni védelem! Minden 1°C-nyi testhőmérséklet csökkenés 11%-kal növeli a sepsis és 28%-kal a perinatalis mortalitás kockázatát!'},
+{tp:'note',tx:'Különösen veszélyeztetettek a koraszülöttek: a lehűlés növeli az agykamrai vérzés, légzési elégtelenség, hypoglykaemia kockázatát.'},
+{tp:'al',lv:'s',tx:'Cél: Az újszülöttek testhőmérsékletét 36,5-37,5°C között kell tartani! (A hyperthermia is kerülendő!). Folyamatos mérés szükséges.'},
+{tp:'sub',tx:'Hővesztés mechanizmusai (akár 2-4°C csökkenés 10-20 perc alatt védelem nélkül):'},
+{tp:'ft',rows:[
+{n:'Hőáramlás (Konvekció)',d:'Körüláramló hideg levegő által. Védekezés: környezeti levegő aktív melegítése.'},
+{n:'Hővezetés (Kondukció)',d:'Közvetlen érintkezés hideg felszínnel. Védekezés: anya testére vagy melegítőpárnára helyezés.'},
+{n:'Párolgás (Evaporáció)',d:'Nedves bőrfelszínről (magzatvíz stb.). Védekezés: szárazra törlés és légzáró anyagba csomagolás.'},
+{n:'Hősugárzás (Radiáció)',d:'Meleg felszínről a hűvösebb külvilág felé. Védekezés: tükörfóliába, izolációs takaróba csomagolás.'}
+]}
+]}
+]},
+{id:'lehetosegek',title:'III-IV. Hővesztés megakadályozása és eszközök',icon:'🛡️',secs:[
+{t:'III. Megakadályozás prehospitális lehetőségei (Sorrendben)',bk:[
+{tp:'bl',items:[
+'1. Környezeti hőmérséklet optimalizálása: huzat megszüntetése, fűtés, hősugárzó, melegített textíliák/kesztyűk/párnák.',
+'2. Érett újszülöttek szárazra törlése: előmelegített tiszta textíliával, majd a nedves textília ELTÁVOLÍTÁSA. (Extrém hideg vagy koraszülött esetén ez a lépés MARADJON KI!).',
+'3. Bőr-bőr kontaktus: Szárazra törölt, érett babát melegben (24-25°C felett) haladéktalanul az anya (vagy apa) hasára/mellkasára tenni, majd együttes betakarás. Ha nem lehet: fóliába zsákba csomagolva melegítőpárnára (nem forró).',
+'4. Hideg/Koraszülött: Kiegészítő izolációs fólia és meleg takaró. Az izolációs fólia alatt melegíteni is kell a babát!'
+]},
+{tp:'al',lv:'i',tx:'Reális elérhetőség esetén a koraszülött mentők (fűtött/párásított inkubátorokkal) riasztása minden helyszíni szülés esetén javasolt!'}
+]},
+{t:'IV. Eszköz jellemzői',bk:[
+{tp:'ft_tools'}
+]}
+]},
+{id:'gyakorlat',title:'V. Gyakorlat és teendők',icon:'🚑',secs:[
+{t:'V. Lehűlés elleni védelem a gyakorlatban',bk:[
+{tp:'sub',tx:'1. Érett, egészséges újszülött:'},
+{tp:'bl',items:[
+'Semleges/meleg (24-25°C felett): Szárazra törlés után az anyán bőr-bőr kontaktus, majd együttes takarás (fejet is, arc szabadon).',
+'Hűvös/hideg (24-25°C alatt): Törlés után polietilén fóliába vagy neohelp zsákba -> anyára -> közös takarás izolációs fóliával és pléddel.',
+'Extrém hideg: TÖRLÉS NÉLKÜL azonnal fóliába/zsákba -> anyára -> közös takarás textíliával, majd izolációs takaróval és pléddel.'
+]},
+{tp:'sub',tx:'2. Koraszülött esetén:'},
+{tp:'al',lv:'d',tx:'A teendők az érettek EXTRÉM HIDEG környezeti viszonyok közötti ellátásával azonosak! (Törlés nélkül azonnal zsákba).'},
+{tp:'sub',tx:'3. Anyai/újszülött ellátási igény (szeparáció):'},
+{tp:'bl',items:['Fóliába/zsákba csomagolva közvetlenül hőforrás mellé/alá (melegítőpárna, előmelegített asztal), betakarva. Folyamatos megfigyelés (égési sérülés veszélye!).']},
+{tp:'sub',tx:'Szigorúan kerülendő gyakorlatok:'},
+{tp:'bl',items:[
+'Az újszülött nem az anyán van, hanem kézben, hordágyon, asztalon fekszik.',
+'Az anyán van, de több réteg textília szigetel köztük.',
+'Szárazra törlés nélkül, nedvesen textíliába csomagolják, vagy rajta marad a nedves törlőkendő.',
+'Felesleges mozgatás, fényképezés (szülői engedéllyel is tilos!).'
+]}
+]}
+]},
+{id:'egyeb',title:'VI. Egyéb megfontolások',icon:'📋',secs:[
+{t:'Mentésirányítás teendői',bk:[
+{tp:'bl',items:['Vonalban maradás, kommunikációs vezetés.','Koraszülött mentő riasztása reális elérhetőség esetén.','Lehetőség szerint legalább 2 db mentőegység (ebből 1 ALS) riasztása.','Előkészületek: fűtés, tiszta textíliák, fólia stb.']}
+]},
+{t:'Helyszíni transzport teendők',bk:[
+{tp:'bl',items:[
+'Újszülött nem utazhat anya hasán, sem kézben, sem mózeskosárban a mozgó járműben!',
+'Szállítás alatti hővédelem: fólia/neohelp, melegítőpárna, izolációs takaró.',
+'Két külön mentővel történő szállítás javasolt, ha a biztonságos rögzítés egyben nem megoldható.',
+'Alacsony rizikójú újszülött: 20-30 perces helyszíni háborítatlan adaptációs szak (az anya mellkasán), mialatt az adminisztráció/rendezés folyik.',
+'Folyamatos hőmérsékletmérés a zsák megbontása nélkül (pl. non-kontakt hőmérő, vagy hát alá tett szenzor).'
+]}
+]}
+]},
+{id:'neohelp',title:'Függelék: Neohelp zsák',icon:'👶',secs:[
+{t:'Neohelp zsák használata',bk:[
+{tp:'bl',items:[
+'Kicsomagolás, hőforrás alá helyezés, tépőzár/kapucni nyitása.',
+'Újszülött behelyezése, vállak illesztése a "backpad"-re (neutrális pozícióhoz).',
+'Tépőzár és kapucni zárása (légút szabadon hagyásával!).',
+'Hőmérséklet stabilizálódásáig a zsákban hagyni, folyamatos monitorozás. (Maximum 24 órán át használható).']}
+]},
+{t:'Méretek',bk:[
+{tp:'ft',rows:[
+{n:'neohelp MEDIUM',d:'1 kg - 2,5 kg (44 x 38 cm)'},
+{n:'neohelp LARGE',d:'2,5 kg felett (50 x 38 cm)'}
+]}
+]}
+]}
+];
+
+function renderBlock(b){
+  if(b.tp==='sub') return '<div class="sub">'+h(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+h_gl(i)+'</li>').join('')+'</ul>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+h_gl(b.tx)+'</div>';
+  if(b.tp==='note') return '<div class="note">'+h_gl(b.tx)+'</div>';
+  if(b.tp==='ft'){
+    return '<div class="tbl-wrap"><table class="tbl"><tbody>'+b.rows.map(r=>'<tr><td style="font-weight:700;color:#38bdf8;width:40%">'+h(r.n)+'</td><td>'+h_gl(r.d)+'</td></tr>').join('')+'</tbody></table></div>';
+  }
+  if(b.tp==='ft_tools'){
+    return '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Eszköz</th><th>Átlátszóság</th><th>Védelem (P/Á/S/V)</th><th>Külső melegítés</th><th>Neutrális pozíció</th></tr></thead><tbody>'+
+    '<tr><td>Műanyag fólia</td><td>Igen</td><td>Párolgás, Áramlás</td><td>Könnyű</td><td>Nem</td></tr>'+
+    '<tr><td>Buborékfólia</td><td>Részben</td><td>Párolgás, Áramlás, Vezetés</td><td>Korlátozottabb</td><td>Kialakítható</td></tr>'+
+    '<tr><td>Izolációs fólia</td><td>Nem</td><td>Párolgás, Áramlás, Sugárzás</td><td>Nem (visszatükröz)</td><td>Nem</td></tr>'+
+    '<tr><td style="font-weight:700;color:#38bdf8">Neohelp zsák</td><td>Igen</td><td>Mind a négy ellen</td><td>Könnyű</td><td>Kialakított (backpad)</td></tr>'+
+    '</tbody></table></div>';
+  }
+  return '';
+}
+
+var QUIZ=[
+{q:'Mennyi 1°C-os testhőmérséklet-csökkenés hatása az újszülöttkori sepsis és halálozás kockázatára?',opts:['Nincs érdemi hatása','11%-kal növeli a sepsis és 28%-kal a mortalitás kockázatát','50%-kal növeli mindkettőt','Csak a koraszülötteknél van hatása'],ok:1,exp:'Minden 1°C csökkenés 11%-kal növeli a sepsis és 28%-kal a perinatalis mortalitás kockázatát.'},
+{q:'Melyik hővesztési mechanizmus ellen véd a szárazra törlés?',opts:['Konvekció (Hőáramlás)','Kondukció (Hővezetés)','Evaporáció (Párolgás)','Radiáció (Hősugárzás)'],ok:2,exp:'A párolgásos (evaporációs) hővesztés nedves bőrfelszínről történik, ez ellen véd a szárazra törlés.'},
+{q:'Mikor TILOS az újszülöttet szárazra törölni az eljárásrend szerint?',opts:['Soha nem tilos, mindig le kell törölni','Koraszülöttek vagy extrém hideg környezet esetén','Ha 25°C felett van a hőmérséklet','Csak ha meconiumos a magzatvíz'],ok:1,exp:'Koraszülöttek és extrém hidegben született érett újszülöttek esetén a törlés maradjon ki, azonnal műanyag fóliába/neohelp zsákba kell tenni őket.'},
+{q:'Mit kell tenni a nedves textíliával a szárazra törlés után?',opts:['A babán kell hagyni melegítés céljából','Azonnal el kell távolítani az újszülöttről','Rá kell tenni még egy takarót','Be kell csomagolni vele az újszülöttet a fóliába'],ok:1,exp:'A rutin ellátás részeként az előmelegített textíliával történő törlés után a (már nedves) textíliát el kell távolítani.'},
+{q:'Hova kell helyezni az érett, egészséges újszülöttet (szárazra törlés után) 25°C feletti meleg környezetben?',opts:['Mózeskosárba','Közvetlenül a hideg vizsgálóasztalra','Az édesanya (vagy apa) hasára/mellkasára (bőr-bőr kontaktus)','Mentőápoló karjába'],ok:2,exp:'Bőr-bőr kontaktusra törekedve haladéktalanul az anya vagy apa testére kell helyezni, mert a felnőtt teste lesz a folyamatos hőforrás.'},
+{q:'Mi a teendő, ha az izolációs fóliát alkalmazzuk hideg időben?',opts:['Önmagában felmelegíti az újszülöttet','Alatta melegíteni is kell a babát (pl. anyával, melegítő párnával), mert a fólia csak a hővesztést gátolja, külső melegítést nem ad','Nem szabad alatta melegíteni, mert túlmelegszik','Csak a baba fejére kell tenni'],ok:1,exp:'Az izolációs fólia csak a hővesztést lassítja (hőtükör), külső melegítés önmagában nem lehetséges tőle, így alatta is biztosítani kell a hőforrást (anya/párna).'},
+{q:'Melyik eszköz a leghatékonyabb a neutrális fejpozíció biztosítására?',opts:['Műanyag fólia','Izolációs fólia','Neohelp zsák','Nedves törülköző'],ok:2,exp:'A neohelp zsák formázott (preformált), tartalmaz "backpad"-et, ami a neutrális pozícióban való fektetést könnyen kivitelezhetővé teszi.'},
+{q:'Hogyan kell az újszülöttet szállítani a mentőgépkocsiban?',opts:['Az anya hasán/mellkasán fekve biztonságos','A mentőápoló karjában','Biztonságosan rögzítve (inkubátorban vagy speciális rögzítővel hordágyon) – sohasem az anya hasán utazva','Mózeskosárban'],ok:2,exp:'Az újszülött nem utazhat az anya hasán, sem a karjában, sem mózeskosárban betegbiztonsági szempontok miatt.'},
+{q:'A Neohelp zsákból melyik méretet használjuk 2 kg-os koraszülött esetén?',opts:['SMALL','MEDIUM (1 kg - 2,5 kg)','LARGE (> 2,5 kg)','XL'],ok:1,exp:'A neohelp MEDIUM mérete 1-2,5 kg testsúly közötti újszülöttek számára ideális.'},
+{q:'Mi a teendő alacsony rizikójú újszülötteknél a transzport megkezdése ELŐTT?',opts:['Azonnali beszállítás a legközelebbi kórházba, megfigyelés nélkül','20-30 perces helyszíni békés, háborítatlan adaptációs szakasz biztosítása az anya mellkasán','Azonnal fürdetés megkezdése','Teljes testes vizsgálat a hideg asztalon'],ok:1,exp:'Alacsony rizikó esetén 20-30 perces minimális helyszíni ellátási (adaptációs) időtartammal kell számolni az anya mellkasán.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Érett újszülött, Lakás, 26°C',diff:'B kompetencia',desc:'Kiérkezés egy 26°C-os fűtött lakásba. A kismama percekkel a mentő érkezése előtt megszült egy egészséges, időre született babát, aki hangosan sír.',steps:[
+{sit:'Megérkezés után ellenőrzöd a környezetet (26°C). A baba épp most született meg. Mi az első teendő a hővédelem szempontjából?',opts:[{tx:'Azonnal becsomagolom izolációs fóliába.',ok:false,fb:'Hibás! Meleg lakásban az érett újszülöttnél más a protokoll.'},{tx:'Előmelegített tiszta textíliával szárazra törlöm az újszülöttet.',ok:true,fb:'Helyes! A párolgásos hővesztés megelőzésére azonnal szárazra kell törölni.'},{tx:'Kinyitom az ablakot, hogy friss levegőt kapjon.',ok:false,fb:'Hibás! A huzat (konvekció) jelentős hővesztést okoz.'}]},
+{sit:'Megtörtént a szárazra törlés a textíliával. Mi történik ezzel a kendővel/textíliával ezután?',opts:[{tx:'Rajta hagyom a babán, hogy melegítse.',ok:false,fb:'Hibás! A nedves textil hűti a babát.'},{tx:'Eltávolítom az újszülöttről, mert a nedves textília párolgásos (evaporációs) hővesztést okoz.',ok:true,fb:'Helyes! Szigorúan el kell távolítani.'},{tx:'Kifacsarom és újra bebugyolálom vele.',ok:false,fb:'Hibás!'}]},
+{sit:'A baba immár száraz. A környezet 26°C. Hová helyezed az újszülöttet?',opts:[{tx:'Leteszem a hordágyra egy takaróra.',ok:false,fb:'Hibás! Nem használod ki a legjobb hőforrást.'},{tx:'A mentőápoló kollégám karjába adom, amíg az anyát vizsgálom.',ok:false,fb:'Hibás! Szigorúan kerülendő gyakorlat.'},{tx:'Haladéktalanul az édesanyja (vagy apja) hasára/mellkasára teszem bőr-bőr kontaktusba.',ok:true,fb:'Helyes! A felnőtt teste lesz a folyamatos hőforrás (kondukció).'}]},
+{sit:'A baba az anya mellkasán fekszik. Hogyan kell betakarni őket ebben a meleg környezetben?',opts:[{tx:'Nem kell betakarni, elég meleg van (26°C).',ok:false,fb:'Hibás! A hővesztés így is fennáll.'},{tx:'Izolációs ezüst fóliával tekerem körbe mindkettőjüket szorosan.',ok:false,fb:'Hibás! Meleg szobában ez túlzott és gátolja az obszervációt.'},{tx:'Textíliákkal/takaróval együtt betakarom az anyát és az újszülöttet, a baba fejét is fedve, de ügyelve, hogy az orra és szája szabad maradjon.',ok:true,fb:'Helyes! Ez a protokoll a meleg/semleges hőmérsékleti viszonyok között.'}]},
+{sit:'A baba ellátása alatt a családtagok szeretnének odamenni és felváltva kézbe venni, fotózni a babát. Mit teszel?',opts:[{tx:'Megengedem, a jó élmény fontos.',ok:false,fb:'Hibás! Ez rontja a hővédelmet és az adaptációt.'},{tx:'Határozottan, de udvariasan megkérem őket, hogy ettől tekintsenek el, mivel a felesleges mozgatás és szeparáció szigorúan kerülendő a protokoll szerint.',ok:true,fb:'Helyes! Minden felesleges mozgatás és fényképezés (még szülői beleegyezéssel is) kerülendő.'},{tx:'Csak egy fotót engedek.',ok:false,fb:'Hibás!'}]},
+{sit:'Milyen gyakorisággal kell az újszülött testhőmérsékletét ellenőrizni, és hogyan?',opts:[{tx:'Nem kell, mert az anya melegíti.',ok:false,fb:'Hibás! A hyper/hypothermia kockázata miatt kötelező a mérés.'},{tx:'Folyamatosan figyelni/mérni kell (pl. non-kontakt hőmérővel vagy a hát alá helyezett szenzorral), anélkül, hogy a hővédelmet megbontanánk.',ok:true,fb:'Helyes! A folyamatos obszerváció kötelező.'},{tx:'15 percenként leveszem róla a takarókat és hónaljban mérem.',ok:false,fb:'Hibás! A védelem megbontása hővesztést okoz.'}]},
+{sit:'A mentésirányítás érdeklődik a szállításról. Mind az anya, mind a baba alacsony rizikójú, stabil. Mikor érdemes elindulni?',opts:[{tx:'Azonnal csomagolunk és rohanunk a mentőhöz.',ok:false,fb:'Hibás! Stabil állapotnál nem indokolt a kapkodás.'},{tx:'Biztosítjuk a 20-30 perces helyszíni, békés adaptációs szakaszt, ezalatt adminisztrálunk.',ok:true,fb:'Helyes! A háborítatlan adaptációs szakasz joga megilleti őket.'},{tx:'Megvárjuk az ügyeletes orvost, hogy ő vigye el.',ok:false,fb:'Hibás! Mentő fogja szállítani.'}]},
+{sit:'Letelt a 20-30 perc. Készültök a szállításra. A kint parkoló mentőhöz kell vinni őket (kint hideg van). Mit teszel a babával a szállítás megkezdése ELŐTT?',opts:[{tx:'Az anya kezébe adom a takaró alatt, majd az anyát hordágyra teszem.',ok:false,fb:'Hibás! A szabadban a takaró nem elég, fólia is kell.'},{tx:'Amennyiben eddig nem történt meg, az újszülöttet polietilén fóliába vagy neohelp zsákba helyezem, így viszem ki.',ok:true,fb:'Helyes! A szállítás alatti hővédelemhez (főleg hidegben) elengedhetetlen a fólia/zsák.'},{tx:'Felöltöztetem az anyuka által adott kisingbe.',ok:false,fb:'Hibás! A fólia a szabvány.'}]},
+{sit:'A mentőautóban hogyan utazhat a baba betegbiztonsági szempontból?',opts:[{tx:'Az anya hasán, ahogy eddig volt.',ok:false,fb:'Hibás! Mozgó járműben ez nem biztonságos.'},{tx:'A mentőápoló ölében rögzítve.',ok:false,fb:'Hibás! Szintén nem biztonságos.'},{tx:'Speciális rögzítőben/inkubátorban; sem az anya hasán, sem karjában, sem mózeskosárban nem utazhat.',ok:true,fb:'Helyes! A betegbiztonsági szempontok felülírják a bőr-bőr kontaktust mozgó járműben.'}]},
+{sit:'A szállítás alatt (bár a mentő fűtött) hogyan biztosítod a baba további melegen tartását a hordágyon/rögzítőben?',opts:[{tx:'A fólia/zsák mellett melegítőpárnát vagy meleg víz/infúzió palackot teszek mellé, és betakarom izolációs/textil takaróval, vigyázva az égésre.',ok:true,fb:'Helyes! Mivel az anya hőforrása kiesett, mesterséges külső hőforrás kell.'},{tx:'Bekapcsolom a klímát melegre és leveszem a fóliát.',ok:false,fb:'Hibás! A fólia marad, a klíma levegője kiszárít/konvekciót okoz.'},{tx:'Folyamatosan dörzsölöm a bőrét.',ok:false,fb:'Hibás! Zavarja a babát és sérülést okozhat.'}]}
+],summary:'Összefoglaló (Érett, Meleg környezet): Megérkezéskor a lakás megfelelő, 26°C-os. A baba érett. A protokollt követve az első lépés az előmelegített textíliával való szárazra törlés volt (evaporáció megelőzése). A nedves textilt azonnal eltávolítottuk, majd a babát az anya (vagy apa) mellkasára helyeztük (kondukció - bőr-bőr kontaktus). Kívülről mindkettőjüket együtt betakartuk úgy, hogy az arc szabad maradjon. A hozzátartozók mozgatási és fotózási kéréseit elutasítottuk, védve az adaptációt. Az obszerváció (hőmérés) folyamatos, a takaró megbontása nélkül zajlott. Mivel az állapot stabil volt, 20-30 perc békés adaptációs szakaszt biztosítottunk a transzport megkezdése előtt. A kinti hideghez és a szállításhoz a babát Neohelp zsákba / fóliába helyeztük. A mentőautóban betegbiztonsági okokból szeparáltan, speciális rögzítőben szállítottuk, mesterséges hőforrás (melegítőpárna) és izolációs takarás alkalmazásával, folyamatos hőmérés mellett.'},
+
+{id:2,title:'2. Szimuláció: Érett újszülött, Utca, -2°C',diff:'B kompetencia',desc:'Téli időjárás, -2°C, havazás. A nő egy utcai kapualjban szült meg. A mentőegység azonnal megérkezik a szülés pillanatában.',steps:[
+{sit:'Megérkezel a fagyos kapualjba (-2°C). A baba épp kibújt. Mi az ELSŐ teendő a kompetenciád szerint a mentésirányítással kapcsolatban?',opts:[{tx:'Azonnal megkérem az irányítást, hogy riasszon koraszülött mentőt (inkubátor miatt) és még egy egységet a nehéz ellátási viszonyok miatt.',ok:true,fb:'Helyes! Extrém viszonyok között legalább 2 mentő (ebből 1 ALS) és reális esetben koramentő hívása kötelező.'},{tx:'Nem kell további segítség, megoldom egyedül.',ok:false,fb:'Hibás! Az eljárásrend kötelezővé teszi a 2 egységet.'},{tx:'Hívok egy rendőrautót, hogy beüljünk oda.',ok:false,fb:'Hibás! Mentőbe kell beszállni.'}]},
+{sit:'A baba a kezedben van. Extrém hideg környezet (-2°C). Mit ír elő az eljárásrend a szárazra törléssel kapcsolatban?',opts:[{tx:'Nagyon alaposan, többször át kell dörzsölni meleg kendővel.',ok:false,fb:'Hibás! Extrém hidegben más a protokoll.'},{tx:'Extrém hideg külső hőmérséklet esetén a szárítás/törlés lépése MARADJON KI!',ok:true,fb:'Helyes! A hideg levegő és a párolgás miatt a törlés idővesztesége és a kitettség végzetes lehűlést okoz. Azonnal izolálni kell.'},{tx:'Csak a fejét szabad letörölni.',ok:false,fb:'Hibás!'}]},
+{sit:'A törlést kihagyod. Mi a következő AZONNALI lépés?',opts:[{tx:'Törlés nélkül egyből polietilén fóliába vagy neohelp zsákba helyezem az újszülöttet.',ok:true,fb:'Helyes! A fólia azonnal megakadályozza a párolgásos (evaporációs) és áramlásos (konvekciós) hővesztést.'},{tx:'Betekerem egy száraz plédbe.',ok:false,fb:'Hibás! A nedves baba a plédet is átnedvesíti, ami áthűl. A fólia az első réteg.'},{tx:'Sietve befutok vele a mentőbe, fedetlenül.',ok:false,fb:'Hibás! Még másodpercekre sem lehet védelem nélkül a fagyban.'}]},
+{sit:'A baba a fóliában/neohelp zsákban van. Kinek a testére teszed a fagyos kapualjban?',opts:[{tx:'A saját (ellátó) kabátom alá.',ok:false,fb:'Hibás! Az anyai kontaktust preferáljuk, ráadásul neked szabad kéz kell az ellátáshoz.'},{tx:'Leteszem a mentőhordágyra egy takaróra.',ok:false,fb:'Hibás! A hordágy hideg (kondukciós hővesztés).'},{tx:'Azonnal az édesanyja hasára/mellkasára teszem hőforrásként.',ok:true,fb:'Helyes! Fólián keresztül (vagy alatta) is a szülő adja a legnagyobb testmeleget a helyszínen.'}]},
+{sit:'A baba az anyán van fóliában. Hogyan alakítod ki a további hővédelmet (betakarást) a protokoll szerint extrém hidegben?',opts:[{tx:'Mindkettőjüket mint egy egységet közösen takarom be: először száraz textíliákkal, majd ezen kívül izolációs (ezüst) takaróval is.',ok:true,fb:'Helyes! Fólia -> Anya -> Közös meleg/száraz textil -> Közös izolációs takaró (hősugárzás ellen).'},{tx:'Csak az újszülöttet tekerem be az izolációs takaróba, anyát nem.',ok:false,fb:'Hibás! Az izolációs takaró elválasztja a babát a hőforrástól (anya), ha csak a babán van.'},{tx:'Sok-sok vizes lepedőt teszek rájuk szigetelésnek.',ok:false,fb:'Hibás!'}]},
+{sit:'Melyik hővesztési formát gátolja a leginkább a KÍVÜLRŐL (a textíliákon túl) felhelyezett izolációs takaró (hőtükör)?',opts:[{tx:'A vezetéses (kondukció) hővesztést a föld felé.',ok:false,fb:'Hibás! A hátuk alatt a hordágy/ruha szigetel.'},{tx:'A sugárzásos (radiációs) hőleadást a hűvösebb külvilág (fagyos levegő/ég) felé.',ok:true,fb:'Helyes! Az izolációs fólia hőtükör hatása a radiáció ellen véd a legjobban.'},{tx:'A párolgást.',ok:false,fb:'Hibás! Azt a legbelső réteg (polietilén fólia) gátolta meg.'}]},
+{sit:'Beemelitek a hordágyat a fűtött mentőautóba. A baba fóliában, az anyán van. Kibontod-e a babát most, hogy törölközővel szárazra töröld?',opts:[{tx:'Igen, most már meleg van, meg kell törölni.',ok:false,fb:'Hibás! A fólia levétele hirtelen hőmérsékletesést, konvekciót okoz.'},{tx:'Nem, a megbontás drasztikus hővesztéssel járna; a baba maradjon a zsákban a kórházi hőmérséklet-stabilizálásig.',ok:true,fb:'Helyes! A zsák megbontása prehospitálisan már nem javasolt, ha egyszer benne van.'},{tx:'Csak egy gyors törlésre veszem ki.',ok:false,fb:'Hibás!'}]},
+{sit:'A baba pulzusa és légzése stabil, de testhőmérsékletét folyamatosan monitorozni kell. Hogyan teszed meg ezt a zsák (Neohelp) megbontása nélkül?',opts:[{tx:'Tűszúrással hőmérőt vezetek a zsákba.',ok:false,fb:'Hibás! Tönkreteszi a fóliát és balesetveszélyes.'},{tx:'Folyamatos obszervációval, eldobható hőmérsékletmérő szenzorral az újszülött háta alá helyezve, vagy non-kontakt hőmérővel az átlátszó fólián/nyíláson át.',ok:true,fb:'Helyes! A protokoll a noninvazív, megbontás nélküli technikákat javasolja.'},{tx:'Ha átlátszó a zsák, ránézésből tudom a hőfokot.',ok:false,fb:'Hibás! Számot kell mérni.'}]},
+{sit:'A transzport megkezdéséhez a két mentőegység (te és a koramentő) a helyszínen van. Hogyan szállítjátok be őket az eljárásrend szerint?',opts:[{tx:'Mindenkit a saját kocsimba teszek, a koramentő csak kísérő.',ok:false,fb:'Hibás! A koramentő az újszülött szállítására hivatott.'},{tx:'Két külön mentővel: az újszülöttet a koraszülött mentő inkubátorában, az édesanyát a másik egységgel, biztosítva a tökéletes rögzítést és hővédelmet.',ok:true,fb:'Helyes! A biztonságos rögzítés és a fűtött inkubátor a legjobb megoldás.'},{tx:'Az anyát otthagyjuk, csak a gyereket visszük.',ok:false,fb:'Hibás!'}]},
+{sit:'Mi a teendő, ha a koramentő nem ért volna oda, és neked kell szállítani mindkettőt?',opts:[{tx:'A babát a neohelp zsákban, az anyától szeparáltan, egy melegítőpárnával ellátott speciális rögzítőbe (pólyába) helyezem a mentőn belül, betakarva, és folyamatos figyelem, elkerülve a melegítőpárna okozta égést.',ok:true,fb:'Helyes! Bár nem ideális, a szeparált biztonságos rögzítés + külső hőforrás (párna) + fólia a szabály.'},{tx:'Az anya kezébe adom a rögzítetlen hordágyon.',ok:false,fb:'Hibás! Betegbiztonsági szabályszegés.'},{tx:'Egy felnőtt hordágyra teszem szabadon.',ok:false,fb:'Hibás! Leesés veszélye.'}]}
+],summary:'Összefoglaló (Érett, Extrém hideg): A kiérkezés fagyos környezetbe (-2°C) azonnali cselekvést és magasabb szintű segítség (koramentő, 2. egység) hívását igényelte. A kritikus lépés az eljárásrend szerint: EXTRÉM HIDEGBEN A SZÁRAZRA TÖRLÉS LÉPÉSÉNEK KIHAGYÁSA. A nedves újszülöttet azonnal Neohelp zsákba (vagy polietilén fóliába) helyeztük, ezzel gátolva a masszív párolgásos hővesztést. A babát a zsákkal együtt az anya mellkasára raktuk (bőr-bőr, mint fő hőforrás), majd közösen betakartuk őket textíliákkal, izolációs (ezüst) takaróval és pléddel. A fűtött mentőbe érve a fóliát szigorúan tilos volt megbontani szárítás céljából. A hőmérsékletet non-kontakt eszközzel/szenzorral monitoroztuk a zsák nyitása nélkül. A szállítást - mivel a koramentő elérhető volt - két külön egységgel végeztük: a babát a fűtött, párásított inkubátorban biztonságosan rögzítve, az anyát pedig a másik esetkocsival vittük a kórházba.'},
+
+{id:3,title:'3. Szimuláció: Koraszülött (1500g), Lakás, 22°C',diff:'B+ kompetencia',desc:'Egy 22°C-os szobában indul be a szülés a 31. terhességi héten. Mentőápoló (B+ kompetencia) elsőként érkezik, az újszülött épp megszületik, kb. 1,5 kg becsült súllyal.',steps:[
+{sit:'A baba koraszülött (kb. 1,5 kg). Még a megszületés pillanatában (vagy azelőtt) milyen egység hívását kellett már intézned a mentésirányítással?',opts:[{tx:'Helikoptert.',ok:false,fb:'Hibás! Prehospitális szüléshez nem a helikopter az elsődleges specifikus egység.'},{tx:'Gyermekorvosi ügyeletet.',ok:false,fb:'Hibás! Célzott szállítóeszköz kell.'},{tx:'Speciális koraszülött mentőt, mivel ők rendelkeznek fűtött/párásított inkubátorral és speciális eszközökkel a transzporthoz.',ok:true,fb:'Helyes! Koraszülés esetén a koramentő azonnali kérése elengedhetetlen.'}]},
+{sit:'A baba megszületett (1,5 kg). Bár a szoba hőmérséklete 22°C (semleges), a baba koraszülött. Szárazra törlöd-e a protokoll alapján?',opts:[{tx:'Igen, mert nincs extrém hideg.',ok:false,fb:'Hibás! Koraszülötteknél a hővesztés sokkal kritikusabb.'},{tx:'Nem, KORASZÜLÖTT esetén a szárazra törlés lépése maradjon ki, és azonnal helyezzük átlátszó fóliába vagy zsákba.',ok:true,fb:'Helyes! Koraszülött = azonnali zsákolás, törlés nélkül, függetlenül a szobahőmérséklettől.'},{tx:'Csak a testét, a fejét nem.',ok:false,fb:'Hibás!'}]},
+{sit:'Rendelkezésedre áll Neohelp zsák. Milyen méretet választasz az 1,5 kg-os babának, és miért?',opts:[{tx:'MEDIUM (1 - 2,5 kg között), hogy megfelelően illeszkedjen a backpad a vállakhoz.',ok:true,fb:'Helyes! A függelék alapján a Medium méret 44x38 cm, és 1-2,5 kg között ideális.'},{tx:'LARGE, hogy biztosan elférjen.',ok:false,fb:'Hibás! A túl nagy zsákban a neutrális pozíció (backpad) nem fog jól illeszkedni.'},{tx:'SMALL',ok:false,fb:'Hibás! Csak Medium és Large méret van a leírásban.'}]},
+{sit:'Hogyan helyezed be a babát a Neohelp zsákba?',opts:[{tx:'Beleteszem és bekötöm a száját egy zsinórral.',ok:false,fb:'Hibás! Fulladásveszély.'},{tx:'Kicsomagolom a zsákot, teljesen kinyitom a tépőzárat/kapucnit, behelyezem a babát, a vállait a "backpad"-re illesztem (neutrális fejpozíció), majd zárom a tépőzárat és a kapucnit, szabadon hagyva a légutakat.',ok:true,fb:'Helyes! Ez a hivatalos használati útmutató a függelékből.'},{tx:'Csak a lábait dugom bele, a feje és mellkasa szabadon marad.',ok:false,fb:'Hibás! Így nincs kellő hővédelem.'}]},
+{sit:'Mi a "backpad" szerepe a Neohelp zsákban?',opts:[{tx:'Melegíti a babát.',ok:false,fb:'Hibás! Nem aktív hőforrás.'},{tx:'Biztosítja a neutrális (semleges) fejpozíciót, ami a légutak nyitva tartásához elengedhetetlen egy koraszülöttnél.',ok:true,fb:'Helyes! A neutrális pozíció gátolja a légút elzáródását.'},{tx:'Felszívja a magzatvizet.',ok:false,fb:'Hibás!'}]},
+{sit:'A baba a zsákban van. A szoba 22°C (tehát nem 24-25°C feletti meleg). Kire/mibe helyezed a babát hőforrásként?',opts:[{tx:'Leteszem a földre.',ok:false,fb:'Hibás! Kondukciós hővesztés.'},{tx:'Mivel az anya testmelege a legjobb hőforrás, a fóliázott babát az anya mellkasára/hasára teszem.',ok:true,fb:'Helyes! Bőr-bőr hiányában is az anya a legjobb kontakt hőforrás a fólián keresztül.'},{tx:'Beteszem a csap alá meleg vízbe.',ok:false,fb:'Hibás! Balesetveszély és tilos.'}]},
+{sit:'Hogyan fejezed be az izolációt az anyán lévő, zsákban lévő koraszülöttnél?',opts:[{tx:'A fólián felül betakarom izolációs (ezüst) fóliával és meleg takaróval is, közösen az anyával.',ok:true,fb:'Helyes! A zsák véd a párolgás/áramlás ellen, a külső izolációs fólia a sugárzás ellen, a takaró a hővezetés/áramlás ellen.'},{tx:'Sehogyan, a Neohelp elég.',ok:false,fb:'Hibás! A kiegészítő takarás is kötelező.'},{tx:'Leveszem a Neohelpet és csak a takarót használom.',ok:false,fb:'Hibás! A párolgásos hővesztés újra beindulna.'}]},
+{sit:'Egy óvatlan rokon odalép, és meg akarja bontani a zsákot, hogy megsimogassa a baba kezét. Mit mondasz?',opts:[{tx:'A zsák megbontása tilos, mert a baba azonnal párolgásos hőt veszít, a testhőmérséklet stabilizálódásáig a zsákban kell hagyni (és a rokonoknak sem szabad mozgatni).',ok:true,fb:'Helyes! A zsák megbontása drasztikus lehűléshez vezet.'},{tx:'Rendben, de csak egy percre.',ok:false,fb:'Hibás! A megbontás tilos.'},{tx:'Csak a lábát simogathatja.',ok:false,fb:'Hibás!'}]},
+{sit:'A koramentő jelzi, hogy még 15 perc. A babát szeparálni kell az anyától egy orvosi beavatkozás miatt (PPH gyanú). Hova és hogyan teszed a babát?',opts:[{tx:'Zacskóban leteszem egy székre.',ok:false,fb:'Hibás! Nincs hőforrás.'},{tx:'A zsákban lévő babát előmelegített helyre (vizsgálóasztal/hordágy) teszem, lehetőleg melegítőpárnára (nem forróra!) vagy melegített infúziós palackok mellé, és vastagon betakarom.',ok:true,fb:'Helyes! Ha az anyai hőforrás kiesik, aktív melegítő felületet kell biztosítani a zsák alá/mellé.'},{tx:'Odaállok vele az ablakhoz, hogy ne legyen útban.',ok:false,fb:'Hibás! Konvekció és sugárzásos hővesztés (ablaküveg hideg).'}]},
+{sit:'A koramentő megérkezett. Mi történik a Neohelp zsákkal az átadás és transzport során?',opts:[{tx:'A babát átteszik a fűtött inkubátorba a koramentőben, de a zsák rajta marad, mivel akár 24 órán át is használható és védi a hővesztéstől.',ok:true,fb:'Helyes! A zsákot tilos megbontani a helyszínen, az inkubátorban is rajta maradhat a kórházi végleges ellátásig.'},{tx:'Lehúzzák róla, és kidobják.',ok:false,fb:'Hibás! A levétel hősokkot okozna.'},{tx:'Kivágják a zsákot, hogy levegőt kapjon.',ok:false,fb:'Hibás! A kapucni eddig is szabadon hagyta az arcot.'}]}
+],summary:'Összefoglaló (Koraszülött, Szobahőmérséklet): Egy 31. hétre született, 1,5 kg-os koraszülött esetén az eljárásrend nagyon szigorú. Azonnal (még a helyszínre érkezéskor) koraszülött mentőt kértünk, mivel az inkubátor életmentő a számukra. A megszületés után a babát SZIGORÚAN TILOS volt szárazra törölni, hogy elkerüljük az időveszteséget és a további kitettséget. Azonnal a MEDIUM méretű (1-2,5 kg) Neohelp zsákba csomagoltuk. Fontos volt, hogy a vállai a zsák "backpad"-jére kerüljenek, biztosítva a neutrális fejpozíciót és a szabad légutat. A zsákba helyezett babát (mivel az anya állapota engedte) fólián keresztül az anya testére tettük, és mindkettőjüket izolációs fóliával és meleg takaróval védtük a konvekció és radiáció ellen. Amikor az anya ellátása miatt szeparálni kellett a babát, melegítőpárnára helyeztük, folyamatos monitorozás (égés és hőfok) mellett. A rokonok fizikai beavatkozását (zsáknyitás) megakadályoztuk. A babát a koramentő inkubátorába a Neohelp zsákkal együtt helyeztük át, amely akár 24 órán át biztonságosan védi a párolgásos hővesztéstől.'},
+
+{id:4,title:'4. Szimuláció: Anya kritikus állapota (Szeparáció)',diff:'B kompetencia',desc:'Kiérkezés egy 18°C-os lépcsőházba. Az újszülött érett (3,2 kg), de az anya masszívan vérzik (Sokk gyanúja), azonnali emelt szintű ellátást igényel.',steps:[
+{sit:'A baba megszületett (érett), a lépcsőház hűvös (18°C). Az anya állapota miatt (vérzés, alacsony vérnyomás) a babát azonnal szeparálni kell tőle az anya újraélesztése/ellátása miatt. Mi az első lépés a babával?',opts:[{tx:'A baba is kritikus lesz, nem csinálok vele semmit, az anyával foglalkozom.',ok:false,fb:'Hibás! Két beteg van, mindkettőt el kell látni (párhuzamos tevékenység / delegálás).'},{tx:'Előmelegített textíliával szárazra törlöm, a nedves textíliát eltávolítom.',ok:true,fb:'Helyes! Érett újszülöttnél (ha nem extrém hideg) a szárazra törlés az első lépés a szeparáció során is.'},{tx:'Törlés nélkül a kövezetre teszem.',ok:false,fb:'Hibás! Kondukciós (vezetéses) hősokk.'}]},
+{sit:'A baba száraz. Anya nem alkalmas hőforrásnak. Mibe csomagolod a babát a 18°C-os hűvös környezetben?',opts:[{tx:'Egy vékony textil lepedőbe.',ok:false,fb:'Hibás! A pamut átereszti a hőt és a levegőt (konvekció).'},{tx:'Polietilén műanyag fóliába vagy LARGE méretű Neohelp zsákba.',ok:true,fb:'Helyes! A 3,2 kg miatt Large méret, és a fólia gátolja a légáramlást/párolgást.'},{tx:'Szemeteszsákba húzva a nyakáig.',ok:false,fb:'Hibás! Kifejezetten a célra szánt orvosi fólia / izolációs anyag kell.'}]},
+{sit:'A fóliázott/zsákolt babát hová és mire teszed, amíg az anyát ellátjátok (nincs inkubátor)?',opts:[{tx:'A földre egy takaróra.',ok:false,fb:'Hibás! A föld (lépcsőház) kiszívja a hőt a takarón át is.'},{tx:'Egy hordágyra vagy előmelegített asztalra, MELEGÍTŐPÁRNÁRA vagy melegített infúziós palackok (esetleg meleg vízzel töltött, száraz gumikesztyű) mellé/alá.',ok:true,fb:'Helyes! Ez a protokoll a külső aktív melegítésre szeparáció esetén.'},{tx:'A mentőautó motorháztetejére.',ok:false,fb:'Hibás! Balesetveszély és kontrollálhatatlan hő.'}]},
+{sit:'A baba a melegítőpárnán fekszik fóliában. Hogyan takarod be?',opts:[{tx:'Nincs szükség további takarásra a párna miatt.',ok:false,fb:'Hibás! A hősugárzás felülről is folyamatos.'},{tx:'Izolációs (ezüst) takaróval és afölött még egy pléddel a lehetséges mértékig.',ok:true,fb:'Helyes! A felülről érkező konvekciós és radiációs hővesztést gátolni kell.'},{tx:'Csak egy izolációs fóliát dobok rá.',ok:false,fb:'Hibás! A pléd extra szigetelést ad.'}]},
+{sit:'Milyen közvetlen veszély fenyegeti az újszülöttet az alkalmazott külső aktív melegítés (melegítőpárna/forró víz) miatt, amire végig nagyon ügyelni kell?',opts:[{tx:'Kiszáradás 10 perc alatt.',ok:false,fb:'Hibás! A fólia meggátolja a párolgást.'},{tx:'Égési sérülés és hyperthermia (túlmelegedés).',ok:true,fb:'Helyes! A baba bőre rendkívül érzékeny, a melegítőpárna súlyos égéseket okozhat, ezért folyamatos észlelés kell.'},{tx:'Fulladás a hőtől.',ok:false,fb:'Hibás!'}]},
+{sit:'Hogyan akadályozod meg az égési sérülést vagy a túlmelegedést?',opts:[{tx:'Félpercenként kiveszem a fóliából, hogy lehűljön.',ok:false,fb:'Hibás! Az ingadozás káros.'},{tx:'Folyamatosan monitorozom a hőmérsékletét (non-kontakt/szenzoros) és rendszeresen kézzel is ellenőrzöm a melegítőpárna hőfokát a baba alatt (a védelem megbontása nélkül).',ok:true,fb:'Helyes! Folyamatos obszervációval megelőzhető az égés és a hyperthermia.'},{tx:'Inkább langyos vizet rakok csak mellé.',ok:false,fb:'Hibás! Elégtelen lehet a hőleadás kompenzálására.'}]},
+{sit:'Az anya ellátása miatt két mentő (pl. egy Eset/Roham és egy KIM) érkezik. Hogyan döntesz a szállításról?',opts:[{tx:'A babát beteszem az anya lábához az Esetkocsin, hogy egy autóval menjenek.',ok:false,fb:'Hibás! A baba útban van az újraélesztésnél/ellátásnál, a rögzítése nem megoldott.'},{tx:'Két külön mentővel történő szállítás javasolt, mivel az anya és újszülött biztonságos, protokoll szerinti rögzítését egy autóban megoldani nem tudjuk, és ellátási érdek áll fenn az anyánál.',ok:true,fb:'Helyes! Két beteg = két kompetens kapacitás, szeparált biztonságos szállítás.'},{tx:'A babát a szomszédra bízom, amíg az anyát beviszem.',ok:false,fb:'Hibás! A baba mentős ellátást/szállítást igényel.'}]},
+{sit:'A baba stabil (NEWS alapján nem értékeljük, de az APGAR jó, színe rózsaszín, hőm. 36.8°C). A mentőápoló kollégád be akarja vinni a babát a második mentőautóba. Hogyan kell az áthelyezést végezni?',opts:[{tx:'Egy vékony textilben kiveszi az utcára.',ok:false,fb:'Hibás! Szállítás alatt is kell a teljes hővédelem.'},{tx:'Az újszülöttet a teljes hővédelmi csomaggal (fólia, melegítőeszköz, takarók) EGYÜTT helyezi át.',ok:true,fb:'Helyes! Az áthelyezés során sem érheti hősokk a babát.'},{tx:'Nedves törölközőben viszi át.',ok:false,fb:'Hibás!'}]},
+{sit:'A másik mentőautóban a transzport alatt hová teszitek a babát?',opts:[{tx:'A hordágyon speciális rögzítőben/pólyában rögzítve, folytatva a melegítést (párna/palack) és az izolációs takarást.',ok:true,fb:'Helyes! Biztonságos rögzítés és folyamatos külső fűtés (mivel anya nincs).'},{tx:'A hordágy fejtámlájára fektetjük.',ok:false,fb:'Hibás! Életveszélyes, nincs rögzítve.'},{tx:'A műszerfalon melegítjük a szélvédő alatt fűtéssel.',ok:false,fb:'Hibás! Teljesen szabálytalan.'}]},
+{sit:'A transzport során a mentőápoló észleli a baba hőmérsékletét. Mi a célhőmérséklet-tartomány, amit meg kell tartania a kórházig?',opts:[{tx:'35,0 - 36,0 °C',ok:false,fb:'Hibás! Ez már enyhe hypothermia.'},{tx:'36,5 - 37,5 °C',ok:true,fb:'Helyes! Ez a fiziológiás normál tartomány, ezt célozza az egész eljárásrend.'},{tx:'38,0 - 39,0 °C',ok:false,fb:'Hibás! Ez már súlyos hyperthermia, ami ugyanolyan káros!'}]}
+],summary:'Összefoglaló (Anya kritikus, Szeparáció): Amikor a szülés hűvös (18°C) lépcsőházban történt, de az anya vérzése/sokkja azonnali életmentő beavatkozást igényelt, a babát szeparálni kellett. A 3,2 kg-os érett babát gyorsan szárazra töröltük, a nedves textilt elvettük, majd LARGE méretű Neohelp zsákba (vagy polietilén fóliába) helyeztük. Mivel az anya testmelege (bőr-bőr kontaktus) nem állt rendelkezésre, az újszülöttet azonnal egy előmelegített felületre tettük, alá/mellé melegítőpárnát vagy meleg vizes palackot (kesztyűt) raktunk, ügyelve arra, hogy meg ne égessük a bőrét. Kívülről mindezt izolációs takaróval és pléddel fedtük le (radiáció és konvekció ellen). Az égési sérülés és túlmelegedés (hyperthermia) elkerülése végett folyamatosan noninvazív eszközzel mértük a baba hőmérsékletét, célként a 36,5-37,5°C-os normál tartományt kitűzve. Az anya kritikus állapota és a biztonságos rögzítés lehetetlensége miatt két külön mentőegységet kértünk. Az áthelyezést a teljes melegítő csomaggal (fólia+takarók+párna) végeztük, majd a másik mentőben a biztonsági szabályoknak megfelelően, a hordágyon rögzítve szállítottuk be a kórházba.'}
+];
+
+function processCalc(){
+  let recs = [];
+  // Biztosítjuk, hogy a vesszős magyar számformátumot is jól kezelje a JavaScript
+  let wStr = String(CA.weight).replace(',', '.');
+  let tStr = String(CA.temp).replace(',', '.');
+  let wNum = parseFloat(wStr) || 0;
+  let tNum = parseFloat(tStr) || 0;
+  
+  let w_size = wNum > 2.5 ? "LARGE (> 2.5 kg)" : "MEDIUM (1 - 2.5 kg)";
+  
+  if (CA.type === 'kora') {
+    recs.push('Szigorúan TILOS a szárazra törlés!');
+    recs.push('Azonnal Neohelp zsákba vagy polietilén fóliába csomagolandó.');
+    recs.push('Javasolt Neohelp méret a megadott súlyra: <b>' + w_size + '</b>');
+    if(CA.mat === 'stabil'){
+      recs.push('A fóliázott babát az anya testére kell helyezni (hőforrásként), majd közösen betakarni izolációs fóliával és takaróval.');
+    }
+  } else { // erett
+    if (tNum < 24) { // hűvös/hideg vagy extrém
+      if (tNum < 15) { // extrém
+         recs.push('Extrém hideg esetén a szárazra törlés LÉPÉSE MARADJON KI!');
+         recs.push('Törlés nélkül azonnal polietilén fóliába vagy neohelp zsákba helyezendő.');
+      } else {
+         recs.push('Gyors szárazra törlés, majd a nedves textil eltávolítása.');
+         recs.push('Polietilén fóliába vagy neohelp zsákba helyezés (Javasolt méret: <b>' + w_size + '</b>).');
+      }
+      if(CA.mat === 'stabil'){
+        recs.push('Fóliában az anya testére tenni, közösen izolációs fóliával és pléddel takarni.');
+      }
+    } else { // 24 felett
+      recs.push('Szárazra törlés előmelegített textíliával, majd a nedves textil eltávolítása.');
+      if(CA.mat === 'stabil'){
+        recs.push('Bőr-bőr kontaktus az anyán (fólia nélkül is megengedett meleg környezetben).');
+        recs.push('Közös betakarás textíliákkal (fejet is fedve).');
+      }
+    }
+  }
+
+  if (CA.mat === 'kell') {
+    recs.push('Mivel az anya ellátást igényel (szeparáció): A fóliázott babát külső hőforrás (melegítőpárna, meleg asztal) alá/mellé kell tenni.');
+    recs.push('Fokozott obszerváció szükséges az ÉGÉSI SÉRÜLÉSEK és TÚLMELEGEDÉS elkerülése miatt!');
+    recs.push('Izolációs takaró felhelyezése a baba fölé is.');
+  }
+
+  return recs;
+}
+
+window.updateCalc = function() {
+  let resDiv = document.getElementById('calc-res');
+  if (!resDiv) return;
+  let result = processCalc();
+  resDiv.innerHTML = '<div class="card" style="background:#064e3b;border-color:#065f46">'+
+  '<h3 style="font-size:14px;color:#38bdf8;margin-bottom:8px">Javasolt protokoll lépések:</h3>'+
+  '<ul class="bl" style="margin-bottom:0">'+
+  result.map(r=>'<li>'+r+'</li>').join('')+
+  '</ul></div>'+
+  '<div class="al al-i">Célhőmérséklet folyamatos noninvazív méréssel: <b>36,5 - 37,5 °C</b></div>';
+};
+
+function renderCalc(){
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Döntéstámogató és Neohelp Kalkulátor</h2>'+
+  '<div class="card" style="background:#262626">'+
+  
+  '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#9ca3af;display:block;margin-bottom:4px">Újszülött állapota:</label>'+
+  '<select onchange="CA.type=this.value; updateCalc();"><option value="erett" '+(CA.type==='erett'?'selected':'')+'>Érett újszülött</option><option value="kora" '+(CA.type==='kora'?'selected':'')+'>Koraszülött (koraszülés / kis súly)</option></select></div>'+
+  
+  '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#9ca3af;display:block;margin-bottom:4px">Környezeti hőmérséklet (°C):</label>'+
+  '<input type="text" inputmode="decimal" value="'+CA.temp+'" oninput="CA.temp=this.value; updateCalc();" onkeyup="CA.temp=this.value; updateCalc();" onchange="CA.temp=this.value; updateCalc();"></div>'+
+  
+  '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#9ca3af;display:block;margin-bottom:4px">Becsült testsúly (kg):</label>'+
+  '<input type="text" inputmode="decimal" value="'+CA.weight+'" oninput="CA.weight=this.value; updateCalc();" onkeyup="CA.weight=this.value; updateCalc();" onchange="CA.weight=this.value; updateCalc();"></div>'+
+  
+  '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:600;color:#9ca3af;display:block;margin-bottom:4px">Anya állapota:</label>'+
+  '<select onchange="CA.mat=this.value; updateCalc();"><option value="stabil" '+(CA.mat==='stabil'?'selected':'')+'>Stabil (ellátja az "inkubátor" funkciót)</option><option value="kell" '+(CA.mat==='kell'?'selected':'')+'>Kritikus / Ellátást igényel (Szeparáció)</option></select></div>'+
+  
+  '</div>'+
+  '<div id="calc-res"></div>';
+}
+
+function render(){
+  var c=document.getElementById('ct');
+  c.innerHTML='';
+  if(SCR==='home') c.innerHTML=renderHome();
+  else if(SCR==='chapters') c.innerHTML=renderChapters();
+  else if(SCR==='chapter') c.innerHTML=renderChapter(CHID);
+  else if(SCR==='quiz') c.innerHTML=renderQuiz();
+  else if(SCR==='sim') c.innerHTML=renderSim();
+  else if(SCR==='calc') {
+    c.innerHTML=renderCalc();
+    updateCalc(); 
+  }
+
+  var tabs=['home','chapters','quiz','sim','calc'];
+  var active=SCR==='chapter'?'chapters':SCR;
+  document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+  window.scrollTo(0,0);
+}
+
+// Global actions
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>

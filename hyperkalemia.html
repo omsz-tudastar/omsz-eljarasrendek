@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyperkalaemia Prehospitális Ellátása</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+/* NAV */
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+/* CONTENT */
+.ct{padding:1rem;}
+/* CARDS */
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+/* ALERTS */
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.note{font-size:12px;color:#9ca3af;padding:.5rem .75rem;background:#262626;border-radius:8px;margin-bottom:.5rem;line-height:1.5;border:1px solid #333;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+/* TABLES */
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+/* BUTTONS */
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+/* QUIZ OPTIONS */
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+/* FLIP CARD */
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+/* HOME GRID */
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+/* CHAPTER LIST */
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+/* PROGRESS */
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+/* TAGS */
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+.tag-r{background:#7f1d1d;color:#fecaca;}
+/* GLOSSARY */
+.gl{border-bottom:1px dashed #14b8a6;color:#14b8a6;cursor:help;font-weight:600;transition:color .2s;}
+.gl:hover{color:#0d9488;}
+/* MODAL */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;display:none;justify-content:center;align-items:center;}
+.modal-content{background:#262626;padding:1.5rem;border-radius:12px;max-width:90%;width:400px;border:1px solid #3f3f3f;box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.modal-title{color:#14b8a6;font-size:16px;font-weight:700;margin-bottom:.5rem;}
+.modal-text{color:#d1d5db;font-size:13px;line-height:1.5;margin-bottom:1rem;}
+select, input[type="range"]{width:100%;padding:8px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;color:#e5e7eb;font-family:inherit;}
+input[type="range"]{padding:0;border:none;}
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Eljárásrend</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<div id="glModal" class="modal-overlay" onclick="closeGl(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div id="glTitle" class="modal-title"></div>
+    <div id="glText" class="modal-text"></div>
+    <button class="btn btn-g btn-fw" onclick="closeGl()">Bezárás</button>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={k:0, ekg:0, state:0};
+
+const DICT = {
+  'POCT': 'Point-Of-Care Testing: Páciens melletti, azonnali eredményt adó laborvizsgálat.',
+  'ASTRUP': 'Vérgázvizsgálat, amely a vér oxigén-, szén-dioxid szintjét, sav-bázis egyensúlyát és elektrolitjait (pl. kálium) határozza meg.',
+  'rhabdomyolysis': 'A harántcsíkolt izomszövet gyors szétesése, ami miatt nagy mennyiségű kálium és myoglobin szabadul a vérkeringésbe.',
+  'hemolízis': 'A vörösvértestek szétesése, ami miatt a sejten belüli kálium a vérplazmába kerül, megemelve a mért káliumszintet.',
+  'NSAID': 'Nem szteroid gyulladáscsökkentő gyógyszerek (pl. ibuprofen, diclofenac), melyek rontva a vesefunkciót kálium-visszatartást okozhatnak.',
+  'sztatin': 'Koleszterinszint-csökkentő gyógyszer, mely bizonyos esetekben (különösen interakciók során) izomkárosodást (rhabdomyolysist) okozhat.',
+  'ARB': 'Angiotenzin receptor blokkoló (vérnyomáscsökkentő gyógyszer), mely kálium-visszatartást okozhat.',
+  'ACEI': 'ACE-gátló (vérnyomáscsökkentő gyógyszer), mely megemeli a szérum káliumszintet.',
+  'MRA': 'Mineralokortikoid receptor antagonista (pl. spironolakton), káliummegtartó vízhajtó.',
+  'Brugada-minta': 'Az EKG-n látható speciális ST-eleváció (leginkább V1-V2 elvezetésekben), amely súlyos szívritmuszavarra hajlamosít. Hyperkalaemiában is megjelenhet hasonló kép.',
+  'junkcionális ritmus': 'Amikor a szinuszcsomó leáll vagy a jele blokkolódik (pl. hyperkalaemia miatt), az AV-csomó veszi át az ingerképzést. EKG-n gyakran P-hullám nélküli, keskeny (vagy kiszélesedő) QRS komplexusok láthatók.',
+  'bradykardia': 'Lassú szívverés (felnőtteknél jellemzően <60/perc).',
+  'asystolia': 'A szív elektromos és mechanikai tevékenységének teljes hiánya, egyenes vonal az EKG-n.',
+  'ECLS': 'Extracorporeal Life Support: Testen kívüli életfenntartó kezelés (keringés- és légzéstámogatás).',
+  'ECPR': 'Extracorporeal Cardiopulmonary Resuscitation: Újraélesztés közben alkalmazott ECLS.',
+  'VF': 'Kamrafibrilláció (Ventricular Fibrillation).',
+  'pnVT': 'Pulzus nélküli kamrai tachycardia.',
+  'ROSC': 'Return of Spontaneous Circulation: Spontán keringés visszatérése újraélesztés során.',
+  'EtCo2': 'Kilégzésvégi szén-dioxid (End-tidal CO2) koncentráció. Értéke a vérkeringés minőségére is utal újraélesztés alatt.',
+  'SOP': 'Szabványos Működési Eljárásrend (Standard Operating Procedure).'
+};
+
+function shG(word) {
+  var term = Object.keys(DICT).find(k => k.toLowerCase() === word.toLowerCase());
+  if (term) {
+    document.getElementById('glTitle').innerText = term.toUpperCase();
+    document.getElementById('glText').innerText = DICT[term];
+    document.getElementById('glModal').style.display = 'flex';
+  }
+}
+
+function closeGl(e) {
+  if (!e || e.target.id === 'glModal' || !e.target.id) {
+    document.getElementById('glModal').style.display = 'none';
+  }
+}
+
+function g(w) { return '<span class="gl" onclick="shG(\''+w+'\')">'+w+'</span>'; }
+
+var CDATA = [
+{id:'celok',title:'Általános szempontok',icon:'ℹ️',acc:'#3b82f6',secs:[
+{t:'Sürgősségi helyzetekre készült útmutató',bk:[
+{tp:'bl',items:[
+'Az elektrolitháztartás zavarai sürgősségi helyzetekben fontos tényezők, de kórházon kívül az elektrolitszintek csak kivételesen határozhatók meg.',
+'Biztonságos kezelés csak akkor vállalható, ha a kórelőzmény, tünetek és EKG egy irányba mutatnak, és közvetlen életveszély áll fenn.',
+'Célzott beavatkozások gondos kockázat-haszon elemzés tükrében alkalmazhatóak.',
+'A leggyakoribb és legnagyobb valószínűséggel azonosítható, prehospitálisan legjobban kezelhető elektrolitzavar a súlyos hyperkalaemia.',
+'Peri-arreszt helyzetekben és újraélesztés során elengedhetetlen a reverzibilis okok keresése és kezelése.',
+'Szívritmuszavar észlelésekor mindig gondolni kell ionzavarra, kiemelten hyperkalaemiára (reverzibilis ok).'
+]},
+{tp:'al',lv:'d',tx:'A jelentős/súlyos hyperkalaemia gyakori, potenciálisan életveszélyes állapot, kezeletlenül keringésmegállással fenyeget!'}
+]}
+]},
+{id:'felismeres',title:'A hyperkalaemia felismerése',icon:'🔍',acc:'#f59e0b',secs:[
+{t:'Meghatározás',bk:[
+{tp:'al',lv:'i',tx:'Enyhe: 5,5 - 5,9 mmol/l\nMérsékelt: 6,0 - 6,5 mmol/l\nSúlyos: > 6,5 mmol/l (Monitorozás kötelező!)'},
+{tp:'note',tx:'Törekedjünk '+g('POCT')+' keretében ('+g('ASTRUP')+') a szérum káliumszint meghatározására, ha van rá mód.'}
+]},
+{t:'Hajlamosító, oki tényezők',bk:[
+{tp:'bl',items:[
+'Vesebetegség, veseelégtelenség',
+'Szívelégtelenség',
+'Diabetes mellitus',
+'Mellékvesekéreg-elégtelenség (Addison kór, hypoaldosteronismus)',
+'Kiterjedt, heveny (elsősorban izom-) szövetkárosodás: trauma (égés, áramütés)',
+g('Rhabdomyolysis')+': (elsősorban végtagi) iszkémia, alkoholmérgezés, droghatás (kokain!)',
+'Egyéb eredetű szövetszétesés spontán vagy gyógyszer okozta tumor szétesés, '+g('hemolízis'),
+'Gyógyszertúlhatás: kálium-megtartó vízhajtók, '+g('NSAID')+', '+g('sztatin')+', '+g('ARB')+', '+g('ACEI')+', '+g('MRA')+', nem szelektív bétareceptor-gátlók'
+]},
+{tp:'al',lv:'w',tx:'Figyelem: A gyógyszerek kombinációban, illetve káliumterheléssel együtt okozhatnak kritikus hyperkalaemiát! A jelentős fizikai terhelés is átmenetileg magas szintet okozhat (majd utána hypokalaemiát).'}
+]},
+{t:'Panaszok, tünetek és EKG',bk:[
+{tp:'bl',items:[
+'Nem specifikusak: izomgyengeség (hypokalaemiában is van!), hasi panaszok, hányinger, végtag gyengeség.',
+'Figyelemfelkeltő: szívdobogásérzés, ritmuszavar, ájulás.'
+]},
+{tp:'sub',tx:'Jellegzetes EKG eltérések kialakulásuk sorrendjében:'},
+{tp:'bl',items:[
+'Legkorábbi jel: T hullám csúcsossá, sátorszerűvé válása (> mint az R hullám)',
+'QT rövidül',
+'Megnyúlik a PR távolság, később másod/harmadfokú AV-blokk',
+'QRS kiszélesedik',
+'P ellapul, majd eltűnik, '+g('junkcionális ritmus')+', '+g('bradykardia')+' jelentkezik',
+'Lehet iszkémiára vagy '+g('Brugada-minta')+'ra emlékeztető ST-eleváció (V1-V2)',
+'S és T hullám összeolvad, szinuszhullám-szerű mintázat alakul ki',
+'Végül kamrai flutter, asystolia'
+]}
+]}
+]},
+{id:'teendok_mindenki',title:'Betegvizsgálat & Azonnali teendők',icon:'🚑',acc:'#14b8a6',secs:[
+{t:'Teendők MINDEN mentőegység számára',bk:[
+{tp:'bl',items:[
+'ABCDE szerinti betegvizsgálat.',
+'Transztelefonikus EKG konzultáció BLS szintű egységek számára minden mellkasi panasz/ritmuszavar esetén KÖTELEZŐ.',
+'Hajlamosító tényezők, rizikófaktorok gyors felmérése és rögzítése (SAMPLE, OPQRST).'
+]},
+{tp:'sub',tx:'Vénabiztosítás és folyadékpótlás (CSAK B+ kompetenciájú ápoló részére):'},
+{tp:'al',lv:'d',tx:'VIGYÁZAT! Fiziológiás szérum kálium szintnél magasabb koncentráció tartalmú infúziót adni TILOS!'},
+{tp:'bl',items:[
+'Nagy lumenű, stabil véna biztosítása.',
+'Folyadékpótlás '+g('SOP')+' szerint.'
+]}
+]}
+]},
+{id:'teendok_als',title:'További ellátás (Mentőtiszt/Orvos/ALS/B+)',icon:'💉',acc:'#8b5cf6',secs:[
+{t:'A kezelés célja: a szívmegállás megelőzése!',bk:[
+{tp:'sub',tx:'Megtartott keringés mellett, peri-arreszt szituációban (ha az EKG jellemző):'},
+{tp:'al',lv:'i',tx:'Első a szív védelme (1. vonal):\n• 10 ml 10%-os kálcium-klorid VAGY 30 ml kálcium-glükonát (Calcimusc) iv. 2-5 perc alatt\n• EKG kontroll: az adag 5 perc után ismételhető, ha nincs változás.'},
+{tp:'note',tx:'A kálcium 1-3 perc alatt csökkenti a '+g('VF')+'/'+g('pnVT')+' esélyét, de NEM csökkenti a szérum kálium-szintet!'}
+]},
+{t:'Újraélesztés hyperkalaemia gyanújában',bk:[
+{tp:'bl',items:[
+'A teljes protokoll szerinti ALS felépítése, a 4H 4T végiggondolása.',
+'Erősítsük meg gyanúnkat (ha lehet) vérméréssel.',
+'Kálcium adása: 10 ml 10% kálcium-klorid vagy 30 ml Calcimusc iv., GYORS BOLUSBAN.',
+'Izotóniás bikarbonát oldat indítása: 75 ml 8,4% NaHCO3 + 500 ml 5% Isodex, VAGY 15 ml 8,4% NaHCO3 + 100 ml 5% glükóz.',
+'Inzulin (alapvetően kórházi, de konzultáció után/kompetenciával prehospitálisan): 10 E rövid hatású inzulin + 25 g glükóz iv., gyors bolusban.',
+'Súlyos acidózis vagy veseelégtelenség esetén: 50 ml 8,4% nátrium-bikarbonát gyors iv. injekcióban (veszély: magas Na+ szint, magas PaCo2 ha rossz a ventilláció).',
+'A bikarbonát után az '+g('EtCo2')+' magasabb lesz, de ez nem feltétlenül jelent '+g('ROSC')+'-ot!',
+'Elhúzódó reanimáció: mechanikus mellkaskompresszió mérlegelése.',
+'"Rescue" kezelésként: '+g('ECLS')+' vagy '+g('ECPR')+' mérlegelése.'
+]}
+]}
+]}
+];
+
+var CARDS = [
+{cat:'Felismerés',f:'Mik a hyperkalaemia határértékei?',b:'Enyhe: 5,5 - 5,9 mmol/l\nMérsékelt: 6,0 - 6,5 mmol/l\nSúlyos: > 6,5 mmol/l (monitorozás kötelező!)'},
+{cat:'Felismerés',f:'Sorolj fel legalább 3 hajlamosító tényezőt!',b:'Veseelégtelenség\nSzívelégtelenség\nTrauma (égés, zúzódás)\nRhabdomyolysis\nBizonyos gyógyszerek (K+ megtartó vízhajtó, ACEI, ARB)'},
+{cat:'EKG',f:'Mi a hyperkalaemia legkorábbi EKG jele?',b:'A T hullám csúcsossá, sátorszerűvé válása (több elvezetésben meghaladja az R hullámot).'},
+{cat:'EKG',f:'Hogyan változik az EKG a folyamat előrehaladtával a csúcsos T hullám után?',b:'QT rövidül -> PR megnyúlik -> QRS kiszélesedik -> P ellapul/eltűnik -> Szinusz-hullám -> Asystolia'},
+{cat:'Kezelés',f:'Mi az infúziós folyadékpótlás legfontosabb szabálya gyanú esetén?',b:'Fiziológiás szérum kálium szintnél magasabb koncentráció tartalmú infúziót adni SZIGORÚAN TILOS!'},
+{cat:'Kezelés',f:'Mi az elsővonalbeli gyógyszer megtartott keringésű (peri-arreszt), súlyos hyperkalaemiás betegnél EKG eltéréssel?',b:'A szív védelme:\n10 ml 10% kálcium-klorid VAGY 30 ml kálcium-glükonát (Calcimusc) iv. 2-5 perc alatt.'},
+{cat:'Kezelés',f:'Csökkenti-e a kálcium adása a szérum káliumszintet?',b:'NEM.\n\nUgyanakkor 1-3 perc alatt stabilizálja a szívizmot és csökkenti a VF/pnVT esélyét.'},
+{cat:'Kezelés',f:'Milyen gyorsan adjuk a kálciumot ÚJRAÉLESZTÉS közben?',b:'Gyors iv. bolusban.\n\n(Megtartott keringésnél 2-5 perc alatt adjuk).'},
+{cat:'Kezelés',f:'Hogyan készítünk izotóniás bikarbonát oldatot a helyszínen?',b:'75 ml 8,4% nátrium-bikarbonátot teszünk 500 ml 5% Isodex oldatba.\nVAGY\n15 ml 8,4% nátrium-bikarbonátot teszünk 100 ml 5% glükózba.'},
+{cat:'Kezelés',f:'Milyen dózisú inzulint és glükózt adunk kompetencia birtokában?',b:'10 E rövid hatású inzulin ÉS 25 g glükóz iv., gyors bolusban.'}
+];
+
+var QUIZ = [
+{q:'Melyik K+ szint felett számít a hyperkalaemia súlyosnak az eljárásrend szerint?',opts:['> 5,5 mmol/l','> 6,0 mmol/l','> 6,5 mmol/l','> 7,0 mmol/l'],ok:2,exp:'Súlyos hyperkalaemia > 6,5 mmol/l. Ebben az esetben a beteg monitorozása kötelező.'},
+{q:'Az alábbiak közül melyik NEM hajlamosít hyperkalaemiára az eljárásrend szerint?',opts:['Veseelégtelenség','Kiterjedt égési sérülés','Béta-2 agonista (pl. Salbutamol) használata','ARB és MRA gyógyszerek szedése'],ok:2,exp:'A béta-2 agonisták (mint a Salbutamol) éppen csökkentik a szérum káliumszintet (beviszik a sejtbe), ezért nem hajlamosítanak rá.'},
+{q:'Melyik a súlyos hyperkalaemia legkorábbi jellemző EKG eltérése?',opts:['P hullám eltűnése','Csúcsos, sátorszerű T hullám','QRS kiszélesedése','Széles PR távolság'],ok:1,exp:'A legkorábbi jel többnyire a T hullám csúcsossá, sátorszerűvé válása (meghaladja az R hullámot).'},
+{q:'Adható-e Ringer-laktát infúzió hyperkalaemia gyanújában? (A Ringer-laktát káliumkoncentrációja 4-5 mmol/l)',opts:['Igen, bármilyen mennyiségben.','Igen, de csak lassan.','Nem, mert tilos fiziológiás szintnél magasabb káliumtartalmú folyadékot adni!','Igen, mert hígítja a vért.'],ok:2,exp:'Fiziológiás szérum kálium szintnél magasabb koncentráció tartalmú infúziót adni tilos!'},
+{q:'BLS szintű mentőegységek számára mellkasi panasz és/vagy ritmuszavar esetén...',opts:['Azonnal be kell adni a kálciumot.','Kötelező a transztelefonikus EKG konzultáció.','Tilos a vénabiztosítás.','Várni kell az orvosra minden vizsgálattal.'],ok:1,exp:'BLS szintű egységek számára a transztelefonikus EKG konzultáció KÖTELEZŐ, ami segítheti a célszerű intézkedést.'},
+{q:'Megtartott keringésű, súlyos hyperkalaemiás betegnél (EKG eltérésekkel) a kálcium-kloridot (10%) vagy kálcium-glükonátot (Calcimusc) milyen ütemben kell beadni?',opts:['Gyors bolusban (1-2 másodperc)','2-5 perc alatt iv.','10-15 perc alatt cseppinfúzióban','Csak izomba adható (im.)'],ok:1,exp:'Megtartott keringés mellett iv. 2-5 perc alatt kell beadni a szív védelme érdekében.'},
+{q:'Ismételhető-e a kálcium adagja megtartott keringésű betegnél?',opts:['Soha nem ismételhető.','Igen, de csak 30 perc múlva.','Igen, 5 perc után ismételhető, ha az EKG eltérések nem változnak.','Igen, azonnal, amíg a T hullám normális nem lesz.'],ok:2,exp:'EKG kontroll mellett a kálcium adag 5 perc után ismételhető, ha nincs javulás az EKG-n.'},
+{q:'Mit okoz a kálcium beadása hyperkalaemiás betegben?',opts:['Gyorsan csökkenti a vér káliumszintjét.','Megköti a káliumot a vérben.','Kiválasztja a káliumot a vesén keresztül.','Nem csökkenti a szérum K+ szintet, de stabilizálja a myocardiumot és csökkenti a VF esélyét.'],ok:3,exp:'A kálcium NEM csökkenti a szérum káliumszintet, de védi a szívet a ritmuszavaroktól.'},
+{q:'Újraélesztés alatt gyanított hyperkalaemia esetén hogyan adjuk a kálciumot?',opts:['Ugyanúgy, mint megtartott keringésnél, 2-5 perc alatt.','Gyors bolusban (iv.).','Infúzióba keverve folyamatosan.','Csak intraossealisan (IO) adható.'],ok:1,exp:'Újraélesztés során a kálcium-kloridot vagy Calcimusc-ot gyors bolusban kell beadni.'},
+{q:'Hogyan készül a helyszínen izotóniás bikarbonát oldat újraélesztés során?',opts:['100 ml 8,4% bikarbonát + 500 ml Salsol.','75 ml 8,4% nátrium-bikarbonát + 500 ml 5% Isodex (vagy 15 ml a 100 ml glükózba).','50 ml 8,4% bikarbonát töményen bolusban.','200 ml 4,2% bikarbonát + 200 ml Ringer.'],ok:1,exp:'75 ml 8,4% nátrium-bikarbonát oldat feloldása 500 ml 5% isodex oldatban, vagy 15 ml 100 ml 5%-os glükózban.'},
+{q:'Milyen veszélye van 50 ml tömény (8,4%) nátrium-bikarbonát gyors iv. bolusban történő adásának?',opts:['Hirtelen káliumszint csökkenés.','Szívmegállás.','Hirtelen megemelkedő szérum nátrium szint, és nem megfelelő ventilláció esetén magas PaCo2.','Tüdőödéma.'],ok:2,exp:'Súlyos acidózis/veseelégtelenség esetén indokolt lehet, de veszélye a magas Na+ szint és a felgyülemlő CO2 (ha a ventilláció elégtelen).'},
+{q:'Mi a teendő, ha a bikarbonát beadását követően az EtCo2 megemelkedik újraélesztés közben?',opts:['Azonnal le kell állítani a kompressziót, mert ez a ROSC egyértelmű jele.','Ez nem feltétlenül jelenti a ROSC állapotot (a bikarbonátból CO2 szabadul fel). Folytatni kell a CPR-t és az értékelést a protokoll szerint.','Hyperventillálni kell a beteget (percenként 30 befúvás).','Újabb adag bikarbonátot kell adni.'],ok:1,exp:'A bikarbonátból felszabaduló CO2 megemeli az EtCo2-t, de ez nem feltétlenül jelenti a keringés visszatérését (ROSC).'},
+{q:'Mi a teendő Enyhe (K 5,5-5,9 mmol/l) hyperkalaemia esetén, ha a beteg stabil és nincs EKG eltérés?',opts:['Azonnali kálcium adása.','Monitorizálás, szoros vércukor (káliumszint) és EKG kontroll.','Azonnali inzulin és glükóz adása.','Nincs teendő, otthon hagyható.'],ok:1,exp:'Enyhe, stabil esetben monitorizálás, vércukor és EKG kontroll a teendő.'},
+{q:'Egy betegnek izomgyengesége, hasi panaszai és hányingere van. Milyen ionzavarra utalhat ez az eljárásrend alapján?',opts:['Kizárólag hypokalaemiára.','Kizárólag hyperkalaemiára.','Hyperkalaemiában is előfordulhatnak ezek a nem specifikus tünetek (bár a köztudatban inkább a hypokalaemiához kötik).','Kizárólag hypercalcaemiára.'],ok:2,exp:'Bár a köztudatban az izomgyengeség hypokalemiához kötődik, hyperkalaemiában is előfordulhat.'},
+{q:'Kiterjedt trauma, áramütés vagy végtagi iszkémia során miért alakul ki hyperkalaemia?',opts:['A vese leáll a stressz miatt.','A fokozott légzés miatt.','A rhabdomyolysis (sejtszétesés) miatt a sejtekből kálium áramlik a vérbe.','A beadott gyógyszerek miatt.'],ok:2,exp:'A szövetkárosodás (rhabdomyolysis, szövetszétesés) során a sejteken belüli kálium a vérpályába kerül.'},
+{q:'B+ kompetenciájú mentőápolóként végezhetsz-e vénabiztosítást és folyadékpótlást hyperkalaemia gyanújában?',opts:['Nem, ez kizárólag orvosi kompetencia.','Igen, gyógyszerelési felhatalmazás birtokában, az SOP szerint.','Csak újraélesztés alatt.','Csak ha a diszpécser kifejezetten utasít rá.'],ok:1,exp:'Vénabiztosítás és folyadékpótlás gyógyszerelési felhatalmazás birtokában lévő B+ kompetenciájú mentőápoló részére megengedett.'},
+{q:'Adható-e prehospitálisan inzulin a hyperkalaemia kezelésére?',opts:['Soha.','Igen, de csak orvos adhatja.','Alapvetően kórházi ellátás, de friss vérgázlelet birtokában, konzultációt követően (kompetencia birtokában) alkalmazható prehospitálisan.','Igen, rutinszerűen minden gyanús esetben.'],ok:2,exp:'Konzultációt követően, friss vérgázlelet birtokában (ha van kompetencia) adható (10 NE rövid hatású inzulin + 25g glükóz iv.).'},
+{q:'Súlyos hyperkalaemiás EKG esetén (QRS kiszélesedik, P eltűnik) mi a kórjóslat kezelés nélkül?',opts:['Lassan javulni fog.','Kialakul a szinusz-hullám, majd kamrai flutter és asystolia (keringésmegállás).','Átmegy sinus tachycardiába.','Nincs teendő, amíg a vérnyomás stabil.'],ok:1,exp:'A folyamat vége a szinuszhullám-szerű mintázat, kamrai flutter, majd asystolia.'},
+{q:'Melyik állítás igaz az EKG-ra és az enyhe/mérsékelt hyperkalaemiára?',opts:['Már enyhe emelkedésnél is mindig drasztikus EKG eltérések vannak.','Az enyhe, de akár a mérsékelt hyperkalaemia sem feltétlenül jár típusos, vagy diagnosztikus értékű EKG eltéréssel.','Csak a QRS kiszélesedése mutatja a mérsékelt szintet.','Soha nincs EKG eltérés 6.5 mmol/l alatt.'],ok:1,exp:'Enyhe/mérsékelt esetben előfordulhat, hogy teljesen hiányoznak az EKG eltérések.'},
+{q:'Mi indokolja a "rescue" ECLS/ECPR kezelés mérlegelését?',opts:['Minden stabil hyperkalaemiás betegnél kötelező.','Csak hypokalaemiában alkalmazzák.','Elhúzódó újraélesztésben a további kórházi kezelés elérhetőségéig mérlegelendő.','A kálcium-klorid alternatívája.'],ok:2,exp:'Elhúzódó újraélesztés esetén mérlegelendő az ECLS vagy ECPR.'}
+];
+
+var SIMS = [
+{id:1,title:'1. Szimuláció: Gyengeség és veseelégtelenség (B kompetencia)',diff:'B kompetencia',desc:'Egy 65 éves férfihez riasztanak, aki "nagyon gyenge, nem tud lábra állni". B kompetenciaszint (szakképzett mentőápoló, gyógyszerezés nélkül). A felesége elmondja, hogy heti 3x dialízisre jár, de az utolsó két alkalommal nem volt, mert náthás volt.',steps:[
+{sit:'Megérkezel a beteghez. A helyszín biztonságos. Mi az első teendőd az ABCD szerint?',opts:[{tx:'Azonnal pulzust mérek és beteszem a mentőbe.',ok:false,fb:'Hibás! A betegvizsgálatot szisztematikusan az A (légút) ponttól kell kezdeni.'},{tx:'Megszólítom a beteget (AVPU), hogy felmérjem a tudatállapotát és a reakcióképességét.',ok:true,fb:'Helyes! Az első benyomás és az AVPU a betegvizsgálat első lépése.'},{tx:'Azonnal vénát biztosítok.',ok:false,fb:'Hibás! B kompetenciaszinten nem végzel vénabiztosítást, és különben is az első benyomás az első.'}]},
+{sit:'A beteg éber (A), de nagyon fáradtnak tűnik. Légútja szabad (A), légzése nyugodt (B), pulzusa tapintható, de kissé lassú (C). Milyen célzott eszközt kötelező használni a C vizsgálattal párhuzamosan mellkasi/ritmus panasz, vagy hajlamosító tényező (vesebetegség) esetén?',opts:[{tx:'Vérnyomásmérőt, de EKG-t nem.',ok:false,fb:'Hibás! A rizikó miatt az EKG elengedhetetlen.'},{tx:'EKG monitorozás és 12 elvezetéses EKG készítése.',ok:true,fb:'Helyes! A veseelégtelenség és a panaszok miatt azonnali EKG monitorozás szükséges.'},{tx:'Defibrillátor azonnali feltöltése.',ok:false,fb:'Hibás! A betegnek van megtartott keringése.'}]},
+{sit:'Az EKG-n 55/perc körüli szívfrekvenciát és feltűnően csúcsos, sátorszerű T-hullámokat látsz, de a QRS még nem széles. B kompetenciaszinten (mentőápoló) mi a kötelező lépés EKG eltérés és hyperkalaemia gyanúja esetén?',opts:[{tx:'Transztelefonikus EKG konzultáció elvégzése.',ok:true,fb:'Helyes! BLS/B szinten kötelező az EKG konzultáció az orvossal/mentőtiszttel.'},{tx:'Kálcium tabletta beadása a betegnek szájon át.',ok:false,fb:'Hibás! Per os kálcium itt nem hatásos, az időablak kritikus.'},{tx:'Infúzió bekötése.',ok:false,fb:'Hibás! B kompetenciával nem köthetsz infúziót.'}]},
+{sit:'Az anamnézis felvételekor (SAMPLE) mit kell különösen vizsgálni a hyperkalaemia felismeréséhez?',opts:[{tx:'Hogy mikor evett utoljára édességet.',ok:false,fb:'Hibás! Bár étkezés fontos, itt a specifikus rizikók az elsődlegesek.'},{tx:'Hajlamosító tényezők felmérése: vesebetegség (igazolt), szedett gyógyszerek (pl. vízhajtók, vérnyomáscsökkentők).',ok:true,fb:'Helyes! A rizikófaktorok felmérése és rögzítése kulcsfontosságú.'},{tx:'Kizárólag az allergiát.',ok:false,fb:'Hibás! A gyógyszerek és az alapbetegség itt a vezető nyom.'}]},
+{sit:'A feleség megmutatja a gyógyszereket: a beteg egy ACE-gátlót (ACEI) és egy káliummegtartó vízhajtót (MRA) is szed. Hogyan befolyásolja ez a hyperkalaemia rizikóját?',opts:[{tx:'Ezek a gyógyszerek csökkentik a káliumot, így a gyanú nem állja meg a helyét.',ok:false,fb:'Hibás! Ezek pont ellentétesen hatnak.'},{tx:'Ezek a gyógyszerek (ACEI és MRA) kálium-visszatartást okoznak, így tovább erősítik a hyperkalaemia gyanúját.',ok:true,fb:'Helyes! Az eljárásrend külön nevesíti ezeket a gyógyszereket oki tényezőként.'},{tx:'Nincs hatásuk a káliumra.',ok:false,fb:'Hibás! Kiemelt kockázati tényezők.'}]},
+{sit:'A tele-EKG konzultáció során a doktornő megerősíti a csúcsos T-hullámokat. Mivel a beteg amúgy (még) stabil hemodinamikailag, azt kéri, kezdjék meg a transzportot az SBO-ra. Milyen speciális paramétert tudsz te B szinten is megmérni (a D vizsgálat részeként), ami a káliumszint szoros "testvére" protokollárisan?',opts:[{tx:'A vérgázt (ASTRUP).',ok:false,fb:'Hibás! Ahhoz speciális POCT gép és vénás/artériás vér kell, ami B szinten nem elvárás.'},{tx:'A vércukorszintet (szoros vércukor kontroll).',ok:true,fb:'Helyes! A stabil betegeknél a protokoll "Szoros vércukor (káliumszint) és EKG kontrollt" ír elő.'},{tx:'A vér káliumszintjét ujjbegyből.',ok:false,fb:'Hibás! Sima vércukormérő nem mér káliumot.'}]},
+{sit:'Szállítás közben a beteg egyre gyengébb, a pulzusa 45/perc-re esik. B kompetenciával adhatsz-e kálcium iv. injekciót a szívizom védelmére?',opts:[{tx:'Igen, ha nagyon rosszul van.',ok:false,fb:'Hibás! B kompetenciával (gyógyszerezés nélkül) nem adhatsz iv. gyógyszert.'},{tx:'Nem, B kompetenciaszinten gyógyszerezés és vénabiztosítás nem engedélyezett, ezért a tele-EKG-n kapott instrukciók alapján sürgős ALS segítséget (mentőtiszt/orvos) kell kérnem a helyszínre vagy elébe.',ok:true,fb:'Helyes! Állapotromláskor fel kell pörgetni az ellátási szintet.'},{tx:'Igen, de csak izomba (im.).',ok:false,fb:'Hibás! Nem így működik az eljárásrend.'}]},
+{sit:'Ha a tele-EKG-n az orvos megkérdezi, hogy van-e lehetőség vénát biztosítani és legalább egy fiziológiás sóoldatot indítani. Mit válaszolsz?',opts:[{tx:'Igen, azonnal bekötök egy Ringer-laktátot.',ok:false,fb:'Hibás! B szinten nem szúrsz, a Ringerben kálium van, ami tilos.'},{tx:'B kompetenciájú egység vagyunk, vénabiztosításra és folyadékpótlásra nincs jogosultságom.',ok:true,fb:'Helyes! Pontosan ismered a kompetenciádat.'},{tx:'Szúrok egy vénát, de infúziót nem adok.',ok:false,fb:'Hibás! A véna szúrása is B+ / magasabb kompetencia.'}]},
+{sit:'A szállítás alatt folyamatos EKG monitorozás zajlik. Mi a protokolláris teendő Enyhe/Középsúlyos stabil állapotú hyperkalaemiánál az eljárásrend algoritmusa szerint?',opts:[{tx:'"Monitorizálás. Szoros vércukor (káliumszint) és EKG kontroll."',ok:true,fb:'Helyes! Az algoritmus egyértelműen ezt írja elő.'},{tx:'Azonnali inzulin adása.',ok:false,fb:'Hibás! Azt csak ALS és súlyos esetben adják.'},{tx:'CPR megkezdése megelőző jelleggel.',ok:false,fb:'Hibás! Sosem csinálunk megelőző CPR-t élő betegen.'}]},
+{sit:'Szerencsére 5 perc múlva találkoztok a mentőorvosi kocsival. Az átadásnál milyen kulcsinformációkat mondasz el röviden a MIST/SAMPLE alapján a hyperkalaemia vonatkozásában?',opts:[{tx:'Csak a nevét és a korát.',ok:false,fb:'Hibás! A klinikai kép a fontos.'},{tx:'Dializált vesebeteg 2 kihagyott kezeléssel, szed ACEI-t és MRA-t, EKG-n csúcsos T-hullámok, csökkenő pulzusszám (45/p), B szinten csak megfigyelést és vércukor kontrollt végeztünk.',ok:true,fb:'Helyes! Tökéletes és pontos átadás az eljárásrend alapján.'},{tx:'Azt mondom, hogy fáj a hasa.',ok:false,fb:'Hibás! A hasfájás itt nem a vezető és életveszélyes tünet.'}]}
+],summary:'Részletes Összefoglaló (Sim 1 - B kompetencia): A helyszínbiztonság és az első benyomás (ABCDE) után egy hemodinamikailag még stabil, de veszélyeztetett beteget vizsgáltunk. Felismertük a rizikófaktorokat (veseelégtelenség, kihagyott dialízis, ACEI és MRA szedése). Az EKG-n látott csúcsos T-hullámok alapján BLS (B) szinten kötelezően elvégeztük a transztelefonikus EKG konzultációt. Mivel B szinten nincs vénabiztosítás és gyógyszerelés (így sem kálciumot, sem infúziót nem adhattunk), a teendőnk az algoritmus szerinti: "Monitorizálás. Szoros vércukor és EKG kontroll" volt. Állapotromlás (bradycardia) esetén haladéktalanul magasabb szintű segítséget (ALS) kértünk a transzport során, majd pontosan átadtuk a beteget, kiemelve a hyperkalaemiára utaló gyanújeleket.'},
+
+{id:2,title:'2. Szimuláció: EKG eltérések (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 50 éves nőbeteghez riasztanak. "Rosszul érzi magát, hevesen ver a szíve". B+ kompetencia (szakképzett mentőápoló, aki gyógyszerezhet, vénát biztosíthat). A nő elmondja, hogy kálium pótlást írtak fel neki a vízhajtója mellé, de ő egy másik vízhajtót (MRA) is bevesz "mert dagad a lába".',steps:[
+{sit:'A helyszínen a beteg sápadt, verítékes. Az ABCDE vizsgálat C (keringés) pontjánál a pulzus irreguláris. B+ kompetenciaként mik a C vizsgálattal párhuzamos teendőid?',opts:[{tx:'Nagy lumenű, stabil vénabiztosítás, EKG monitorozás és 12 elvezetéses EKG készítése.',ok:true,fb:'Helyes! A ritmuszavar és a kompetenciád miatt a vénabiztosítás és a monitorozás kötelező párhuzamos lépés.'},{tx:'Csak vérnyomásmérés, a véna ráér a kórházban.',ok:false,fb:'Hibás! A ritmuszavar azonnali vénát indokol.'},{tx:'Csak oxigént adok és azonnal indulok.',ok:false,fb:'Hibás! A vizsgálatot be kell fejezni.'}]},
+{sit:'Az 12 elvezetéses EKG-t vizsgálod. A szérum káliumszint emelkedése milyen progresszív EKG eltéréseket okoz a PR és a QRS esetében a csúcsos T után?',opts:[{tx:'A PR távolság és a QRS szélesség is csökken (keskenyedik).',ok:false,fb:'Hibás! Épp ellenkezőleg.'},{tx:'Megnyúlik a PR távolság, a QRS pedig kiszélesedik.',ok:true,fb:'Helyes! Az EKG ábra és a szöveg egyértelműen ezt a progressziót írja le.'},{tx:'A PR távolság megnyúlik, de a QRS mindig keskeny marad.',ok:false,fb:'Hibás! Súlyos esetben a QRS kiszélesedik.'}]},
+{sit:'A beteg EKG-ján a QRS 0.16s (széles), a P hullám alig látható. A vérnyomás 90/60 Hgmm. B+ kompetenciaként mi a helyes gyógyszeres teendő (peri-arreszt szituáció, Súlyos kategória) a szív védelme érdekében?',opts:[{tx:'Várok, mert a kálcium beadása orvosi feladat.',ok:false,fb:'Hibás! A kompetencia alapján életmentő beavatkozásként adható protokoll szerint.'},{tx:'10 ml 10%-os kálcium-klorid vagy 30 ml kálcium-glükonát (Calcimusc) iv. beadása 2-5 perc alatt.',ok:true,fb:'Helyes! Ez az első vonalbeli kezelés az algoritmus alapján.'},{tx:'Azonnal izotóniás bikarbonátot adok.',ok:false,fb:'Hibás! A kálcium az elsővonalbeli szer a membránstabilizálásra.'}]},
+{sit:'Milyen gyorsan adod be ezt az intravénás kálcium dózist megtartott keringés (peri-arreszt) esetén?',opts:[{tx:'Gyors bolusban (1-2 másodperc).',ok:false,fb:'Hibás! A gyors bolus az újraélesztésre (arreszt) vonatkozik.'},{tx:'2-5 perc alatt (lassú iv. injekcióban).',ok:true,fb:'Helyes! A protokoll megtartott keringésnél 2-5 percet ír elő.'},{tx:'Cseppinfúzióban 30 perc alatt.',ok:false,fb:'Hibás! Az túl lassú lenne, az állapot kritikus.'}]},
+{sit:'A kálcium beadása után mennyi idővel kell az EKG kontrollt elvégezni, és ismételhető-e az adag?',opts:[{tx:'10 perc múlva, nem ismételhető.',ok:false,fb:'Hibás.'},{tx:'5 perc után EKG kontroll, és ha az EKG-eltérések nem változnak, a kálcium adag ismételhető.',ok:true,fb:'Helyes! Pontosan ez a protokoll utasítása.'},{tx:'1 perc után, de tilos ismételni.',ok:false,fb:'Hibás.'}]},
+{sit:'A beteg vérnyomása alacsony. Szeretnél folyadékpótlást végezni. Melyik szabályt KELL szigorúan betartani az infúzió megválasztásakor?',opts:[{tx:'Kizárólag Ringer-laktátot lehet adni.',ok:false,fb:'Hibás! A Ringer káliumot tartalmaz.'},{tx:'Fiziológiás szérum kálium szintnél magasabb koncentráció tartalmú infúziót adni TILOS!',ok:true,fb:'Helyes! Ez kiemelt figyelmeztetés az eljárásrendben.'},{tx:'Nincs megkötés, bármilyen krisztalloid jó.',ok:false,fb:'Hibás! A kálium tartalmú oldatok rontanak az állapoton.'}]},
+{sit:'Tudsz-e a helyszínen inzulin/glükóz infúziót adni a vér káliumszintjének csökkentésére (B+ kompetenciával)?',opts:[{tx:'Igen, rutinszerűen minden ilyen betegnek beadom a 10E inzulint.',ok:false,fb:'Hibás! Nem rutinszerű, B+ szinten pedig főleg nem.'},{tx:'Alapvetően kórházi ellátás része, prehospitálisan friss vérgázlelet birtokában, konzultációt követően alkalmazható.',ok:true,fb:'Helyes! Az inzulin adása szigorú feltételekhez között (ASTRUP, orvosi konzultáció).'},{tx:'Soha nem adunk inzulint, mert hypoglykaemiát csinál.',ok:false,fb:'Hibás! Adható, ha a feltételek adottak.'}]},
+{sit:'Az algoritmus Súlyos (K > 6,5 mmol/l) instabil beteg ága mit ír elő elsőként?',opts:[{tx:'Kálcium iv. adása + újabb EKG készítése.',ok:true,fb:'Helyes! A kálcium adása az első, majd EKG kontroll.'},{tx:'Azonnali intubálás.',ok:false,fb:'Hibás! A légút biztosítása ABCDE szerinti, de a kálium specifikus teendő a kálcium.'},{tx:'Folyadék bőséges adása.',ok:false,fb:'Hibás! A folyadék önmagában nem oldja meg a súlyos ionzavart.'}]},
+{sit:'Az 5 perces EKG kontrollon a QRS kezd keskenyedni, a szívfrekvencia stabilizálódik (70/perc). Mi a magyarázata a javulásnak?',opts:[{tx:'A kálcium percek alatt kiürítette a káliumot a veséken át.',ok:false,fb:'Hibás! A kálcium nem csökkenti a káliumszintet.'},{tx:'A kálcium nem csökkentette a szérum káliumszintet, de 1-3 perc alatt stabilizálta a szívizomsejtek membránját, csökkentve a kamrai ritmuszavar (VF/pnVT) esélyét.',ok:true,fb:'Helyes! A kálcium "védi a szívet", miközben a káliumszint továbbra is magas marad a vérben.'},{tx:'A beteg megnyugodott.',ok:false,fb:'Hibás! Ez egy életveszélyes kémiai/elektromos zavar, nem pszichés.'}]},
+{sit:'A beteget elindítod a Sürgősségi Osztályra (SBO). A MIST átadásnál mit jelzel a kórháznak a gyógyszerelést illetően?',opts:[{tx:'Elmondom, hogy a hajlamosító gyógyszerek miatt kálium-visszatartás gyanítható, a széles QRS miatt 30 ml Calcimusc-ot adtam 3 perc alatt iv., melyre az EKG eltérés javult, de káliumszint csökkentő kezelést (pl. inzulin) még nem kapott.',ok:true,fb:'Helyes! Ez az átadás pontosan tükrözi az eljárásrendet és az elvégzett kompetencia szintű teendőket.'},{tx:'Csak átadom a papírt.',ok:false,fb:'Hibás! A szóbeli átadás kritikus.'},{tx:'Közlöm, hogy a beteg meggyógyult.',ok:false,fb:'Hibás! A káliumszint még mindig toxikusan magas.'}]}
+],summary:'Részletes Összefoglaló (Sim 2 - B+ kompetencia): A sápadt, irreguláris pulzusú betegnél az első vizsgálat alatt párhuzamosan vénát biztosítottunk és 12 elvezetéses EKG-t készítettünk. Az EKG-n a QRS kiszélesedett és a P hullám eltűnt, ami az anamnézis (kálium pótlás + MRA vízhajtó kombináció) ismeretében súlyos hyperkalaemiát jelzett. B+ kompetenciával a peri-arreszt állapot miatt az első vonalbeli kezelést, a kálcium adását választottuk (10 ml 10% CaCl vagy 30 ml Calcimusc iv. lassan, 2-5 perc alatt). A folyadékpótlásnál szigorúan figyeltünk, hogy káliumtartalmú oldatot ne adjunk. 5 perc után EKG kontrollt végeztünk; mivel a QRS keskenyedni kezdett, az adagot nem kellett ismételni. Inzulint prehospitálisan nem adtunk, mivel nem volt ASTRUP leletünk és orvosi konzultációnk erre vonatkozóan. Tisztában voltunk vele, hogy a kálcium csak a szívet védi (nem csökkenti a kálium szintet), ezért gyors transzport és precíz MIST átadás következett.'},
+
+{id:3,title:'3. Szimuláció: Keringésmegállás (B+ kompetencia)',diff:'B+ kompetencia',desc:'Egy 45 éves, ismert végstádiumú vesebeteg (dializált) férfit találnak a földön, nem reagál. B+ kompetencia (szakképzett mentőápoló, aki gyógyszerezhet, ALS asszisztencia / emelt szintű protokoll).',steps:[
+{sit:'A helyszín biztonságos. A beteg eszméletlen. A légzés vizsgálatakor 10 másodperc alatt csak egyetlen hörgő, "tátogó" légvételt (gaspolás) tapasztalsz. Mi az azonnali teendő?',opts:[{tx:'Azonnal megkezdem a mellkasi kompressziókat és a BLS/ALS protokollt.',ok:true,fb:'Helyes! A gaspoló légzés keringésmegállást jelent. A mellkasi kompressziók megkezdése az első lépés.'},{tx:'Oxigént teszek az arcára és várok.',ok:false,fb:'Hibás! Ez keringésmegállás.'},{tx:'Azonnal kálciumot adok be.',ok:false,fb:'Hibás! A kompresszió és az alap/emelt újraélesztési algoritmus az első.'}]},
+{sit:'A monitor/defibrillátor felhelyezése megtörtént. Az EKG-n egyenletes, széles szinuszhullám-szerű mintázat látható (pulzus nincs), amely lassan asystoliába hajlik. Melyik "4H 4T" reverzibilis okra gondolsz elsősorban az anamnézis alapján?',opts:[{tx:'Hypovolaemia.',ok:false,fb:'Hibás! A vesebetegség és a dialízis hiánya másra utal.'},{tx:'Hypo/Hyperkalaemia (jelen esetben hyperkalaemia).',ok:true,fb:'Helyes! Vesebeteg + szinuszhullám EKG = egyértelmű hyperkalaemia gyanú.'},{tx:'Tromboembólia.',ok:false,fb:'Hibás! Az EKG nem erre specifikus itt.'}]},
+{sit:'A folyamatos kompressziók mellettvénát biztosítasz. Mi az első gyógyszer, amit az eljárásrend szerint beadhatsz újraélesztés alatt hyperkalaemia gyanúban?',opts:[{tx:'10 ml 10%-os kálcium-klorid vagy 30 ml kálcium-glükonát (Calcimusc) iv., GYORS BOLUSBAN.',ok:true,fb:'Helyes! Újraélesztés közben a kálciumot gyors bolusban (nem 2-5 perc alatt) adjuk be.'},{tx:'Kálciumot 5 perc alatt, lassan.',ok:false,fb:'Hibás! Keringésmegállásban nincs idő lassú adagolásra, gyors bolus kell.'},{tx:'Ringer-laktát bolus.',ok:false,fb:'Hibás! A kálium tartalmú oldat tilos.'}]},
+{sit:'Következő gyógyszeres teendőként izotóniás bikarbonát oldatot kell indítanod. Hogyan kevered be a protokoll szerint?',opts:[{tx:'100 ml 8.4%-os nátrium-bikarbonátot feloldok 100 ml NaCl-ben.',ok:false,fb:'Hibás! Nem ez a protokolláris hígítás.'},{tx:'75 ml 8,4% nátrium-bikarbonátot feloldok 500 ml 5% isodex oldatban, vagy 15 ml-t 100 ml 5%-os glükózban.',ok:true,fb:'Helyes! Ez az izotóniás bikarbonát készítésének hivatalos módja.'},{tx:'Töményen beadom az összeset.',ok:false,fb:'Hibás! A tömény adást (50 ml bolus) más indikációval (súlyos acidózis/veseelégtelenség) adjuk.'}]},
+{sit:'A doktornő (aki a helyszínre érkezett) friss vérgázlelet birtokában (ASTRUP gépük van) megkér, hogy készítsd elő a glükóz-inzulin bolust. Mi a pontos adagolás?',opts:[{tx:'10 NE (Egység) rövid hatású inzulin és 25 g glükóz iv., gyors bolusban.',ok:true,fb:'Helyes! Ez a protokoll szerinti pontos dózis a káliumszint gyors sejtbe viteléhez.'},{tx:'50 NE inzulin glükóz nélkül.',ok:false,fb:'Hibás! Halálos hypoglykaemiát okozna.'},{tx:'25 NE inzulin és 10 g glükóz.',ok:false,fb:'Hibás! Rossz arány.'}]},
+{sit:'A beteg ismert végstádiumú veseelégtelen, és az újraélesztés közben súlyos acidózis is gyanítható. Milyen formában adhatsz neki 8,4%-os nátrium-bikarbonátot erre a specifikus indikációra?',opts:[{tx:'Soha nem adunk tömény bikarbonátot.',ok:false,fb:'Hibás! Veseelégtelenség/súlyos acidózis esetén adható.'},{tx:'50 ml 8,4%-os nátrium-bikarbonát GYORS, iv. injekcióban.',ok:true,fb:'Helyes! Ez a "tömény" bolus dózisa ilyen extrém esetekben.'},{tx:'Lassan csepegtetve.',ok:false,fb:'Hibás! Gyors injekcióban kell adni a protokoll szerint.'}]},
+{sit:'Mik a bikarbonát adásának veszélyei / hátrányai az eljárásrend szerint?',opts:[{tx:'Hirtelen leesik tőle a vérnyomás.',ok:false,fb:'Hibás! Nem ez a fő veszélye.'},{tx:'Hirtelen megemelkedő szérum nátrium szint, és nem megfelelő ventilláció esetén a magas PaCo2.',ok:true,fb:'Helyes! A bikarbonát bomlása során CO2 keletkezik, amit ki kell lélegeztetni, különben rontja az acidózist.'},{tx:'Csökkenti a vércukrot.',ok:false,fb:'Hibás! Nincs ilyen hatása.'}]},
+{sit:'A 8,4%-os bikarbonát beadása után a monitoron az EtCo2 érték hirtelen megemelkedik. Mit kell tenned?',opts:[{tx:'Azonnal leállítom a mellkaskompressziókat, mert ez a keringés visszatérését (ROSC) jelenti.',ok:false,fb:'Hibás! Ez csapda.'},{tx:'Tudom, hogy ez nem feltétlenül jelenti a ROSC állapotot (csak a CO2 felszabadulását a bikarbonátból), így az előírt 2 perces ciklus végéig folytatom a kompressziót.',ok:true,fb:'Helyes! A bikarbonát adása utáni EtCO2 emelkedés mesterséges is lehet, nem biztos ROSC jel.'},{tx:'Csökkentem a lélegeztetés számát.',ok:false,fb:'Hibás! Épp ellenkezőleg, a CO2-t ki kell juttatni.'}]},
+{sit:'Az újraélesztés elhúzódik. Mit kell az algoritmus szerint mérlegelni elhúzódó reanimációban, ha hyperkalaemia az ok?',opts:[{tx:'Mechanikus mellkaskompressziós eszköz használatát.',ok:true,fb:'Helyes! Mivel a reverzibilis ok kezelése (dialízis) kórházi, a hosszan tartó CPR során javasolt a gép használata.'},{tx:'Azonnali lemondást a betegről.',ok:false,fb:'Hibás! A hyperkalaemia reverzibilis, érdemes küzdeni.'},{tx:'Csak kézi kompressziót szabad alkalmazni.',ok:false,fb:'Hibás! A gép javasolt.'}]},
+{sit:'Mi a végső "rescue" (mentőöv) kezelés, amit a kórház (vagy speciális egység) nyújthat, és a helyszínen mérlegelni kell az időfaktor miatt?',opts:[{tx:'Újabb adag inzulin.',ok:false,fb:'Hibás! Az nem "rescue" mechanikai támogatás.'},{tx:'ECLS (Extracorporeal Life Support) vagy ECPR mérlegelése.',ok:true,fb:'Helyes! A műtüdő/műszív (ECMO/ECPR) a végső opció a reverzibilis ok megoldásáig.'},{tx:'Pacemaker beültetés.',ok:false,fb:'Hibás! Itt az ionzavar a gond, a PM nem oldja meg az asystoliát toxikus K+ mellett.'}]}
+],summary:'Részletes Összefoglaló (Sim 3 - B+ kompetencia / ALS asszisztencia): A kiérkezéskor agonálisan légző, eszméletlen dializált betegnél azonnal felismertük a keringésmegállást és megkezdtük a mellkasi kompressziókat. Az EKG-n látható szinuszhullám és az anamnézis alapján a reverzibilis okok közül egyértelműen hyperkalaemiára gyanakodtunk. A protokollnak megfelelően (újraélesztés alatt) a kálcium-kloridot (10 ml 10%) gyors iv. bolusban adtuk (nem lassan, mint peri-arresztben). Ezt követően izotóniás bikarbonát infúziót (75ml 8.4% + 500ml Isodex) indítottunk. A helyszíni orvos kérésére (ASTRUP lelet alapján) 10 NE inzulint + 25g glükózt is beadtunk iv. bolusban a kálium sejtbe juttatására. A súlyos veseelégtelenség miatt 50 ml tömény (8.4%) bikarbonát is lement gyors injekcióban; tudtuk, hogy ennek veszélye a magas Na+ és PaCO2 (fontos a jó ventilláció). A beadás utáni EtCO2 emelkedést nem vettük automatikusan ROSC-nak. Az elhúzódó CPR miatt felhelyeztük a mechanikus mellkaskompressziós eszközt, és az ECPR (extracorporális újraélesztés) lehetőségét is mérlegeltük a szállítás során.'}
+];
+
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Render blocks for Chapters
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+h(b.tx)+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>'; /* We allow glossary spans here */
+  if(b.tp==='kr') return '<div>'+b.items.map(i=>'<div class="kr">✓ &nbsp;'+h(i)+'</div>').join('')+'</div>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+h(b.tx)+'</div>';
+  if(b.tp==='note') return '<div class="note">'+b.tx+'</div>'; /* Allow glossary spans */
+  if(b.tp==='algo') return renderAlgo();
+  return '';
+}
+
+function renderAlgo(){
+  return '<div style="margin-bottom:.75rem">'+
+    '<div style="background:#262626;border:1px solid #3f3f3f;border-radius:8px;padding:10px;text-align:center;font-size:12px;color:#d1d5db;margin-bottom:8px"><b>ABCDE szerinti betegvizsgálat</b><br>vénabiztosítás, monitorizálás, 12 elvezetéses EKG<br>SAMPLE, OPQRST, rizikófaktorok felmérése, (ASTRUP)<br>haemodinamikai instabilitás mérlegelése</div>'+
+    '<div class="g3" style="margin-bottom:8px">'+
+      '<div style="background:#172554;border-radius:8px;padding:8px;text-align:center;font-size:11px;color:#bfdbfe;border:1px solid #1e3a8a"><b>Enyhe / Középsúlyos</b><br>(K+ 5,5-6,4)<br>EKG eltérés NÉLKÜL,<br>stabil beteg<br><hr style="border-color:#1e3a8a;margin:5px 0"><span style="font-weight:700">Monitorizálás<br>Szoros vércukor és EKG kontroll</span></div>'+
+      '<div style="background:#451a03;border-radius:8px;padding:8px;text-align:center;font-size:11px;color:#fde68a;border:1px solid #78350f"><b>Súlyos</b><br>(K+ > 6,5)<br>EKG eltérés /<br>Instabilitás<br><hr style="border-color:#78350f;margin:5px 0"><span style="font-weight:700">Elsőként: 10ml 10% Ca-klorid vagy 30ml Calcimusc iv. 2-5 perc alatt. Kontroll EKG!</span></div>'+
+      '<div style="background:#450a0a;border-radius:8px;padding:8px;text-align:center;font-size:11px;color:#fca5a5;border:1px solid #7f1d1d"><b>Keringésmegállás</b><br>Hyperkalaemia<br>gyanújában<br><hr style="border-color:#7f1d1d;margin:5px 0"><span style="font-weight:700">ALS felépítése<br>Ca iv. gyorsan!<br>10E inzulin+25g glükóz<br>Izotóniás bikarbonát (folyamatos)<br>50ml NaHCO3 (ha acidózis)</span></div>'+
+    '</div></div>';
+}
+
+// ── SCREENS ────────────────────────────────────────────────────────
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Hyperkalaemia Prehospitális Ellátása</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v1.0 · 2025. 02. 10.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Eljárásrend','A hivatalos szöveg adaptációja'],['flash','🃏','Kártyák','10 ellenőrző flashkártya'],['quiz','❓','Kvíz','20 tesztkérdés magyarázattal'],['sim','🚑','Szimuláció','3 részletes eset B/B+ szinten'],['calc','🧮','Kalkulátor','Rizikó és teendő értékelő']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az OMSZ valamennyi kivonuló dolgozójára és mentésirányítójára. A kórházon kívüli magas káliumszint gyanújának felismerésére és a közvetlen életveszély elhárítására.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Eljárásrend</h2>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:.75rem">A szövegben a szaggatott zöld vonallal aláhúzott szavakra kattintva (pl. '+g('rhabdomyolysis')+') megnyílik a kifejezés magyarázata.</div>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('')+
+'<div class="card"><h3 style="font-size:14px;font-weight:700;color:#f3f4f6;margin-bottom:.65rem;border-bottom:1px solid #3f3f3f;padding-bottom:.5rem">Vizuális Algoritmus</h3>'+renderAlgo()+'</div>';
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+h(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+h(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+h(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+h(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function calcRes(){
+  if(CA.state==2){ // CPR
+    return {col:'#fca5a5', bg:'#450a0a', t:'Keringésmegállás (ALS/B+)', d:'<ul style="padding-left:1.2rem;margin-top:5px;line-height:1.5"><li>10ml 10% Ca-klorid vagy 30ml Calcimusc iv. <b>GYORS BOLUSBAN</b></li><li>10 NE inzulin + 25g glükóz iv. bolus</li><li>Izotóniás bikarbonát (75ml 8.4% + 500ml Isodex vagy 15ml + 100ml Glükóz) indítása</li><li>Ha súlyos acidózis: 50ml 8.4% NaHCO3 gyors iv.</li></ul>'};
+  } else if(CA.ekg==1 || CA.state==1 || CA.k==2){ // Severe/Unstable
+    return {col:'#fde68a', bg:'#451a03', t:'Súlyos / Instabil (B+)', d:'<ul style="padding-left:1.2rem;margin-top:5px;line-height:1.5"><li>Elsőként: 10ml 10% Ca-klorid vagy 30ml Calcimusc iv. <b>2-5 perc alatt lassan</b></li><li>5 perc után EKG kontroll</li><li>Ha nem javul: kálcium adag ismételhető</li></ul>'};
+  } else { // Stable/Mild
+    return {col:'#bfdbfe', bg:'#172554', t:'Enyhe/Középsúlyos Stabil (B)', d:'<ul style="padding-left:1.2rem;margin-top:5px;line-height:1.5"><li>Folytonos monitorizálás</li><li>Szoros vércukor és EKG kontroll</li><li>Infúziós sóoldat (pl. Ringer) adása tilos!</li></ul>'};
+  }
+}
+
+function renderCalc(){
+  var r = calcRes();
+  function selBtn(lb, grp, val, idx){
+    return '<button onclick="setCalcVar(\''+grp+'\','+idx+')" style="padding:6px;border:1px solid '+(val==idx?'#14b8a6':'#3f3f3f')+';border-radius:7px;background:'+(val==idx?'#14b8a6':'#2a2a2a')+';color:'+(val==idx?'#111827':'#d1d5db')+';cursor:pointer;font-size:12px;font-weight:600;font-family:inherit">'+lb+'</button>';
+  }
+
+  return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Rizikó és Teendő Kalkulátor</h2>'+
+  '<div class="card" style="padding-bottom:10px">'+
+    '<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:6px">Becsült Káliumszint (mmol/l)</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:15px">'+
+      selBtn('Ismeretlen / <6', 'k', CA.k, 0)+
+      selBtn('Mérsékelt (6.0-6.4)', 'k', CA.k, 1)+
+      selBtn('Súlyos (>6.5)', 'k', CA.k, 2)+
+    '</div>'+
+    '<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:6px">EKG Eltérések</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:15px">'+
+      selBtn('Nincs EKG eltérés', 'ekg', CA.ekg, 0)+
+      selBtn('Van (Csúcsos T, széles QRS)', 'ekg', CA.ekg, 1)+
+    '</div>'+
+    '<div style="font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:6px">Hemodinamikai állapot</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:15px">'+
+      selBtn('Stabil', 'state', CA.state, 0)+
+      selBtn('Instabil / Peri-arreszt', 'state', CA.state, 1)+
+      selBtn('Keringésmegállás', 'state', CA.state, 2)+
+    '</div>'+
+  '</div>'+
+  '<div class="res-box" style="background:'+r.bg+';border:1px solid '+r.col+'40;text-align:left">'+
+    '<div style="font-size:16px;font-weight:700;color:'+r.col+';margin-bottom:8px">'+r.t+'</div>'+
+    '<div style="font-size:12px;color:#d1d5db">'+r.d+'</div>'+
+  '</div>';
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc')c.innerHTML=renderCalc();
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+window.setCalcVar=function(grp, val){ CA[grp] = val; render(); }
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMSZ – Derékfájdalom Ellátása</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#121212;color:#e5e7eb;min-height:100vh;padding-bottom:72px;}
+.app{max-width:680px;margin:0 auto;background:#1e1e1e;min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,.4);}
+.nav{display:flex;background:#242424;border-bottom:1px solid #333;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.nb{flex:1;padding:9px 2px 6px;background:none;border:none;border-top:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:border-color .2s;}
+.nb.act{border-top-color:#14b8a6;}
+.ni{font-size:16px;}
+.nl{font-size:9px;color:#9ca3af;font-weight:400;}
+.nb.act .nl{color:#14b8a6;font-weight:600;}
+.ct{padding:1rem;}
+.card{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;margin-bottom:.75rem;}
+.card-btn{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.85rem 1rem;margin-bottom:7px;cursor:pointer;text-align:left;width:100%;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.card-btn:hover{background:#333;}
+.al{border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:13px;line-height:1.6;white-space:pre-line;}
+.al-d{background:#450a0a;color:#fecaca;border:1px solid #7f1d1d;}
+.al-w{background:#451a03;color:#fde68a;border:1px solid #78350f;}
+.al-i{background:#172554;color:#bfdbfe;border:1px solid #1e3a8a;}
+.al-s{background:#064e3b;color:#bbf7d0;border:1px solid #065f46;}
+.sub{font-size:13px;font-weight:600;color:#d1d5db;margin:.75rem 0 .35rem;}
+ul.bl{margin:0 0 .5rem;padding-left:1.3rem;}
+ul.bl li{font-size:13px;color:#d1d5db;line-height:1.65;margin-bottom:.2rem;}
+.kr{display:flex;gap:8px;align-items:flex-start;padding:.5rem .75rem;background:#064e3b20;border-radius:8px;margin-bottom:5px;font-size:13px;color:#d1d5db;line-height:1.5;border-left:3px solid #14b8a6;}
+.fw{color:#5eead4;border-bottom:1px dashed #14b8a6;cursor:pointer;font-weight:600;}
+.fw:hover{color:#2dd4bf;}
+.tbl-wrap{overflow-x:auto;margin-bottom:.75rem;}
+table.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+table.tbl th{padding:5px 8px;text-align:left;font-weight:600;color:#9ca3af;border-bottom:1px solid #3f3f3f;background:#262626;}
+table.tbl td{padding:5px 8px;border-bottom:1px solid #333;vertical-align:top;color:#d1d5db;}
+.prog{height:4px;background:#333;border-radius:2px;margin-bottom:1rem;}
+.progb{height:4px;border-radius:2px;transition:width .3s;}
+.btn{padding:.55rem 1rem;border:1px solid #4b5563;border-radius:8px;background:#2a2a2a;cursor:pointer;font-size:13px;color:#e5e7eb;font-family:inherit;transition:all .15s;}
+.btn:hover{background:#374151;}
+.btn-g{background:#0d9488;color:#fff;border-color:#0d9488;}
+.btn-g:hover{background:#0f766e;}
+.btn-r{background:#b91c1c;color:#fff;border-color:#b91c1c;}
+.btn-v{background:#7c3aed;color:#fff;border-color:#7c3aed;}
+.btn-fw{width:100%;display:block;text-align:center;padding:.75rem;}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;text-align:center;}
+.opt{width:100%;display:block;padding:.7rem 1rem;margin-bottom:7px;border:1px solid #3f3f3f;border-radius:8px;cursor:pointer;text-align:left;font-size:13px;color:#d1d5db;background:#2a2a2a;font-family:inherit;line-height:1.45;transition:background .1s;}
+.opt:hover{background:#374151;}
+.opt-ok{background:#064e3b!important;border-color:#059669!important;color:#ecfdf5!important;cursor:default!important;}
+.opt-no{background:#7f1d1d!important;border-color:#b91c1c!important;color:#fef2f2!important;cursor:default!important;}
+.flip{border:2px solid #3f3f3f;border-radius:12px;padding:1.5rem;min-height:175px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;transition:border-color .2s;margin-bottom:.75rem;background:#262626;}
+.flip.on{border-color:#a78bfa;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.res-box{border-radius:12px;padding:1rem;text-align:center;margin-top:.75rem;background:#262626;border:1px solid #3f3f3f;}
+.res-num{font-size:42px;font-weight:700;}
+.res-lbl{font-size:14px;margin:.3rem 0;}
+input[type=number]{width:100%;background:#2a2a2a;border:1px solid #4b5563;border-radius:8px;padding:8px;color:#e5e7eb;font-family:inherit;}
+select{width:100%;padding:7px 10px;border-radius:8px;border:1px solid #4b5563;background:#2a2a2a;font-size:13px;color:#e5e7eb;font-family:inherit;}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-g{background:#064e3b;color:#ecfdf5;}
+.tag-y{background:#78350f;color:#fef3c7;}
+.home-mod{background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:1rem;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s;color:#e5e7eb;}
+.home-mod:hover{background:#333;border-color:#4b5563;transform:translateY(-1px);}
+.home-mod-icon{font-size:26px;margin-bottom:6px;}
+.home-mod-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:2px;}
+.home-mod-desc{font-size:11px;color:#9ca3af;}
+.ch-row{display:flex;align-items:center;gap:10px;background:#2a2a2a;border:1px solid #3f3f3f;border-radius:12px;padding:.75rem 1rem;margin-bottom:7px;cursor:pointer;width:100%;text-align:left;font-family:inherit;transition:background .15s;color:#e5e7eb;}
+.ch-row:hover{background:#333;}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" id="nav">
+<button class="nb act" onclick="go('home')"><span class="ni">🏠</span><span class="nl">Főoldal</span></button>
+<button class="nb" onclick="go('chapters')"><span class="ni">📚</span><span class="nl">Tananyag</span></button>
+<button class="nb" onclick="go('flash')"><span class="ni">🃏</span><span class="nl">Kártyák</span></button>
+<button class="nb" onclick="go('quiz')"><span class="ni">❓</span><span class="nl">Kvíz</span></button>
+<button class="nb" onclick="go('sim')"><span class="ni">🚑</span><span class="nl">Szimuláció</span></button>
+<button class="nb" onclick="go('calc')"><span class="ni">🧮</span><span class="nl">Kalkulátor</span></button>
+</nav>
+<div class="ct" id="ct"></div>
+</div>
+
+<!-- Dictionary Modal -->
+<div id="dict" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#262626;border:1px solid #3f3f3f;border-radius:12px;padding:20px;max-width:400px;width:100%;box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+    <h3 id="dw" style="color:#14b8a6;margin-bottom:10px;font-size:18px;"></h3>
+    <p id="dd" style="font-size:14px;color:#e5e7eb;line-height:1.5;margin-bottom:20px;"></p>
+    <button onclick="cD()" class="btn btn-fw">Bezárás</button>
+  </div>
+</div>
+
+<script>
+var SCR='home',CHID=null;
+var FC={cat:'Összes',idx:0,flip:false};
+var QZ={idx:0,sel:null,score:0,done:false,ans:[]};
+var SI={id:null,step:0,chosen:null,hist:[],fin:false};
+var CA={tab:'redflag', n_diclo:0, n_ibu:0, n_napro:0, rf_score:0};
+
+var DICT = {
+  'akut': '4 héten belüli.',
+  'szubakut': 'Félheveny, 4-12 hét közötti időtartam.',
+  'krónikus': 'Idült, 12 héten túl fennálló.',
+  'nemspecifikus': 'A fájdalom hátterében nem azonosítható semmilyen alapbetegség (az esetek >85%-a).',
+  'OPQRST': 'Fájdalom felmérési séma: Onset (Kezdet), Provokáló tényezők, Quality (Minőség), Radiation (Kisugárzás), Severity (Súlyosság), Time (Időtartam).',
+  'scoliosis': 'Gerincferdülés.',
+  'hyperkhyphosis': 'Fokozott háti domborulat, púposság.',
+  'paravertebralis': 'Gerinc melletti.',
+  'metastasis': 'Áttét (daganatos betegségnél).',
+  'discus hernia': 'Porckorongsérv.',
+  'cauda equina': 'A gerincvelő alsó részén kilépő ideggyökök (lófark). Kompressziója azonnali beavatkozást igényel.',
+  'epiduralis': 'A gerinccsatorna kemény burkán (dura mater) kívüli tér.',
+  'osteomyelitis': 'Csontvelőgyulladás, csigolyagyulladás.',
+  'aneurysma': 'Értágulat (pl. abdominalis aorta aneurysma).',
+  'dissectio': 'Érfalrepedés, az érfal rétegeinek hosszanti szétválása.',
+  'osteoporosis': 'Csontritkulás.',
+  'radiculopathia': 'Ideggyök-bántalom.',
+  'stenosis': 'Szűkület (pl. a gerinccsatorna szűkülete, canalis spinalis stenosis).',
+  'osteoarthritis': 'Ízületi porckopás.',
+  'pancreatitis': 'Hasnyálmirigy-gyulladás.',
+  'cholecystitis': 'Epehólyag-gyulladás.',
+  'nephrolithiasis': 'Vesekövesség.',
+  'pyelonephritis': 'Vesemedence-gyulladás.',
+  'herpes zoster': 'Övsömör.',
+  'endometriosis': 'A méhnyálkahártya szövetének méhen kívüli megjelenése.',
+  'analgetikum': 'Fájdalomcsillapító gyógyszer.',
+  'neoplasia': 'Daganat, újdonképződés.',
+  'hemodialízis': 'Művesekezelés.',
+  'immunszupresszió': 'Az immunrendszer működésének elnyomása vagy csökkent volta.',
+  'MET': 'Muscle Energy Technique (izomenergia technika).',
+  'NSAID': 'Nem-szteroid gyulladáscsökkentő gyógyszerek (pl. ibuprofen, diclofenac).'
+};
+
+function sD(w) {
+  document.getElementById('dw').innerText = w.toUpperCase();
+  document.getElementById('dd').innerText = DICT[w] || 'Nincs adat.';
+  document.getElementById('dict').style.display = 'flex';
+}
+function cD() {
+  document.getElementById('dict').style.display = 'none';
+}
+
+function f(w, text) {
+  return '<span class="fw" onclick="sD(\''+w+'\')">'+(text||w)+'</span>';
+}
+
+var CDATA=[
+{id:'cel_bev',title:'Célok és Bevezetés',icon:'🎯',acc:'#14b8a6',secs:[
+{t:'I. Célok',bk:[
+{tp:'bl',items:[
+'Bemutatni az '+f('akut')+', nem traumás derékfájdalom típusait, okait.',
+'Prehospitális vizsgálat fontosabb elemeit és ellátását rögzíteni.',
+'Intézeti ellátás szükségességének/indokoltságának kritériumait meghatározni.',
+'Magyar és nemzetközi irányelvek adaptációja, a munka egységesítése.',
+'Bizonyíték nélküli, haszontalan vagy káros beavatkozások mellőzése.'
+]}
+]},
+{t:'II. Bevezetés',bk:[
+{tp:'bl',items:[
+'A derékfájdalom gyakori panasz, nagy részében jóindulatú, kezelés nélkül elmúlik.',
+'Időtartam szerint: '+f('akut')+' (4 héten belüli), '+f('szubakut')+' (4-12 hét) és '+f('krónikus')+' (12 héten túli).',
+'Alapellátásban >85%-ban '+f('nemspecifikus')+' tünetként jelenik meg (nincs azonosítható alapbetegség).',
+'A prehospitális ellátó feladata: felismerni a riasztó tüneteket ("red flags"), melyek azonnali intézeti kivizsgálást követelnek, és mely esetekben elég a tüneti terápia/tanácsadás.'
+]}
+]}
+]},
+{id:'vizsg',title:'Anamnézis és Vizsgálat',icon:'🔍',acc:'#3b82f6',secs:[
+{t:'III. Anamnézis és Tünettan',bk:[
+{tp:'al',lv:'w',tx:'A legfontosabb feladat: felderíteni minden olyan jelet, amely azonnali intézeti kivizsgálást indokol. Nem feladat a definitív diagnózis felállítása!'},
+{tp:'bl',items:[
+'Az ABCDE-szemlélet nem kerülhető meg.',
+'Kifejezetten fontos az anamnézis és a rizikófaktorok felmérése.',
+'Fájdalom vizsgálata: helye, időtartama, súlyossága ('+f('OPQRST')+'), korábbiakkal való összevetés.'
+]},
+{tp:'sub',tx:'Célzottan keresendő rizikófaktorok:'},
+{tp:'bl',items:[
+'Nem szándékos fogyás, láz, éjszakai verejtékezés',
+'Tumoros anamnézis',
+'Kiváltó okok (pl. trauma)',
+'Neurológiai tünetek: gyengeség, elesések, érzéskiesés, vizelet/széklettartási panaszok',
+'Infekcióra utaló jelek, intravénás droghasználat',
+'Kortikoszteroid használata, megelőző '+f('epiduralis')+' beavatkozások'
+]}
+]},
+{t:'Fizikális vizsgálat',bk:[
+{tp:'bl',items:[
+'A gerincoszlop vizsgálata: '+f('scoliosis')+', ill. '+f('hyperkhyphosis')+' felismerése.',
+'Csigolyák és '+f('paravertebralis')+' izomzat tapintása/ütögetése: a csigolyák fájdalma infekcióra, kompressziós törésre, '+f('metastasis', 'metastasisra')+' utalhat.',
+'Részletes neurológiai vizsgálat (motoros és szenzoros): guggolás/emelkedés, sarokjárás, lábujjhegyen járás.',
+'Specifikus manőverek: Lasegue-, ill. keresztezett Lasegue-tünet, femoralis teszt.',
+'Érrendszer fizikális vizsgálata.'
+]}
+]}
+]},
+{id:'diff',title:'Differenciáldiagnózis',icon:'⚖',acc:'#f59e0b',secs:[
+{t:'IV. Súlyos (Életveszélyes) kórképek (<1%)',bk:[
+{tp:'al',lv:'d',tx:'Figyelemfelhívó jelek esetén AZONNALI kórházi beutalás szükséges!'},
+{tp:'bl',items:[
+'Gerincvelői vagy '+f('cauda equina')+' kompresszió: leggyakoribb oka a '+f('discus hernia')+', de tumor, trauma, infekció is lehet. Tünetek: alsó végtagi motoros/szenzoros kiesés, bél/húgyúti diszfunkció.',
+'Daganat (áttét): tumoros anamnézis (emlő, prostata, tüdő, pajzsmirigy, vese). Krónikus, progresszív, éjszaka/nyugalomban is fennálló fájdalom. Hirtelen erősödés = patológiás törés.',
+'Gerincvelői '+f('epiduralis')+' tályog: gyengeség, láz, infekció, derékfájdalom. Rizikó: epidurális procedúra, IV drog, immundeprimált állapot.',
+f('osteomyelitis')+' (csigolya): hetekig/hónapokig tartó fájdalom, lázzal vagy anélkül.',
+'Abdominalis aorta '+f('aneurysma')+', aorta '+f('dissectio')+': kisugárzó fájdalom (hátba, mellkasba, hasba). Hirtelen kezdődő, éles, elviselhetetlen fájdalom. Végtagok közötti pulzuskülönbség.'
+]}
+]},
+{t:'Egyéb strukturális okok (~10%)',bk:[
+{tp:'bl',items:[
+'Kompressziós csigolyatörés: gyakran traumás anamnézis nélkül ('+f('osteoporosis')+', szteroid rizikó).',
+f('radiculopathia')+': gerincvelői gyökökkel kapcsolatos tünetek (pl. porckorongsérv).',
+'Canalis spinalis '+f('stenosis')+': vádli/alsó végtagi fájdalom, mely üléssel/előrehajláskor szűnik. Járótávolság beszűkül.'
+]}
+]},
+{t:'További okok',bk:[
+{tp:'bl',items:[
+f('osteoarthritis')+', pszichés eredet.',
+'Gerincen kívüli kórképek: gyomorfekély, '+f('pancreatitis')+', '+f('cholecystitis')+', '+f('nephrolithiasis')+', '+f('pyelonephritis')+', '+f('herpes zoster')+', '+f('endometriosis')+'.',
+'AV-i érszűkület (pihenésre azonnal szűnik) elkülönítése az akut érelzáródástól/thrombosistól.'
+]},
+{tp:'note',tx:'Megjegyzés:\n- Tompa, mozgásra fokozódó, nyugalomban enyhülő fájdalom = általában jóindulatú.\n- Éjszaka jelentkező, nyugalomra, analgetikumra nem reagáló fájdalom = tumor vagy infekció gyanúja.\n- Mechanikus ok = aszimmetrikus; Gyulladás/neoplasia = szimmetrikus/kétoldali.'}
+]}
+]},
+{id:'ellatas',title:'Ellátás (Helyszíni és Utáni)',icon:'🚑',acc:'#ef4444',secs:[
+{t:'VI. Azonnali teendők MINDEN mentőegység részére',bk:[
+{tp:'bl',items:[
+'Helyszín biztonságának ellenőrzése.',
+'ABCDE szerinti vizsgálat. Életveszélyes kórképek / "red flags" keresése.',
+'ABC instabilitásnál azonnali segélykocsikérés (kompetencia hiányában).',
+'A legtöbb derékfájdalom fájdalomcsillapításon kívül helyszíni akut ellátást nem igényel.',
+'Intézetbe szállításnál: fájdalomcsillapítás és megfelelő rögzítés (beteg általában elmondja a jó pozíciót).'
+]}
+]},
+{t:'VII. További ellátás (Mentőtiszt/Orvos)',bk:[
+{tp:'bl',items:[
+'Diklofenák (50 mg p.o./p.r. vagy 75 mg i.m.)',
+'Metamizol-nátrium (500-1000 mg p.o./i.v.)',
+'Ibuprofén (200-400 mg p.o.)',
+'Paracetamol (500 mg p.o.)',
+'Tramadol (50 mg p.o./i.v./i.m. - csak '+f('NSAID')+'-ra nem reagáló / krónikus esetben).',
+'Ópiátok: ha NSAID ellenére fennáll, de ekkor a beteg intézetbe utalása mindenképpen szükséges.'
+]}
+]},
+{t:'VIII. Ellátás utáni teendők',bk:[
+{tp:'al',lv:'d',tx:'Azonnali intézeti vizsgálat szükséges: Újkeletű (<4 hét) derékfájdalom ÉS legalább egy az alábbiak közül:'},
+{tp:'bl',items:[
+'Tumoros anamnézis / malignitás gyanúja',
+'Infekciós tünetek, '+f('immunszupresszió')+'',
+f('hemodialízis')+'',
+'Intravénás droghasználat',
+'Megelőző '+f('epiduralis')+' beavatkozás',
+'Újkeletű vizelet/széklettartási/ürítési rendellenesség',
+'Újkeletű lovaglónadrág érzéskiesés (perianalis, comb belső oldala)',
+'Újkeletű (motoros vagy szenzoros) neurológiai deficit',
+'Kompressziós csigolyatörés gyanúja'
+]}
+]},
+{t:'Tanácsok helyszínen maradóknak',bk:[
+{tp:'bl',items:[
+'Tartós ágynyugalom kerülése! Fokozatos visszatérés a normál aktivitáshoz.',
+'Meleg borogatás (alacsony szintű bizonyíték).',
+'Masszázs, akupunktúra, manuálterápia (beteg preferenciája szerint).',
+'Mozgás/fizikoterápia: akut fázisban nem, de krónikussá válás rizikója esetén javasolható.'
+]},
+{tp:'al',lv:'w',tx:'NEM javasolt eljárások akut fázisban: hideg vizes borogatás, '+f('MET')+', fűzők/merevítők, húzás, jóga, paraspinalis injekciók, szisztémás szteroidok, antidepresszánsok, lidokain tapasz.'},
+{tp:'sub',tx:'Gyógyszeres javaslat otthonra:'},
+{tp:'bl',items:[
+'Első körben '+f('NSAID')+' javasolt 2-4 hétig (pl. diklofenák max 150 mg/nap, ibuprofén max 1200 mg/nap, naproxen max 1100 mg/nap).',
+'Gyomorvédelem javasolt (H2-blokkoló/PPI: famotidin 20mg vagy omeprazol/pantoprazol 20mg).',
+'Paracetamol NEM elsőként választandó (kivéve, ha NSAID kontraindikált).'
+]}
+]}
+]}
+];
+
+var CARDS=[
+{cat:'Definíciók',f:'Mikor nevezünk egy derékfájdalmat akutnak, szubakutnak és krónikusnak?',b:'Akut: 4 héten belüli\nSzubakut: 4-12 hét közötti\nKrónikus: 12 héten túl fennálló'},
+{cat:'Diagnózis',f:'Mi a prehospitális ellátó legfontosabb feladata derékfájdalom esetén?',b:'Felderíteni minden olyan jelet (red flag), amely AZONNALI intézeti kivizsgálást indokol.\nNEM feladat a definitív diagnózis felállítása.'},
+{cat:'Fizikális vizsgálat',f:'Milyen specifikus neurológiai manővereket/funkciókat kell vizsgálni a gerincen kívül?',b:'Guggolási/emelkedési funkciók\nSarokjárás\nLábujjhegyen járás\nLasegue-, ill. keresztezett Lasegue-tünet\nFemoralis teszt'},
+{cat:'Súlyos kórképek',f:'Mik a cauda equina szindróma / gerincvelői kompresszió riasztó jelei ("red flags")?',b:'- Alsó végtagi motoros funkciók romlása vagy kiesése\n- Érzészavar (pl. lovaglónadrág érzéskiesés)\n- Bél/húgyúti diszfunkció (vizelet/széklettartási vagy ürítési zavar)'},
+{cat:'Súlyos kórképek',f:'Hogyan jelentkezik típusosan a tumoros (áttétes) eredetű derékfájdalom?',b:'- Jellemzően krónikus, progresszív\n- Éjszaka és nyugalomban is fennálló fájdalom\n- Ha a fájdalom hirtelen fokozódik: patológiás csigolyatörésre utalhat.'},
+{cat:'Súlyos kórképek',f:'Mik utalhatnak gerincvelői epiduralis tályogra?',b:'- Gyengeség, láz, infekciós panaszok derékfájdalommal együtt.\n- Rizikófaktorok: epiduralis beavatkozás, intravénás droghasználat, immundeprimált állapot.'},
+{cat:'Súlyos kórképek',f:'Hogyan ismerhető fel az abdominalis aorta aneurysma / aorta dissectio gyanúja derékfájdalomnál?',b:'- Hirtelen kezdődő, éles, elviselhetetlen fájdalom\n- Kisugárzás hátba, mellkasba, hasba\n- Végtagok közötti pulzuskülönbség\n- Esetleges keringési instabilitás'},
+{cat:'Megfigyelések',f:'Hogyan különíthető el a mechanikus ok a tumor/infekció gyanújától a fájdalom jellege alapján?',b:'Mechanikus: tompa, mozgásra fokozódó, nyugalomban enyhülő (általában aszimmetrikus).\n\nTumor/infekció: éjszaka is jelentkező, nyugalomra, analgetikumra NEM reagáló fájdalom (gyakran szimmetrikus).'},
+{cat:'Terápia',f:'Milyen fájdalomcsillapító adható mentőtiszti/orvosi kompetenciában (NSAID-ok)?',b:'Diklofenák: 50 mg p.o./p.r. vagy 75 mg i.m.\nMetamizol: 500-1000 mg p.o./i.v.\nIbuprofén: 200-400 mg p.o.'},
+{cat:'Terápia',f:'Mikor alkalmazható ópiát az eljárásrend szerint?',b:'NSAID ellenére fennálló esetekben, DE ekkor a beteg intézetbe utalása MINDENKÉPPEN szükséges.'},
+{cat:'Otthoni tanácsok',f:'Mi a legfontosabb tanács a mozgással kapcsolatban akut derékfájás esetén?',b:'A tartós ágynyugalom KERÜLÉSE!\n\nIgyekezzenek minél hamarabb visszatérni a normál életvitelhez, elérni a normál aktivitást.'},
+{cat:'Otthoni tanácsok',f:'Milyen fizikai eljárások javasoltak és mik NEM?',b:'Javasolt: Meleg borogatás.\n\nNem javasolt: Hideg vizes borogatás, fűzők, "húzás", akut szakaszban jóga.'},
+{cat:'Gyógyszer',f:'Hogyan kell felírni/javasolni az orális NSAID készítményeket otthonra?',b:'2-4 hétig javasoltak.\nA legalacsonyabb hatásos dózisban.\nMINDENKÉPPEN javasolt megfelelő gyomorvédelem (pl. 20 mg famotidin, omeprazol, pantoprazol) is!'},
+{cat:'Gyógyszer',f:'A paracetamol jó választás első körben?',b:'NEM. A paracetamolt nem javasolt első választandó kezelésként alkalmazni, kivéve, ha más NSAID nem alkalmazható (kontraindikált).'}
+];
+
+var QUIZ=[
+{q:'Melyik tünetegyüttes minősül "red flag"-nek, ami azonnali kórházi beutalást igényel?',opts:['Tompa, aszimmetrikus fájdalom, ami mozgásra fokozódik','Újkeletű lovaglónadrág érzéskiesés és vizelettartási rendellenesség','Fájdalom, ami meleg borogatásra csökken','Reggeli gerincmerevség, ami mozgásra javul'],ok:1,exp:'A lovaglónadrág érzéskiesés és vizelet-/széklettartási panaszok cauda equina szindrómára utalnak, ami azonnali kórházi beutalást igénylő red flag!'},
+{q:'Milyen anamnesztikus adat esetén kell fokozottan gondolni daganat (metastasis) miatti derékfájdalomra?',opts:['Ha a beteg nemrégiben emelt nehezet','Ha a beteg fiatal, sportoló','Ha a betegnek emlő, prostata vagy tüdő tumoros anamnézise van','Ha a beteg elmúlt 40 éves'],ok:2,exp:'Tumoros anamnézis (különösen emlő, prostata, tüdő, pajzsmirigy, vese, myeloma) esetén a derékfájdalom áttétre utalhat, főleg ha éjszaka, nyugalomban is fáj.'},
+{q:'A derékfájdalom prehospitális ellátóként mi az ELSŐDLEGES feladat?',opts:['Definitív diagnózis felállítása a helyszínen','Az ABCDE szerinti betegvizsgálat és a riasztó tünetek felderítése','Minden esetben paracetamol vénás adása','Röntgenvizsgálat megszervezése'],ok:1,exp:'A legfontosabb feladat a részletes vizsgálat (ABCDE), és minden olyan jel felderítése, ami azonnali intézeti kivizsgálást indokol.'},
+{q:'Hogyan kell tanácsolni a helyszínen maradó, nemspecifikus akut derékfájdalommal küzdő beteget a fekvést illetően?',opts:['Feküdjön mozdulatlanul legalább egy hétig (tartós ágynyugalom)','Igyekezzen kerülni a tartós ágynyugalmat és minél hamarabb visszatérni a normál aktivitáshoz','Használjon hideg vizes borogatást folyamatosan','Végezzen intenzív gerincnyújtó jógát még aznap'],ok:1,exp:'A legfontosabb tanács, hogy a betegek ne legyenek tartós ágynyugalomban, mivel az elnyújthatja a panaszokat.'},
+{q:'Melyik NEM javasolt kezelés akut derékfájdalom esetén az eljárásrend szerint?',opts:['Meleg borogatás','Nem-szteroid gyulladáscsökkentő (NSAID) szedése','Gyomorvédő alkalmazása NSAID mellé','Hideg vizes borogatás és húzás'],ok:3,exp:'Akut fájdalom esetén NEM javasolt eljárások: hideg vizes borogatás, fűzők, húzás, MET, mivel nem áll rendelkezésre kellő bizonyíték.'},
+{q:'Az alábbiak közül mi utal abdominalis aorta aneurysmára / aorta dissectióra derékfájdalom esetén?',opts:['Lassan fokozódó tompa fájdalom','Hirtelen kezdődő, éles, elviselhetetlen fájdalom, végtagok közötti pulzuskülönbséggel','Csak reggelente jelentkező derékfájás','Lázzal és hidegrázással kísért fájdalom'],ok:1,exp:'A hirtelen, éles, hasba/hátba sugárzó fájdalom pulzuskülönbséggel egyértelműen érrendszeri katasztrófára (aneurysma/dissectio) utalhat.'},
+{q:'Ha egy betegnek otthonra NSAID gyógyszert (pl. ibuprofent) javasolnak, mit KELL még feltétlenül mellé javasolni?',opts:['Ópiát tartalmú fájdalomcsillapítót','Szisztémás glükokortikoidot','H2-receptor-blokkoló / PPI gyomorvédelmet','Lidokain tapasztalt'],ok:2,exp:'Orális NSAID készítmények mellé mindenképpen javasolt a megfelelő gyomorvédelem (pl. famotidin vagy pantoprazol).'},
+{q:'Melyik életveszélyes kórkép kockázatát növeli a megelőző epiduralis beavatkozás és az intravénás droghasználat?',opts:['Gerincferdülés (scoliosis)','Gerincvelői epiduralis tályog / osteomyelitis','Kompressziós csigolyatörés','Abdominalis aorta aneurysma'],ok:1,exp:'Az IV droghasználat, immunszupresszió és az epidurális beavatkozások az infekciós eredetű kórképek (epidurális tályog, osteomyelitis) rizikófaktorai.'},
+{q:'A paracetamol az első választandó gyógyszer akut derékfájás kezelésére otthonra?',opts:['Igen, a legbiztonságosabb.','Igen, de csak injekció formájában.','Nem, első körben NSAID javasolt, paracetamol csak akkor, ha NSAID nem alkalmazható.','Nem, az első választandó a tramadol.'],ok:2,exp:'Az eljárásrend egyértelműen kimondja, hogy a paracetamolt nem javasolt első választandó kezelésként alkalmazni.'},
+{q:'Milyen esetben alkalmazható ópiát az ügyeleti ellátás során az eljárásrend alapján?',opts:['Bármilyen akut fájdalom esetén első vonalban.','Ha NSAID-ra nem reagál a fájdalom, de ekkor a beteget mindenképpen intézetbe kell utalni.','Otthon hagyás esetén, vényre felírva.','Pszichés eredetű fájdalom esetén.'],ok:1,exp:'Ópiátok NSAID ellenére fennálló esetekben alkalmazhatók, azonban ekkor a beteg intézetbe utalása mindenképpen szükséges. Felírása ügyeleti ellátás során otthonra nem javasolt.'}
+];
+
+var SIMS=[
+{id:1,title:'1. Szimuláció: Egyszerű nemspecifikus derékfájdalom',diff:'B kompetencia',desc:'Egy 45 éves férfihez riasztják a B kompetenciájú egységet. Pár napja egy nehéz doboz emelése közben a derekába nyilallt a fájdalom. Nem tud kiegyenesedni.',steps:[
+{sit:'Megérkeznek a helyszínre. A beteg a nappaliban egy fotelben ül, arca fájdalmas. Mi az első teendő?',opts:[{tx:'Azonnal fájdalomcsillapítót (NSAID) adok neki p.o.',ok:false,fb:'Hibás! A helyszínbiztonság és a betegvizsgálat megelőzi a gyógyszerelést.'},{tx:'Helyszínbiztonság ellenőrzése, majd ABCDE szerinti elsődleges betegvizsgálat.',ok:true,fb:'Helyes! A helyszín biztonságának ellenőrzése és az ABCDE vizsgálat sosem hagyható ki.'}]},
+{sit:'Az ABCDE vizsgálat során a beteg keringése és légzése stabil (normális). A következő lépés az anamnézis felvétele. Melyik rendszert/sémát alkalmazza a fájdalom részletes kikérdezésére?',opts:[{tx:'GCS skála',ok:false,fb:'Hibás! A GCS a tudatállapot felmérésére szolgál.'},{tx:'OPQRST séma a fájdalom helyére, idejére, súlyosságára.',ok:true,fb:'Helyes! Az OPQRST ideális a fájdalom pontos kikérdezésére.'}]},
+{sit:'A fájdalom a deréktájon jelentkezik, aszimmetrikus, mozgásra (főleg előrehajlásra) fokozódik, nyugalomban enyhül. Milyen célzott kérdéseket tesz még fel a "Red Flags" kizárására?',opts:[{tx:'Megkérdezem, van-e újkeletű széklet/vizelettartási panasza, láza, daganatos betegsége, vagy fogyott-e mostanában.',ok:true,fb:'Helyes! Ezek a legfontosabb vörös zászlós tünetek (cauda equina, tumor, infekció).'},{tx:'Megkérdezem, hogy szokott-e fejfájása lenni.',ok:false,fb:'Hibás! Ez nem releváns a derékfájdalom súlyos okainak kizárásában.'}]},
+{sit:'A beteg tagad minden "red flag" tünetet (nincs vizeletpanasz, láz, tumor anamnézis). Mi a teendő a gerinc fizikális vizsgálata során?',opts:[{tx:'A gerincoszlop tapintása, paravertebrális izomzat vizsgálata, scoliosis keresése.',ok:true,fb:'Helyes! A fizikális vizsgálat célja a tapintható eltérések, izomfeszülés azonosítása.'},{tx:'Szigorúan tilos megérinteni a beteget.',ok:false,fb:'Hibás! A fizikális vizsgálat a protokoll része.'}]},
+{sit:'A bal oldali paravertebralis izomzat kötött, nyomásérzékeny. A neurológiai vizsgálat során mit kér a betegtől?',opts:[{tx:'Hogy álljon fél lábon csukott szemmel 1 percig.',ok:false,fb:'Hibás! Ez a Romberg/egyensúly teszt, itt nem célzott.'},{tx:'Sarokjárás, lábujjhegyen járás és guggolás/emelkedés kivitelezését kérem.',ok:true,fb:'Helyes! A motoros neurológiai funkciók alapvető vizsgálata az alsó végtagon.'}]},
+{sit:'A beteg tud sarkon és lábujjon járni, guggolásból feláll (bár a dereka fáj). Végez specifikus manővereket (Lasegue)?',opts:[{tx:'Nem, az csak kórházban végezhető.',ok:false,fb:'Hibás! Az eljárásrend a prehospitális vizsgálatok közé sorolja a Lasegue-tesztet.'},{tx:'Igen, hanyatt fekvésben elvégzem a Lasegue-tesztet.',ok:true,fb:'Helyes! A gyöki érintettség (radiculopathia) vizsgálata fontos.'}]},
+{sit:'A Lasegue-teszt negatív (nincs gyöki kisugárzó fájdalom). A betegnek nemspecifikus derékfájdalma van riasztó tünetek nélkül. B kompetenciájú mentőápolóként dönthet-e önállóan a beteg helyszínen hagyásáról?',opts:[{tx:'Nem, mentőápoló önálló hatáskörben helyszínen hagyás mellett nem dönthet.',ok:true,fb:'Helyes! Az eljárásrend kimondja, hogy mentőápoló önállóan nem hagyhat a helyszínen beteget. (Orvosi ügyelet/irányítás bevonása szükséges).'},{tx:'Igen, mivel nincsenek red flag tünetek.',ok:false,fb:'Hibás! Kompetenciaszint miatt ez önállóan nem megengedett.'}]},
+{sit:'A mentésirányítással/orvosi ügyelettel egyeztetve a beteg a helyszínen maradhat. Milyen tanácsot ad a betegnek a pihenéssel kapcsolatban?',opts:[{tx:'Maradjon ágyban 1-2 hétig, egyáltalán ne mozogjon.',ok:false,fb:'Hibás! A tartós ágynyugalom kerülendő.'},{tx:'Igyekezzen kerülni a tartós ágynyugalmat, és minél hamarabb térjen vissza a normál aktivitásához.',ok:true,fb:'Helyes! A mozgás elősegíti a gyógyulást, a fekvés elnyújtja a panaszokat.'}]},
+{sit:'Milyen fizikai fájdalomcsillapító módszert javasol a betegnek otthonra?',opts:[{tx:'Jeges, hideg vizes borogatást.',ok:false,fb:'Hibás! Az eljárásrend kifejezetten nem javasolja a hideget.'},{tx:'Meleg borogatást javaslok az izmok ellazítására.',ok:true,fb:'Helyes! A meleg borogatás alacsony szintű bizonyítékokon alapulva, de javasolható.'}]},
+{sit:'Az ügyeletes orvos/irányítás NSAID (pl. ibuprofén) gyógyszert javasol a betegnek otthonra. Mit kell mindenképpen felhívni a figyelmét a gyógyszerszedés kapcsán?',opts:[{tx:'Az NSAID készítmények mellé mindenképpen alkalmazzon megfelelő gyomorvédelmet (pl. famotidin vagy pantoprazol).',ok:true,fb:'Helyes! A gyomorvédelem az eljárásrend kötelező javaslata.'},{tx:'Hogy vegyen be mellé erős nyugtatót is.',ok:false,fb:'Hibás! Nem protokoll szerinti javaslat.'}]}
+],summary:'Egy tipikus, mechanikus eredetű, nemspecifikus akut derékfájdalom esete. A helyszínbiztonság és az ABCDE stabilitás igazolása után az OPQRST alapján felvett anamnézis, valamint a neurológiai (sarok/lábujjhegy járás, guggolás) és specifikus (Lasegue) vizsgálatok során "red flag" tünetek nem igazolódtak. B kompetenciájú ellátó önállóan nem hagyhat a helyszínen beteget, ezért irányítói/ügyeleti konzultáció történt. A betegnek a tartós ágynyugalom kerülését, meleg borogatást, és gyomorvédelem mellett NSAID szedését javasoltuk.'},
+
+{id:2,title:'2. Szimuláció: Cauda Equina gyanú',diff:'B+ kompetencia',desc:'Egy 60 éves nőt vizsgálnak, aki erős, mindkét alsó végtagba sugárzó derékfájdalomra panaszkodik, B+ kompetenciával.',steps:[
+{sit:'Megérkeznek a helyszínre, a beteg az ágyon fekszik, sír a fájdalomtól. ABCDE vizsgálat: stabil vitális paraméterek. Milyen anamnesztikus "red flag" tünetre kérdez rá a fájdalmon kívül?',opts:[{tx:'Újkeletű vizelet- vagy széklettartási (ürítési) rendellenesség jelentkezett-e.',ok:true,fb:'Helyes! A kétoldali radiculáris fájdalom cauda equina szindrómára utalhat, a sphincter funkció a legfontosabb kérdés.'},{tx:'Szokott-e fájni a gyomra étkezés után.',ok:false,fb:'Hibás! Nem tartozik a közvetlen gerinc eredetű riasztó jelek közé.'}]},
+{sit:'A beteg elmondja, hogy ma reggel óta nem tudja visszatartani a vizeletét. Mit kell megvizsgálni a fizikai neurológiai felmérés során?',opts:[{tx:'Csak a pupillareflexeket.',ok:false,fb:'Hibás! Ez koponyaűrű nyomásfokozódásra / KIR eltérésre jó.'},{tx:'Motoros és szenzoros funkciókat, kiemelten keresve a "lovaglónadrág érzéskiesést" (perianális és belső comb tájék).',ok:true,fb:'Helyes! A gáttáji (lovaglónadrág) érzéskiesés a cauda equina szindróma specifikus jele.'}]},
+{sit:'A betegnél a gáttájéki érzéskiesés egyértelmű, a lábait gyengének érzi. Milyen döntést hoz a szállításról?',opts:[{tx:'Azonnali intézeti vizsgálat, kórházi beutalás szükséges!',ok:true,fb:'Helyes! Újkeletű vizelettartási probléma és lovaglónadrág érzéskiesés = Cauda Equina gyanú, azonnali beutalás (Red Flag).'},{tx:'Helyszínen maradhat fájdalomcsillapítóval.',ok:false,fb:'Hibás! Ez egy életveszélyes, azonnali beavatkozást igénylő állapot.'}]},
+{sit:'A beteg fájdalma erős, a B+ kompetencia szerinti ellátás során vénát biztosít. Adhat-e valamilyen fájdalomcsillapítót vénásan az eljárásrend alapján?',opts:[{tx:'Igen, B+ kompetenciával a protokoll szerint pl. metamizol-nátrium adható i.v. (amennyiben ez a hatáskörbe beletartozik és nincs kontraindikáció).',ok:true,fb:'Helyes! B+ kompetencia lehetővé teszi a gyógyszerelést, és az eljárásrend említ i.v. metamizolt.'},{tx:'Szigorúan tilos bármilyen gyógyszer.',ok:false,fb:'Hibás! A beteg fájdalomcsillapításra szorul.'}]},
+{sit:'Az intravénás fájdalomcsillapítás ellenére a fájdalom fennmarad. Adható-e ópiát a mentőápoló (B+) által?',opts:[{tx:'Nem, ópiátot önállóan B+ nem ad, szükség esetén magasabb kompetenciájú segítség kérése (ALS egység) vagy gyors szállítás javasolt.',ok:true,fb:'Helyes! Az ópiátok alkalmazása komolyabb kompetenciát, illetve a beteg kötelező kórházi szállítását igényli.'},{tx:'Igen, korlátlanul.',ok:false,fb:'Hibás!'}]},
+{sit:'Mivel a beteg vizeletét maga alá vizelte és mozgatásra a fájdalom erősödik, hogyan készíti elő a szállításra?',opts:[{tx:'Felállítom és a mentőhöz sétáltatom.',ok:false,fb:'Hibás! Motoros gyengeség és gyöki kompresszió esetén a terhelés tilos.'},{tx:'A fájdalmat a leginkább csökkentő (általában tehermentesített, felhúzott lábú) pozícióban rögzítem a hordágyon.',ok:true,fb:'Helyes! A beteg gyakran elmondja a jó pozíciót, tehermentesítés szükséges.'}]},
+{sit:'A szállítás megkezdése előtt szükséges a kórház előzetes értesítése?',opts:[{tx:'Igen, cauda equina szindróma gyanúja (neurológiai vészhelyzet) miatt a célkórházat/irányítást értesítem.',ok:true,fb:'Helyes! Időkritikus neurológiai kórkép, azonnali MR/műtét merülhet fel.'},{tx:'Nem, ez egy sima derékfájás.',ok:false,fb:'Hibás! Ez egy "Red Flag" kórkép.'}]},
+{sit:'A szállítás alatt milyen vitális paramétert kell kiemelten monitorozni?',opts:[{tx:'Elég csak beszélni a beteggel.',ok:false,fb:'Hibás! Folyamatos obszerváció kell.'},{tx:'Az ABCDE paraméterek (vérnyomás, pulzus, légzés, tudat) folyamatos követése, hiszen gyógyszert is kapott.',ok:true,fb:'Helyes! Minden gyógyszerelt/instabil beteget monitorozni kell.'}]},
+{sit:'A beteg megkérdezi, hogy meg fog-e bénulni. Mit válaszol szakszerűen?',opts:[{tx:'Sajnos igen, biztosan.',ok:false,fb:'Hibás! A definitív diagnózist és prognózist nem mi állítjuk fel.'},{tx:'A panaszai komoly kórházi kivizsgálást igényelnek, ezért most a megfelelő intézménybe visszük azonnali vizsgálatokra.',ok:true,fb:'Helyes! Őszinte, tényszerű, de nem diagnosztizál és nem rémisztget feleslegesen.'}]},
+{sit:'A beteg átadásakor az SBO/neurológiai osztályon mit kell kiemelni az anamnézisből?',opts:[{tx:'Csak azt, hogy kapott fájdalomcsillapítót.',ok:false,fb:'Hibás! A legfontosabb a "Red Flag" infók átadása.'},{tx:'Az újkeletű vizelettartási zavart, a lovaglónadrág érzéskiesést és az alsó végtagi gyengeséget (Cauda Equina gyanú).',ok:true,fb:'Helyes! Ezek az azonnali beavatkozást indikáló tényezők.'}]}
+],summary:'A szituáció egy gerincvelői / cauda equina kompressziót ("Red Flag" kórképet) mutat be. Az anamnézis (vizelettartási probléma) és a neurológiai vizsgálat (lovaglónadrág érzéskiesés, motoros gyengeség) alapján azonnali intézeti beutalás volt indokolt. B+ kompetenciával a beteg vénabiztosítást és fájdalomcsillapítót kapott, majd kíméletes, tehermentesített pozícióban azonnal megfelelő ellátóhelyre szállítottuk, a kórház előzetes értesítése mellett.'},
+
+{id:3,title:'3. Szimuláció: Érrendszeri katasztrófa (Aorta dissectio gyanú)',diff:'B+ kompetencia',desc:'Egy 65 éves férfihoz hívják a B+ egységet. A beteg a földön fekszik, verejtékes, elmondása szerint hirtelen elviselhetetlenül éles fájdalom hasított a derekába és a hátába.',steps:[
+{sit:'Helyszínbiztonság rendben. A beteg sápadt, verejtékes, arcán halálfélelem tükröződik. Az ABCDE alapján milyen vizsgálattal kezd?',opts:[{tx:'Gyors ABC vizsgálat a kritikus keringési zavar azonosítására.',ok:true,fb:'Helyes! A sápadt, verejtékes beteg instabil lehet, azonnali ABC felmérés szükséges.'},{tx:'Azonnal megpróbálom felállítani, hogy tud-e járni.',ok:false,fb:'Hibás! Instabil beteget tilos mozgatni a vizsgálat előtt.'}]},
+{sit:'Az A és B rendben. A "C" (keringés) vizsgálat során a pulzusa szapora, a vérnyomása a bal karon 180/100 Hgmm. Mi az aorta dissectio tipikus fájdalomjellemzője?',opts:[{tx:'Lassan kialakuló tompa, nyomó fájdalom.',ok:false,fb:'Hibás! Az a típusos izomfájdalomra vagy más lassan kialakuló kórképre jellemző.'},{tx:'Hirtelen kezdődő, éles, "hasító", elviselhetetlen fájdalom, amely a hátba/hasba sugárzik.',ok:true,fb:'Helyes! Ez az érrendszeri katasztrófák, kiemelten az aorta dissectio/aneurysma ruptúra klasszikus jele.'}]},
+{sit:'Milyen specifikus érrendszeri fizikális vizsgálatot kell az eljárásrend alapján azonnal elvégezni ennél a gyanúnál?',opts:[{tx:'Végtagok közötti pulzuskülönbség vizsgálata és a vérnyomás mérése mindkét karon.',ok:true,fb:'Helyes! A pulzusasszimmetria az aorta dissectio erős gyanújele.'},{tx:'A nyaki vénák teltségének megtekintése.',ok:false,fb:'Hibás! Hasznos, de dissectio gyanújánál a pulzuskülönbség a legfontosabb specifikus vizsgálat.'}]},
+{sit:'A jobb csuklón a pulzus alig tapintható, a vérnyomás ott csak 90/50 Hgmm. Jelentős a pulzus/vérnyomás aszimmetria. Mi a teendő B+ kompetenciával?',opts:[{tx:'Azonnali segélykocsi (ALS) riasztása, mivel életveszélyes állapot (Aorta dissectio gyanúja).',ok:true,fb:'Helyes! Az állapot kritikus, az idő faktor létfontosságú, azonnal ALS kell.'},{tx:'Adok neki egy fájdalomcsillapító tablettát és várok.',ok:false,fb:'Hibás! Időveszteség, a beteg belehalhat.'}]},
+{sit:'A segélykocsi/ALS egység érkezéséig mit tesz a beteggel?',opts:[{tx:'Felállítom és sétáltatom a vérkeringés javítása érdekében.',ok:false,fb:'Hibás! Szigorú fektetés és nyugalom szükséges!'},{tx:'Szigorú nyugalomba helyezem, 100% oxigént adok és azonnal vénát biztosítok (B+ kompetencia).',ok:true,fb:'Helyes! Az oxigenizáció, a nyugalom és a véna megléte kritikus a továbblépéshez.'}]},
+{sit:'Az anamnézisből kiderül, hogy ismert magasvérnyomás-beteg. Adhat-e önállóan vérnyomáscsökkentőt (B+ szint)?',opts:[{tx:'Igen, nitrátot adok rögtön.',ok:false,fb:'Hibás! Az érrendszeri katasztrófa kezelése ALS/orvosi feladat, a B+ önállóan nitrátot ilyen esetben óvatosan/nem adhat anélkül, hogy ne rontaná az állapotot, ha aneurysma ruptura is van.'},{tx:'Nem, B+ szinten a vérnyomáscsökkentés és célzott medikáció ebben a helyzetben ALS beavatkozást/orvosi utasítást igényel.',ok:true,fb:'Helyes! A vérnyomás drasztikus csökkentése anélkül, hogy a pulzust kontrollálnák, vagy aneurysma rupturánál veszélyes lehet.'}]},
+{sit:'A fájdalma továbbra is elviselhetetlen (10/10). Adhat-e NSAID-ot per os?',opts:[{tx:'Nem, az NSAID (főleg p.o.) itt teljesen hatástalan lesz és szájon át semmit nem adunk kritikus betegnek.',ok:true,fb:'Helyes! Életveszélyes állapotban p.o. gyógyszer kontraindikált a lehetséges műtét és aspiráció miatt.'},{tx:'Igen, ibuprofent adok vízzel.',ok:false,fb:'Hibás!'}]},
+{sit:'A mentőorvos megérkezik, de Önnek folytatnia kell a vizsgálatot "D" (Neurológia) és "E" tekintetében. Mit kell vizsgálni az alsó végtagokon?',opts:[{tx:'Csak azt, hogy melegek-e.',ok:false,fb:'Hibás! Több dolog kell.'},{tx:'A motoros/szenzoros funkciókat és az alsó végtagi keringést (lehet iszkémiás a dissectio miatt).',ok:true,fb:'Helyes! A dissectio ráterjedhet a csípőerekre, ami alsó végtagi paralízist vagy ischaemiát (hideg, fehér végtag) okozhat.'}]},
+{sit:'Az EKG felhelyezése indokolt ebben a helyzetben?',opts:[{tx:'Igen, a 12 elvezetéses EKG differenciáldiagnosztikai (pl. AMI kizárása) szempontból fontos, de nem késleltetheti a szállítást.',ok:true,fb:'Helyes! Az aorta dissectio gyakran utánozza az infarktust, de nem okozhat időveszteséget.'},{tx:'Nem, teljesen felesleges.',ok:false,fb:'Hibás! A C vizsgálat része az EKG.'}]},
+{sit:'Hogyan kell a szállítás célintézményét meghatározni?',opts:[{tx:'A legközelebbi rendelőintézet.',ok:false,fb:'Hibás! Nem megfelelő az ellátási szint.'},{tx:'Mentésirányítással egyeztetve a megfelelő profilú érsebészeti/SBO központba szállítás azonnal.',ok:true,fb:'Helyes! Az érrendszeri katasztrófa definitív ellátása sürgős műtéti kapacitást (SBO/Érsebészet) igényel.'}]}
+],summary:'Az eset egy abdominalis aorta aneurysma / dissectio gyanúját mutatta be, amely hirtelen, éles, kisugárzó fájdalommal és pulzuskülönbséggel jelentkezik. B+ kompetenciával felismertük az életveszélyes, kritikus kórképet, azonnal ALS (segélykocsi) egységet kértünk. Addig is szigorú nyugalom, vénabiztosítás, O2 terápia és hemodinamikai monitorozás történt. Szájon át gyógyszert nem adtunk a várható műtét miatt. A mentőorvos kiérkezése után érsebészeti háttérrel rendelkező SBO-ra szállítottuk a beteget.'},
+
+{id:4,title:'4. Szimuláció: Tumoros áttét / Patológiás törés',diff:'B kompetencia',desc:'Egy 70 éves hölgyhöz hívják Önöket. Ismert mellrákja volt évekkel ezelőtt. Éjszaka erős, nyugalomban is fennálló hát/derékfájdalomra ébredt, ami egy tüsszentésnél hirtelen "roppanó" érzéssel és elviselhetetlen fájdalommal társult.',steps:[
+{sit:'Helyszínbiztonság és ABCDE stabilitás megerősítve. Az anamnézis (OPQRST) felvétele során mely tünetek utalnak azonnali Red Flag (daganat) jelenlétére?',opts:[{tx:'Korábbi emlőtumor, éjszakai/nyugalmi fájdalom, valamint hirtelen, trauma nélküli (tüsszentés) fájdalomfokozódás.',ok:true,fb:'Helyes! A tumoros anamnézis, éjszakai fájdalom és a hirtelen rosszabbodás (patológiás törés gyanúja) típusos red flag.'},{tx:'Csak az életkora.',ok:false,fb:'Hibás! Bár az idős kor rizikó, a tumoros múlt és a fájdalom jellege sokkal specifikusabb.'}]},
+{sit:'A fizikai vizsgálat során a gerincoszlop tapintását és finom ütögetését végzi. Mit tapasztal patológiás törés / metasztázis esetén?',opts:[{tx:'Helyi, csigolyára lokalizált, erős nyomás- és ütögetési érzékenységet.',ok:true,fb:'Helyes! A csigolyák fájdalma infekcióra, kompressziós törésre, metastasisra utal.'},{tx:'Nem tapasztalható semmilyen fájdalom tapintásra.',ok:false,fb:'Hibás! A csontfolyamat (törés/tumor) nagyon érzékeny a lokalizált nyomásra.'}]},
+{sit:'A beteget megkéri, hogy álljon fel. A neurológiai vizsgálat során (láb emelése, járás) a beteg hirtelen gyengeséget jelez a jobb lábában. Mit jelent ez?',opts:[{tx:'Újkeletű (motoros) neurológiai deficit, ami azonnali kórházi beutalást igénylő Red Flag.',ok:true,fb:'Helyes! A neurológiai kiesés tumoros térfoglalás (gerincvelői kompresszió) jele is lehet.'},{tx:'Az izmok egyszerű elfáradását.',ok:false,fb:'Hibás! Ne bagatellizáljuk a neurológiai tüneteket daganatos anamnézis mellett.'}]},
+{sit:'B kompetenciával, felismerve a Red Flag tüneteket (tumor gyanú, neuro deficit, patológiás törés), milyen intézkedést kell tennie?',opts:[{tx:'Tanácsot adok, hogy szedjen be egy fájdalomcsillapítót és pihenjen otthon.',ok:false,fb:'Hibás! A Red Flag = azonnali intézeti vizsgálat.'},{tx:'Azonnali kórházi beutalást indikálok és megszervezem a biztonságos betegszállítást, sz.e. iránymutatást kérek.',ok:true,fb:'Helyes! A protokoll kötelezővé teszi az azonnali intézeti kivizsgálást.'}]},
+{sit:'A beteg mozgatása a hordágyra fájdalmas. Hogyan oldja meg a szállításhoz a rögzítést?',opts:[{tx:'Gyorsan felültetem a hordágyra.',ok:false,fb:'Hibás! A csigolyatörés gyanúja instabilitást jelent, a felültetés gerincvelői sérülést okozhat.'},{tx:'Kíméletesen, lapocka/medence együttes forgatásával (en bloc) fektetem a hordágyra, megfelelő gerincrögzítést (lapátágy/vákuummatrac) alkalmazva.',ok:true,fb:'Helyes! Patológiás törés gyanúja esetén óvni kell a gerincvelőt.'}]},
+{sit:'A fájdalma 9/10-es. B kompetenciával rendelkezik. Adhat-e i.v. ópiátot?',opts:[{tx:'Nem, ez meghaladja a B kompetenciaszintet. Mentésirányításon keresztül magasabb szintű fájdalomcsillapítás (Mentőtiszt/Orvos) kérése merül fel.',ok:true,fb:'Helyes! B kompetenciával nincs i.v. ópiát adás. Az erős fájdalom és gerincsérülés ALS kompetenciát igényel a kíméletes szállítás megkezdése előtt.'},{tx:'Igen, beállítok egy vénát és adom a morfint.',ok:false,fb:'Hibás!'}]},
+{sit:'A beteg arról panaszkodik, hogy az elmúlt hetekben sokat fogyott és gyakran volt hőemelkedése is. Melyik differenciáldiagnózis irányába mutat ez még a tumor mellett?',opts:[{tx:'Pszichés eredetű fájdalom.',ok:false,fb:'Hibás! Fogyás és hőemelkedés organikus okra utal.'},{tx:'Gerincvelői epidurális tályog vagy osteomyelitis (csontvelőgyulladás).',ok:true,fb:'Helyes! A láz és a derékfájás, fogyással együtt infekcióra (osteomyelitis/tályog) is felhívja a figyelmet.'}]},
+{sit:'A mentésirányítás orvosi egységet küld a fájdalomcsillapításhoz. Milyen információt kell átadnia az érkező kollégáknak a "SAMPLE" anamnézisből?',opts:[{tx:'Csak azt, hogy mikor evett utoljára.',ok:false,fb:'Hibás! Az előzmény és a tünetek fontosabbak.'},{tx:'Tumoros anamnézis, éjszakai fájdalom, hirtelen fellépő gerincfájdalom, jobb alsó végtagi motoros gyengeség.',ok:true,fb:'Helyes! Ezek a legfontosabb Red Flag információk a differenciáldiagnózis felállításához.'}]},
+{sit:'Az orvos kábító fájdalomcsillapítót (ópiátot) ad a betegnek a szállítás előtt. Mit mond erről az eljárásrend?',opts:[{tx:'Szigorúan tilos ópiátot adni derékfájdalomra.',ok:false,fb:'Hibás! A protokoll megengedi.'},{tx:'Ópiátok NSAID ellenére fennálló vagy nagyon heves esetekben alkalmazhatók, azonban ekkor a beteg intézetbe utalása mindenképpen szükséges.',ok:true,fb:'Helyes! A kábítószeres fájdalomcsillapítás kötelezővé teszi a beszállítást (itt amúgy is kötelező a törés miatt).'}]},
+{sit:'A kórházba érkezéskor hová adja át a beteget?',opts:[{tx:'Reumatológiai szakrendelőbe.',ok:false,fb:'Hibás! Akut, töréses neuro vészhelyzet.'},{tx:'Sürgősségi Betegellátó Osztályra (SBO) vagy Traumatológia/Idegsebészetre, jelezve az azonnali neurológiai deficitet és törésgyanút.',ok:true,fb:'Helyes! A beteg akut neurológiai/sebészeti kivizsgálást és ellátást (MR, CT) igényel.'}]}
+],summary:'A szituáció egy metasztatikus eredetű, patológiás kompressziós csigolyatörés gyanúját taglalta. Az éjszakai fájdalom és az emlőtumor anamnézis azonnal Red Flag tünet. A fizikai tapintás (fájdalom a csigolyán) és az újkeletű jobb láb gyengeség (motoros kiesés) azonnali kórházi ellátást indokol. A gerincet instabilként kezeltük, és a hordágyon vákuummatraccal rögzítettük. Az erős, p.o. gyógyszerre nem reagáló fájdalom és a szállítás kivitelezhetetlensége miatt (B szint nem adhatott iv. ópiátot) mentőorvosi/tiszti segítséget kértünk a fájdalomcsillapításhoz, majd SBO-ra szállítottuk a beteget.'}
+];
+
+function renderCalc(){
+  // Red flag score system
+  let rfHtml = `
+    <h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kalkulátorok és Értékelők</h2>
+    <div style="display:flex;gap:7px;margin-bottom:.75rem">
+      <button onclick="CA.tab='redflag';render();" style="flex:1;padding:.5rem;border:1px solid ${CA.tab==='redflag'?'#14b8a6':'#3f3f3f'};border-radius:8px;background:${CA.tab==='redflag'?'#14b8a6':'#2a2a2a'};color:${CA.tab==='redflag'?'#111827':'#d1d5db'};cursor:pointer;font-size:13px;font-weight:600;font-family:inherit">Red Flag Értékelő</button>
+      <button onclick="CA.tab='nsaid';render();" style="flex:1;padding:.5rem;border:1px solid ${CA.tab==='nsaid'?'#14b8a6':'#3f3f3f'};border-radius:8px;background:${CA.tab==='nsaid'?'#14b8a6':'#2a2a2a'};color:${CA.tab==='nsaid'?'#111827':'#d1d5db'};cursor:pointer;font-size:13px;font-weight:600;font-family:inherit">NSAID Kalkulátor</button>
+    </div>
+  `;
+
+  if(CA.tab === 'redflag') {
+    let rfs = [
+      {id:'rf1', l:'Újkeletű (4 héten belüli) fájdalom?'},
+      {id:'rf2', l:'Tumoros anamnézis / malignitás jelentős gyanúja?'},
+      {id:'rf3', l:'Infekciós tünetek társulása (láz, hidegrázás)?'},
+      {id:'rf4', l:'Intravénás droghasználat / Immunszupresszió?'},
+      {id:'rf5', l:'Újkeletű vizelet/széklettartási rendellenesség?'},
+      {id:'rf6', l:'Lovaglónadrág érzéskiesés?'},
+      {id:'rf7', l:'Újkeletű (motoros/szenzoros) neuro deficit?'}
+    ];
+    rfHtml += `<div class="card"><div style="font-size:13px;color:#9ca3af;margin-bottom:10px;">Jelölje be a fennálló tüneteket:</div>`;
+    rfs.forEach((r, i) => {
+      rfHtml += `<label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;color:#f3f4f6;"><input type="checkbox" id="${r.id}" onchange="calcRF()" style="width:18px;height:18px;accent-color:#14b8a6;"> ${r.l}</label>`;
+    });
+    rfHtml += `<div id="rf_res" class="res-box" style="margin-top:15px;background:#262626;"><div style="font-size:14px;color:#9ca3af;">Jelöljön be tüneteket az értékeléshez.</div></div></div>`;
+  } else {
+    // NSAID calc
+    rfHtml += `
+    <div class="card">
+      <div style="font-size:13px;color:#9ca3af;margin-bottom:10px;">Számolja ki a napi javasolt maximális dózist a hatóanyag alapján. (A készítmény leiratok csak irányadóak!)</div>
+      
+      <div style="margin-bottom:15px;">
+        <label style="font-size:12px;color:#d1d5db;">Diklofenák (Napi max: 150 mg). Bevenni kívánt tabletták száma x dózis (mg):</label>
+        <div style="display:flex;gap:5px;margin-top:5px;">
+          <input type="number" id="nd_db" value="0" min="0" onchange="calcNS()" placeholder="Db">
+          <span style="display:flex;align-items:center;color:#9ca3af">x</span>
+          <input type="number" id="nd_mg" value="50" min="0" onchange="calcNS()" placeholder="mg">
+          <span id="nd_res" style="display:flex;align-items:center;font-weight:bold;color:#f3f4f6;width:100px;justify-content:center;">0 mg</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="font-size:12px;color:#d1d5db;">Ibuprofén (Napi max: 1200 mg). Bevenni kívánt tabletták száma x dózis (mg):</label>
+        <div style="display:flex;gap:5px;margin-top:5px;">
+          <input type="number" id="ni_db" value="0" min="0" onchange="calcNS()" placeholder="Db">
+          <span style="display:flex;align-items:center;color:#9ca3af">x</span>
+          <input type="number" id="ni_mg" value="400" min="0" onchange="calcNS()" placeholder="mg">
+          <span id="ni_res" style="display:flex;align-items:center;font-weight:bold;color:#f3f4f6;width:100px;justify-content:center;">0 mg</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="font-size:12px;color:#d1d5db;">Naproxen (Napi max: 1100 mg). Bevenni kívánt tabletták száma x dózis (mg):</label>
+        <div style="display:flex;gap:5px;margin-top:5px;">
+          <input type="number" id="nn_db" value="0" min="0" onchange="calcNS()" placeholder="Db">
+          <span style="display:flex;align-items:center;color:#9ca3af">x</span>
+          <input type="number" id="nn_mg" value="275" min="0" onchange="calcNS()" placeholder="mg">
+          <span id="nn_res" style="display:flex;align-items:center;font-weight:bold;color:#f3f4f6;width:100px;justify-content:center;">0 mg</span>
+        </div>
+      </div>
+      
+      <div id="nsaid_warn" class="al al-i">Adja meg a tervezett gyógyszer mennyiséget.</div>
+      <div class="note">Minden orális NSAID mellé gyomorvédelem (H2 blokkoló / PPI 20mg) javasolt!</div>
+    </div>`;
+  }
+
+  return rfHtml;
+}
+
+window.calcRF = function() {
+  let isAcute = document.getElementById('rf1').checked;
+  let hasOther = false;
+  for(let i=2; i<=7; i++) {
+    if(document.getElementById('rf'+i).checked) hasOther = true;
+  }
+  
+  let res = document.getElementById('rf_res');
+  if(isAcute && hasOther) {
+    res.style.background = '#450a0a';
+    res.style.borderColor = '#ef4444';
+    res.innerHTML = `<div style="font-size:16px;font-weight:bold;color:#fca5a5;">AZONNALI INTÉZETI VIZSGÁLAT INDOKOLT!</div><div style="font-size:12px;color:#fecaca;margin-top:5px;">A beteg újkeletű derékfájdalommal és legalább egy riasztó (red flag) tünettel rendelkezik.</div>`;
+  } else if (hasOther) {
+    res.style.background = '#451a03';
+    res.style.borderColor = '#f59e0b';
+    res.innerHTML = `<div style="font-size:16px;font-weight:bold;color:#fde68a;">ORVOSI/INTÉZETI KONZULTÁCIÓ JAVASOLT!</div><div style="font-size:12px;color:#fef3c7;margin-top:5px;">A tünetek nem kifejezetten újak (<4 hét), de a riasztó tünetek komolyabb kivizsgálást igényelnek.</div>`;
+  } else {
+    res.style.background = '#064e3b';
+    res.style.borderColor = '#10b981';
+    res.innerHTML = `<div style="font-size:16px;font-weight:bold;color:#a7f3d0;">NEM AZONOSÍTHATÓ KRITIKUS RED FLAG</div><div style="font-size:12px;color:#d1fae5;margin-top:5px;">A helyszíni tanácsadás és tüneti terápia valószínűleg elegendő, de a beteg állapota folyamatos követést igényel.</div>`;
+  }
+}
+
+window.calcNS = function() {
+  let d_d = parseInt(document.getElementById('nd_db').value) || 0;
+  let d_m = parseInt(document.getElementById('nd_mg').value) || 0;
+  let d_tot = d_d * d_m;
+  document.getElementById('nd_res').innerText = d_tot + " mg";
+  document.getElementById('nd_res').style.color = d_tot > 150 ? '#fca5a5' : '#4ade80';
+
+  let i_d = parseInt(document.getElementById('ni_db').value) || 0;
+  let i_m = parseInt(document.getElementById('ni_mg').value) || 0;
+  let i_tot = i_d * i_m;
+  document.getElementById('ni_res').innerText = i_tot + " mg";
+  document.getElementById('ni_res').style.color = i_tot > 1200 ? '#fca5a5' : '#4ade80';
+
+  let n_d = parseInt(document.getElementById('nn_db').value) || 0;
+  let n_m = parseInt(document.getElementById('nn_mg').value) || 0;
+  let n_tot = n_d * n_m;
+  document.getElementById('nn_res').innerText = n_tot + " mg";
+  document.getElementById('nn_res').style.color = n_tot > 1100 ? '#fca5a5' : '#4ade80';
+
+  let warn = document.getElementById('nsaid_warn');
+  if(d_tot > 150 || i_tot > 1200 || n_tot > 1100) {
+    warn.className = "al al-d";
+    warn.innerHTML = "<strong>FIGYELEM!</strong> A kiszámított napi dózis meghaladja az eljárásrend szerinti maximális javasolt értéket! (Diklofenák max 150mg, Ibuprofén max 1200mg, Naproxen max 1100mg).";
+  } else if (d_tot > 0 || i_tot > 0 || n_tot > 0) {
+    warn.className = "al al-s";
+    warn.innerHTML = "A kiszámított dózisok a megengedett tartományon belül vannak. (Emlékeztető: a lehető legalacsonyabb hatásos dózis javasolt).";
+  } else {
+    warn.className = "al al-i";
+    warn.innerHTML = "Adja meg a tervezett gyógyszer mennyiséget.";
+  }
+}
+
+// Renderező funkciók (Az index.html alapján adaptálva)
+function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function rb(b){
+  if(b.tp==='sub') return '<div class="sub">'+b.tx+'</div>';
+  if(b.tp==='bl') return '<ul class="bl">'+b.items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  if(b.tp==='al') return '<div class="al al-'+b.lv+'">'+b.tx+'</div>';
+  if(b.tp==='note') return '<div class="note">'+b.tx+'</div>';
+  return '';
+}
+
+function renderHome(){
+return '<div style="margin-bottom:1.25rem"><div style="font-size:11px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Országos Mentőszolgálat</div>'+
+'<h1 style="font-size:22px;font-weight:700;color:#f3f4f6;margin-bottom:4px;line-height:1.2">Derékfájdalom Ellátása</h1>'+
+'<div style="font-size:13px;color:#9ca3af">Szabványos Eljárásrend v1.0 · 2023.06.28.</div></div>'+
+'<div class="g2" style="margin-bottom:.75rem">'+
+[['chapters','📚','Tananyag','Teljes tartalom'],['flash','🃏','Flashkártyák','Interaktív kártyák'],['quiz','❓','Kvíz','20 kérdés visszajelzéssel'],['sim','🚑','Szimuláció','4 interaktív eset'],['calc','🧮','Kalkulátor','Red Flag & NSAID']].map(([id,ic,lb,d])=>
+'<button onclick="go(\''+id+'\')" class="home-mod"><div class="home-mod-icon">'+ic+'</div><div class="home-mod-title">'+lb+'</div><div class="home-mod-desc">'+d+'</div></button>').join('')+
+'</div>'+
+'<div class="card" style="background:#064e3b;border-color:#065f46"><div style="font-size:12px;color:#9ca3af"><b>Vonatkozik:</b> Az OMSZ valamennyi kivonuló dolgozójára és mentésirányítójára, kompetenciaszintnek megfelelően.</div></div>';
+}
+
+function renderChapters(){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Tananyag</h2>'+
+'<div class="note">A színezett, aláhúzott szavakra kattintva megtekintheti azok magyarázatát.</div>'+
+CDATA.map(c=>'<button class="ch-row" onclick="go(\'chapter\',\''+c.id+'\')">'+
+'<div style="width:38px;height:38px;border-radius:9px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c.icon+'</div>'+
+'<div style="flex:1"><div style="font-size:14px;font-weight:600;color:#f3f4f6">'+h(c.title)+'</div><div style="font-size:11px;color:#9ca3af">'+c.secs.length+' szakasz</div></div>'+
+'<div style="color:#9ca3af;font-size:18px">›</div></button>').join('');
+}
+
+function renderChapter(id){
+var c=CDATA.find(x=>x.id===id);if(!c)return '';
+return '<button onclick="go(\'chapters\')" style="background:none;border:none;cursor:pointer;color:#14b8a6;font-size:14px;margin-bottom:.75rem;padding:0;font-family:inherit;font-weight:600">‹ Vissza</button>'+
+'<div style="display:flex;align-items:center;gap:10px;margin-bottom:.85rem"><div style="width:42px;height:42px;border-radius:10px;background:'+c.acc+'20;display:flex;align-items:center;justify-content:center;font-size:21px">'+c.icon+'</div>'+
+'<h2 style="font-size:18px;font-weight:700;color:#f3f4f6;margin:0">'+h(c.title)+'</h2></div>'+
+c.secs.map(s=>'<div class="card"><h3 style="font-size:14px;font-weight:700;color:'+c.acc+';margin-bottom:.65rem;padding-bottom:.5rem;border-bottom:1px solid #3f3f3f">'+h(s.t)+'</h3>'+s.bk.map(b=>rb(b)).join('')+'</div>').join('');
+}
+
+function renderFlash(){
+var cats=['Összes',...[...new Set(CARDS.map(c=>c.cat))]];
+var filtered=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);
+var card=filtered[Math.min(FC.idx,filtered.length-1)];
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Flashkártyák</h2>'+
+'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.75rem">'+cats.map(c=>'<button onclick="setCat(\''+h(c)+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid '+(FC.cat===c?'#14b8a6':'#3f3f3f')+';background:'+(FC.cat===c?'#14b8a6':'#2a2a2a')+';color:'+(FC.cat===c?'#111827':'#9ca3af')+';cursor:pointer;font-family:inherit">'+h(c)+'</button>').join('')+'</div>'+
+'<div style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:.65rem">'+(FC.idx+1)+' / '+filtered.length+' • Kattints a kártyára a fordításhoz</div>'+
+'<div class="flip'+(FC.flip?' on':'')+'" onclick="flipCard()">'+
+(FC.flip?
+'<div style="font-size:10px;font-weight:700;color:#c4b5fd;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Válasz</div>'+
+'<div style="font-size:13px;color:#d1d5db;line-height:1.7;text-align:left;white-space:pre-line">'+h(card.b)+'</div>':
+'<div style="font-size:10px;font-weight:700;color:#14b8a6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">'+h(card.cat)+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5">'+h(card.f)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af;margin-top:14px">Kattints a válaszért →</div>')+
+'</div>'+
+'<div class="btn-row"><button class="btn btn-fw" onclick="navCard(-1)">‹ Előző</button><button class="btn btn-v btn-fw" onclick="flipCard()">Fordít</button><button class="btn btn-fw" onclick="navCard(1)">Következő ›</button></div>';
+}
+
+function renderQuiz(){
+if(QZ.done){
+var pct=Math.round(QZ.score/QUIZ.length*100),good=pct>=80;
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Kvíz eredmény</h2>'+
+'<div style="background:'+(good?'#064e3b':'#451a03')+';border:1px solid '+(good?'#065f46':'#78350f')+';border-radius:12px;padding:1.25rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:42px;font-weight:700;color:'+(good?'#4ade80':'#fde68a')+'">'+QZ.score+'/'+QUIZ.length+'</div>'+
+'<div style="font-size:15px;font-weight:600;color:'+(good?'#4ade80':'#fde68a')+'">'+pct+'% – '+(good?'Kiváló!':'Van még hova fejlődni.')+'</div></div>'+
+(QZ.ans.filter(a=>!a.ok).length?'<h3 style="font-size:14px;font-weight:700;margin-bottom:.65rem;color:#f3f4f6">Helytelen válaszok:</h3>'+
+QZ.ans.filter(a=>!a.ok).map(a=>'<div class="card" style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:4px">'+h(QUIZ[a.qi].q)+'</div><div style="font-size:11px;color:#fca5a5;margin-bottom:2px">✗ Válasz: '+h(QUIZ[a.qi].opts[a.pi])+'</div><div style="font-size:11px;color:#4ade80;margin-bottom:5px">✓ Helyes: '+h(QUIZ[a.qi].opts[QUIZ[a.qi].ok])+'</div><div style="font-size:11px;color:#9ca3af">'+h(QUIZ[a.qi].exp)+'</div></div>').join(''):'<div class="al al-s">Tökéletes eredmény! Mindent helyesen válaszoltál meg.</div>')+
+'<button class="btn btn-g btn-fw" onclick="resetQuiz()">Újra</button>';
+}
+var q=QUIZ[QZ.idx];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><h2 style="font-size:19px;font-weight:700;margin:0;color:#f3f4f6">Kvíz</h2><span style="font-size:12px;color:#9ca3af">'+(QZ.idx+1)+'/'+QUIZ.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((QZ.idx+1)/QUIZ.length*100)+'%;background:#14b8a6"></div></div>'+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:15px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(q.q)+'</p></div>'+
+q.opts.map((opt,i)=>{var cls='opt';if(QZ.sel!==null){if(i===q.ok)cls+=' opt-ok';else if(i===QZ.sel&&i!==q.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(QZ.sel===null?'onclick="pickQ('+i+')"':'')+'">'+h(opt)+'</button>';}).join('')+
+(QZ.sel!==null?'<div class="al al-i" style="margin-bottom:.75rem">'+h(q.exp)+'</div><button class="btn btn-g btn-fw" onclick="nextQ()">'+(QZ.idx<QUIZ.length-1?'Következő kérdés →':'Eredmények')+'</button>':'');
+}
+
+function renderSim(){
+if(!SI.id){
+return '<h2 style="font-size:19px;font-weight:700;margin-bottom:.75rem;color:#f3f4f6">Szimulációs esetek</h2>'+
+SIMS.map(s=>'<button class="card-btn" onclick="startSim('+s.id+')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><div style="font-size:14px;font-weight:700;color:#f3f4f6">'+h(s.title)+'</div>'+
+'<span class="tag '+(s.diff==='B kompetencia'?'tag-g':'tag-y')+'">'+s.diff+'</span></div>'+
+'<div style="font-size:12px;color:#9ca3af;margin-bottom:5px">'+h(s.desc)+'</div>'+
+'<div style="font-size:11px;color:#9ca3af">'+s.steps.length+' döntési pont</div></button>').join('');
+}
+var sim=SIMS.find(s=>s.id===SI.id);
+if(SI.fin){
+var correct=SI.hist.filter(h=>sim.steps[h.step].opts[h.oi].ok).length;
+return '<h2 style="font-size:18px;font-weight:700;margin-bottom:.5rem;color:#f3f4f6">'+h(sim.title)+' - Eredmény</h2>'+
+'<div style="background:#064e3b;border:1px solid #065f46;border-radius:12px;padding:1rem;text-align:center;margin-bottom:.75rem">'+
+'<div style="font-size:36px;font-weight:700;color:#4ade80">'+correct+'/'+sim.steps.length+'</div>'+
+'<div style="font-size:13px;color:#4ade80;font-weight:600">helyes döntés</div></div>'+
+'<div class="al al-i"><strong>Összefoglaló:</strong><br>'+h(sim.summary)+'</div>'+
+SI.hist.map((hh,i)=>{var st=sim.steps[hh.step];var opt=st.opts[hh.oi];return '<div class="card" style="margin-bottom:7px"><div style="font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:3px">'+(i+1)+'. '+h(st.sit)+'</div><div style="font-size:11px;margin-bottom:3px;color:'+(opt.ok?'#4ade80':'#fca5a5')+'">'+(opt.ok?'✓':'✗')+' '+h(opt.tx)+'</div><div style="font-size:11px;color:#9ca3af">'+h(opt.fb)+'</div></div>';}).join('')+
+'<button class="btn btn-r btn-fw" onclick="resetSim()" style="margin-top:10px">Vissza az esetekhez</button>';
+}
+var step=sim.steps[SI.step];
+return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:15px;font-weight:700;color:#f3f4f6">'+h(sim.title)+'</div><span style="font-size:12px;color:#9ca3af">'+(SI.step+1)+'/'+sim.steps.length+'</span></div>'+
+'<div class="prog"><div class="progb" style="width:'+((SI.step+1)/sim.steps.length*100)+'%;background:#ef4444"></div></div>'+
+(SI.step===0?'<div class="al al-i">'+h(sim.desc)+'</div>':'')+
+'<div class="card" style="margin-bottom:.75rem;background:#262626"><p style="font-size:14px;font-weight:600;color:#f3f4f6;line-height:1.5;margin:0">'+h(step.sit)+'</p></div>'+
+step.opts.map((opt,i)=>{var cls='opt';if(SI.chosen!==null){if(opt.ok)cls+=' opt-ok';else if(i===SI.chosen&&!opt.ok)cls+=' opt-no';}return '<button class="'+cls+'" '+(SI.chosen===null?'onclick="chooseSim('+i+')"':'')+'">'+h(opt.tx)+'</button>';}).join('')+
+(SI.chosen!==null?'<div class="al '+(step.opts[SI.chosen].ok?'al-s':'al-d')+'">'+h(step.opts[SI.chosen].fb)+'</div><button class="btn btn-r btn-fw" onclick="nextSim()">'+(SI.step<sim.steps.length-1?'Következő helyzet →':'Összefoglaló')+'</button>':'');
+}
+
+function render(){
+var c=document.getElementById('ct');c.innerHTML='';
+if(SCR==='home')c.innerHTML=renderHome();
+else if(SCR==='chapters')c.innerHTML=renderChapters();
+else if(SCR==='chapter')c.innerHTML=renderChapter(CHID);
+else if(SCR==='flash')c.innerHTML=renderFlash();
+else if(SCR==='quiz')c.innerHTML=renderQuiz();
+else if(SCR==='sim')c.innerHTML=renderSim();
+else if(SCR==='calc')c.innerHTML=renderCalc();
+var tabs=['home','chapters','flash','quiz','sim','calc'];
+var active=SCR==='chapter'?'chapters':SCR;
+document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('act',tabs[i]===active);});
+window.scrollTo(0,0);
+}
+
+window.go=function(s,id){SCR=s;CHID=id||null;render();};
+window.setCat=function(c){FC.cat=c;FC.idx=0;FC.flip=false;render();};
+window.flipCard=function(){FC.flip=!FC.flip;render();};
+window.navCard=function(d){var f=FC.cat==='Összes'?CARDS:CARDS.filter(c=>c.cat===FC.cat);FC.flip=false;FC.idx=(FC.idx+d+f.length)%f.length;render();};
+window.pickQ=function(i){if(QZ.sel!==null)return;QZ.sel=i;var ok=i===QUIZ[QZ.idx].ok;if(ok)QZ.score++;QZ.ans.push({qi:QZ.idx,pi:i,ok:ok});render();};
+window.nextQ=function(){if(QZ.idx<QUIZ.length-1){QZ.idx++;QZ.sel=null;}else QZ.done=true;render();};
+window.resetQuiz=function(){QZ={idx:0,sel:null,score:0,done:false,ans:[]};render();};
+window.startSim=function(id){SI.id=id;SI.step=0;SI.chosen=null;SI.hist=[];SI.fin=false;render();};
+window.chooseSim=function(i){if(SI.chosen!==null)return;SI.chosen=i;SI.hist.push({step:SI.step,oi:i});render();};
+window.nextSim=function(){var sim=SIMS.find(s=>s.id===SI.id);if(SI.step<sim.steps.length-1){SI.step++;SI.chosen=null;}else SI.fin=true;render();};
+window.resetSim=function(){SI={id:null,step:0,chosen:null,hist:[],fin:false};render();};
+
+render();
+</script>
+</body>
+</html>
