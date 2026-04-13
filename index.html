@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>OMSZ – Szabványos Eljárásrendek Tudástára</title>
+<link rel="apple-touch-icon" href="omsz_logo.png?v=2">
+<link rel="icon" href="omsz_logo.png?v=2">
+<style>
+/* ALAPVETŐ BEÁLLÍTÁSOK */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    background: #121212; 
+    color: #e5e7eb; 
+    line-height: 1.5;
+    padding-bottom: 40px;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #1e1e1e; }
+::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+/* HEADER */
+.header {
+    background: #1e1e1e;
+    border-bottom: 1px solid #333;
+    padding: 1.2rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    max-width: 1100px;
+    margin: 0 auto 15px auto;
+}
+
+/* OMSZ LOGO STÍLUS */
+.logo-container {
+    width: 65px;
+    height: 65px;
+    background: #fff; 
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid #14b8a6;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.logo-img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+.titles-container {
+    text-align: left;
+}
+
+.app-title { font-size: 24px; font-weight: 800; color: #f3f4f6; line-height: 1.1; letter-spacing: -0.5px; }
+.app-subtitle { font-size: 13px; color: #14b8a6; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* KERESŐ */
+.search-container {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+.search-input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    border-radius: 30px;
+    border: 1px solid #3f3f3f;
+    background: #2a2a2a;
+    color: #f3f4f6;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+.search-input:focus {
+    outline: none;
+    border-color: #14b8a6;
+    background: #333;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+}
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #9ca3af;
+}
+
+/* TARTALOM & KATEGÓRIÁK */
+.container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+.category-section {
+    margin-bottom: 2.5rem;
+}
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #333;
+}
+.cat-icon-bg {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.cat-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f3f4f6;
+}
+
+/* GRID & CARDS */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+}
+.card {
+    background: #2a2a2a;
+    border: 1px solid #3f3f3f;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.2s ease;
+}
+.card:hover {
+    background: #333;
+    border-color: #14b8a6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.item-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e5e7eb;
+    line-height: 1.4;
+    flex: 1;
+}
+
+.chevron {
+    color: #4b5563;
+    font-size: 18px;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.card:hover .chevron { color: #14b8a6; }
+
+/* ÜRES KERESÉS */
+.no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9ca3af;
+    font-size: 16px;
+    display: none;
+}
+
+@media(max-width: 650px) {
+    .grid { grid-template-columns: 1fr; }
+    .header-top { justify-content: center; gap: 12px; }
+    .logo-container { width: 55px; height: 55px; }
+    .app-title { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-top">
+        <div class="logo-container">
+            <img src="omsz_logo.png" alt="OMSZ Logó" class="logo-img">
+        </div>
+        <div class="titles-container">
+            <div class="app-title">OMSZ Tudástár</div>
+            <div class="app-subtitle">Szabványos Eljárásrendek</div>
+        </div>
+    </div>
+    
+    <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Gyorskeresés az eljárásrendek között..." autocomplete="off">
+    </div>
+</header>
+
+<main class="container" id="content">
+    </main>
+
+<div class="no-results" id="noResults">
+    Nincs találat. Próbáld más kifejezéssel! 🚑
+</div>
+
+<script>
+const KATEGORIAK = [
+    {
+        title: "I. Alapok, Vizsgálat és Dokumentáció",
+        icon: "📋",
+        color: "#3b82f6",
+        items: [
+            { file: "betegvizsgalat.html", title: "Betegvizsgálat (Alap pillér)", icon: "🩺" },
+            { file: "betegazonositas.html", title: "Betegazonosítás a prehospitális ellátásban", icon: "🪪" },
+            { file: "betegdokumentacio.html", title: "Betegdokumentáció az IFT-n", icon: "💻" },
+            { file: "ellatas_visszautasitasa.html", title: "Az ellátás visszautasítása", icon: "✍️" },
+            { file: "tcpr.html", title: "Telefonon irányított újraélesztés (T-CPR)", icon: "📞" },
+            { file: "telefonos_konzultacio.html", title: "Telefonos Konzultáció Szabványos Eljárásrendje", icon: "🗣️" },
+            { file: "ift_beteg_elorejelzes.html", title: "Beteg előrejelzése, átadása, segélykocsi", icon: "📢" },
+            { file: "ics_kerdezesi_protokoll.html", title: "Kérdezési protokoll mentésirányítóknak", icon: "❓" }
+        ]
+    },
+    {
+        title: "II. Felszerelés és Készültség",
+        icon: "🎒",
+        color: "#8b5cf6",
+        items: [
+            { file: "felszereles.html", title: "Feltalálási helyre juttatandó minimum felszerelés", icon: "🏃" },
+            { file: "roham_es_esetkocsik_felszerelese.html", title: "Roham- és esetkocsik felszerelésének elhelyezése", icon: "🚑" }
+        ]
+    },
+    {
+        title: "III. Légút, Légzés és Beavatkozások",
+        icon: "🫁",
+        color: "#14b8a6",
+        items: [
+            { file: "egyszeru_legutbiztositas.html", title: "Eszköz nélküli és egyszerű eszközös légútbiztosítás", icon: "😮" },
+            { file: "oxigenterapia.html", title: "Oxigénterápia", icon: "⚗️" },
+            { file: "kilegzesi_co2_monitorozasa.html", title: "Kilégzési szén-dioxid monitorozása (kapnográfia)", icon: "📈" },
+            { file: "noninvaziv_lelegeztetes.html", title: "Noninvazív pozitív nyomású lélegeztetés (CPAP/NIV)", icon: "😷" },
+            { file: "rsi.html", title: "RSI (Rapid Sequence Intubation)", icon: "🧪" },
+            { file: "thoracostomia.html", title: "Prehospitális Thoracostomia", icon: "🔪" }
+        ]
+    },
+    {
+        title: "IV. Újraélesztés és Keringés",
+        icon: "❤️",
+        color: "#ef4444",
+        items: [
+            { file: "ujraelesztes.html", title: "Újraélesztés", icon: "⚡" },
+            { file: "ttekg.html", title: "TTEKG szabványos eljárásrend", icon: "📟" },
+            { file: "folyadekpotlas_gyogyszeres_keringestamogatas.html", title: "Folyadékpótlás és keringéstámogatás", icon: "💧" }
+        ]
+    },
+    {
+        title: "V. Gyógyszertan és Fájdalomcsillapítás",
+        icon: "💊",
+        color: "#f59e0b",
+        items: [
+            { file: "gyogyszerbeviteli_utak.html", title: "Gyógyszerbeviteli utak", icon: "💉" },
+            { file: "intranasalis_gyogyszereles.html", title: "Intranasalis gyógyszerelés", icon: "👃" },
+            { file: "analgezia_es_szedacio.html", title: "Analgézia és szedáció", icon: "😴" }
+        ]
+    },
+    {
+        title: "VI. Belgyógyászat és Kardiológia",
+        icon: "🩺",
+        color: "#ec4899",
+        items: [
+            { file: "acs.html", title: "Akut coronaria szindróma (ACS)", icon: "💔" },
+            { file: "szivelegtelenseg.html", title: "Heveny szívelégtelenség", icon: "🌊" },
+            { file: "ritmuszavarok.html", title: "Ritmuszavarok ellátása", icon: "🥁" },
+            { file: "tudoembolia.html", title: "Tüdőembólia", icon: "🫁" },
+            { file: "asztma.html", title: "Akut asztmás roham", icon: "😮‍💨" },
+            { file: "copd.html", title: "COPD akut exacerbatiója", icon: "🚬" },
+            { file: "anaphylaxia.html", title: "Heveny túlérzékenységi reakció (anaphylaxia)", icon: "🐝" },
+            { file: "szeptikus.html", title: "Szeptikus beteg felismerése és ellátása", icon: "🦠" },
+            { file: "hyperkalemia.html", title: "Hyperkalaemia", icon: "🍌" },
+            { file: "hugyuti_fertozesek.html", title: "Húgyúti fertőzések", icon: "🚽" }
+        ]
+    },
+    {
+        title: "VII. Neurológia és Egyéb",
+        icon: "🧠",
+        color: "#a855f7",
+        items: [
+            { file: "stroke.html", title: "Heveny stroke", icon: "🕰️" },
+            { file: "gorcsroham.html", title: "Görcsrohammal járó rosszullétek", icon: "🌪️" },
+            { file: "derekfajdalom.html", title: "Derékfájdalom", icon: "🧍" }
+        ]
+    },
+    {
+        title: "VIII. Traumatológia és Környezeti ártalmak",
+        icon: "🚨",
+        color: "#f97316",
+        items: [
+            { file: "sulyos_serultek.html", title: "Súlyos sérültek ellátása", icon: "💥" },
+            { file: "rogzitesek.html", title: "Rögzítések a prehospitális ellátásban", icon: "🩹" },
+            { file: "elektromos_balesetek.html", title: "Elektromos balesetek", icon: "🔌" },
+            { file: "hoartalmak.html", title: "Hőártalmak", icon: "☀️" },
+            { file: "lehulesvedelem.html", title: "Lehűlésvédelem", icon: "🥶" },
+            { file: "tomeges_esemenyek_es_katasztrofa_helyzetek.html", title: "Tömeges események, katasztrófa helyzetek", icon: "🚧" }
+        ]
+    },
+    {
+        title: "IX. Gyermek- és Szülészeti Ellátás",
+        icon: "👶",
+        color: "#10b981",
+        items: [
+            { file: "szules.html", title: "Komplikációmentes helyszíni szülés", icon: "🤰" },
+            { file: "ujszulottek_lehules_elleni_vedelme.html", title: "Újszülöttek lehűlés elleni védelme", icon: "🐣" },
+            { file: "krupp.html", title: "Krupp prehospitális ellátása", icon: "🐕" }, 
+            { file: "bronchiolitis.html", title: "Bronchiolitis prehospitális ellátása", icon: "👶" }
+        ]
+    },
+    {
+        title: "X. Egyebek",
+        icon: "📂",
+        color: "#6b7280",
+        items: [
+            { file: "gyogyszerek.html", title: "Gyógyszerek (Összefoglaló kártyák)", icon: "📚" }
+        ]
+    }
+];
+
+const contentDiv = document.getElementById('content');
+const searchInput = document.getElementById('searchInput');
+const noResultsDiv = document.getElementById('noResults');
+
+function renderProtocols(filterText = "") {
+    contentDiv.innerHTML = "";
+    let totalMatches = 0;
+    const lowerFilter = filterText.toLowerCase().trim();
+
+    KATEGORIAK.forEach(cat => {
+        const matchedItems = cat.items.filter(item => 
+            item.title.toLowerCase().includes(lowerFilter)
+        );
+
+        if (matchedItems.length > 0) {
+            totalMatches += matchedItems.length;
+            const section = document.createElement('section');
+            section.className = 'category-section';
+            const header = document.createElement('div');
+            header.className = 'category-header';
+            header.innerHTML = `
+                <div class="cat-icon-bg" style="background: ${cat.color}20; color: ${cat.color}; border: 1px solid ${cat.color}50;">
+                    ${cat.icon}
+                </div>
+                <h2 class="cat-title">${cat.title}</h2>
+            `;
+            section.appendChild(header);
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            matchedItems.forEach(item => {
+                const a = document.createElement('a');
+                a.href = item.file;
+                a.className = 'card';
+                a.innerHTML = `
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="card-title">${item.title}</div>
+                    <div class="chevron">›</div>
+                `;
+                grid.appendChild(a);
+            });
+            section.appendChild(grid);
+            contentDiv.appendChild(section);
+        }
+    });
+
+    noResultsDiv.style.display = (totalMatches === 0 && lowerFilter !== "") ? "block" : "none";
+}
+
+searchInput.addEventListener('input', (e) => renderProtocols(e.target.value));
+renderProtocols();
+</script>
+</body>
+</html>
