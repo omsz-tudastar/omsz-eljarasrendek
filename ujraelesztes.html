@@ -116,37 +116,36 @@ const DICT = {
   'hypovolaemia': 'A keringő vérmennyiség súlyos csökkenése (pl. vérzés, szepszis miatt). Traumás keringésmegállásnál a leggyakoribb ok. Kezelése agresszív folyadékpótlás.',
   'pneumothorax': 'Feszülő (tenziós) légmell. A levegő nyomása gátolja a vénás visszaáramlást a szívbe. Subcutan emphysema jelezheti. Prehospitálisan azonnali tűdekompressziót igényel.',
   'tamponád': 'Folyadék/vér a pericardiumban (szívburok). Megakadályozza a szív telődését.',
-  'asystolia': 'A szív elektromos és mechanikai működésének teljes hiánya. Nem sokkolandó ritmus. Kezelése: kompresszió, azonnali 1 mg Adrenalin iv/io.',
+  'asystolia': 'A szív elektromos és mechanikai működésének teljes hiánya. Nem sokkolandó ritmus. Kétséges (finom hullámú VF vagy asystolia) esetben NE sokkoljunk, kompressziót végezzünk. Kezelése: folyamatos kompresszió, 1 mg Adrenalin iv/io.',
   'pea': 'Pulzus Nélküli Elektromos Aktivitás. A monitoron látható elektromos ritmus, de nincs tapintható pulzus. Nem sokkolandó ritmus.',
-  'vf': 'Kamrafibrilláció. A szív kaotikus elektromos tevékenysége. Sokkolandó ritmus. Azonnali aszinkron defibrillálás szükséges (150-200J).',
+  'vf': 'Kamrafibrilláció. A szív kaotikus elektromos tevékenysége. Egyértelmű esetben sokkolandó ritmus. Refrakter VF (3 sikertelen sokk) esetén vektorváltás (antero-posterior elektróda) mérlegelendő.',
   'rosc': 'Return of Spontaneous Circulation - Spontán keringés visszatérése. Kapnográfia (EtCO2) hirtelen, jelentős megemelkedése is jelezheti. ABCDE és postresuscitatios ellátás követi.',
-  'als': 'Advanced Life Support - Emelt Szintű Újraélesztés. Manuális defibrillátor, gyógyszerek, emelt légút, 4H-4T keresése.',
-  'cabcde': 'Súlyos traumás betegek algoritmusa. A "c" a katasztrofális külső vérzés azonnali csillapítását jelenti a nyaki gerinc védelme (MILS) mellett, mielőtt a légutat vizsgálnánk.',
-  'capnografia': 'A kilégzett CO2 (EtCO2) mérése. ALS során kötelező az emelt légúti eszközön! Mutatja a kompresszió hatékonyságát és a ROSC beálltát.',
-  'mils': 'Manual In-Line Stabilization - A nyaki gerinc kézi rögzítése trauma esetén. Ennek alkalmazása mellett a légutat csak az áll kiemelésével (fej hátrahajtása nélkül) szabad megnyitni.',
+  'als': 'Advanced Life Support - Emelt Szintű Újraélesztés. Emelt légút, intravénás (elsőként IV, ha nem megy, IO) gyógyszerelés, 4H-4T keresése.',
+  'cabcde': 'Súlyos traumás betegek algoritmusa. A "c" a katasztrofális külső vérzés azonnali csillapítását jelenti a nyaki gerinc védelme (MILS) mellett.',
+  'capnografia': 'A kilégzett CO2 (EtCO2) mérése. ALS során kötelező, görbét kijelző kapnográf használata a tubushelyzet ellenőrzésére és a kompresszió hatékonyságának megítélésére.',
+  'mils': 'Manual In-Line Stabilization - A nyaki gerinc kézi rögzítése trauma esetén. Ennek alkalmazása mellett a légutat csak az áll kiemelésével szabad megnyitni.',
   'avpu': 'Tudatállapot vizsgáló skála. A: Alert (éber), V: Verbal (hangra reagál), P: Pain (fájdalomra reagál), U: Unresponsive (nem reagál).',
-  'crt': 'Kapilláris Újratelődési Idő. A körömágyon vagy a szegycsonthoz nyomva 5 másodpercig. Normál értéke: ≤ 2 másodperc. A perifériás keringést mutatja.',
-  'szepszis': 'Súlyos, életveszélyes állapot, a szervezet fertőzésre adott kóros válasza. Ha a NEWS2 pontszám ≥ 5 ÉS fertőzés jelei vannak jelen, azonnal szepszisre kell gondolni!'
+  'crt': 'Kapilláris Újratelődési Idő. Normál értéke: ≤ 2 másodperc. A perifériás keringést mutatja.',
+  'szepszis': 'Súlyos, életveszélyes állapot. Ha a NEWS2 pontszám ≥ 5 ÉS fertőzés jelei vannak jelen, azonnal szepszisre kell gondolni!'
 };
 
 // --- TANANYAG / ELJÁRÁSREND TARTALOM ---
 const GUIDES = [
 {id:'alapok', t:'1. ABCDE Betegvizsgálat Alapelvei', txt:`
-<div class="al al-i">A prehospitális sürgősségi betegvizsgálat célja az életveszély azonosítása és azonnali elhárítása. Szisztematikus, ABCDE sorrendű vizsgálatot igényel.</div>
+<div class="al al-i">A prehospitális sürgősségi betegvizsgálat célja az életveszély azonosítása és azonnali elhárítása. Szisztematikus, ABCDE sorrendű vizsgálatot igényel. Kritikus állapot, ill. keringésmegállás gyanúja esetén azonnal törekedjünk a beteg 360°-os körüljárhatóságának biztosítására!</div>
 <h3 style="color:#14b8a6;margin-bottom:5px;">Első benyomások (Nulladik lépés)</h3>
 <ul class="bl">
   <li><b>Helyszínbiztonság:</b> Veszélyes helyszínen NE közelítsd meg a beteget! Egyéni védőfelszerelés felvétele.</li>
   <li>Reakcióképesség vizsgálata: Hangos megszólítás és a váll kíméletes megrázása egyidőben.</li>
-  <li>Ha nincs reakció: azonnali ALS (segélykocsi) hívása és életjelenségek vizsgálata (Légút, Hármas érzékelés 10 mp-ig).</li>
+  <li>Ha nincs reakció: azonnali ALS (segélykocsi) hívása és életjelenségek vizsgálata (Légút, Hármas érzékelés 10 mp-ig). Bizonytalan esetben is kezdd el az újraélesztést, nem okozol vele súlyos sérülést!</li>
 </ul>
 <h3 style="color:#14b8a6;margin-bottom:5px;margin-top:15px;">A szisztematikus ABCDE</h3>
 <ul class="bl">
-  <li><b>A (Légút):</b> Áttekinthetőség, horkolás, szörcsölés, stridor. Fenyegetett légút (pl. égés, trauma) felismerése.</li>
-  <li><b>B (Légzés):</b> Frekvencia, szimmetria, légzési munka. Minden kritikus betegnél AZONNAL 100% oxigén adása!</li>
-  <li><b>C (Keringés):</b> Pulzus, bőrszín, <span class="dict-word" onclick="shD('crt')">CRT</span>. Szükség esetén (B+ szinttől) vénabiztosítás, monitorozás.</li>
+  <li><b>A (Légút):</b> Áttekinthetőség, horkolás, szörcsölés, stridor. Fenyegetett légút felismerése.</li>
+  <li><b>B (Légzés):</b> Frekvencia, szimmetria, légzési munka. Cseppfertőzés gyanúja esetén (pl. COVID) ne hajoljunk a beteg arca fölé, csak a mellkas kitérését és a légzési hangokat figyeljük!</li>
+  <li><b>C (Keringés):</b> Pulzus, bőrszín, <span class="dict-word" onclick="shD('crt')">CRT</span>. Szükség esetén (B+ szinttől) elsőként IV vénabiztosítás (ha nem megy, akkor IO).</li>
   <li><b>D (Idegrendszer):</b> <span class="dict-word" onclick="shD('avpu')">AVPU</span> skála, pupillák. Megváltozott tudat esetén <b>kötelező a vércukormérés</b>!</li>
-  <li><b>E (Egyéb):</b> Testtájékok vizsgálata, lázmérés, hűtés/melegítés, SAMPLE anamnézis.</li>
-  <li>A vizsgálat elölről (A-tól) ismétlendő állapotváltozás, beavatkozás, vagy betegmozgatás után!</li>
+  <li><b>E (Egyéb):</b> Testtájékok vizsgálata, lázmérés, hőmérséklet-kontroll, SAMPLE anamnézis.</li>
 </ul>
 `},
 {id:'trauma', t:'2. Trauma és cABCDE', txt:`
@@ -154,34 +153,33 @@ const GUIDES = [
 <ul class="bl">
   <li><b>C (Catastrophic hemorrhage):</b> A katasztrofális külső vérzés azonnali csillapítása (Tourniquet, direkt nyomás).</li>
   <li><b>A (Légút) + Nyaki gerinc:</b> <span class="dict-word" onclick="shD('mils')">MILS</span> (nyaki gerinc kézi rögzítése) mellett a légutat <b>kizárólag az áll kiemelésével</b> biztosítjuk, a fej hátrahajtása TILOS!</li>
-  <li><b>B (Légzés):</b> A mellkas megtekintése és megtapintása kötelező. <span class="dict-word" onclick="shD('pneumothorax')">Feszülő légmell (PTX)</span> esetén azonnali tűdekompresszió szükséges (B+ kompetencia).</li>
-  <li><b>C (Keringés):</b> A medence vizsgálata <b>bármilyen irányú nyomással szigorúan tilos!</b> Ránézéssel és mechanizmus alapján kell dönteni a medencerögzítőről. Hypovolaemiás shock esetén agresszív folyadékterápia (krisztalloid, Tranexámsav).</li>
-  <li>A ruházatot teljesen el kell távolítani a sérülések felméréséhez, de utána azonnali hővédelem (kihűlés elleni védelem) szükséges.</li>
+  <li><b>B (Légzés):</b> A mellkas megtekintése és megtapintása kötelező. <span class="dict-word" onclick="shD('pneumothorax')">Feszülő légmell (PTX)</span> esetén azonnali tűdekompresszió szükséges.</li>
+  <li><b>C (Keringés):</b> A medence vizsgálata <b>bármilyen irányú nyomással szigorúan tilos!</b> Ránézéssel és mechanizmus alapján kell dönteni a medencerögzítőről.</li>
+  <li>A ruházatot teljesen el kell távolítani a sérülések felméréséhez, de utána azonnali hővédelem szükséges a kihűlés megelőzésére.</li>
 </ul>
 `},
 {id:'cpr', t:'3. Újraélesztés (BLS és ALS)', txt:`
-<div class="al al-s">Keringésmegállás gyanújakor törekedjünk a beteg 360°-os körüljárhatóságának biztosítására!</div>
+<div class="al al-s">Keringésmegállás gyanújakor kezdd el az ALS-t amilyen korán csak lehet, minden másodperc számít! Bizonytalan esetben is kezdd el az újraélesztést!</div>
 <h3 style="color:#14b8a6;margin-bottom:5px;">Alapszintű Újraélesztés (BLS)</h3>
 <ul class="bl">
-  <li>Eszméletlen betegnél a hármas érzékelés pontosan 10 másodpercig tart. Az agonális (gaspoló, tátogó, furcsa) légzés <b>nem normális</b>, keringésmegállást jelent!</li>
+  <li>Az agonális (gaspoló, tátogó, furcsa) légzés <b>nem normális</b>, keringésmegállást jelent!</li>
   <li>Felnőttnél azonnal mellkasi kompressziókkal kezdünk (30:2 arány). Mélység: 5-6 cm, frekvencia 100-120/perc.</li>
-  <li>Az AED érkezésekor azonnal fel kell rakni. A töltés alatt a kompresszió folytatódik.</li>
   <li>Sokk leadása után AZONNAL 2 perc CPR következik, ritmus/pulzus ellenőrzés nélkül!</li>
 </ul>
 <h3 style="color:#14b8a6;margin-bottom:5px;margin-top:15px;">Emelt Szintű Újraélesztés (ALS)</h3>
 <ul class="bl">
-  <li><b>Sokkolandó ritmusok:</b> <span class="dict-word" onclick="shD('vf')">Kamrafibrilláció (VF)</span>, Pulzus nélküli VT. Sokk (150-200J). Adrenalin (1 mg) a 3. sokk után, majd 3-5 percenként.</li>
-  <li><b>Nem sokkolandó ritmusok:</b> <span class="dict-word" onclick="shD('asystolia')">Asystolia</span>, <span class="dict-word" onclick="shD('pea')">PEA</span>. Nincs sokk. Adrenalin (1 mg) AZONNAL, majd 3-5 percenként.</li>
-  <li>A kompressziót végzőt 2 percenként cserélni kell. A szünet (ritmusanalízishez) nem lehet több 5 másodpercnél!</li>
-  <li>Emelt légúti eszköz (LMA/Tubus) esetén: folyamatos kompresszió, és függetlenül 10/perc lélegeztetés. <span class="dict-word" onclick="shD('capnografia')">Kapnográfia</span> használata kötelező!</li>
+  <li><b>Sokkolandó ritmusok:</b> Egyértelmű <span class="dict-word" onclick="shD('vf')">Kamrafibrilláció (VF)</span> vagy pulzus nélküli VT. Sokk leadása. Kétséges esetben (finom hullámú VF vagy asystolia) NE sokkoljunk, kompressziót végezzünk!</li>
+  <li><b>Refrakter VF:</b> 3 sikertelen sokk után mérlegeljünk vektorváltást alternatív (pl. antero-posterior) elektródahelyzetre.</li>
+  <li><b>Nem sokkolandó ritmusok:</b> <span class="dict-word" onclick="shD('asystolia')">Asystolia</span>, <span class="dict-word" onclick="shD('pea')">PEA</span>. Adrenalin (1 mg) AZONNAL (mielőbb), majd 3-5 percenként.</li>
+  <li>A kompressziót végzőt 2 percenként cserélni kell. A megszakítás nem lehet több 5 másodpercnél!</li>
+  <li><b>Légút és Vénabiztosítás:</b> Szupraglottikus eszközből az i-gel előnyösebb. A tubus helyzetének ellenőrzésére <b>görbét kijelző kapnográfot</b> kell használni! Gyógyszereléshez elsőként IV utat biztosítsunk, ha nem sikerül, akkor IO bemenetet. Kalcium és nátrium-bikarbonát rutinszerű adása tilos.</li>
 </ul>
 `},
 {id:'gyermek', t:'4. Gyermek Ellátás és CPR', txt:`
 <div class="al al-w">Gyermekeknél a keringésmegállás döntően <span class="dict-word" onclick="shD('hypoxia')">hypoxia</span> (oxigénhiány) talaján alakul ki, így az algoritmus némileg eltér a felnőttekétől.</div>
 <h3 style="color:#f472b6;margin-bottom:5px;">Gyermek Állapotfelmérés és ABCDE</h3>
 <ul class="bl">
-  <li>Első megközelítéskor a <b>PAT (Állapotfelmérés Háromszöge)</b> alkalmazandó: Küllem, Légzési munka, Keringés (bőrszín). Ha bármelyik kóros, a gyermek kritikus állapotú. Ez a vizuális felmérés nem helyettesíti a fizikális ABCDE-t!</li>
-  <li>A gyermekek sokáig kompenzálnak. A <b>vérnyomásesés nagyon későn jelenik meg</b>, és fenyegető kardiovaszkuláris összeomlást jelez! Enyhe csökkenésnél is azonnali, agresszív beavatkozás kell.</li>
+  <li>A <b>PAT (Állapotfelmérés Háromszöge)</b> alkalmazandó. A gyermekek sokáig kompenzálnak, a vérnyomásesés nagyon későn jelenik meg!</li>
 </ul>
 <h3 style="color:#f472b6;margin-bottom:5px;margin-top:15px;">Gyermek Újraélesztés (PBLS / ALS)</h3>
 <ul class="bl">
@@ -206,17 +204,14 @@ const SIM_DATA = [
       opts: ['Erősen megdörzsölöm a szegycsontját (fájdalominger).', 'Hideg vizet locsolok az arcába.', 'Hangosan megszólítom és ezzel egyidőben kíméletesen megrázom a vállát.'],
       ok: 2, fb: 'A hangos megszólítás és a váll kíméletes megrázása a hivatalos reakcióvizsgálat.' },
     { q: 'A beteg semmilyen ingerre nem reagál. B kompetenciájú mentőként mi a KÖVETKEZŐ LÉPÉS, mielőtt a légzésvizsgálathoz hajolnál?',
-      opts: ['Azonnal stabil oldalfekvésbe fordítom.', 'Kézirádión haladéktalanul segélykocsit (ALS egységet) kérek.', 'Elkezdem a 30 mellkasi kompressziót.'],
-      ok: 1, fb: 'Eszméletlen/nem reagáló beteghez B kompetenciaszinten azonnal magasabb szintű segítséget kell hívni.' },
+      opts: ['Azonnal 360°-os körüljárhatóságot biztosítok és segélykocsit (ALS egységet) kérek.', 'Elkezdem a 30 mellkasi kompressziót.', 'Várok, hátha magához tér.'],
+      ok: 0, fb: 'Kritikus állapotban a beteg 360°-os körüljárhatóságának biztosítása és magasabb szintű segítség kérése kötelező.' },
     { q: 'Hogyan teszed szabaddá a légutakat ennél a betegnél (trauma nem gyanítható)?',
       opts: ['A fejét oldalra fordítom.', 'Egyik kezem a homlokára, másik az álla alá: a fejet kíméletesen hátrahajtom és az állat megemelem.', 'Kinyitom a száját és vakon benyúlok ujjal.'],
       ok: 1, fb: 'A fej hátrahajtása és az áll megemelése a standard, legbiztonságosabb technika.' },
-    { q: 'A légút megnyílt. Hogyan és pontosan mennyi ideig vizsgálod a légzést?',
-      opts: ['Csak a mellkas emelkedését nézem 5 másodpercig.', 'Fonendoszkóppal meghallgatom a tüdőt 15 másodpercig.', 'Hármas érzékeléssel (látom a mellkast, hallom és érzem a levegőt) pontosan 10 másodpercig.'],
-      ok: 2, fb: 'A 10 másodperces hármas érzékelés a kötelező BLS módszer.' },
-    { q: 'A 10 mp alatt a beteg kétszer, hörgő hanggal és tátogva vesz levegőt. Hogyan értékeled ezt?',
-      opts: ['A beteg él és lélegzik, stabil oldalfekvésbe helyezem.', 'Ez agonális (gaspoló) légzés, amely NEM normális, így keringésmegállásként kezelem!', 'Ez asztmás roham, inhalátort keresek.'],
-      ok: 1, fb: 'Az agonális légzés a nyúltvelő utolsó reakciója, nem biztosít gázcserét. Egyértelműen keringésmegállás.' },
+    { q: 'A légút megnyílt. A beteg mintha gyanúsan horkolna, tátogna (gaspoló légzés). Érintkeztél a beteggel, de nem egyértelmű számodra, hogy normális-e a légzése. Mit ír elő a 2025-ös eljárásrend?',
+      opts: ['Várok még 1 percet a biztos döntéshez.', 'Bizonytalan esetben is kezdd el az újraélesztést, nem okozol vele súlyos sérülést!', 'Csak stabil oldalfekvésbe teszem.'],
+      ok: 1, fb: 'A legújabb irányelvek kimondják: bizonytalan esetben is kezdj CPR-t, a késlekedés végzetesebb, mint egy felesleges kompresszió.' },
     { q: 'Keringésmegállás. Mi a BLS ELSŐ fizikai beavatkozása egy felnőtt esetében?',
       opts: ['Két nagy befúvást végzek a szájába.', 'Vénát biztosítok.', 'Azonnal megkezdem a mellkasi kompressziókat (30 lenyomással).'],
       ok: 2, fb: 'A felnőtt keringésmegállások többsége szíveredetű, azonnal kompressziókkal kezdünk.' },
@@ -226,11 +221,14 @@ const SIM_DATA = [
     { q: 'A társad megérkezik az AED-vel és bekapcsolja. Ragasztja az elektródákat. Mit csinálsz te ezalatt?',
       opts: ['Megállok és segítek neki ragasztani.', 'A kompressziót a ragasztás alatt IS folytatom, csak a ritmusanalízis/sokk idejére állok meg.', 'Átadom a kompressziót egy laikusnak.'],
       ok: 1, fb: 'Az "hands-off" időt minimalizálni kell. A ragasztás és a gép töltése alatt is mennie kell a kompressziónak.' },
-    { q: 'Az AED sokkot javasolt. Leadod a sokkot. Mi a legelső teendőd a gomb lenyomása után?',
+    { q: 'Az AED a monitoron nagyon finom hullámú VF-et mutat, szinte asystolia (kétséges ritmus). Mit ír elő ilyenkor az új ALS/BLS protokoll?',
+      opts: ['Sokkoljunk azonnal legnagyobb energiával.', 'Kétséges esetben (finom hullámú VF vagy asystolia) NE sokkoljunk, hanem folytassuk a mellkaskompressziókat.', 'Váltsunk vektorhelyzetet.'],
+      ok: 1, fb: 'A 2025-ös eljárásrend alapján ha a ritmus asystolia vagy nagyon finom VF, nem sokkolunk, hanem kompressziót végzünk.' },
+    { q: 'Később egyértelmű VF alakul ki. Az AED sokkot javasolt. Leadod a sokkot. Mi a legelső teendőd a gomb lenyomása után?',
       opts: ['Megtapintom a carotis pulzust.', 'Megvárom az AED következő utasítását.', 'Ritmus és pulzus ellenőrzése NÉLKÜL azonnal folytatom a mellkasi kompressziókat 2 percig.'],
       ok: 2, fb: 'Sokk leadása után a szívizom kimerült. Azonnali 2 perces CPR a protokoll pulzusvizsgálat nélkül!' }
   ],
-  summary: 'Részletes Összefoglaló (BLS - B kompetencia): A helyszínbiztonság és a védőfelszerelés felvétele után a mozdulatlan betegnél a hangos megszólítás és vállrázás reakcióhiányt igazolt. B kompetenciájúként azonnal ALS egységet (segélykocsit) hívtál a rádión. A fej hátrahajtásával megnyitott légút mellett a 10 másodperces hármas érzékelés agonális (gaspoló) légzést mutatott, ami egyértelmű keringésmegállást jelent. A felnőtt protokoll szerint azonnal mellkasi kompressziókkal (30:2) kezdtél a mellkas közepén 5-6 cm mélyen, 100-120/perc ütemben. A társad az AED-t bekapcsolta, az elektródákat a folyamatos kompresszió mellett ragasztotta fel. A gép sokkot javasolt, a biztonságos sokkleadás után pedig mindenféle pulzusvizsgálat nélkül azonnal folytattad a kompressziót 2 percig. Az ellátás az ALS egység érkezéséig folyamatos, minőségi mellkaskompressziókon és AED ritmuselemzéseken alapult.'
+  summary: 'Részletes Összefoglaló (BLS - B kompetencia): A helyszínbiztonság és a védőfelszerelés felvétele után a mozdulatlan betegnél a hangos megszólítás és vállrázás reakcióhiányt igazolt. A 360 fokos körüljárhatóság biztosítása után B kompetenciájúként azonnal ALS egységet hívtál a rádión. A fej hátrahajtásával megnyitott légút mellett gyanús gaspoló légzést tapasztaltál; az új ERC ajánlás alapján bizonytalan esetben is azonnal megkezdtük az újraélesztést. A felnőtt protokoll szerint azonnal mellkasi kompressziókkal (30:2) kezdtél a mellkas közepén 5-6 cm mélyen, 100-120/perc ütemben. A társad az AED-t bekapcsolta, az elektródákat a folyamatos kompresszió mellett ragasztotta fel. Bár a kezdeti nagyon finom hullámú VF kétséges volt (így kompresszióval folytattuk), a később kialakult egyértelmű VF esetén a gép sokkot javasolt. A biztonságos sokkleadás után mindenféle pulzusvizsgálat nélkül azonnal folytattad a kompressziót 2 percig.'
 },
 {
   id: 2, diff: 'B+ kompetencia', tag: 'tag-bp', title: '2. Súlyos Trauma és Szepszis Differenciálás',
@@ -251,9 +249,9 @@ const SIM_DATA = [
     { q: 'A detenzionálás után a légzés javul. Jön a "C" (Keringés) vizsgálat. Hogyan vizsgálod a medencét?',
       opts: ['A MEDENCE VIZSGÁLATA BÁRMILYEN IRÁNYÚ NYOMÁSSAL SZIGORÚAN TILOS! Csak a mechanizmus és ránézés alapján értékelem.', 'Óvatosan megnyomom két oldalról.', 'Megkérem, hogy mozgassa a lábait.'],
       ok: 0, fb: 'A nyomkodás újabb masszív belső vérzést indíthat. Szigorúan tilos!' },
-    { q: 'A beteg shockos. B+ kompetenciával milyen párhuzamos tevékenységet végzel a "C" fázisban?',
-      opts: ['Vénabiztosítást végzek, agresszív folyadékpótlást készítek elő (vérzés miatt), és monitorozom (EKG, vérnyomás).', 'Várom, hogy az orvos biztosítson vénát.', 'Csak pulzust tapintok 5 percenként.'],
-      ok: 0, fb: 'B+ ápoló vénát biztosít, folyadékot adhat és teljes monitorozást végez.' },
+    { q: 'A beteg shockos. B+ kompetenciával milyen párhuzamos tevékenységet végzel a "C" fázisban az új eljárásrend alapján?',
+      opts: ['Elsőként IV utat létesítek (ha nem megy, akkor IO), agresszív folyadékpótlást készítek elő, és monitorozom a beteget.', 'Csak IO utat szúrok azonnal.', 'Várom, hogy az orvos biztosítson vénát.'],
+      ok: 0, fb: 'Az új ajánlás kiemeli, hogy elsőként IV utat kell választani, és ha az nem sikerül gyorsan, csak akkor IO utat.' },
     { q: 'Következik a "D" (Idegrendszer) vizsgálat. A beteg zavart (AVPU: V). Melyik mérést kell kötelezően elvégezni megváltozott tudat esetén?',
       opts: ['Alkoholteszt.', 'Részletes reflexvizsgálat.', 'Vércukormérés a vénás kanül tűjéből.'],
       ok: 2, fb: 'A vércukorszint mérése minden megváltozott tudatú betegnél kötelező a "D" fázisban.' },
@@ -267,44 +265,44 @@ const SIM_DATA = [
       opts: ['Innentől már csak a monitort figyelem.', 'A szisztematikus ABCDE vizsgálatot az elejéről (A-tól) megismétlem.', 'Kitöltöm az adminisztrációt.'],
       ok: 1, fb: 'Betegmozgatás, állapotváltozás vagy jelentős beavatkozás után a teljes ABCDE felmérést elölről meg kell ismételni.' }
   ],
-  summary: 'Részletes Összefoglaló (Trauma B+): A helyszínbiztonság után a trauma protokoll (cABCDE) lépett életbe: a nyaki gerinc manuális rögzítése (MILS) mellett történt a katasztrofális vérzések keresése. Az "A" (Légút) vizsgálatánál a fejet nem hajtottuk hátra, csak az állat emeltük ki a MILS mellett. A "B" (Légzés) fázisban a mellkas lemeztelenítése, megtekintése és megtapintása egyértelműen subcutan emphysemát és feszülő PTX-et igazolt. B+ kompetenciának megfelelően azonnali életmentő tűdekompressziót (detenzionálást) hajtottunk végre oxigén adása mellett. A "C" (Keringés) vizsgálata során a medencét csak vizuálisan értékeltük, a mechanikus nyomkodást szigorúan elkerültük. A shock jelei miatt vénát biztosítottunk és folyadékterápiát kezdtünk. A "D" (Tudat) fázisban a zavartság miatt kötelezően vércukrot mértünk a vénás tűből. Az "E" (Egyéb) lépésnél a ruházat eltávolítása után a hypothermia megelőzése érdekében azonnali hővédelmet alkalmaztunk. A 12-elvezetéses EKG-t elhagytuk az időnyerés érdekében. A mentőautóba helyezés (mozgatás) után a teljes szisztematikus ABCDE felmérést újra elölről kezdtük.'
+  summary: 'Részletes Összefoglaló (Trauma B+): A helyszínbiztonság után a trauma protokoll (cABCDE) lépett életbe: a nyaki gerinc manuális rögzítése (MILS) mellett történt a katasztrofális vérzések keresése. Az "A" (Légút) vizsgálatánál a fejet nem hajtottuk hátra, csak az állat emeltük ki a MILS mellett. A "B" (Légzés) fázisban a mellkas lemeztelenítése, megtekintése és megtapintása egyértelműen subcutan emphysemát és feszülő PTX-et igazolt. B+ kompetenciának megfelelően azonnali életmentő tűdekompressziót (detenzionálást) hajtottunk végre oxigén adása mellett. A "C" (Keringés) vizsgálata során a medencét csak vizuálisan értékeltük, a mechanikus nyomkodást szigorúan elkerültük. A shock jelei miatt az új eljárásrendnek megfelelően elsőként perifériás IV vénát biztosítottunk (IO helyett) és folyadékterápiát kezdtünk. A "D" (Tudat) fázisban a zavartság miatt kötelezően vércukrot mértünk a vénás tűből. Az "E" (Egyéb) lépésnél a ruházat eltávolítása után a hypothermia megelőzése érdekében azonnali hővédelmet alkalmaztunk. A 12-elvezetéses EKG-t elhagytuk az időnyerés érdekében. A mentőautóba helyezés (mozgatás) után a teljes szisztematikus ABCDE felmérést újra elölről kezdtük.'
 },
 {
-  id: 3, diff: 'B+ kompetencia', tag: 'tag-bp', title: '3. Magas Láz és Légzési Zavar',
-  desc: 'Egy idősotthonban élő 78 éves hölgyhöz hívnak. A bejelentő szerint nagyon magas a láza és szaporán lélegzik. B+ kompetencia.',
+  id: 3, diff: 'B+ kompetencia', tag: 'tag-bp', title: '3. Refrakter VF (B+ ALS asszisztencia)',
+  desc: 'Egy 60 éves férfinál a helyszínen VF-et észleltetek. Már 3 sikertelen sokkot adtatok le manuális defibrillátorral. ALS csapatként dolgoztok.',
   steps: [
-    { q: 'A beteg az ágyban fekszik, éber, de nagyon gyenge, arca kipirult, légzése szapora. Stabil állapotúnak minősül?',
-      opts: ['Igen, mert éber és ágyban fekszik.', 'Nem, kritikus beteg. A szapora légzés és a súlyos gyengeség miatt azonnali szisztematikus ABCDE vizsgálat szükséges.', 'Igen, ha tud válaszolni a kérdésekre.'],
-      ok: 1, fb: 'A tudatosság nem jelent stabilitást. A vitális jelek eltérése kritikus állapotot jelez.' },
-    { q: 'Az "A" légút átjárható. A "B" vizsgálatnál a légzésszám 28/perc, SpO2 88% szobalevegőn. Milyen párhuzamos tevékenység KÖTELEZŐ azonnal?',
-      opts: ['100%-os belégzési oxigén biztosítása (pl. nem visszalégző, rezervoáros maszkon át).', 'Hörgőtágító spray fújatása.', 'Mellkasi röntgen kérése.'],
-      ok: 0, fb: 'Minden vitálisan instabil, hypoxiás betegnél az első lépés a magas áramlású oxigénterápia.' },
-    { q: 'A "C" vizsgálat során a pulzus 120/perc, a szisztolés vérnyomás 95 Hgmm. B+ kompetenciával mit teszel?',
-      opts: ['Csak felírom az értékeket a papírra.', 'Vénabiztosítást végzek, és folyamatos EKG, vérnyomás monitorozást állítok be.', 'Centrális vénát szúrok a nyakon.'],
-      ok: 1, fb: 'B+ szinten a perifériás vénabiztosítás és a monitorozás a C vizsgálat fontos párhuzamos eleme.' },
-    { q: 'A "D" vizsgálatnál a beteg éber (AVPU: A). Mi a kötelező eszközös vizsgálat a D fázisban?',
-      opts: ['Pupillavizsgálat fénnyel.', 'Vércukormérés a vénás kanül tűjéből.', 'Reflexvizsgálat.'],
-      ok: 1, fb: 'Bár a beteg éber (AVPU: A), minden kritikus betegnél kötelező a vércukormérés.' },
-    { q: 'Az "E" vizsgálat: hőmérséklet 39,5 °C. Melyik pontrendszer kiszámítása KIFEJEZETTEN javasolt a felnőtt, lázas, légzési zavaros betegnél az eljárásrend szerint?',
-      opts: ['A Glasgow Coma Scale (GCS).', 'A NEWS2 (National Early Warning Score 2).', 'A PAT (Gyermek állapotfelmérő háromszög).'],
-      ok: 1, fb: 'A NEWS2 pontrendszer célzottan a felnőtt betegek romló állapotának (és szepszis rizikójának) korai felismerésére szolgál.' },
-    { q: 'A NEWS2 értékek: RR 28 (3p), SpO2 88% (3p), Oxigén kell (2p), SBP 95 (2p), Pulzus 120 (2p), Láz 39,5 (2p). Az eredmény >=7, magas "Red score". Mire KELL gondolnod a magas NEWS2 és a láz alapján?',
-      opts: ['Azonnal SZEPSZISRE kell gondolni (NEWS2 >= 5 + infekció jelei).', 'Ez csak egy egyszerű megfázás.', 'Allergiás reakcióra (anaphylaxia).'],
-      ok: 0, fb: 'Az eljárásrend egyértelmű: magas NEWS2 pontszám + fertőzésre utaló jel (láz) = gyanakodj szepszisre!' },
-    { q: 'A beteg a >=7-es NEWS2 pontszámmal milyen klinikai rizikócsoportba tartozik, és mi a teendő B+ szinten?',
-      opts: ['Közepes rizikó, helyszíni ellátás elegendő.', 'Magas rizikó: azonnali folyamatos monitorozás, és mivel magasabb szintű beavatkozás kellhet, haladéktalanul SEGÉLYKOCSI (ALS) kérése!', 'Alacsony rizikó, szállítás háziorvoshoz.'],
-      ok: 1, fb: 'A 7 pont feletti érték magas rizikót és ALS (orvos/mentőtiszt) jelenlétét igényli a stabilizáláshoz.' },
-    { q: 'A mentőtiszt kiérkezéséig hogyan jársz el a szisztematikus vizsgálat tekintetében?',
-      opts: ['Már csak a monitort figyelem.', 'A szisztematikus ABCDE vizsgálatot 5-10 percenként automatikusan megismétlem.', 'Hagyom a beteget pihenni.'],
-      ok: 1, fb: 'Kritikus betegnél a teljes fizikális vizsgálat (ABCDE) 5-10 percenkénti ismétlése elengedhetetlen a monitorozás mellett.' },
-    { q: 'A beteg állapota hirtelen romlik, nem reagál a hangra (AVPU: U), légzése hörgővé válik. Mit teszel?',
-      opts: ['Állapotváltozás történt! Az ABCDE-t elölről kezdem: az "A" légút hörgő, ezért pozicionálom a fejet és egyszerű légúti eszközt (OPA) teszek be.', 'Azonnal elkezdem a mellkasi kompressziókat.', 'Várom a segélykocsit.'],
-      ok: 0, fb: 'Bármilyen állapotváltozás esetén az ABCDE elölről indul. A hörgés/eszméletvesztés azonnali "A" (légútbiztosítási) beavatkozást kíván.' },
-    { q: 'A légút biztosítása után a hármas érzékelés során a légzés leáll. Mi a következő lépés?',
-      opts: ['Gyógyszert adok be.', 'Azonnal megkezdem az Újraélesztést (BLS): mellkasi kompressziókkal és ballonos-maszkos lélegeztetéssel, és kérem az AED-t.', 'Felültetem a beteget.'],
-      ok: 1, fb: 'A légzés leállása keringésmegállást jelent. Felnőttnél azonnal CPR indul (30:2) AED felhelyezésével.' }
+    { q: 'A 3. sikertelen sokk után a ritmus továbbra is VF. Milyen ritmuszavarnak hívja ezt az eljárásrend?',
+      opts: ['Asystolia.', 'Refrakter VF.', 'PEA.'],
+      ok: 1, fb: 'Három egymást követő, helyes elektródahelyzetben leadott sikertelen sokk után refrakter VF-ről beszélünk.' },
+    { q: 'Mi az ERC 2025-ös ajánlása refrakter VF esetén az elektródákkal kapcsolatban?',
+      opts: ['Hagyjuk őket a helyükön és emeljünk energiát végtelenségig.', 'Mérlegeljünk vektorváltást alternatív (pl. antero-posterior) lapát/pad helyzetre.', 'Tegyük az elektródákat a beteg hátára mindkettőt.'],
+      ok: 1, fb: 'Refrakter VF-ben az irányelv alternatív elektródahelyzetre (antero-posterior) való vektorváltást javasol.' },
+    { q: 'A 3. sokk leadása megtörtént, a ritmus még VF. Gyógyszerelés szempontjából mit kell azonnal beadni (B+ kompetencia / ALS asszisztencia)?',
+      opts: ['1 mg Adrenalin és 300 mg Amiodaron iv/io.', 'Csak 1 mg Adrenalin.', 'Kalcium és Nátrium-bikarbonát.'],
+      ok: 0, fb: 'A 3. sokk után mind az 1 mg Adrenalin, mind a 300 mg Amiodaron adása esedékes.' },
+    { q: 'Mennyi ideig tart a mellkaskompressziók és lélegeztetések (30:2) ciklusa a következő ritmusanalízisig?',
+      opts: ['1 perc', '2 perc', '5 perc'],
+      ok: 1, fb: 'Az újraélesztési ciklusok ritmusanalízisig 2 percig tartanak.' },
+    { q: 'Légútbiztosítás: Szupraglottikus eszköz felhelyezése mellett döntötök. Melyik eszközt preferálja az ERC 2025?',
+      opts: ['Laringeális tubus.', 'i-gel.', 'Bármelyik egyenértékű.'],
+      ok: 1, fb: 'Az új ajánlás kimondja: ha szupraglottikus eszközt választunk, az i-gel előnyösebb a laringeális tubusnál.' },
+    { q: 'A légút biztosítása megtörtént. Mi KÖTELEZŐ a tubus / eszköz megfelelő helyzetének megerősítésére?',
+      opts: ['A mellkas emelkedésének figyelése kizárólag.', 'Fonendoszkópos meghallgatás.', 'Görbét kijelző kapnográf folyamatos használata (ETCO2 mérése).'],
+      ok: 2, fb: 'A görbét kijelző kapnográf használata kötelező a légúti eszköz helyzetének ellenőrzésére.' },
+    { q: 'A kapnográfot csatlakoztattátok. Milyen lélegeztetési stratégiát követtek a folyamatos mellkaskompressziók mellett?',
+      opts: ['Függetlenül 10/perc frekvenciával lélegeztetünk.', 'Lélegeztetés nélkül csak komprimálunk.', 'Folytatjuk a 30:2 arányt a szupraglottikus eszközzel is.'],
+      ok: 0, fb: 'Emelt / izolált légúti eszköz esetén a kompresszió folyamatos, a lélegeztetés függetlenül 10/perc.' },
+    { q: 'A gyógyszerek beadása során felmerül a Kalcium és Nátrium-bikarbonát használata, mivel hosszú az újraélesztés. Mit mond az eljárásrend?',
+      opts: ['Azonnal be kell adni mindkettőt.', 'Rutinszerűen NE adjuk ezeket a CPR-ben.', 'Csak kalciumot adjunk.'],
+      ok: 1, fb: 'A 2025-ös irányelv tisztázta: nagyon specifikus indikációkon kívül a kalciumnak és Na-bikarbonátnak nincs szerepe, rutinszerűen ne adjuk.' },
+    { q: 'A kapnográf hirtelen jelentős EtCO2 emelkedést mutat. Mi lehet ez?',
+      opts: ['Eltömődött a tubus.', 'A spontán keringés visszatérésének (ROSC) jele.', 'Túllélegeztetés jele.'],
+      ok: 1, fb: 'Az EtCO2 hirtelen megemelkedése a keringés megindulásának (ROSC) legkorábbi jele lehet.' },
+    { q: 'A ROSC beállt. Mik a legelső teendők a posztreszuszcitációs szakaszban az új irányelv alapján?',
+      opts: ['Azonnal felültetjük a beteget.', 'ABCDE betegvizsgálat, SpO2 94-98% célzása, 100 Hgmm feletti szisztolés vérnyomás biztosítása és 12 elvezetéses EKG készítése.', 'Megvárjuk a mentőorvost a mentőben.'],
+      ok: 1, fb: 'ROSC után az ABCDE elv, a megfelelő oxigenizáció és a stabil vérnyomás (sokk elkerülése), valamint a 12 elvezetéses EKG kulcsfontosságú.' }
   ],
-  summary: 'Részletes Összefoglaló (Láz/Szepszis B+): Az idős, magas lázzal és szapora légzéssel küzdő beteg megközelítésekor azonnal megállapítottuk, hogy állapota kritikus. Az "A" (Légút) átjárható volt, de a "B" (Légzés) során mért hypoxia miatt azonnal 100% oxigénterápiát indítottunk. A "C" (Keringés) fázisban a hypotensio (95 Hgmm) és tachycardia miatt vénát biztosítottunk és folyamatos monitorozást építettünk ki. A "D" (Idegrendszer) alatt kötelező vércukormérést végeztünk a kanülből. Az "E" (Egyéb) vizsgálat magas lázat igazolt. A mért értékek alapján kiszámolt NEWS2 pontszám >7 lett ("Red score"), ami a lázzal kiegészülve egyértelműen SZEPSZIS gyanúját vetette fel. Mivel ez magas klinikai rizikót jelent, azonnal segélykocsit (ALS) kértünk. Az állapot folyamatos monitorozása és a 5-10 percenként ismételt ABCDE vizsgálat közben a beteg eszméletét vesztette, légútja elzáródott. Az eljárásrendnek megfelelően azonnal reagáltunk (ABCDE újra), pozicionáltuk a légutat, majd a légzés leállásakor haladéktalanul megkezdtük a mellkasi kompressziókat és a BLS protokollt a segélykocsi megérkezéséig.'
+  summary: 'Részletes Összefoglaló (Refrakter VF B+ ALS asszisztencia): A 60 éves betegnél a 3. sikertelen sokk után az ERC 2025 alapján a ritmus refrakter VF-nek minősült. Az irányelvnek megfelelően a defibrillátor elektródáinál vektorváltást (antero-posterior pozíció) mérlegeltünk az ismételt sokkokhoz. A 3. sokkot követően azonnal beadtuk az 1 mg Adrenalint és a 300 mg Amiodaront IV (az új ajánlás a perifériás IV utat részesíti előnyben az IO-val szemben kezdéskor). A légútbiztosításnál szupraglottikus eszközt (i-gel, mely az ajánlás szerint előnyösebb) használtunk, és a helyzet megerősítésére kötelezően görbét kijelző kapnográfot csatlakoztattunk. Az újraélesztés alatt a folyamatos mellkaskompressziók mellett percenként 10 befúvást végeztünk. Kerültük a kalcium és a nátrium-bikarbonát rutinszerű adását, mert az új eljárásrend ezt nem javasolja. A folyamatos monitorozás során a kapnográf ETCO2 értékének hirtelen emelkedése jelezte a ROSC (Spontán Keringés Visszatérése) beálltát. Ezt követően a posztreszuszcitációs ellátás (ABCDE, célzott SpO2 94-98%, RR >100 Hgmm, 12 elvezetéses EKG) lépett életbe.'
 },
 {
   id: 4, diff: 'B kompetencia', tag: 'tag-g', title: '4. Vízből mentett Gyermek (PBLS)',
@@ -354,7 +352,7 @@ function renderHome() {
       <div style="font-size:56px;margin-bottom:15px;text-shadow:0 0 20px rgba(20,184,166,0.4);">🚑</div>
       <h1 style="font-size:24px;font-weight:800;color:#fff;margin-bottom:15px;letter-spacing:0.02em;">OMSZ Prehospitális Eljárásrend</h1>
       <p style="font-size:14px;color:#d1d5db;margin-bottom:30px;line-height:1.6;">
-        A hivatalos prehospitális eljárásrend alapján készült egységes webalkalmazás. Tartalmazza a <b>betegvizsgálat (ABCDE)</b> alapelveit, a <b>trauma protokollt</b>, az <b>újraélesztést</b>, a <b>szimulációs gyakorlatokat</b>, és a beépített klinikai <b>kalkulátorokat</b>.
+        A hivatalos prehospitális eljárásrend alapján készült egységes webalkalmazás. Tartalmazza a <b>betegvizsgálat (ABCDE)</b> alapelveit, a <b>trauma protokollt</b>, az <b>újraélesztést (ERC 2025 frissítésekkel)</b>, a <b>szimulációs gyakorlatokat</b>, és a beépített klinikai <b>kalkulátorokat</b>.
       </p>
       
       <div style="display:flex;flex-direction:column;gap:12px;">
